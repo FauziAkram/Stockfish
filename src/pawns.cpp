@@ -236,7 +236,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) const {
   Bitboard ourPawns = b & pos.pieces(Us) & ~pawnAttacks[Them];
   Bitboard theirPawns = b & pos.pieces(Them);
 
-  Score bonus = make_score(5, 5);
+  Score bonus = SCORE_ZERO;
 
   File center = std::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
