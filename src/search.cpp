@@ -35,8 +35,8 @@
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 
-int y[] = {21.9,20,22,44};
-int t[] = {214,168,159,81,205,409,174,157,155};
+int y[] = {20,22,44};
+int t[] = {214,168,159,81,205,409,174,157,155,219};
 int u[] = {534,904,1090,537};
 int o[] = {-218};
 TUNE(Search::init);
@@ -163,7 +163,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int(y[0] * std::log(i));
+      Reductions[i] = int(t[9]/10 * std::log(i));
 }
 
 
@@ -802,7 +802,7 @@ namespace {
         && (ss-1)->statScore < 23767
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - y[1] * depth - y[2] * improving + t[2] * ss->ttPv + t[3]
+        &&  ss->staticEval >= beta - y[0] * depth - y[1] * improving + t[2] * ss->ttPv + t[3]
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -846,7 +846,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + t[5] - y[3] * improving;
+    probCutBeta = beta + t[5] - y[2] * improving;
 
     // Step 9. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value
