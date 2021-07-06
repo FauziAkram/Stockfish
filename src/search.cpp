@@ -36,7 +36,6 @@
 #include "syzygy/tbprobe.h"
 
 int t[] = {214,534,904,219,20,22,168,159,1090,81,205,209,44,409,-218,174,157,537,155};
-TUNE(t, Search::init);
 
 namespace Stockfish {
 
@@ -171,7 +170,7 @@ void Search::clear() {
   Tablebases::init(Options["SyzygyPath"]); // Free mapped files
 }
 
-
+TUNE(t, Search::init);
 /// MainThread::search() is started when the program receives the UCI 'go'
 /// command. It searches from the root position and outputs the "bestmove".
 
