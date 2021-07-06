@@ -35,10 +35,10 @@
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 
-int y[] = {21.9,20,22,44}
-int t[] = {214,168,159,81,205,409,174,157,155}
-int u[] = {534,904,1090,537}
-int o[] = {-218}
+int y[] = {21.9,20,22,44};
+int t[] = {214,168,159,81,205,409,174,157,155};
+int u[] = {534,904,1090,537};
+int o[] = {-218};
 TUNE(Search::init);
 TUNE(SetRange(0, 80), y);
 TUNE(SetRange(40, 500), t);
