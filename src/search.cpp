@@ -35,16 +35,8 @@
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 
-int o[] = {-218};
-int y[] = {20,22,44};
-int t[] = {214,168,159,81,205,409,174,157,155,219};
-int u[] = {534,904,1090,537};
-
-TUNE(o, Search::init);
-TUNE(SetRange(0, 80), y);
-TUNE(SetRange(40, 500), t);
-TUNE(SetRange(300, 1300), u);
-
+int t[] = {214,168,159,81,205,409,174,157,155,219,-218,20,22,44,534,904,1090,537};
+TUNE(t, Search::init);
 
 namespace Stockfish {
 
@@ -85,7 +77,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + u[0]) / 1024 + (!i && r > u[1]);
+    return (r + t[14]) / 1024 + (!i && r > t[15]);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -802,7 +794,7 @@ namespace {
         && (ss-1)->statScore < 23767
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - y[0] * depth - y[1] * improving + t[2] * ss->ttPv + t[3]
+        &&  ss->staticEval >= beta - t[11] * depth - t[12] * improving + t[2] * ss->ttPv + t[3]
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -810,7 +802,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and value
-        Depth R = (u[2] + t[3] * depth) / 256 + std::min(int(eval - beta) / t[4], 3);
+        Depth R = (t[16] + t[3] * depth) / 256 + std::min(int(eval - beta) / t[4], 3);
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -846,7 +838,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + t[5] - y[2] * improving;
+    probCutBeta = beta + t[5] - t[13] * improving;
 
     // Step 9. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value
@@ -1021,7 +1013,7 @@ moves_loop: // When in check, search starts from here
                   continue;
 
               // SEE based pruning
-              if (!pos.see_ge(move, Value(o[0]) * depth)) // (~25 Elo)
+              if (!pos.see_ge(move, Value(t[10]) * depth)) // (~25 Elo)
                   continue;
           }
           else
@@ -1145,7 +1137,7 @@ moves_loop: // When in check, search starts from here
               r--;
 
           // Decrease reduction if the ttHit running average is large (~0 Elo)
-          if (thisThread->ttHitAverage > u[3] * TtHitAverageResolution * TtHitAverageWindow / 1024)
+          if (thisThread->ttHitAverage > t[17] * TtHitAverageResolution * TtHitAverageWindow / 1024)
               r--;
 
           // Decrease reduction if position is or has been on the PV
