@@ -66,7 +66,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(214 * (d - improving));
+    return Value(211 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -74,7 +74,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 534) / 1024 + (!i && r > 904);
+    return (r + 545) / 1024 + (!i && r > 922);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -152,7 +152,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int(21.9 * std::log(i));
+      Reductions[i] = int(22 * std::log(i));
 }
 
 
@@ -791,7 +791,7 @@ namespace {
         && (ss-1)->statScore < 23767
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 159
+        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 169 * ss->ttPv + 158
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -799,7 +799,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and value
-        Depth R = (1090 + 81 * depth) / 256 + std::min(int(eval - beta) / 205, 3);
+        Depth R = (1105 + 81 * depth) / 256 + std::min(int(eval - beta) / 207, 3);
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -835,7 +835,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 209 - 44 * improving;
+    probCutBeta = beta + 209 - 43 * improving;
 
     // Step 9. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value
@@ -912,7 +912,7 @@ moves_loop: // When in check, search starts from here
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
 
     // Step 11. A small Probcut idea, when we are in check
-    probCutBeta = beta + 409;
+    probCutBeta = beta + 402;
     if (   ss->inCheck
         && !PvNode
         && depth >= 4
@@ -1010,7 +1010,7 @@ moves_loop: // When in check, search starts from here
                   continue;
 
               // SEE based pruning
-              if (!pos.see_ge(move, Value(-218) * depth)) // (~25 Elo)
+              if (!pos.see_ge(move, Value(-215) * depth)) // (~25 Elo)
                   continue;
           }
           else
@@ -1024,7 +1024,7 @@ moves_loop: // When in check, search starts from here
               // Futility pruning: parent node (~5 Elo)
               if (   lmrDepth < 7
                   && !ss->inCheck
-                  && ss->staticEval + 174 + 157 * lmrDepth <= alpha
+                  && ss->staticEval + 173 + 160 * lmrDepth <= alpha
                   &&  (*contHist[0])[movedPiece][to_sq(move)]
                     + (*contHist[1])[movedPiece][to_sq(move)]
                     + (*contHist[3])[movedPiece][to_sq(move)]
@@ -1134,7 +1134,7 @@ moves_loop: // When in check, search starts from here
               r--;
 
           // Decrease reduction if the ttHit running average is large (~0 Elo)
-          if (thisThread->ttHitAverage > 537 * TtHitAverageResolution * TtHitAverageWindow / 1024)
+          if (thisThread->ttHitAverage > 547 * TtHitAverageResolution * TtHitAverageWindow / 1024)
               r--;
 
           // Decrease reduction if position is or has been on the PV
