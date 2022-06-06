@@ -60,7 +60,7 @@ namespace Stockfish {
 
 namespace Eval {
   
-  int EVT1 = 5, EVT2 = 856, EVT3 = 64, EVT4 = 297, EVT5 = 1048, EVT6 = 109, EVT7 = 137, EVT70 = 137, EVT8 = 155, EVT9 = 848, EVT10 = 195, EVT11 = 211, EVT12 = 10;
+  int EVT1 = 5, EVT2 = 856, EVT3 = 64, EVT4 = 297, EVT5 = 1048, EVT6 = 109, EVT7 = 137, EVT70 = 137, EVT8 = 255, EVT9 = 848, EVT10 = 195, EVT11 = 211, EVT12 = 10;
   auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m * 2 / 3, m * 3 / 2);};
   TUNE(SetRange(f1), EVT1, EVT2, EVT3, EVT4, EVT5, EVT6, EVT7, EVT70, EVT8, EVT9, EVT10, EVT11, EVT12);
 
