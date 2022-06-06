@@ -57,13 +57,17 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+  int fut1 = 168, raz2 = 348, raz3 = 258, fut3 = 256, fut4 = 26305, nmp1 = 15, nmp2 = 15;
+  int nmp3 = 198, nmp4 = 28, pc1 = 179, pc2 = 46, pc3 = 481;
+  TUNE(SetRange(f1), fut1, raz2, raz3, fut3, fut4, nmp1, nmp2, nmp3, nmp4, pc1, pc2, pc3);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(168 * (d - improving));
+    return Value(fut1 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -782,7 +786,7 @@ namespace {
     // return a fail low.
     if (   !PvNode
         && depth <= 7
-        && eval < alpha - 348 - 258 * depth * depth)
+        && eval < alpha - raz2 - raz3 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -793,9 +797,9 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 256 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / fut3 >= beta
         &&  eval >= beta
-        &&  eval < 26305) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
+        &&  eval < fut4 ) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
         return eval;
 
     // Step 9. Null move search with verification search (~22 Elo)
@@ -804,7 +808,7 @@ namespace {
         && (ss-1)->statScore < 14695
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 15 * depth - improvement / 15 + 198 + complexity / 28
+        &&  ss->staticEval >= beta - nmp1 * depth - improvement / nmp2 + nmp3 + complexity / nmp4
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -848,7 +852,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 179 - 46 * improving;
+    probCutBeta = beta + pc1 - pc2 * improving;
 
     // Step 10. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value
@@ -922,7 +926,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~0 Elo)
-    probCutBeta = beta + 481;
+    probCutBeta = beta + pc3;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
