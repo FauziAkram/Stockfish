@@ -63,7 +63,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(168 * (d - improving));
+    return Value(164 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -782,7 +782,7 @@ namespace {
     // return a fail low.
     if (   !PvNode
         && depth <= 7
-        && eval < alpha - 347 - 263 * depth * depth)
+        && eval < alpha - 344 - 263 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -804,7 +804,7 @@ namespace {
         && (ss-1)->statScore < 14695
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 15 * depth - improvement / 15 + 197 + complexity / 28
+        &&  ss->staticEval >= beta - 15 * depth - improvement / 15 + 194 + complexity / 28
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -848,7 +848,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 182 - 46 * improving;
+    probCutBeta = beta + 179 - 46 * improving;
 
     // Step 10. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value
@@ -925,7 +925,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~0 Elo)
-    probCutBeta = beta + 481;
+    probCutBeta = beta + 484;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
