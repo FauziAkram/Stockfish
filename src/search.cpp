@@ -63,7 +63,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(162 * (d - improving));
+    return Value(160 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -782,7 +782,7 @@ namespace {
     // return a fail low.
     if (   !PvNode
         && depth <= 7
-        && eval < alpha - 340 - 263 * depth * depth)
+        && eval < alpha - 340 - 264 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -793,9 +793,9 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 255 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 254 >= beta
         &&  eval >= beta
-        &&  eval < 26214) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
+        &&  eval < 26300) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
         return eval;
 
     // Step 9. Null move search with verification search (~22 Elo)
@@ -804,7 +804,7 @@ namespace {
         && (ss-1)->statScore < 14695
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 15 * depth - improvement / 15 + 195 + complexity / 28
+        &&  ss->staticEval >= beta - 15 * depth - improvement / 15 + 193 + complexity / 28
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
