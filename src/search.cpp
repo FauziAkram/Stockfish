@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstring>   // For std::memset
 #include <iostream>
 #include <sstream>
