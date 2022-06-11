@@ -18,7 +18,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cmath>
 #include <cstring>   // For std::memset
 #include <iostream>
 #include <sstream>
@@ -58,7 +57,7 @@ using namespace Search;
 
 namespace {
   auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-  int S1 = 122, S2 = 138, S3 = 60, S4 = -3875;
+  int S1 = 122, S2 = 138, S3 = 60, S4 = 3875;
   TUNE(SetRange(f1), S1, S2, S3, S4);
 
   // Different node types, used as a template parameter
@@ -1051,7 +1050,7 @@ moves_loop: // When in check, search starts here
               
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 5
-                  && history < S4 * (depth - 1))
+                  && history < - S4 * (depth - 1))
               {
                   if (lmrDepth < 2)
                       continue;
