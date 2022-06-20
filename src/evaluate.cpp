@@ -59,6 +59,10 @@ using namespace std;
 namespace Stockfish {
 
 namespace Eval {
+  
+  int  EVT2 = 856, EVT3 = 64, EVT4 = 297, EVT5 = 1092, EVT6 = 106, EVT7 = 104, EVT70 = 131, EVT8 = 269, EVT9 = 754, EVT90 = 1024 , EVT10 = 195, EVT11 = 211, EVT12 = 10;
+  auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m * 2 / 3, m * 3 / 2);};
+  TUNE(SetRange(f1), EVT2, EVT3, EVT4, EVT5, EVT6, EVT7, EVT70, EVT8, EVT9, EVT90, EVT10, EVT11, EVT12);
 
   bool useNNUE;
   string currentEvalFileName = "None";
@@ -1088,38 +1092,38 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   // Deciding between classical and NNUE eval (~10 Elo): for high PSQ imbalance we use classical,
   // but we switch to NNUE during long shuffling or with high material on the board.
   bool useClassical =    (pos.this_thread()->depth > 9 || pos.count<ALL_PIECES>() > 7)
-                      && abs(psq) * 5 > (856 + pos.non_pawn_material() / 64) * (10 + pos.rule50_count());
+                      && abs(psq) * 5 > (EVT2 + pos.non_pawn_material() / EVT3) * (EVT12 + pos.rule50_count());
 
   // Deciding between classical and NNUE eval (~10 Elo): for high PSQ imbalance we use classical,
   // but we switch to NNUE during long shuffling or with high material on the board.
   if (!useNNUE || useClassical)
   {
       v = Evaluation<NO_TRACE>(pos).value();
-      useClassical = abs(v) >= 297;
+      useClassical = abs(v) >= EVT4;
   }
 
   // If result of a classical evaluation is much lower than threshold fall back to NNUE
   if (useNNUE && !useClassical)
   {
        int nnueComplexity;
-       int scale = 1092 + 106 * pos.non_pawn_material() / 5120;
+       int scale = EVT5 + EVT6 * pos.non_pawn_material() / 5120;
        Value optimism = pos.this_thread()->optimism[stm];
 
        Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
        // Blend nnue complexity with (semi)classical complexity
-       nnueComplexity = (104 * nnueComplexity + 131 * abs(nnue - psq)) / 256;
+       nnueComplexity = (EVT7 * nnueComplexity + EVT70 * abs(nnue - psq)) / 256;
        if (complexity) // Return hybrid NNUE complexity to caller
            *complexity = nnueComplexity;
 
-       optimism = optimism * (269 + nnueComplexity) / 256;
-       v = (nnue * scale + optimism * (scale - 754)) / 1024;
+       optimism = optimism * (EVT8 + nnueComplexity) / 256;
+       v = (nnue * scale + optimism * (scale - EVT9)) / EVT90;
 
        if (pos.is_chess960())
            v += fix_FRC(pos);
   }
 
   // Damp down the evaluation linearly when shuffling
-  v = v * (195 - pos.rule50_count()) / 211;
+  v = v * (EVT10 - pos.rule50_count()) / EVT11;
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
