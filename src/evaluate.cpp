@@ -275,7 +275,7 @@ namespace {
   constexpr Score RestrictedPiece     = S(  6,  7);
   constexpr Score RookOnKingRing      = S( 16,  0);
   constexpr Score SliderOnQueen       = S( 62, 21);
-  constexpr Score ThreatByKing        = S( 24, 87);
+  // constexpr Score ThreatByKing        = S( 24, 87);
   constexpr Score ThreatByPawnPush    = S( 48, 39);
   constexpr Score ThreatBySafePawn    = S(167, 99);
   constexpr Score TrappedRook         = S( 55, 13);
@@ -666,8 +666,8 @@ namespace {
         while (b)
             score += ThreatByRook[type_of(pos.piece_on(pop_lsb(b)))];
 
-        if (weak & attackedBy[Us][KING])
-            score += ThreatByKing;
+        //if (weak & attackedBy[Us][KING])
+        //    score += ThreatByKing;
 
         b =  ~attackedBy[Them][ALL_PIECES]
            | (nonPawnEnemies & attackedBy2[Us]);
