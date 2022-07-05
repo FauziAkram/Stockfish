@@ -270,7 +270,7 @@ namespace {
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score PassedFile          = S( 13,  8);
-  constexpr Score PawnlessFlank       = S( 19, 97);
+  //constexpr Score PawnlessFlank       = S( 19, 97);
   constexpr Score ReachableOutpost    = S( 33, 19);
   constexpr Score RestrictedPiece     = S(  6,  7);
   constexpr Score RookOnKingRing      = S( 16,  0);
@@ -615,8 +615,8 @@ namespace {
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
 
     // Penalty when our king is on a pawnless flank
-    if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
-        score -= PawnlessFlank;
+    //if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
+    //    score -= PawnlessFlank;
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
