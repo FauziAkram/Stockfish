@@ -27,11 +27,12 @@
 namespace Stockfish {
 
 namespace {
-
+  
+ int aa=0, bb=0, cc=0, dd=0, aaa=0, bbb=0, ccc=0, ddd=0 ;
+  
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
-  
-  int aa=0, bb=0, cc=0, dd=0, aaa=0, bbb=0, ccc=0, ddd=0 ;
+ 
 
   // Pawn penalties
   Score Backward      = S( 6, 19);
