@@ -30,32 +30,34 @@ namespace {
 
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
+  
+  int aa=0, bb=0, cc=0, dd=0, aaa=0, bbb=0, ccc=0, ddd=0 ;
 
   // Pawn penalties
-  constexpr Score Backward      = S( 6, 19);
-  constexpr Score Doubled       = S(11, 51);
-  constexpr Score DoubledEarly  = S(17,  7);
-  constexpr Score Isolated      = S( 1, 20);
-  constexpr Score WeakLever     = S( 2, 57);
-  constexpr Score WeakUnopposed = S(15, 18);
+  Score Backward      = S( 6, 19);
+  Score Doubled       = S(11, 51);
+  Score DoubledEarly  = S(17,  7);
+  Score Isolated      = S( 1, 20);
+  Score WeakLever     = S( 2, 57);
+  Score WeakUnopposed = S(15, 18);
 
   // Bonus for blocked pawns at 5th or 6th rank
-  constexpr Score BlockedPawn[2] = { S(-19, -8), S(-7, 3) };
+  Score BlockedPawn[2] = { S(-19, -8), S(-7, 3) };
 
-  constexpr Score BlockedStorm[RANK_NB] = {
+  Score BlockedStorm[RANK_NB] = {
     S(0, 0), S(0, 0), S(64, 75), S(-3, 14), S(-12, 19), S(-7, 4), S(-10, 5)
   };
 
   // Connected pawn bonus
-  constexpr int Connected[RANK_NB] = { 0, 3, 7, 7, 15, 54, 86 };
+  int Connected[RANK_NB] = { 0, 3, 7, 7, 15, 54, 86 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
   constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
-    { V(-2), V(85), V(95), V(53), V(39), V(23), V(25) },
-    { V(-55), V(64), V(32), V(-55), V(-30), V(-11), V(-61) },
-    { V(-11), V(75), V(19), V(-6), V(26), V(9), V(-47) },
-    { V(-41), V(-11), V(-27), V(-58), V(-42), V(-66), V(-163) }
+    { V(-2+aa), V(85+aa), V(95+aa), V(53+aa), V(39+aa), V(23+aa), V(25+aa) },
+    { V(-55+bb), V(64+bb), V(32+bb), V(-55+bb), V(-30+bb), V(-11+bb), V(-61+bb) },
+    { V(-11+cc), V(75+cc), V(19+cc), V(-6+cc), V(26+cc), V(9+cc), V(-47+cc) },
+    { V(-41+dd), V(-11+dd), V(-27+dd), V(-58+dd), V(-42+dd), V(-66+dd), V(-163+dd) }
   };
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
@@ -63,17 +65,25 @@ namespace {
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
   constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
-    { V(94), V(-280), V(-170), V(90), V(59), V(47), V(53) },
-    { V(43), V(-17), V(128), V(39), V(26), V(-17), V(15) },
-    { V(-9), V(62), V(170), V(34), V(-5), V(-20), V(-11) },
-    { V(-27), V(-19), V(106), V(10), V(2), V(-13), V(-24) }
+    { V(94+aaa), V(-280+aaa), V(-170+aaa), V(90+aaa), V(59+aaa), V(47+aaa), V(53+aaa) },
+    { V(43+bbb), V(-17+bbb), V(128+bbb), V(39+bbb), V(26+bbb), V(-17+bbb), V(15+bbb) },
+    { V(-9+ccc), V(62+ccc), V(170+ccc), V(34+ccc), V(-5+ccc), V(-20+ccc), V(-11+ccc) },
+    { V(-27+ddd), V(-19+ddd), V(106+ddd), V(10+ddd), V(2+ddd), V(-13+ddd), V(-24+ddd) }
   };
 
 
   // KingOnFile[semi-open Us][semi-open Them] contains bonuses/penalties
   // for king when the king is on a semi-open or open file.
-  constexpr Score KingOnFile[2][2] = {{ S(-18,11), S(-6,-3)  },
+  Score KingOnFile[2][2] = {{ S(-18,11), S(-6,-3)  },
                                      {  S(  0, 0), S( 5,-4) }};
+  
+  TUNE(SetRange(-20, 20), aa, bb, cc, dd, aaa, bbb, ccc, ddd);
+  TUNE(SetRange(-10, 35), Backward, DoubledEarly, Isolated, WeakUnopposed);
+  TUNE(SetRange(-10, 70), Doubled, WeakLever);
+  TUNE(SetRange(-30, 15), BlockedPawn, KingOnFile);
+  TUNE(SetRange(-30, 90), BlockedStorm);
+  TUNE(SetRange(-10, 100), Connected);
+  
 
   #undef S
   #undef V
