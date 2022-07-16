@@ -32,30 +32,30 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward      = S( 6, 19);
-  constexpr Score Doubled       = S(11, 51);
-  constexpr Score DoubledEarly  = S(17,  7);
-  constexpr Score Isolated      = S( 1, 20);
-  constexpr Score WeakLever     = S( 2, 57);
-  constexpr Score WeakUnopposed = S(15, 18);
+  constexpr Score Backward      = S( 8, 19);
+  constexpr Score Doubled       = S(14, 46);
+  constexpr Score DoubledEarly  = S(18,  6);
+  constexpr Score Isolated      = S( 1, 21);
+  constexpr Score WeakLever     = S( 4, 54);
+  constexpr Score WeakUnopposed = S(17, 16);
 
   // Bonus for blocked pawns at 5th or 6th rank
-  constexpr Score BlockedPawn[2] = { S(-19, -8), S(-7, 3) };
+  constexpr Score BlockedPawn[2] = { S(-18, -8), S(-7, 5) };
 
   constexpr Score BlockedStorm[RANK_NB] = {
-    S(0, 0), S(0, 0), S(64, 75), S(-3, 14), S(-12, 19), S(-7, 4), S(-10, 5)
+    S(0, 0), S(0, 0), S(64, 78), S(-4, 16), S(-17, 31), S(-8, 8), S(-13, 8)
   };
 
   // Connected pawn bonus
-  constexpr int Connected[RANK_NB] = { 0, 3, 7, 7, 15, 54, 86 };
+  constexpr int Connected[RANK_NB] = { 0, 3, 4, 6, 18, 49, 83 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
   constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
-    { V(-2), V(85), V(95), V(53), V(39), V(23), V(25) },
-    { V(-55), V(64), V(32), V(-55), V(-30), V(-11), V(-61) },
-    { V(-11), V(75), V(19), V(-6), V(26), V(9), V(-47) },
-    { V(-41), V(-11), V(-27), V(-58), V(-42), V(-66), V(-163) }
+{ V(-1), V(86), V(96), V(54), V(40), V(24), V(26) },
+{ V(-57), V(62), V(30), V(-57), V(-32), V(-13), V(-63) },
+{ V(-13), V(73), V(17), V(-8), V(24), V(7), V(-49) },
+{ V(-40), V(-10), V(-26), V(-57), V(-41), V(-65), V(-162) }
   };
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
@@ -63,17 +63,17 @@ namespace {
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
   constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
-    { V(94), V(-280), V(-170), V(90), V(59), V(47), V(53) },
-    { V(43), V(-17), V(128), V(39), V(26), V(-17), V(15) },
-    { V(-9), V(62), V(170), V(34), V(-5), V(-20), V(-11) },
-    { V(-27), V(-19), V(106), V(10), V(2), V(-13), V(-24) }
+{ V(-94), V(-280), V(-170), V(-90), V(-59), V(-47), V(-53) },
+{ V(-42), V(-16), V(-127), V(-38), V(-25), V(-16), V(-14) },
+{ V(-10), V(-63), V(-171), V(-35), V(-6), V(-21), V(-12) },
+{ V(-28), V(-20), V(-107), V(-11), V(-3), V(-14), V(-25) }
   };
 
 
   // KingOnFile[semi-open Us][semi-open Them] contains bonuses/penalties
   // for king when the king is on a semi-open or open file.
-  constexpr Score KingOnFile[2][2] = {{ S(-18,11), S(-6,-3)  },
-                                     {  S(  0, 0), S( 5,-4) }};
+  constexpr Score KingOnFile[2][2] = {{ S(-20,10), S(-5,-1)  },
+                                     {  S(  1, 1), S( 7,-1) }};
 
   #undef S
   #undef V
