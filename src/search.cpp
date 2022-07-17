@@ -57,13 +57,18 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int A = 11;
+  int B = 11;
+  int C = 78;
+  TUNE(A,B,C);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(168 * (d - improving));
+    return Value(204 * d - 256 * improving);
   }
 
   // Reductions lookup table, initialized at startup
@@ -1189,7 +1194,7 @@ moves_loop: // When in check, search starts here
 
           // If the son is reduced and fails high it will be re-searched at full depth
           doFullDepthSearch = value > alpha && d < newDepth;
-          doDeeperSearch = value > (alpha + 78 + 11 * (newDepth - d));
+          doDeeperSearch = value > (alpha + C + A * newDepth - B * d);
           didLMR = true;
       }
       else
