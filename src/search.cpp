@@ -63,7 +63,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(168 * (d - improving));
+    return Value(204 * d - 256 * improving);
   }
 
   // Reductions lookup table, initialized at startup
@@ -1189,7 +1189,7 @@ moves_loop: // When in check, search starts here
 
           // If the son is reduced and fails high it will be re-searched at full depth
           doFullDepthSearch = value > alpha && d < newDepth;
-          doDeeperSearch = value > (alpha + 78 + 11 * (newDepth - d));
+          doDeeperSearch = value > (alpha + 77 + 10 * (newDepth - d));
           didLMR = true;
       }
       else
