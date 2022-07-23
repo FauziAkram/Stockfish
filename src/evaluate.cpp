@@ -62,7 +62,7 @@ namespace Stockfish {
   TUNE(SetRange(5, 90), KingAttackWeights);
   int aa=183, bb=148, cc=98, dd=69, ee=30, ff=873, gg=100, hh=60, ii=40, jj=37 ;
 
-  TUNE(SetRange(5, 90), KingAttackWeights);
+  TUNE(SetRange(0, 90), KingAttackWeights);
   TUNE(SetRange(140, 210), aa);
   TUNE(SetRange(110, 180), bb);
   TUNE(SetRange(75, 125), cc);
