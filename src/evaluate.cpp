@@ -57,7 +57,21 @@
 using namespace std;
 
 namespace Stockfish {
+int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 76, 46, 45, 14 };
 
+  TUNE(SetRange(0, 90), KingAttackWeights);
+  int aa=183, bb=148, cc=98, dd=69, ee=30, ff=873, gg=100, hh=60, ii=40, jj=37 ;
+
+  TUNE(SetRange(140, 210), aa);
+  TUNE(SetRange(110, 180), bb);
+  TUNE(SetRange(75, 125), cc);
+  TUNE(SetRange(45, 95), dd);
+  TUNE(SetRange(0, 60), ee);
+  TUNE(SetRange(800, 999), ff);
+  TUNE(SetRange(75, 125), gg);
+  TUNE(SetRange(30, 85), hh);
+  TUNE(SetRange(15, 70), ii);
+  TUNE(SetRange(10, 60), jj);
 namespace Eval {
 
   bool useNNUE;
@@ -196,9 +210,6 @@ namespace {
   constexpr Value LazyThreshold1    =  Value(3631);
   constexpr Value LazyThreshold2    =  Value(2084);
   constexpr Value SpaceThreshold    =  Value(11551);
-
-  // KingAttackWeights[PieceType] contains king attack weights by piece type
-  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 76, 46, 45, 14 };
 
   // SafeCheck[PieceType][single/multiple] contains safe check bonus by piece type,
   // higher if multiple safe checks are possible for that piece type.
@@ -598,17 +609,17 @@ namespace {
     int kingFlankDefense = popcount(b3);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them] // (~10 Elo)
-                 + 183 * popcount(kingRing[Us] & weak)                        // (~15 Elo)
-                 + 148 * popcount(unsafeChecks)                               // (~4 Elo)
-                 +  98 * popcount(pos.blockers_for_king(Us))                  // (~2 Elo)
-                 +  69 * kingAttacksCount[Them]                               // (~0.5 Elo)
-                 +   3 * kingFlankAttack * kingFlankAttack / 8                // (~0.5 Elo)
+                 + aa * popcount(kingRing[Us] & weak)                        // (~15 Elo)
+                 + bb * popcount(unsafeChecks)                               // (~4 Elo)
+                 +  cc * popcount(pos.blockers_for_king(Us))                  // (~2 Elo)
+                 +  dd * kingAttacksCount[Them]                               // (~0.5 Elo)
+                 +   ee * kingFlankAttack * kingFlankAttack / 80                // (~0.5 Elo)
                  +       mg_value(mobility[Them] - mobility[Us])              // (~0.5 Elo)
-                 - 873 * !pos.count<QUEEN>(Them)                              // (~24 Elo)
-                 - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])  // (~5 Elo)
-                 -   6 * mg_value(score) / 8                                  // (~8 Elo)
-                 -   4 * kingFlankDefense                                     // (~5 Elo)
-                 +  37;                                                       // (~0.5 Elo)
+                 - ff * !pos.count<QUEEN>(Them)                              // (~24 Elo)
+                 - gg * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])  // (~5 Elo)
+                 -   hh * mg_value(score) / 80                                  // (~8 Elo)
+                 -   ii * kingFlankDefense / 10                                 // (~5 Elo)
+                 +  jj ;                                                       // (~0.5 Elo)
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)
