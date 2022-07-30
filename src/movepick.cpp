@@ -22,6 +22,11 @@
 #include "movepick.h"
 
 namespace Stockfish {
+  
+  int aa=50000, bb=25000, cc=15000, dd=9000, ee=69, ff=3000;
+  TUNE(SetRange(6000, 70000), aa, bb, cc, dd);
+  TUNE(SetRange(10, 120), ee);
+  TUNE(SetRange(1000, 5000), ff);
 
 namespace {
 
@@ -106,7 +111,7 @@ void MovePicker::score() {
 
   static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
 
-  Bitboard threatened, threatenedByPawn, threatenedByMinor, threatenedByRook;
+  Bitboard threatened, threatenedByPawn, threatenedByMinor, threatenedByRook, threatenedByQueen;
   if constexpr (Type == QUIETS)
   {
       Color us = pos.side_to_move();
@@ -116,6 +121,7 @@ void MovePicker::score() {
       threatenedByMinor = pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatenedByPawn;
       // squares threatened by rooks, minors or pawns
       threatenedByRook  = pos.attacks_by<ROOK>(~us) | threatenedByMinor;
+      threatenedByQueen = pos.attacks_by<QUEEN>(~us) | threatenedByRook;
 
       // pieces threatened by pieces of lesser material value
       threatened =  (pos.pieces(us, QUEEN) & threatenedByRook)
@@ -129,6 +135,7 @@ void MovePicker::score() {
       (void) threatenedByPawn;
       (void) threatenedByMinor;
       (void) threatenedByRook;
+      (void) threatenedByQueen;
   }
 
   for (auto& m : *this)
@@ -143,9 +150,10 @@ void MovePicker::score() {
                    +     (*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]
                    +     (*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)]
                    +     (threatened & from_sq(m) ?
-                           (type_of(pos.moved_piece(m)) == QUEEN && !(to_sq(m) & threatenedByRook)  ? 50000
-                          : type_of(pos.moved_piece(m)) == ROOK  && !(to_sq(m) & threatenedByMinor) ? 25000
-                          :                                         !(to_sq(m) & threatenedByPawn)  ? 15000
+                           (type_of(pos.moved_piece(m)) == QUEEN  && !(to_sq(m) & threatenedByQueen)  ? aa
+                          : type_of(pos.moved_piece(m)) == ROOK   && !(to_sq(m) & threatenedByRook)   ? bb
+                          : type_of(pos.moved_piece(m)) >= KNIGHT && !(to_sq(m) & threatenedByMinor)  ? cc
+                          :                                          !(to_sq(m) & threatenedByPawn)   ? dd
                           :                                                                           0)
                           :                                                                           0);
 
@@ -207,7 +215,7 @@ top:
 
   case GOOD_CAPTURE:
       if (select<Next>([&](){
-                       return pos.see_ge(*cur, Value(-69 * cur->value / 1024)) ?
+                       return pos.see_ge(*cur, Value(-ee * cur->value / 1024)) ?
                               // Move losing capture to endBadCaptures to be tried later
                               true : (*endBadCaptures++ = *cur, false); }))
           return *(cur - 1);
@@ -239,7 +247,7 @@ top:
           endMoves = generate<QUIETS>(pos, cur);
 
           score<QUIETS>();
-          partial_insertion_sort(cur, endMoves, -3000 * depth);
+          partial_insertion_sort(cur, endMoves, -ff * depth);
       }
 
       ++stage;
