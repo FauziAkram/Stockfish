@@ -149,7 +149,7 @@ void MovePicker::score() {
                            (type_of(pos.moved_piece(m)) == QUEEN  && !(to_sq(m) & threatenedByQueen)  ? 49700
                           : type_of(pos.moved_piece(m)) == ROOK   && !(to_sq(m) & threatenedByRook)   ? 24500
                           : type_of(pos.moved_piece(m)) >= KNIGHT && !(to_sq(m) & threatenedByMinor)  ? 14800
-                          :                                          !(to_sq(m) & threatenedByPawn)   ? 8300
+                          :                                          !(to_sq(m) & threatenedByPawn)   ? 9500
                           :                                                                           0)
                           :                                                                           0);
 
