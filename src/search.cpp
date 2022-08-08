@@ -918,7 +918,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~0 Elo)
-    probCutBeta = beta + 481;
+    probCutBeta = beta + 480;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -1485,7 +1485,7 @@ moves_loop: // When in check, search starts here
         if (PvNode && bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = bestValue + 118;
+        futilityBase = bestValue + 123;
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
