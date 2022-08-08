@@ -1166,7 +1166,7 @@ moves_loop: // When in check, search starts here
 
           // Decrease reduction for PvNodes based on depth
           if (PvNode)
-              r -= 1 + 15 / (3 + depth);
+              r -= 1 + 12 / (3 + depth);
 
           // Decrease reduction if ttMove has been singularly extended (~1 Elo)
           if (singularQuietLMR)
@@ -1180,10 +1180,10 @@ moves_loop: // When in check, search starts here
                          + (*contHist[0])[movedPiece][to_sq(move)]
                          + (*contHist[1])[movedPiece][to_sq(move)]
                          + (*contHist[3])[movedPiece][to_sq(move)]
-                         - 4334;
+                         - 4290;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= ss->statScore / 15914;
+          r -= ss->statScore / 15000;
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
@@ -1194,7 +1194,7 @@ moves_loop: // When in check, search starts here
 
           // If the son is reduced and fails high it will be re-searched at full depth
           doFullDepthSearch = value > alpha && d < newDepth;
-          doDeeperSearch = value > (alpha + 78 + 11 * (newDepth - d));
+          doDeeperSearch = value > (alpha + 65 + 11 * (newDepth - d));
           didLMR = true;
       }
       else
