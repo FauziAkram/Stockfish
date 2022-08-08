@@ -63,7 +63,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(168 * (d - improving));
+    return Value(156 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -71,7 +71,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1463 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 1010);
+    return (r + 1546 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 925);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
