@@ -1014,12 +1014,12 @@ moves_loop: // When in check, search starts here
                   && !PvNode
                   && lmrDepth < 6
                   && !ss->inCheck
-                  && ss->staticEval + 281 + 179 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
+                  && ss->staticEval + 253 + 196 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 6 < alpha)
                   continue;
 
               // SEE based pruning (~9 Elo)
-              if (!pos.see_ge(move, Value(-203) * depth))
+              if (!pos.see_ge(move, Value(-199) * depth))
                   continue;
           }
           else
