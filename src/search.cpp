@@ -57,6 +57,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int aa = 25, bb = 5, cc = 19000;
+  TUNE(SetRange(0, 50), aa);
+  TUNE(SetRange(0, 15), bb);
+  TUNE(SetRange(12000, 21000), cc);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -353,7 +357,7 @@ void Thread::search() {
           if (rootDepth >= 4)
           {
               Value prev = rootMoves[pvIdx].averageScore;
-              delta = Value(std::min(25, 5 + rootDepth / 2)) + int(prev) * prev / 19000;
+              delta = Value(std::min(aa, bb + rootDepth / 2)) + int(prev) * prev / cc;
               alpha = std::max(prev - delta,-VALUE_INFINITE);
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
