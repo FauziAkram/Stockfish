@@ -196,6 +196,8 @@ namespace {
   int P2=106; TUNE(SetRange(0, 212), P2);
   int P3=104, P4=131; TUNE(SetRange(50, 200), P3, P4);
   int P5=269; TUNE(SetRange(160, 400), P5);
+  int P6=754; TUNE(SetRange(630, 870), P6);
+  int P7=195, P8=211; TUNE(SetRange(150, 260), P7, P8);
   
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
@@ -1080,11 +1082,11 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
           *complexity = nnueComplexity;
 
       optimism = optimism * (P5 + nnueComplexity) / 256;
-      v = (nnue * scale + optimism * (scale - 754)) / 1024;
+      v = (nnue * scale + optimism * (scale - P6)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling
-  v = v * (195 - pos.rule50_count()) / 211;
+  v = v * (P7 - pos.rule50_count()) / P8;
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
