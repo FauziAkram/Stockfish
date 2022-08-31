@@ -358,7 +358,7 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust trend and optimism based on root move's previousScore
-              int tr = sigmoid(prev, 3, 8, 90, 125, 1);
+              int tr = sigmoid(prev, 2, 8, 90, 125, 1);
               trend = (us == WHITE ?  make_score(tr, tr / 2)
                                    : -make_score(tr, tr / 2));
 
@@ -808,7 +808,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth, eval and complexity of position
-        Depth R = std::min(int(eval - beta) / 147, 5) + depth / 3 + 4 - (complexity > 650);
+        Depth R = std::min(int(eval - beta) / 147, 5) + depth / 3 + 3 - (complexity > 650);
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -908,7 +908,7 @@ namespace {
     if (    cutNode
         &&  depth >= 8
         && !ttMove)
-        depth--;
+        depth -= 2;
 
 moves_loop: // When in check, search starts here
 
@@ -1173,7 +1173,7 @@ moves_loop: // When in check, search starts here
                          + (*contHist[0])[movedPiece][to_sq(move)]
                          + (*contHist[1])[movedPiece][to_sq(move)]
                          + (*contHist[3])[movedPiece][to_sq(move)]
-                         - 4334;
+                         - 4444;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
           r -= ss->statScore / 15914;
