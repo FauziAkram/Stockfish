@@ -358,11 +358,11 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust trend and optimism based on root move's previousScore
-              int tr = sigmoid(prev, 3, 10, 89, 116, 1);
+              int tr = sigmoid(prev, 4, 9, 89, 116, 1);
               trend = (us == WHITE ?  make_score(tr, tr / 2)
                                    : -make_score(tr, tr / 2));
 
-              int opt = sigmoid(prev, 7, 20, 169, 19350, 164);
+              int opt = sigmoid(prev, 7, 20, 169, 19350, 169);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
           }
