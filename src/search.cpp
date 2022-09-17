@@ -71,7 +71,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1642 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 916);
+    return (r + 1642 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 920);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -81,7 +81,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min((12 * d + 282) * d - 349 , 1594);
+    return std::min((12 * d + 282) * d - 349 , 1550);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -469,7 +469,7 @@ void Thread::search() {
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.37 : 0.65;
+          timeReduction = lastBestMoveDepth + 10 < completedDepth ? 1.37 : 0.65;
           double reduction = (1.4 + mainThread->previousTimeReduction) / (2.15 * timeReduction);
           double bestMoveInstability = 1 + 1.7 * totBestMoveChanges / Threads.size();
           int complexity = mainThread->complexityAverage.value();
@@ -798,7 +798,7 @@ namespace {
         && (ss-1)->statScore < 17139
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 20 * depth - improvement / 13 + 233 + complexity / 25
+        &&  ss->staticEval >= beta - 19 * depth - improvement / 13 + 247 + complexity / 25
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -911,7 +911,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~0 Elo)
-    probCutBeta = beta + 417;
+    probCutBeta = beta + 398;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -1007,7 +1007,7 @@ moves_loop: // When in check, search starts here
                   && !PvNode
                   && lmrDepth < 7
                   && !ss->inCheck
-                  && ss->staticEval + 180 + 201 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
+                  && ss->staticEval + 180 + 210 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 6 < alpha)
                   continue;
 
@@ -1171,7 +1171,7 @@ moves_loop: // When in check, search starts here
                          + (*contHist[0])[movedPiece][to_sq(move)]
                          + (*contHist[1])[movedPiece][to_sq(move)]
                          + (*contHist[3])[movedPiece][to_sq(move)]
-                         - 4433;
+                         - 4400;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
           r -= ss->statScore / 13628;
