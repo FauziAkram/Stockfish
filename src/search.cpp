@@ -65,7 +65,7 @@ namespace {
   int NMP3 = 13, NMP4 = 233, NMP5 = 25, NMP6 = 168, NMP7 = 7, NMP8 = 3, NMP9 = 4, NMP10 = 861, PC1 = 191, PC2 = 54, PINC1 = 417;
   int DPTR2 = 9, DPTR3 = 2, CAP1 = 7, CAP2 = 180, CAP3 = 201, CAP4 = 6, CAP5 = 222, QUP1 = 13, QUP2 = 106, QUP3 = 145, QUP4 = 52, QUP5 = 24, QUP6 = 15;
   int EXT1 = 4, EXT2 = 24, EXT3 = 2, EXT7 = 25, EXT8 = 9, EXT9 = 9, EXT10 = 82, EXT11 = 5177;
-  int LMR4 = 11, LMR4 = 7, LMR5 = 3, LMR7 = 4433, LMR8 = 13628, LMR9 = 64, LMR10 = 11;
+  int  DR1 = 7, LMR4 = 11, LMR5 = 3, LMR7 = 4433, LMR8 = 13628, LMR9 = 64, LMR10 = 11;
   int PBA1 = 5, PBA2 = 62, QS1 = 153, VSB1 = 3, PCB1 = 137;
   
   auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
@@ -84,7 +84,7 @@ namespace {
   TUNE(SetRange(f1), LMR10, PBA2, QS1, VSB1);
   TUNE(SetRange(f1), NMP7, NMP8, NMP9, FPC1, RZR1, DLT3, SEA1);
   TUNE(SetRange(f1), EXT9, EXT8, EXT7, EXT1, EXT2, EXT3, QUP1, CAP1, PINC1);
-  TUNE(SetRange(f1), PBA1, LMR4, LMR7, LMR8 , LMR9, PCB1);
+  TUNE(SetRange(f1), PBA1, DR1, LMR7, LMR8 , LMR9, PCB1);
   
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1172,7 +1172,7 @@ moves_loop: // When in check, search starts here
               r -= 2;
 
           // Decrease reduction if opponent's move count is high (~1 Elo)
-          if ((ss-1)->moveCount > LMR4)
+          if ((ss-1)->moveCount > DR1)
               r--;
 
           // Increase reduction for cut nodes (~3 Elo)
