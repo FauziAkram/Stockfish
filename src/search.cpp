@@ -352,7 +352,7 @@ void Thread::search() {
           if (rootDepth >= 4)
           {
               Value prev = rootMoves[pvIdx].averageScore;
-              delta = Value(10) + int(prev) * prev / 15620;
+              delta = Value(13) + int(prev) * prev / 15270;
               alpha = std::max(prev - delta,-VALUE_INFINITE);
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
@@ -806,7 +806,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth, eval and complexity of position
-        Depth R = std::min(int(eval - beta) / 168, 7) + depth / 3 + 4 - (complexity > 861);
+        Depth R = std::min(int(eval - beta) / 168, 7) + depth / 6 + 5 - (complexity > 861);
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -1022,8 +1022,8 @@ moves_loop: // When in check, search starts here
                             + (*contHist[3])[movedPiece][to_sq(move)];
 
               // Continuation history based pruning (~2 Elo)
-              if (   lmrDepth < 5
-                  && history < -3875 * (depth - 1))
+              if (   lmrDepth < 3
+                  && history < -3820 * (depth - 1))
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
@@ -1058,7 +1058,7 @@ moves_loop: // When in check, search starts here
               && (tte->bound() & BOUND_LOWER)
               &&  tte->depth() >= depth - 3)
           {
-              Value singularBeta = ttValue - (3 + (ss->ttPv && !PvNode)) * depth;
+              Value singularBeta = ttValue - (2 + (ss->ttPv && !PvNode)) * depth;
               Depth singularDepth = (depth - 1) / 2;
 
               ss->excludedMove = move;
@@ -1144,7 +1144,7 @@ moves_loop: // When in check, search starts here
               r -= 2;
 
           // Decrease reduction if opponent's move count is high (~1 Elo)
-          if ((ss-1)->moveCount > 7)
+          if ((ss-1)->moveCount > 6)
               r--;
 
           // Increase reduction for cut nodes (~3 Elo)
@@ -1157,7 +1157,7 @@ moves_loop: // When in check, search starts here
 
           // Decrease reduction for PvNodes based on depth
           if (PvNode)
-              r -= 1 + 11 / (3 + depth);
+              r -= 1 + 12 / (4 + depth);
 
           // Decrease reduction if ttMove has been singularly extended (~1 Elo)
           if (singularQuietLMR)
@@ -1335,7 +1335,7 @@ moves_loop: // When in check, search starts here
                          quietsSearched, quietCount, capturesSearched, captureCount, depth);
 
     // Bonus for prior countermove that caused the fail low
-    else if (   (depth >= 5 || PvNode)
+    else if (   (depth >= 4 || PvNode)
              && !priorCapture)
     {
         //Assign extra bonus if current node is PvNode or cutNode
