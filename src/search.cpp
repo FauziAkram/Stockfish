@@ -71,7 +71,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1642 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 916);
+    return (r + 1564 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 942);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -81,7 +81,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min((12 * d + 282) * d - 349 , 1594);
+    return std::min((12 * d + 284) * d - 359 , 1594);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -798,7 +798,7 @@ namespace {
         && (ss-1)->statScore < 17139
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 20 * depth - improvement / 13 + 233 + complexity / 25
+        &&  ss->staticEval >= beta - 21 * depth - improvement / 12 + 274 + complexity / 25
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -842,7 +842,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 191 - 54 * improving;
+    probCutBeta = beta + 190 - 58 * improving;
 
     // Step 10. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value
@@ -904,7 +904,7 @@ namespace {
         return qsearch<PV>(pos, ss, alpha, beta);
 
     if (    cutNode
-        &&  depth >= 9
+        &&  depth >= 10
         && !ttMove)
         depth -= 2;
 
@@ -1031,7 +1031,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~9 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 13
-                  && ss->staticEval + 106 + 145 * lmrDepth + history / 52 <= alpha)
+                  && ss->staticEval + 95 + 139 * lmrDepth + history / 53 <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~3 Elo)
@@ -1104,7 +1104,7 @@ moves_loop: // When in check, search starts here
           else if (   PvNode
                    && move == ttMove
                    && move == ss->killers[0]
-                   && (*contHist[0])[movedPiece][to_sq(move)] >= 5177)
+                   && (*contHist[0])[movedPiece][to_sq(move)] >= 4620)
               extension = 1;
       }
 
@@ -1144,7 +1144,7 @@ moves_loop: // When in check, search starts here
               r -= 2;
 
           // Decrease reduction if opponent's move count is high (~1 Elo)
-          if ((ss-1)->moveCount > 7)
+          if ((ss-1)->moveCount > 8)
               r--;
 
           // Increase reduction for cut nodes (~3 Elo)
@@ -1174,7 +1174,7 @@ moves_loop: // When in check, search starts here
                          - 4433;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= ss->statScore / 13628;
+          r -= ss->statScore / 14444;
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
