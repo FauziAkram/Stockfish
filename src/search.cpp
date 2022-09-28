@@ -58,6 +58,9 @@ using namespace Search;
 
 namespace {
 
+  int VSB1 = 3, VSB2 = 10, EXT7 = 25, EXT8 = 9;
+  TUNE (VSB1, VSB2, EXT7, EXT8);
+  
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
@@ -1058,7 +1061,7 @@ moves_loop: // When in check, search starts here
               && (tte->bound() & BOUND_LOWER)
               &&  tte->depth() >= depth - 3)
           {
-              Value singularBeta = ttValue - (3 + (ss->ttPv && !PvNode)) * depth;
+              Value singularBeta = ttValue - (VSB1 + (ss->ttPv && !PvNode)) * depth - VSB2 * improving;
               Depth singularDepth = (depth - 1) / 2;
 
               ss->excludedMove = move;
@@ -1072,8 +1075,8 @@ moves_loop: // When in check, search starts here
 
                   // Avoid search explosion by limiting the number of double extensions
                   if (  !PvNode
-                      && value < singularBeta - 25
-                      && ss->doubleExtensions <= 9)
+                      && value < singularBeta - EXT7
+                      && ss->doubleExtensions <= EXT8)
                       extension = 2;
               }
 
