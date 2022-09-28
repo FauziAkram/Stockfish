@@ -58,6 +58,9 @@ using namespace Search;
 
 namespace {
 
+  int DPTR2 = 7, DPTR3 = 1, DPTR4 = 9
+  TUNE(SetRange(0, 16), DPTR2, DPTR3, DPTR4);
+    
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
@@ -904,9 +907,9 @@ namespace {
         return qsearch<PV>(pos, ss, alpha, beta);
 
     if (    cutNode
-        &&  depth >= 9
+        &&  depth >= DPTR2
         && !ttMove)
-        depth -= 2;
+        depth -= DPTR3 + (depth >= DPTR4);
 
 moves_loop: // When in check, search starts here
 
