@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int PC1 = 191, PC2 = 54, PINC1 = 417;
+  TUNE (PC1, PC2, PINC1);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -842,7 +845,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 191 - 54 * improving;
+    probCutBeta = beta + PC1 - PC2 * improving;
 
     // Step 10. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value
@@ -880,12 +883,12 @@ namespace {
                 value = -qsearch<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1);
 
                 // If the qsearch held, perform the regular search
-                if (value >= probCutBeta)
+                if (value > probCutBeta)
                     value = -search<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1, depth - 4, !cutNode);
 
                 pos.undo_move(move);
 
-                if (value >= probCutBeta)
+                if (value > probCutBeta)
                 {
                     // Save ProbCut data into transposition table
                     tte->save(posKey, value_to_tt(value, ss->ply), ss->ttPv, BOUND_LOWER, depth - 3, move, ss->staticEval);
@@ -911,7 +914,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~0 Elo)
-    probCutBeta = beta + 417;
+    probCutBeta = beta + PINC1;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
