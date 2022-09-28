@@ -58,8 +58,8 @@ using namespace Search;
 
 namespace {
 
-  int DPTR2 = 7, DPTR3 = 1, DPTR4 = 9
-  TUNE(SetRange(0, 16), DPTR2, DPTR3, DPTR4);
+  int DPTR2 = 7, DPTR3 = 1, DPTR4 = 9;
+  TUNE(SetRange(0, 18), DPTR2, DPTR3, DPTR4);
     
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
