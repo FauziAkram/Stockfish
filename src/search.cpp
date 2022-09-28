@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int LMR7 = 5, LMR8 = 15728, FPC3 = 303, FPC2 = 28031;
+  TUNE (LMR7, LMR8, FPC3, FPC2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -787,9 +790,9 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 303 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / FPC3 >= beta
         &&  eval >= beta
-        &&  eval < 28031) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
+        &&  eval < FPC2) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
         return eval;
 
     // Step 9. Null move search with verification search (~22 Elo)
@@ -1174,7 +1177,7 @@ moves_loop: // When in check, search starts here
                          - 4433;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= ss->statScore / 13628;
+          r -= (ss->statScore + LMR7 * alpha) / LMR8;
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
