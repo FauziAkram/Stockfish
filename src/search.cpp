@@ -1058,7 +1058,7 @@ moves_loop: // When in check, search starts here
               && (tte->bound() & BOUND_LOWER)
               &&  tte->depth() >= depth - 3)
           {
-              Value singularBeta = ttValue - (3 + (ss->ttPv && !PvNode)) * depth;
+              Value singularBeta = ttValue - (3 + (ss->ttPv && !PvNode)) * depth - 10 * improving;
               Depth singularDepth = (depth - 1) / 2;
 
               ss->excludedMove = move;
@@ -1072,7 +1072,7 @@ moves_loop: // When in check, search starts here
 
                   // Avoid search explosion by limiting the number of double extensions
                   if (  !PvNode
-                      && value < singularBeta - 25
+                      && value < singularBeta - 27
                       && ss->doubleExtensions <= 9)
                       extension = 2;
               }
