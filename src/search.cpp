@@ -880,12 +880,12 @@ namespace {
                 value = -qsearch<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1);
 
                 // If the qsearch held, perform the regular search
-                if (value >= probCutBeta)
+                if (value > probCutBeta)
                     value = -search<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1, depth - 4, !cutNode);
 
                 pos.undo_move(move);
 
-                if (value >= probCutBeta)
+                if (value > probCutBeta)
                 {
                     // Save ProbCut data into transposition table
                     tte->save(posKey, value_to_tt(value, ss->ply), ss->ttPv, BOUND_LOWER, depth - 3, move, ss->staticEval);
@@ -904,14 +904,14 @@ namespace {
         return qsearch<PV>(pos, ss, alpha, beta);
 
     if (    cutNode
-        &&  depth >= 9
+        &&  depth >= 7
         && !ttMove)
-        depth -= 2;
+        depth -= 1 + (depth >= 10);
 
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~0 Elo)
-    probCutBeta = beta + 417;
+    probCutBeta = beta + 418;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -1178,7 +1178,7 @@ moves_loop: // When in check, search starts here
                          - 4430;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= (ss->statScore + std::clamp(5 * int(alpha), -20000, 20000)) / 15448;
+          r -= ss->statScore / 13800;
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
