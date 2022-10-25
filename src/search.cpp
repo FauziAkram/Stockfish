@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int  LMR1 = 625, LMR2 = 250, LMR4 = 11, LMR5 = 3, LMR7 = 4433, LMR8 = 13628, LMR9 = 64, LMR10 = 11;
+  TUNE (LMR1, LMR2, LMR4, LMR5, LMR7, LMR8, LMR9, LMR10);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1152,10 +1155,15 @@ moves_loop: // When in check, search starts here
           // Increase reduction if ttMove is a capture (~3 Elo)
           if (ttCapture)
               r++;
-
+              
+          {
           // Decrease reduction for PvNodes based on depth
           if (PvNode)
-              r -= 1 + 11 / (3 + depth);
+              r -= 1 + LMR4 / (LMR5 + depth);
+              
+          // Decrease reduction at PvNodes according to complexity and eval gap
+              r -= complexity / LMR1 + abs(ss->staticEval - bestValue) / LMR2;
+          }
 
           // Decrease reduction if ttMove has been singularly extended (~1 Elo)
           if (singularQuietLMR)
@@ -1167,17 +1175,17 @@ moves_loop: // When in check, search starts here
               r--;
 
           // Increase reduction if next ply has a lot of fail high
-          if ((ss+1)->cutoffCnt > 3 && !PvNode)
+          else if ((ss+1)->cutoffCnt > 3)
               r++;
 
           ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
                          + (*contHist[0])[movedPiece][to_sq(move)]
                          + (*contHist[1])[movedPiece][to_sq(move)]
                          + (*contHist[3])[movedPiece][to_sq(move)]
-                         - 4433;
+                         - LMR7;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= ss->statScore / 13628;
+          r -= ss->statScore / LMR8;
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
@@ -1189,7 +1197,7 @@ moves_loop: // When in check, search starts here
           // Do full depth search when reduced LMR search fails high
           if (value > alpha && d < newDepth)
           {
-              const bool doDeeperSearch = value > (alpha + 64 + 11 * (newDepth - d));
+              const bool doDeeperSearch = value > (alpha + LMR9 + LMR10 * (newDepth - d));
               value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + doDeeperSearch, !cutNode);
 
               int bonus = value > alpha ?  stat_bonus(newDepth)
