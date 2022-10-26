@@ -1153,9 +1153,14 @@ moves_loop: // When in check, search starts here
           if (ttCapture)
               r++;
 
+          {
           // Decrease reduction for PvNodes based on depth
           if (PvNode)
               r -= 1 + 11 / (3 + depth);
+              
+          // Decrease reduction at PvNodes according to complexity and eval gap
+              r -= complexity / 760 + abs(ss->staticEval - bestValue) / 326;
+          }
 
           // Decrease reduction if ttMove has been singularly extended (~1 Elo)
           if (singularQuietLMR)
@@ -1167,17 +1172,17 @@ moves_loop: // When in check, search starts here
               r--;
 
           // Increase reduction if next ply has a lot of fail high
-          if ((ss+1)->cutoffCnt > 3 && !PvNode)
+          else if ((ss+1)->cutoffCnt > 3)
               r++;
 
           ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
                          + (*contHist[0])[movedPiece][to_sq(move)]
                          + (*contHist[1])[movedPiece][to_sq(move)]
                          + (*contHist[3])[movedPiece][to_sq(move)]
-                         - 4433;
+                         - 4615;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= ss->statScore / 13628;
+          r -= ss->statScore / 14400;
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
@@ -1189,7 +1194,7 @@ moves_loop: // When in check, search starts here
           // Do full depth search when reduced LMR search fails high
           if (value > alpha && d < newDepth)
           {
-              const bool doDeeperSearch = value > (alpha + 64 + 11 * (newDepth - d));
+              const bool doDeeperSearch = value > (alpha + 66 + 11 * (newDepth - d));
               value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + doDeeperSearch, !cutNode);
 
               int bonus = value > alpha ?  stat_bonus(newDepth)
