@@ -1174,10 +1174,10 @@ moves_loop: // When in check, search starts here
                          + (*contHist[0])[movedPiece][to_sq(move)]
                          + (*contHist[1])[movedPiece][to_sq(move)]
                          + (*contHist[3])[movedPiece][to_sq(move)]
-                         - 4433;
+                         - 4300;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= ss->statScore / (13628 + 4000 * (depth > 7 && depth < 19));
+          r -= ss->statScore / (13050 + 3905 * (depth > 7 && depth < 19));
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
@@ -1189,7 +1189,7 @@ moves_loop: // When in check, search starts here
           // Do full depth search when reduced LMR search fails high
           if (value > alpha && d < newDepth)
           {
-              const bool doDeeperSearch = value > (alpha + 64 + 11 * (newDepth - d));
+              const bool doDeeperSearch = value > (alpha + 62 + 11 * (newDepth - d));
               value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + doDeeperSearch, !cutNode);
 
               int bonus = value > alpha ?  stat_bonus(newDepth)
