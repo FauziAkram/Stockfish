@@ -57,9 +57,8 @@
 using namespace std;
 
 namespace Stockfish {
-
-namespace Eval {
   int  fz1=18, fz2=4, fz3=22, fz4=3, fz5=36, fz6=36, fz7=3, fz8=4, fz9=37, fz10=3, fz11=36, fz12=7, fz13=4, fz14=4;
+namespace Eval {
 
   bool useNNUE;
   string currentEvalFileName = "None";
