@@ -921,7 +921,7 @@ namespace {
             // For every other opposite colored bishops endgames use scale factor
             // based on the number of all pieces of the strong side.
             else
-                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
+                sf = 21 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         // For rook endgames with strong side not having overwhelming pawn number advantage
         // and its pawns being on one flank and weak side protecting its pieces with a king
@@ -931,7 +931,11 @@ namespace {
                 && pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) <= 1
                 && bool(KingSide & pos.pieces(strongSide, PAWN)) != bool(QueenSide & pos.pieces(strongSide, PAWN))
                 && (attacks_bb<KING>(pos.square<KING>(~strongSide)) & pos.pieces(~strongSide, PAWN)))
-            sf = 36;
+            sf = 37;
+        // For RR v RR endgames, use a lower scale factor.
+        else if (  pos.count<ROOK>() >= 4
+                && pos.non_pawn_material() <= 4 * RookValueMg + 3 * BishopValueMg)
+            sf = 35 + 3 * pos.count<PAWN>(strongSide) - 4 * !pawnsOnBothFlanks;
         // For queen vs no queen endgames use scale factor
         // based on number of minors of side that doesn't have queen.
         else if (pos.count<QUEEN>() == 1)
