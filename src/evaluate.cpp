@@ -931,15 +931,15 @@ namespace {
                 && pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) <= 1
                 && bool(KingSide & pos.pieces(strongSide, PAWN)) != bool(QueenSide & pos.pieces(strongSide, PAWN))
                 && (attacks_bb<KING>(pos.square<KING>(~strongSide)) & pos.pieces(~strongSide, PAWN)))
-            sf = 38;
+            sf = 36;
         // For RR v RR endgames, use a lower scale factor.
         else if (  pos.count<ROOK>() >= 4
                 && pos.non_pawn_material() <= 4 * RookValueMg + 3 * BishopValueMg)
-            sf = 36 + 3 * pos.count<PAWN>(strongSide) - 5 * !pawnsOnBothFlanks;
+            sf = 33 + 3 * pos.count<PAWN>(strongSide) - 5 * !pawnsOnBothFlanks;
         // For queen vs no queen endgames use scale factor
         // based on number of minors of side that doesn't have queen.
         else if (pos.count<QUEEN>() == 1)
-            sf = 36 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
+            sf = 35 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
                                                         : pos.count<BISHOP>(WHITE) + pos.count<KNIGHT>(WHITE));
         // In every other case use scale factor based on
         // the number of pawns of the strong side reduced if pawns are on a single flank.
