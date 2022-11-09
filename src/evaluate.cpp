@@ -917,7 +917,7 @@ namespace {
             // based on the number of passed pawns of the strong side.
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 17 + 4 * popcount(pe->passed_pawns(strongSide));
+                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             // For every other opposite colored bishops endgames use scale factor
             // based on the number of all pieces of the strong side.
             else
@@ -939,7 +939,7 @@ namespace {
         // For queen vs no queen endgames use scale factor
         // based on number of minors of side that doesn't have queen.
         else if (pos.count<QUEEN>() == 1)
-            sf = 37 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
+            sf = 36 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
                                                         : pos.count<BISHOP>(WHITE) + pos.count<KNIGHT>(WHITE));
         // In every other case use scale factor based on
         // the number of pawns of the strong side reduced if pawns are on a single flank.
