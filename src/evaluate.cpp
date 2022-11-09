@@ -917,11 +917,11 @@ namespace {
             // based on the number of passed pawns of the strong side.
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 17 + 4 * popcount(pe->passed_pawns(strongSide));
+                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             // For every other opposite colored bishops endgames use scale factor
             // based on the number of all pieces of the strong side.
             else
-                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
+                sf = 21 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         // For rook endgames with strong side not having overwhelming pawn number advantage
         // and its pawns being on one flank and weak side protecting its pieces with a king
