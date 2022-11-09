@@ -917,7 +917,7 @@ namespace {
             // based on the number of passed pawns of the strong side.
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 17 + 4 * popcount(pe->passed_pawns(strongSide));
+                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             // For every other opposite colored bishops endgames use scale factor
             // based on the number of all pieces of the strong side.
             else
@@ -931,7 +931,7 @@ namespace {
                 && pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) <= 1
                 && bool(KingSide & pos.pieces(strongSide, PAWN)) != bool(QueenSide & pos.pieces(strongSide, PAWN))
                 && (attacks_bb<KING>(pos.square<KING>(~strongSide)) & pos.pieces(~strongSide, PAWN)))
-            sf = 36;
+            sf = 38;
         // For RR v RR endgames, use a lower scale factor.
         else if (  pos.count<ROOK>() >= 4
                 && pos.non_pawn_material() <= 4 * RookValueMg + 3 * BishopValueMg)
