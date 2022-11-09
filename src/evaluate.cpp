@@ -921,7 +921,7 @@ namespace {
             // For every other opposite colored bishops endgames use scale factor
             // based on the number of all pieces of the strong side.
             else
-                sf = 21 + 3 * pos.count<ALL_PIECES>(strongSide);
+                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         // For rook endgames with strong side not having overwhelming pawn number advantage
         // and its pawns being on one flank and weak side protecting its pieces with a king
@@ -939,12 +939,12 @@ namespace {
         // For queen vs no queen endgames use scale factor
         // based on number of minors of side that doesn't have queen.
         else if (pos.count<QUEEN>() == 1)
-            sf = 36 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
+            sf = 37 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
                                                         : pos.count<BISHOP>(WHITE) + pos.count<KNIGHT>(WHITE));
         // In every other case use scale factor based on
         // the number of pawns of the strong side reduced if pawns are on a single flank.
         else
-            sf = std::min(sf, 37 + 7 * pos.count<PAWN>(strongSide)) - 4 * !pawnsOnBothFlanks;
+            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide)) - 4 * !pawnsOnBothFlanks;
 
         // Reduce scale factor in case of pawns being on a single flank
         sf -= 4 * !pawnsOnBothFlanks;
