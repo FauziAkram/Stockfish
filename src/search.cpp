@@ -57,6 +57,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int  raz1 = 369, raz2 = 300;
+  TUNE (raz1, raz2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -770,7 +772,7 @@ namespace {
     // Step 7. Razoring.
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (eval < alpha - 369 - 254 * depth * depth)
+    if (eval < alpha - raz1 - raz2 * depth )
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
