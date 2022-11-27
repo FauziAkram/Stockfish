@@ -58,8 +58,8 @@ using namespace Search;
 
 namespace {
   
-  int statlmr[19]      = { 0, 0, 8613, 26530, 14746, 8618, 13665, 10781, 9618, 17125, 25005, 12946, 22985, 27984, 16586, 15259, 21484, 30988, 16688};
-  int statconst = 11568
+  int statlmr[19]      = { 0, 0, 8613, 26530, 14746, 8620, 13665, 10781, 9618, 17125, 25005, 12948, 22985, 27984, 16586, 15259, 21484, 30988, 16688};
+  int statconst = 11568;
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
