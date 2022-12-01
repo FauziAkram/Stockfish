@@ -57,7 +57,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
-
+  int  fz1 = 13628 , fz2 = 4000, fz3 = 64;
+  TUNE (fz1, fz2, fz3);
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
@@ -1172,7 +1173,7 @@ moves_loop: // When in check, search starts here
                          - 4433;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= ss->statScore / (13628 + 4000 * (depth > 7 && depth < 19));
+          r -= ss->statScore / (fz1 + fz2 * (depth > 7 && depth < 19)) + fz3 * (newDepth - d));;
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
