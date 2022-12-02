@@ -191,7 +191,13 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
-
+  int P0=1760; TUNE(SetRange(1300,2020),P0
+  int P1=1000; TUNE(SetRange(800,1250),P1);
+  int P2=100; TUNE(SetRange(30, 190), P2);
+  int P3=416, P4=424; TUNE(SetRange(150, 620), P3, P4);
+  int P9=1150, TUNE(SetRange(800, 1700), P9);
+  int P10=5120, TUNE(SetRange(4900, 5300), P10);
+ 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
   constexpr Value LazyThreshold2    =  Value(2084);
@@ -1056,14 +1062,14 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   // We use the much less accurate but faster Classical eval when the NNUE
   // option is set to false. Otherwise we use the NNUE eval unless the
   // PSQ advantage is decisive and several pieces remain. (~3 Elo)
-  bool useClassical = !useNNUE || (pos.count<ALL_PIECES>() > 7 && abs(psq) > 1760);
+  bool useClassical = !useNNUE || (pos.count<ALL_PIECES>() > 7 && abs(psq) > P0);
 
   if (useClassical)
       v = Evaluation<NO_TRACE>(pos).value();
   else
   {
       int nnueComplexity;
-      int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
+      int scale = min(P1 + d*2,P10) + P2 * pos.non_pawn_material() / P9;
 
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
@@ -1071,10 +1077,10 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  416 * nnueComplexity
-                        + 424 * abs(psq - nnue)
+      nnueComplexity = (  P3 * nnueComplexity
+                        + P4 * abs(psq - nnue)
                         + (optimism  > 0 ? int(optimism) * int(psq - nnue) : 0)
-                        ) / 1024;
+                        ) / 1028;
 
       // Return hybrid NNUE complexity to caller
       if (complexity)
