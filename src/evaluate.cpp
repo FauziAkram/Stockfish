@@ -191,7 +191,7 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
-  int P0=1760; TUNE(SetRange(1300,2020),P0
+  int P0=1760; TUNE(SetRange(1300,2020),P0);
   int P1=1000; TUNE(SetRange(800,1250),P1);
   int P2=100; TUNE(SetRange(30, 190), P2);
   int P3=416, P4=424; TUNE(SetRange(150, 620), P3, P4);
