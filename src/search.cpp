@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int  fz0 = 62, fz1 = 6;
+  TUNE (fz0);
+  TUNE(SetRange(1, 18), fz1);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1298,7 +1301,7 @@ moves_loop: // When in check, search starts here
 
                   // Reduce other moves if we have found at least one score improvement
                   if (   depth > 1
-                      && depth < 6
+                      && depth < fz1
                       && beta  <  VALUE_KNOWN_WIN
                       && alpha > -VALUE_KNOWN_WIN)
                       depth -= 1;
@@ -1352,14 +1355,12 @@ moves_loop: // When in check, search starts here
                          quietsSearched, quietCount, capturesSearched, captureCount, depth);
 
     // Bonus for prior countermove that caused the fail low
-    else if (   (depth >= 5 || PvNode)
+    else if (   (depth >= 5 || PvNode || bestValue < alpha - fz0 * depth)
              && !priorCapture)
     {
         //Assign extra bonus if current node is PvNode or cutNode
         //or fail low was really bad
-        bool extraBonus =    PvNode
-                          || cutNode
-                          || bestValue < alpha - 62 * depth;
+        bool extraBonus = PvNode || cutNode;
 
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * (1 + extraBonus));
     }
