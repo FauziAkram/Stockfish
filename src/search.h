@@ -88,6 +88,8 @@ typedef std::vector<RootMove> RootMoves;
 
 struct LimitsType {
 
+  static const int MaxSearchMoves = 256;
+
   LimitsType() { // Init explicitly due to broken value-initialization of non POD in MSVC
     time[WHITE] = time[BLACK] = inc[WHITE] = inc[BLACK] = npmsec = movetime = TimePoint(0);
     movestogo = depth = mate = perft = infinite = 0;
@@ -98,7 +100,8 @@ struct LimitsType {
     return time[WHITE] || time[BLACK];
   }
 
-  std::vector<Move> searchmoves;
+  Move searchmoves[MaxSearchMoves];
+  int numSearchMoves = 0;
   TimePoint time[COLOR_NB], inc[COLOR_NB], npmsec, movetime, startTime;
   int movestogo, depth, mate, perft, infinite;
   int64_t nodes;
