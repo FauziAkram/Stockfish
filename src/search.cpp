@@ -477,7 +477,7 @@ void Thread::search() {
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
           if (rootMoves.size() == 1)
-              totalTime = std::min(500.0, totalTime);
+              if (totalTime > 500.0) totalTime = 500.0;
 
           // Stop the search if we have exceeded the totalTime
           if (Time.elapsed() > totalTime)
