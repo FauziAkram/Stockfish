@@ -71,7 +71,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return ((r + 1642 - int(delta) * 1024 / int(rootDelta)) >> 10) + (!i && r >= 917);
+    return ((r + 1642 - int(delta) << 10 / int(rootDelta)) >> 10) + (!i && r >= 917);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1806,7 +1806,7 @@ void MainThread::check_time() {
       return;
 
   // When using nodes, ensure checking rate is not lower than 0.1% of nodes
-  callsCnt = Limits.nodes ? std::min(1024, int(Limits.nodes / 1024)) : 1024;
+  callsCnt = Limits.nodes ? std::min(1024, int(Limits.nodes >> 10)) : 1024;
 
   static TimePoint lastInfoTime = now();
 
