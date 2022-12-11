@@ -1742,11 +1742,14 @@ moves_loop: // When in check, search starts here
   void update_quiet_stats(const Position& pos, Stack* ss, Move move, int bonus) {
 
     // Update killers
-    if (ss->killers[0] != move)
-    {
-        ss->killers[1] = ss->killers[0];
-        ss->killers[0] = move;
-    }
+update_killers(ss, move);
+
+// Function to update killers array
+void update_killers(SearchStack* ss, Move move)
+{
+    ss->killers[1] = (ss->killers[0] != move) ? ss->killers[0] : ss->killers[1];
+    ss->killers[0] = move;
+}
 
     Color us = pos.side_to_move();
     Thread* thisThread = pos.this_thread();
