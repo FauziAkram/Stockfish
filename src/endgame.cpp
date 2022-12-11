@@ -41,8 +41,17 @@ namespace {
   }
 
   // Drive a piece close to or away from another piece
-  inline int push_close(Square s1, Square s2) { return 140 - 20 * distance(s1, s2); }
-  inline int push_away(Square s1, Square s2) { return 120 - push_close(s1, s2); }
+  inline int push_close(Square s1, Square s2)
+  {
+      int dist = distance(s1, s2);
+      return 140 - 20 * dist;
+  }
+
+  inline int push_away(Square s1, Square s2)
+  {
+      int dist = distance(s1, s2);
+      return 120 - push_close(s1, s2);
+  }
 
 #ifndef NDEBUG
   bool verify_material(const Position& pos, Color c, Value npm, int pawnsCnt) {
