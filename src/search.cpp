@@ -1740,7 +1740,13 @@ moves_loop: // When in check, search starts here
   // update_quiet_stats() updates move sorting heuristics
 
   void update_quiet_stats(const Position& pos, Stack* ss, Move move, int bonus) {
+    
+// Declare SearchStack and Move types
+struct SearchStack;
+enum Move;
 
+// Declare update_killers function
+void update_killers(SearchStack* ss, Move move);
     // Update killers
 update_killers(ss, move);
 
