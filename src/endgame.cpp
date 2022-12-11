@@ -31,7 +31,7 @@ namespace {
   // Values range from 27 (center squares) to 90 (in the corners)
   inline int push_to_edge(Square s) {
       int rd = edge_distance(rank_of(s)), fd = edge_distance(file_of(s));
-      return 90 - (7 * fd * fd / 2 + 7 * rd * rd / 2);
+      return 90 - (7 * bit_scan(fd) * bit_scan(fd) / 2 + 7 * bit_scan(rd) * bit_scan(rd) / 2);
   }
 
   // Used to drive the king towards A1H8 corners in KBN vs K endgames.
