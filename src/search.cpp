@@ -71,6 +71,9 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
+  // Return early if r is less than or equal to 916
+    if (!i && r <= 916) return 0;
+
     return (r + 1642 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 916);
   }
 
