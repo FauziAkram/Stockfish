@@ -81,7 +81,12 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min((12 * d + 282) * d - 349 , 1480);
+    int value = (12 * d + 282) * d - 349;
+  if (value > 1480) {
+    return 1480;
+  } else {
+    return value;
+  }
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -802,7 +807,11 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth, eval and complexity of position
-        Depth R = std::min(int(eval - beta) / 168, 7) + depth / 3 + 4 - (complexity > 861);
+        if (complexity > 861) {
+        Depth R = depth / 3 + 4 - (complexity > 861);
+        } else {
+        Depth R = (eval - beta) / 168 + depth / 3 + 4 - (complexity > 861);
+        }
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
