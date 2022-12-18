@@ -735,8 +735,9 @@ namespace {
         else // Fall back to (semi)classical complexity for TT hits, the NNUE complexity is lost
             complexity = abs(ss->staticEval - pos.psq_eg_stm());
 
-        // ttValue can be used as a better position evaluation (~4 Elo)
+        // ttValue can be used as a better position evaluation (~4 Elo?)
         if (    ttValue != VALUE_NONE
+            &&  false
             && (tte->bound() & (ttValue > eval ? BOUND_LOWER : BOUND_UPPER)))
             eval = ttValue;
     }
