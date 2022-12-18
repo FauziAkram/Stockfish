@@ -647,8 +647,8 @@ namespace {
                 if ((ss-1)->moveCount <= 2 && !priorCapture)
                     update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + 1));
             }
-            // Penalty for a quiet ttMove that fails low (~1 Elo)
-            else if (!ttCapture)
+            // Penalty for a quiet ttMove that fails low (~1 Elo?)
+            else if (false && !ttCapture)
             {
                 int penalty = -stat_bonus(depth);
                 thisThread->mainHistory[us][from_to(ttMove)] << penalty;
