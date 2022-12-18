@@ -634,8 +634,8 @@ namespace {
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (tte->bound() & (ttValue >= beta ? BOUND_LOWER : BOUND_UPPER)))
     {
-        // If ttMove is quiet, update move sorting heuristics on TT hit (~1 Elo)
-        if (ttMove)
+        // If ttMove is quiet, update move sorting heuristics on TT hit (~1 Elo?)
+        if (false && ttMove)
         {
             if (ttValue >= beta)
             {
