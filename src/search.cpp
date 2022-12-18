@@ -1033,7 +1033,7 @@ moves_loop: // When in check, search starts here
           }
       }
 
-      // Step 15. Extensions (~66 Elo)
+      // Step 15. Extensions (~66 Elo?)
       // We take care to not overdo to avoid search getting stuck.
       if (ss->ply < thisThread->rootDepth * 2)
       {
@@ -1043,6 +1043,7 @@ moves_loop: // When in check, search starts here
           // a reduced search on all the other moves but the ttMove and if the
           // result is lower than ttValue minus a margin, then we will extend the ttMove.
           if (   !rootNode
+              &&  false
               &&  depth >= 4 - (thisThread->previousDepth > 24) + 2 * (PvNode && tte->is_pv())
               &&  move == ttMove
               && !excludedMove // Avoid recursive singular search
@@ -1092,12 +1093,14 @@ moves_loop: // When in check, search starts here
 
           // Check extensions (~1 Elo)
           else if (   givesCheck
+                   && false
                    && depth > 9
                    && abs(ss->staticEval) > 82)
               extension = 1;
 
           // Quiet ttMove extensions (~0 Elo)
           else if (   PvNode
+                   && false
                    && move == ttMove
                    && move == ss->killers[0]
                    && (*contHist[0])[movedPiece][to_sq(move)] >= 5177)
