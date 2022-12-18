@@ -907,6 +907,7 @@ moves_loop: // When in check, search starts here
     // Step 12. A small Probcut idea, when we are in check (~0 Elo)
     probCutBeta = beta + 417;
     if (   ss->inCheck
+        && false
         && !PvNode
         && depth >= 2
         && ttCapture
