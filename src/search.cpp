@@ -58,7 +58,19 @@ using namespace Search;
 
 namespace {
 
-  int 
+  int fz1=165,	fz2=1642,	fz3=916,	fz4=12,	fz5=282,	fz6=349,	fz7=1480,	fz8=155,	fz9=10,	fz10=15620;
+  int fz11=118,	fz12=169,	fz13=19,	fz14=1914,	fz15=168,	fz16=369,	fz17=254,	fz18=303,	fz19=28031,	fz20=17139;
+  int fz21=20,	fz22=13,	fz23=233,	fz24=25,	fz25=168,	fz26=7,	fz27=861,	fz28=191,	fz29=54,	fz30=417;
+  int fz31=180,	fz32=201,	fz33=222,	fz34=3875,	fz35=106,	fz36=145,	fz37=52,	fz38=24,	fz39=15,	fz40=9;
+  int fz41=82,	fz42=5177,	fz43=9,	fz44=4433,	fz45=13000,	fz46=4152,	fz47=8,	fz48=64,	fz49=11,	fz50=582;
+  int fz51=62,	fz52=85,	fz53=153,	fz54=137; 
+  
+  auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
+  
+  TUNE(SetRange(f1),fz8,fz9,fz10,fz11,fz12);
+  TUNE(SetRange(0, 16), fz40, fz43);
+  TUNE (fz1,	fz2,	fz3,	fz4,	fz5,	fz6,	fz7,	fz13,	fz14,	fz15,	fz16,	fz17,	fz18,	fz19,	fz20,	fz21,	fz22,	fz23,	fz24,	fz25,	fz26,	fz27,	fz28,	fz29,	fz30,	fz31,	fz32,	fz33,	fz34,	fz35,	fz36,	fz37,	fz38,	fz39,	fz41,	fz42,	fz44,	fz45,	fz46,	fz47,	fz48,	fz49,	fz50,	fz51,	fz52,	fz53,	fz54);
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
