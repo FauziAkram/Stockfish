@@ -1040,7 +1040,7 @@ moves_loop: // When in check, search starts here
                   continue;
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-fz39 * lmrDepth * lmrDepth - fz40 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-fz38 * lmrDepth * lmrDepth - fz39 * lmrDepth)))
                   continue;
           }
       }
@@ -1371,8 +1371,10 @@ moves_loop: // When in check, search starts here
     {
         //Assign extra bonus if current node is PvNode or cutNode
         //or fail low was really bad
-        bool extraBonus = PvNode || cutNode;
-        bool doubleExtraBonus = bestValue < alpha - fz52 * depth;
+        bool extraBonus =    PvNode
+                          || cutNode;
+
+        bool doubleExtraBonus = extraBonus && bestValue < alpha - fz52 * depth;
 
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * (1 + extraBonus + doubleExtraBonus));
     }
