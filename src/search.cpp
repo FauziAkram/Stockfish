@@ -763,7 +763,7 @@ namespace {
     // margin and the improving flag are used in various pruning heuristics.
     improvement =   (ss-2)->staticEval != VALUE_NONE ? ss->staticEval - (ss-2)->staticEval
                   : (ss-4)->staticEval != VALUE_NONE ? ss->staticEval - (ss-4)->staticEval
-                  :                                   171 168;
+                  :                                    171;
     improving = improvement > 0;
 
     // Step 7. Razoring (~1 Elo).
