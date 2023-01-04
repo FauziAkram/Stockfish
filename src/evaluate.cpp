@@ -191,11 +191,22 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
+  
+  int faz1=1781; TUNE(SetRange(1400,2000),faz1);
+  int faz2=1076; TUNE(SetRange(940,1140),faz2);
+  int faz3=96; TUNE(SetRange(30, 180), faz3);
+  int faz4=406, faz5=424; TUNE(SetRange(160, 650), faz4, faz5);
+  int faz6=272; TUNE(SetRange(160, 400), faz6);
+  int faz7=748; TUNE(SetRange(610, 890), faz7);
+  int faz8=200, faz9=214; TUNE(SetRange(130, 280), faz8, faz9);
+  int faz10=3631; TUNE(SetRange(3200,4000);
+  int faz11=2084; TUNE(SetRange(1800,2280);                                 
+  int faz12=11551; TUNE(SetRange(10000,13000);
 
   // Threshold for lazy and space evaluation
-  constexpr Value LazyThreshold1    =  Value(3631);
-  constexpr Value LazyThreshold2    =  Value(2084);
-  constexpr Value SpaceThreshold    =  Value(11551);
+  constexpr Value LazyThreshold1    =  Value(faz10);
+  constexpr Value LazyThreshold2    =  Value(faz11);
+  constexpr Value SpaceThreshold    =  Value(faz12);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 76, 46, 45, 14 };
@@ -1056,14 +1067,14 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   // We use the much less accurate but faster Classical eval when the NNUE
   // option is set to false. Otherwise we use the NNUE eval unless the
   // PSQ advantage is decisive and several pieces remain. (~3 Elo)
-  bool useClassical = !useNNUE || (pos.count<ALL_PIECES>() > 7 && abs(psq) > 1781);
+  bool useClassical = !useNNUE || (pos.count<ALL_PIECES>() > 7 && abs(psq) > faz1);
 
   if (useClassical)
       v = Evaluation<NO_TRACE>(pos).value();
   else
   {
       int nnueComplexity;
-      int scale = 1076 + 96 * pos.non_pawn_material() / 5120;
+      int scale = faz2 + faz3 * pos.non_pawn_material() / 5120;
 
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
@@ -1071,8 +1082,8 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  406 * nnueComplexity
-                        + 424 * abs(psq - nnue)
+      nnueComplexity = (  faz4 * nnueComplexity
+                        + faz5 * abs(psq - nnue)
                         + (optimism  > 0 ? int(optimism) * int(psq - nnue) : 0)
                         ) / 1024;
 
@@ -1080,12 +1091,12 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       if (complexity)
           *complexity = nnueComplexity;
 
-      optimism = optimism * (272 + nnueComplexity) / 256;
-      v = (nnue * scale + optimism * (scale - 748)) / 1024;
+      optimism = optimism * (faz6 + nnueComplexity) / 256;
+      v = (nnue * scale + optimism * (scale - faz7)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling
-  v = v * (200 - pos.rule50_count()) / 214;
+  v = v * (faz8 - pos.rule50_count()) / faz9;
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
