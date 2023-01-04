@@ -204,9 +204,9 @@ namespace {
   int faz12=11551; TUNE(SetRange(10000,13000, faz12);
 
   // Threshold for lazy and space evaluation
-  constexpr Value LazyThreshold1    =  Value(faz10);
-  constexpr Value LazyThreshold2    =  Value(faz11);
-  constexpr Value SpaceThreshold    =  Value(faz12);
+   Value LazyThreshold1    =  Value(faz10);
+   Value LazyThreshold2    =  Value(faz11);
+   Value SpaceThreshold    =  Value(faz12);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 76, 46, 45, 14 };
