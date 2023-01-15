@@ -194,7 +194,7 @@ namespace {
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
-  constexpr Value LazyThreshold2    =  Value(2084);
+  constexpr Value LazyThreshold2    =  Value(2048);
   constexpr Value SpaceThreshold    =  Value(11551);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
@@ -214,13 +214,13 @@ namespace {
     { S(-62,-79), S(-53,-57), S(-12,-31), S( -3,-17), S(  3,  7), S( 12, 13), // Knight
       S( 21, 16), S( 28, 21), S( 37, 26) },
     { S(-47,-59), S(-20,-25), S( 14, -8), S( 29, 12), S( 39, 21), S( 53, 40), // Bishop
-      S( 53, 56), S( 60, 58), S( 62, 65), S( 69, 72), S( 78, 78), S( 83, 87),
+      S( 53, 56), S( 60, 58), S( 62, 64), S( 69, 72), S( 78, 78), S( 83, 87),
       S( 91, 88), S( 96, 98) },
     { S(-60,-82), S(-24,-15), S(  0, 17) ,S(  3, 43), S(  4, 72), S( 14,100), // Rook
       S( 20,102), S( 30,122), S( 41,133), S(41 ,139), S( 41,153), S( 45,160),
       S( 57,165), S( 58,170), S( 67,175) },
     { S(-29,-49), S(-16,-29), S( -8, -8), S( -8, 17), S( 18, 39), S( 25, 54), // Queen
-      S( 23, 59), S( 37, 73), S( 41, 76), S( 54, 95), S( 65, 95) ,S( 68,101),
+      S( 23, 59), S( 37, 73), S( 41, 76), S( 54, 95), S( 64, 95) ,S( 68,101),
       S( 69,124), S( 70,128), S( 70,132), S( 70,133) ,S( 71,136), S( 72,140),
       S( 74,147), S( 76,149), S( 90,153), S(104,169), S(105,171), S(106,171),
       S(112,178), S(114,185), S(114,187), S(119,221) }
@@ -237,7 +237,7 @@ namespace {
 
   // Outpost[knight/bishop] contains bonuses for each knight or bishop occupying a
   // pawn protected square on rank 4 to 6 which is also safe from a pawn attack.
-  constexpr Score Outpost[] = { S(54, 34), S(31, 25) };
+  constexpr Score Outpost[] = { S(54, 34), S(32, 25) };
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {
@@ -251,7 +251,7 @@ namespace {
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
   constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-    S(0, 0), S(6, 37), S(64, 50), S(82, 57), S(103, 130), S(81, 163)
+    S(0, 0), S(6, 37), S(64, 50), S(82, 57), S(103, 128), S(81, 163)
   };
 
   constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
@@ -271,10 +271,10 @@ namespace {
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score PassedFile          = S( 13,  8);
   constexpr Score PawnlessFlank       = S( 19, 97);
-  constexpr Score ReachableOutpost    = S( 33, 19);
+  constexpr Score ReachableOutpost    = S( 32, 19);
   constexpr Score RestrictedPiece     = S(  6,  7);
   constexpr Score RookOnKingRing      = S( 16,  0);
-  constexpr Score SliderOnQueen       = S( 62, 21);
+  constexpr Score SliderOnQueen       = S( 64, 21);
   constexpr Score ThreatByKing        = S( 24, 87);
   constexpr Score ThreatByPawnPush    = S( 48, 39);
   constexpr Score ThreatBySafePawn    = S(167, 99);
