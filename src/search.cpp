@@ -58,7 +58,7 @@ using namespace Search;
 
 namespace {
   
-  int zz1=159, zz2=4, zz3=4, zz4=14, zz5=327, zz6= 27762, zz7=18, zz8=50, zz9=145, zz10=400;
+  int zz1=159, zz2=4, zz3=4, zz4=14, zz5=327, zz6= 27762, zz7=183, zz8=50, zz9=145, zz10=400;
   TUNE (zz1,zz4,zz5,zz6,zz7,zz8,zz9,zz10);
   TUNE(SetRange(1, 12), zz2,zz3);
 
