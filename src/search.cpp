@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=183, xx2=50, xx3=150;
+  TUNE (xx1,xx2,xx3);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -841,7 +844,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 183 - 50 * improving;
+    probCutBeta = beta + xx1 - xx2 * improving + xx2 * ttCapture;;
 
     // Step 10. ProbCut (~10 Elo)
     // If we have a good enough capture and a reduced search returns a value
