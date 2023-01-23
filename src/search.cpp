@@ -57,13 +57,17 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int zz1=159, zz2=4, zz3=4, zz4=14, zz5=327, zz6= 27762, zz7=18, zz8=50, zz9=145, zz10=400;
+  TUNE (zz1,zz4,zz5,zz6,zz7,zz8,zz9,zz10);
+  TUNE(SetRange(1, 12), zz2,zz3);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(145 * (d - improving));
+    return Value(zz9 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -769,8 +773,8 @@ namespace {
     // margin and the improving flag are used in various pruning heuristics.
     improvement =   (ss-2)->staticEval != VALUE_NONE ? ss->staticEval - (ss-2)->staticEval
                   : (ss-4)->staticEval != VALUE_NONE ? ss->staticEval - (ss-4)->staticEval
-                  :                                    159;
-    improving = improvement > 0;
+                  :                                    zz1;
+    improving = improvement > std::clamp(depth - zz2, -zz3, zz4);
 
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
@@ -786,9 +790,9 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 327 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / zz5 >= beta
         &&  eval >= beta
-        &&  eval < 27762) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < zz6) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
@@ -841,7 +845,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 183 - 50 * improving;
+    probCutBeta = beta + zz7 - zz8 * improving;
 
     // Step 10. ProbCut (~10 Elo)
     // If we have a good enough capture and a reduced search returns a value
@@ -910,7 +914,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 402;
+    probCutBeta = beta + zz10;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
