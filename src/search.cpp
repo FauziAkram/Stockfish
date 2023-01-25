@@ -63,7 +63,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(144 * (d - improving));
+    return Value(136 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -769,8 +769,8 @@ namespace {
     // margin and the improving flag are used in various pruning heuristics.
     improvement =   (ss-2)->staticEval != VALUE_NONE ? ss->staticEval - (ss-2)->staticEval
                   : (ss-4)->staticEval != VALUE_NONE ? ss->staticEval - (ss-4)->staticEval
-                  :                                    162;
-    improving = improvement > 0;
+                  :                                    166;
+    improving = improvement > std::clamp(depth - 4, -4, 14);
 
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
@@ -786,9 +786,9 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 324 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 322 >= beta
         &&  eval >= beta
-        &&  eval < 27758) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < 27558) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
@@ -841,7 +841,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 170 - 50 * improving + 146 * ttCapture;
+    probCutBeta = beta + 188 - 54 * improving;
 
     // Step 10. ProbCut (~10 Elo)
     // If we have a good enough capture and a reduced search returns a value
