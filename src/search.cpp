@@ -71,7 +71,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1460 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 937);
+    return (r + 1430 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 937);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -310,7 +310,7 @@ void Thread::search() {
 
   multiPV = std::min(multiPV, rootMoves.size());
 
-  complexityAverage.set(153, 1);
+  complexityAverage.set(155, 1);
 
   optimism[us] = optimism[~us] = VALUE_ZERO;
 
@@ -771,7 +771,7 @@ namespace {
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (eval < alpha - 394 - 255 * depth * depth)
+    if (eval < alpha - 394 - 256 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -782,7 +782,7 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 304 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 306 >= beta
         &&  eval >= beta
         &&  eval < 28580) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
@@ -906,7 +906,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 402;
+    probCutBeta = beta + 388;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -1171,7 +1171,7 @@ moves_loop: // When in check, search starts here
                      - 4467;
 
       // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-      r -= ss->statScore / (12800 + 4410 * (depth > 7 && depth < 19));
+      r -= ss->statScore / (12800 + 4450 * (depth > 7 && depth < 19));
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
       // We use various heuristics for the sons of a node after the first son has
@@ -1363,7 +1363,7 @@ moves_loop: // When in check, search starts here
                          quietsSearched, quietCount, capturesSearched, captureCount, depth);
 
     // Bonus for prior countermove that caused the fail low
-    else if (   (depth >= 5 || PvNode || bestValue < alpha - 65 * depth)
+    else if (   (depth >= 5 || PvNode || bestValue < alpha - 64 * depth)
              && !priorCapture)
     {
         // Extra bonuses for PV/Cut nodes or bad fail lows
