@@ -192,7 +192,7 @@ using namespace Trace;
 
 namespace {
   
-  int fau96=96; TUNE(SetRange(30, 180), faz3);
+  int fau96=96; TUNE(SetRange(30, 180), fau96);
   int fau406=406, fau424=424; TUNE(SetRange(160, 650), fau406, fau424);
 
   // Threshold for lazy and space evaluation
