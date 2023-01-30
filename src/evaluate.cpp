@@ -191,6 +191,9 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
+  
+  int fau96=96; TUNE(SetRange(30, 180), faz3);
+  int fau406=406, fau424=424; TUNE(SetRange(160, 650), fau406, fau424);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
@@ -1063,7 +1066,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   else
   {
       int nnueComplexity;
-      int scale = 1076 + 96 * pos.non_pawn_material() / 5120;
+      int scale = 1076 + fau96 * pos.non_pawn_material() / 5120;
 
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
@@ -1071,9 +1074,9 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  406 * nnueComplexity
-                        + 424 * abs(psq - nnue)
-                        + (optimism  > 0 ? int(optimism) * int(psq - nnue) : 0)
+      nnueComplexity = (  fau406 * nnueComplexity
+                        + fau424 * abs(psq - nnue)
+                        + int(optimism) * int(psq - nnue)
                         ) / 1024;
 
       // Return hybrid NNUE complexity to caller
