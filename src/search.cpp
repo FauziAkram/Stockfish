@@ -58,7 +58,7 @@ using namespace Search;
 
 namespace {
   
-  int fau1=1460, fau2=937, fau3=350, fau4=400, fau5=1650, fau6=153, fau7=304, fau8=28580, fau9=18200, fau10=20, fau11=400, fau12=4410, fau800=800, fau108=108, fau3600=3600;
+  int fau1=1420, fau2=937, fau3=350, fau4=400, fau5=1600, fau6=153, fau7=304, fau8=28580, fau9=18200, fau10=20, fau11=400, fau12=4444, fau800=800, fau108=120, fau3600=3600;
   TUNE (fau1,fau2,fau3,fau4,fau5,fau6,fau7,fau8,fau9,fau10,fau11,fau12,fau800,fau108,fau3600);
 
   // Different node types, used as a template parameter
