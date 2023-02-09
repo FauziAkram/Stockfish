@@ -735,14 +735,18 @@ namespace {
         // Recalculate value with current optimism (without updating thread avgComplexity)
         ss->staticEval = eval = evaluate(pos, &complexity);
     }
-    else if (ss->ttHit && tte->eval() != VALUE_NONE)
+    else if (ss->ttHit)
     {
         // Never assume anything about values stored in TT
         ss->staticEval = eval = tte->eval();
-        complexity = abs(ss->staticEval - pos.psq_eg_stm());
+        if (eval == VALUE_NONE)
+            ss->staticEval = eval = evaluate(pos, &complexity);
+        else // Fall back to (semi)classical complexity for TT hits, the NNUE complexity is lost
+            complexity = abs(ss->staticEval - pos.psq_eg_stm());
 
         // ttValue can be used as a better position evaluation (~7 Elo)
-        if (tte->bound() & (ttValue > eval ? BOUND_LOWER : BOUND_UPPER))
+        if (    ttValue != VALUE_NONE
+            && (tte->bound() & (ttValue > eval ? BOUND_LOWER : BOUND_UPPER)))
             eval = ttValue;
     }
     else
@@ -1225,7 +1229,7 @@ moves_loop: // When in check, search starts here
       {
                // Increase reduction for cut nodes and not ttMove (~1 Elo)
                if (!ttMove && cutNode)
-                         r += 2;
+                         r += 2 + !capture;
 
                value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth - (r > 4), !cutNode);
       }
