@@ -192,13 +192,13 @@ using namespace Trace;
 
 namespace {
   
-  int fau0=1781; TUNE(SetRange(1400,2000),fau0);
-  int fau1=1076; TUNE(SetRange(940,1140),fau1);
-  int fau3=96; TUNE(SetRange(30, 180), fau3);
-  int fau4=406, fau5=424; TUNE(SetRange(160, 650), fau4, fau5);
-  int fau6=272; TUNE(SetRange(160, 400), fau6);
-  int fau7=748; TUNE(SetRange(610, 890), fau7);
-  int fau8=200, faz9=214; TUNE(SetRange(135, 280), fau8, fau9);
+  int faz0=1781; TUNE(SetRange(1400,2000),faz0);
+  int faz1=1076; TUNE(SetRange(940,1140),faz1);
+  int faz2=96; TUNE(SetRange(30, 180), faz2);
+  int faz3=406, faz4=424; TUNE(SetRange(160, 650), faz3, faz4);
+  int faz5=272; TUNE(SetRange(160, 400), faz5);
+  int faz6=748; TUNE(SetRange(610, 890), faz6);
+  int faz7=200, faz8=214; TUNE(SetRange(135, 280), faz7, faz8);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
@@ -1064,14 +1064,14 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   // We use the much less accurate but faster Classical eval when the NNUE
   // option is set to false. Otherwise we use the NNUE eval unless the
   // PSQ advantage is decisive and several pieces remain. (~3 Elo)
-  bool useClassical = !useNNUE || (pos.count<ALL_PIECES>() > 7 && abs(psq) > fau0);
+  bool useClassical = !useNNUE || (pos.count<ALL_PIECES>() > 7 && abs(psq) > faz0);
 
   if (useClassical)
       v = Evaluation<NO_TRACE>(pos).value();
   else
   {
       int nnueComplexity;
-      int scale = fa1 + fau2 * pos.non_pawn_material() / 5120;
+      int scale = faz1 + faz2 * pos.non_pawn_material() / 5120;
 
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
@@ -1079,8 +1079,8 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  fau3 * nnueComplexity
-                        + fau4 * abs(psq - nnue)
+      nnueComplexity = (  faz3 * nnueComplexity
+                        + faz4 * abs(psq - nnue)
                         + int(optimism) * int(psq - nnue)
                         ) / 1024;
 
@@ -1088,12 +1088,12 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       if (complexity)
           *complexity = nnueComplexity;
 
-      optimism = optimism * (fau5 + nnueComplexity) / 256;
-      v = (nnue * scale + optimism * (scale - fau6)) / 1024;
+      optimism = optimism * (faz5 + nnueComplexity) / 256;
+      v = (nnue * scale + optimism * (scale - faz6)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling
-  v = v * (fau7 - pos.rule50_count()) / fau8;
+  v = v * (faz7 - pos.rule50_count()) / faz8;
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
