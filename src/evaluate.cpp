@@ -237,7 +237,7 @@ namespace {
 
   // Outpost[knight/bishop] contains bonuses for each knight or bishop occupying a
   // pawn protected square on rank 4 to 6 which is also safe from a pawn attack.
-  constexpr Score Outpost[] = { S(54, 34), S(31, 25) };
+  constexpr Score Outpost[] = { S(54, 34), S(32, 25) };
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {
