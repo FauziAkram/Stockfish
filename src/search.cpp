@@ -71,7 +71,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1460 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 937);
+    return (r + 1412 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 907);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -81,7 +81,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(350 * d - 400, 1650);
+    return std::min(347 * d - 419, 1545);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -310,7 +310,7 @@ void Thread::search() {
 
   multiPV = std::min(multiPV, rootMoves.size());
 
-  complexityAverage.set(153, 1);
+  complexityAverage.set(156, 1);
 
   optimism[us] = optimism[~us] = VALUE_ZERO;
 
@@ -367,7 +367,7 @@ void Thread::search() {
           // Start with a small aspiration window and, in the case of a fail
           // high/low, re-search with a bigger window until we don't fail
           // high/low anymore.
-          int failedHighCnt = 0;
+          failedHighCnt = 0;
           while (true)
           {
               // Adjust the effective depth searched, but ensuring at least one effective increment for every
@@ -787,15 +787,15 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 304 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 299 >= beta
         &&  eval >= beta
-        &&  eval < 28580) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < 28520) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 18200
+        && (ss-1)->statScore < 17620
         &&  eval >= beta
         &&  eval >= ss->staticEval
         &&  ss->staticEval >= beta - 20 * depth - improvement / 14 + 235 + complexity / 24
@@ -806,7 +806,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth, eval and complexity of position
-        Depth R = std::min(int(eval - beta) / 165, 6) + depth / 3 + 4 - (complexity > 800);
+        Depth R = std::min(int(eval - beta) / 165, 6) + depth / 3 + 4 - (complexity > 812);
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -911,7 +911,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 402;
+    probCutBeta = beta + 375;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -1115,6 +1115,11 @@ moves_loop: // When in check, search starts here
                    && (*contHist[0])[movedPiece][to_sq(move)] >= 5600)
               extension = 1;
       }
+      
+      if (   rootNode
+          && depth > 4
+          && thisThread->failedHighCnt >= 2)
+          extension = -1;
 
       // Add extension to new depth
       newDepth += extension;
@@ -1172,7 +1177,7 @@ moves_loop: // When in check, search starts here
 
       // Decrease reduction if move is a killer and we have a good history
       if (move == ss->killers[0]
-          && (*contHist[0])[movedPiece][to_sq(move)] >= 3600)
+          && (*contHist[0])[movedPiece][to_sq(move)] >= 3628)
           r--;
 
       ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
@@ -1182,7 +1187,7 @@ moves_loop: // When in check, search starts here
                      - 4467;
 
       // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-      r -= ss->statScore / (12800 + 4410 * (depth > 7 && depth < 19));
+      r -= ss->statScore / (12800 + 4446 * (depth > 7 && depth < 19));
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
       // We use various heuristics for the sons of a node after the first son has
