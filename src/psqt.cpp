@@ -28,6 +28,10 @@ namespace Stockfish {
 
 namespace
 {
+  
+  int bb1=-17, bb2=-31, bb3=10, bb4=-5, bb5=12, bb6=1, bb7=36, bb8=16; TUNE(SetRange(-120,120),bb1, bb2, bb3, bb4, bb5, bb6, bb7, bb8);
+  int rr1=-17, rr2=-31, rr3=10, rr4=-5, rr5=12, rr6=1, rr7=36, rr8=16; TUNE(SetRange(-120,120),rr1, rr2, rr3, rr4, rr5, rr6, rr7, rr8);
+  int qq1=-17, qq2=-31, qq3=10, qq4=-5, qq5=12, qq6=1, qq7=36, qq8=16; TUNE(SetRange(-120,120),qq1, qq2, qq3, qq4, qq5, qq6, qq7, qq8);
 
 auto constexpr S = make_score;
 
@@ -107,28 +111,28 @@ namespace PSQT
 // Parameters for Bishop tiling
 const Score BishTiling[4] =
 {
-    S(BishopValueMg, BishopValueEg) + S(-17, -31), // outmost ring
-    S(BishopValueMg, BishopValueEg) + S(10, -5),
-    S(BishopValueMg, BishopValueEg) + S(12, 1),
-    S(BishopValueMg, BishopValueEg) + S(35, 16)  // central 4 squares
+    S(BishopValueMg, BishopValueEg) + S(bb1, bb2), // outmost ring
+    S(BishopValueMg, BishopValueEg) + S(bb3, bb4),
+    S(BishopValueMg, BishopValueEg) + S(bb5, bb6),
+    S(BishopValueMg, BishopValueEg) + S(bb7, bb8)  // central 4 squares
 };
 
 // Parameters for Rook tiling
 const Score RookTiling[4] =
 {
-    S(RookValueMg, RookValueEg) + S(-17, -31), // outmost ring
-    S(RookValueMg, RookValueEg) + S(10, -5),
-    S(RookValueMg, RookValueEg) + S(12, 1),
-    S(RookValueMg, RookValueEg) + S(35, 16)  // central 4 squares
+    S(RookValueMg, RookValueEg) + S(rr1, rr2), // outmost ring
+    S(RookValueMg, RookValueEg) + S(rr3, rr4),
+    S(RookValueMg, RookValueEg) + S(rr5, rr6),
+    S(RookValueMg, RookValueEg) + S(rr7, rr8)  // central 4 squares
 };
 
 // Parameters for Queen tiling
 const Score QueenTiling[4] =
 {
-    S(QueenValueMg, QueenValueEg) + S(-17, -31), // outmost ring
-    S(QueenValueMg, QueenValueEg) + S(10, -5),
-    S(QueenValueMg, QueenValueEg) + S(12, 1),
-    S(QueenValueMg, QueenValueEg) + S(35, 16)  // central 4 squares
+    S(QueenValueMg, QueenValueEg) + S(qq1, qq2), // outmost ring
+    S(QueenValueMg, QueenValueEg) + S(qq3, qq4),
+    S(QueenValueMg, QueenValueEg) + S(qq5, qq6),
+    S(QueenValueMg, QueenValueEg) + S(qq7, qq8)  // central 4 squares
 };
 
 namespace hidden
