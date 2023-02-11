@@ -105,7 +105,7 @@ constexpr Score PBonus[RANK_NB][FILE_NB] =
 namespace PSQT
 {
 // Parameters for Bishop tiling
-const Score BishTiling[4] =
+Score BishTiling[4] =
 {
     S(BishopValueMg, BishopValueEg) + S(-17, -31), // outmost ring
     S(BishopValueMg, BishopValueEg) + S(10, -5),
@@ -114,7 +114,7 @@ const Score BishTiling[4] =
 };
 
 // Parameters for Rook tiling
-const Score RookTiling[4] =
+Score RookTiling[4] =
 {
     S(RookValueMg, RookValueEg) + S(-17, -31), // outmost ring
     S(RookValueMg, RookValueEg) + S(10, -5),
@@ -123,13 +123,15 @@ const Score RookTiling[4] =
 };
 
 // Parameters for Queen tiling
-const Score QueenTiling[4] =
+Score QueenTiling[4] =
 {
     S(QueenValueMg, QueenValueEg) + S(-17, -31), // outmost ring
     S(QueenValueMg, QueenValueEg) + S(10, -5),
     S(QueenValueMg, QueenValueEg) + S(12, 1),
     S(QueenValueMg, QueenValueEg) + S(35, 16)  // central 4 squares
 };
+  
+  TUNE(SetRange(-120, 120), BishTiling, RookTiling, QueenTiling);
 
 namespace hidden
 { 
