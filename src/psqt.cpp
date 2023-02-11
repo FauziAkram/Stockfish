@@ -104,24 +104,103 @@ constexpr Score PBonus[RANK_NB][FILE_NB] =
 
 namespace PSQT
 {
+// Parameters for Bishop tiling
+const Score BishTiling[4] =
+{
+    S(BishopValueMg, BishopValueEg) + S(-17, -31), // outmost ring
+    S(BishopValueMg, BishopValueEg) + S(10, -5),
+    S(BishopValueMg, BishopValueEg) + S(12, 1),
+    S(BishopValueMg, BishopValueEg) + S(35, 16)  // central 4 squares
+};
 
+// Parameters for Rook tiling
+const Score RookTiling[4] =
+{
+    S(RookValueMg, RookValueEg) + S(-17, -31), // outmost ring
+    S(RookValueMg, RookValueEg) + S(10, -5),
+    S(RookValueMg, RookValueEg) + S(12, 1),
+    S(RookValueMg, RookValueEg) + S(35, 16)  // central 4 squares
+};
+
+// Parameters for Queen tiling
+const Score QueenTiling[4] =
+{
+    S(QueenValueMg, QueenValueEg) + S(-17, -31), // outmost ring
+    S(QueenValueMg, QueenValueEg) + S(10, -5),
+    S(QueenValueMg, QueenValueEg) + S(12, 1),
+    S(QueenValueMg, QueenValueEg) + S(35, 16)  // central 4 squares
+};
+
+namespace hidden
+{ 
 Score psq[PIECE_NB][SQUARE_NB];
+}
 
+Piece idx(Piece p)
+{
+    assert(p != W_BISHOP);
+    assert(p != B_BISHOP);
+    assert(p != W_ROOK);
+    assert(p != B_ROOK);
+    assert(p != W_QUEEN);
+    assert(p != B_QUEEN);
+
+    return p;
+}
+
+Score psq(Piece p, Square s)
+{
+    // For bishops, using ring tiling
+
+    if (type_of(p) == ROOK)
+    {
+        // Find tiling index. 0 = outmost ring, 3 = central 4 squares
+        auto tileIdx = std::min(
+                edge_distance(file_of(s)),
+                edge_distance(rank_of(s))
+                );
+        return color_of(p) == WHITE ? RookTiling[tileIdx] : -RookTiling[tileIdx];
+    }
+    else if (type_of(p) == BISHOP)
+    {
+        auto tileIdx = std::min(
+                edge_distance(file_of(s)),
+                edge_distance(rank_of(s))
+                );
+        return color_of(p) == WHITE ? BishTiling[tileIdx] : -BishTiling[tileIdx];
+    }
+    else if (type_of(p) == QUEEN)
+    {
+        auto tileIdx = std::min(
+                edge_distance(file_of(s)),
+                edge_distance(rank_of(s))
+                );
+        return color_of(p) == WHITE ? QueenTiling[tileIdx] : -QueenTiling[tileIdx];
+    }
+
+    // For psq values which we have not touched, use old psq table. idx()
+    // adjusts the piece value such that we obtain the index in the array where
+    // bishops, rooks and queens were removed.
+    else
+    {
+        return hidden::psq[idx(p)][s];
+    }
+}
 // PSQT::init() initializes piece-square tables: the white halves of the tables are
 // copied from Bonus[] and PBonus[], adding the piece value, then the black halves of
 // the tables are initialized by flipping and changing the sign of the white scores.
 void init() {
 
-  for (Piece pc : {W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING})
+  for (Piece pc : {W_PAWN, W_KNIGHT, /*W_BISHOP, W_ROOK, W_QUEEN, */W_KING})
   {
     Score score = make_score(PieceValue[MG][pc], PieceValue[EG][pc]);
 
     for (Square s = SQ_A1; s <= SQ_H8; ++s)
     {
       File f = File(edge_distance(file_of(s)));
-      psq[ pc][s] = score + (type_of(pc) == PAWN ? PBonus[rank_of(s)][file_of(s)]
+      hidden::psq[ pc][s] = score + (type_of(pc) == PAWN ? PBonus[rank_of(s)][file_of(s)]
                                                  : Bonus[pc][rank_of(s)][f]);
-      psq[~pc][flip_rank(s)] = -psq[pc][s];
+      hidden::psq[~pc][flip_rank(s)] = -hidden::psq[pc][s];
     }
   }
 }
