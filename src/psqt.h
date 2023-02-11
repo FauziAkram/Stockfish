@@ -26,8 +26,23 @@
 
 namespace Stockfish::PSQT
 {
+  
+// Parameters for Bishop tiling
+extern const Score BishTiling[4];
+// Parameters for Rook tiling
+extern const Score RookTiling[4];
+// Parameters for Queen tiling
+extern const Score QueenTiling[4];
 
+namespace hidden 
+{
 extern Score psq[PIECE_NB][SQUARE_NB];
+  
+  }
+
+Piece idx(Piece p);
+
+Score psq(Piece p, Square s);
 
 // Fill psqt array from a set of internally linked parameters
 void init();
