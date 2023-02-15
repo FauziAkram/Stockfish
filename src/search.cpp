@@ -57,6 +57,11 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=64, xx2=11, xx3=588, xx4=33, xx5=247,xx6=8, xx7=62, xx8=16;
+  int zz1=1450, zz2=348, zz3=1640, zz4=396;
+    TUNE (xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
+    TUNE (zz1,zz2,zz3,zz4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -71,7 +76,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1460 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 937);
+    return (r + zz1 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 937);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -81,7 +86,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(350 * d - 400, 1650);
+    return std::min(zz2 * d - 400, zz3);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -911,7 +916,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 402;
+    probCutBeta = beta + zz4;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -1206,13 +1211,16 @@ moves_loop: // When in check, search starts here
           {
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (alpha + 66 + 11 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 582 && ss->doubleExtensions <= 5;
-              const bool doShallowerSearch = value < bestValue + newDepth;
+              const bool doDeeperSearch = value > (alpha + xx1 + xx2 * (newDepth - d));
+              const bool doEvenDeeperSearch = value > alpha + xx3 && ss->doubleExtensions <= 5;
+              const bool doShallowerSearch = value < bestValue + xx4;
+              const bool doEvenShallowerSearch = doShallowerSearch && cutNode
+                      && (value < beta - xx5 - xx6 * newDepth || value < alpha + xx7 + xx8 * newDepth / 2)
+                      && (ss-1)->cutoffCnt > 0;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
 
-              newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch;
+              newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch - doEvenShallowerSearch;
 
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
