@@ -1210,7 +1210,7 @@ moves_loop: // When in check, search starts here
               const bool doEvenDeeperSearch = value > alpha + 614 && ss->doubleExtensions <= 5;
               const bool doShallowerSearch = value < bestValue + 31;
               const bool doEvenShallowerSearch = doShallowerSearch && cutNode
-                      && (value < beta - 226 - 8 * newDepth || value < alpha + 68 + 16 * newDepth / 2)
+                      && (value < beta - 226 - 8 * newDepth || value < alpha + 68 + 17 * newDepth / 2)
                       && (ss-1)->cutoffCnt > 0;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
