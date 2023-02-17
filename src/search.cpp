@@ -71,7 +71,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1460 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 937);
+    return (r + 1479 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 937);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -81,7 +81,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(350 * d - 400, 1650);
+    return std::min(306 * d - 400, 1613);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -911,7 +911,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 402;
+    probCutBeta = beta + 380;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -1206,13 +1206,16 @@ moves_loop: // When in check, search starts here
           {
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (alpha + 66 + 11 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 582 && ss->doubleExtensions <= 5;
-              const bool doShallowerSearch = value < bestValue + newDepth;
+              const bool doDeeperSearch = value > (alpha + 65 + 10 * (newDepth - d));
+              const bool doEvenDeeperSearch = value > alpha + 614 && ss->doubleExtensions <= 5;
+              const bool doShallowerSearch = value < bestValue + 31;
+              const bool doEvenShallowerSearch = doShallowerSearch && cutNode
+                      && (value < beta - 226 - 8 * newDepth || value < alpha + 68 + 16 * newDepth / 2)
+                      && (ss-1)->cutoffCnt > 0;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
 
-              newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch;
+              newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch - doEvenShallowerSearch;
 
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
