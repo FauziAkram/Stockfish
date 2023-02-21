@@ -57,7 +57,11 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
-
+  
+  int LMR4 = 1;
+  auto f1 = [](int m){return Range(0, 2 * m);};
+  TUNE(SetRange(f1),LMR4);
+  
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
