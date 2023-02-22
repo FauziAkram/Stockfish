@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=100, xx2=200;
+  TUNE(SetRange(0, 300), xx1, xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -911,7 +914,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 402;
+    probCutBeta = beta + 390;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -995,7 +998,7 @@ moves_loop: // When in check, search starts here
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
-          moveCountPruning = moveCount >= futility_move_count(improving, depth);
+          moveCountPruning = 100 * moveCount >= xx1 * futility_move_count(improving, depth) - xx2 * ttCapture;
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - r, 0);
