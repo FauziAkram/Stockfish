@@ -354,7 +354,7 @@ void Thread::search() {
           if (rootDepth >= 4)
           {
               Value prev = rootMoves[pvIdx].averageScore;
-              delta = Value(10) + int(prev) * prev / 16502;
+              delta = Value(10) + int(prev) * prev / 16800;
               alpha = std::max(prev - delta,-VALUE_INFINITE);
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
@@ -555,7 +555,7 @@ namespace {
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, probCutBeta;
     bool givesCheck, improving, priorCapture, singularQuietLMR;
-    bool capture, moveCountPruning, ttCapture;
+    bool capture, moveCountPruning, ttCapture, playStrongMove;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, improvement, complexity;
 
@@ -947,6 +947,7 @@ moves_loop: // When in check, search starts here
     value = bestValue;
     moveCountPruning = singularQuietLMR = false;
 
+    playStrongMove = false;
     // Indicate PvNodes that will probably fail low if the node was searched
     // at a depth equal or greater than the current depth, and the result of this search was a fail low.
     bool likelyFailLow =    PvNode
@@ -1048,7 +1049,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1124,6 +1125,9 @@ moves_loop: // When in check, search starts here
                    && (*contHist[0])[movedPiece][to_sq(move)] >= 5705)
               extension = 1;
       }
+      
+      if (move == ttMove || move == ss->killers[0] || move == ss->killers[1])
+          playStrongMove = true;
 
       // Add extension to new depth
       newDepth += extension;
@@ -1159,6 +1163,9 @@ moves_loop: // When in check, search starts here
       // Increase reduction if ttMove is a capture (~3 Elo)
       if (ttCapture)
           r++;
+          
+      if (moveCount > 2 && !playStrongMove && PvNode)
+          r--;
 
       // Decrease reduction for PvNodes based on depth
       if (PvNode)
@@ -1213,7 +1220,7 @@ moves_loop: // When in check, search starts here
           {
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (alpha + 58 + 12 * (newDepth - d));
+              const bool doDeeperSearch = value > (alpha + 60 + 12 * (newDepth - d));
               const bool doEvenDeeperSearch = value > alpha + 588 && ss->doubleExtensions <= 5;
               const bool doShallowerSearch = value < bestValue + newDepth;
 
