@@ -58,8 +58,8 @@ using namespace Search;
 
 namespace {
   
-  int xx1=32, xx2=103, xx3=138;
-  TUNE (xx1,xx2,xx3);
+  int xx1=32, xx2=13, xx3=103, xx4=138;
+  TUNE (xx1,xx2,xx3,xx4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
