@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=3722, xx2=3722;
+  TUNE (xx1,xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1179,7 +1182,11 @@ moves_loop: // When in check, search starts here
 
       // Decrease reduction if move is a killer and we have a good history
       if (move == ss->killers[0]
-          && (*contHist[0])[movedPiece][to_sq(move)] >= 3722)
+          && (*contHist[0])[movedPiece][to_sq(move)] >= xx1)
+          r--;
+          
+      if (move == ss->killers[1]
+          && (*contHist[0])[movedPiece][to_sq(move)] >= xx2)
           r--;
 
       ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
