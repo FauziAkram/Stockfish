@@ -1177,9 +1177,14 @@ moves_loop: // When in check, search starts here
       if ((ss+1)->cutoffCnt > 3)
           r++;
 
-      // Decrease reduction if move is a killer and we have a good history
+      // Decrease reduction if move is a killer[0] and we have a good history
       if (move == ss->killers[0]
-          && (*contHist[0])[movedPiece][to_sq(move)] >= 3722)
+          && (*contHist[0])[movedPiece][to_sq(move)] >= 3890)
+          r--;
+      
+      // Decrease reduction if move is a killer[1] and we have a good history
+      if (move == ss->killers[1]
+          && (*contHist[0])[movedPiece][to_sq(move)] >= 3500)
           r--;
 
       ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
