@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=2, xx2=2;
+  TUNE(SetRange(0, 14), xx1, xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -367,7 +370,7 @@ void Thread::search() {
           // Start with a small aspiration window and, in the case of a fail
           // high/low, re-search with a bigger window until we don't fail
           // high/low anymore.
-          int failedHighCnt = 0;
+          failedHighCnt = 0;
           while (true)
           {
               // Adjust the effective depth searched, but ensuring at least one effective increment for every
@@ -908,6 +911,10 @@ namespace {
     if (    PvNode
         && !ttMove)
         depth -= 3;
+        
+    if (rootNode
+       && thisThread->failedHighCnt >= xx1)
+        depth -= xx2;
 
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
