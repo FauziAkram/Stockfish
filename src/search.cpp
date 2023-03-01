@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int vv1= 7, vv2= 3;
+  TUNE (vv1, vv2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1048,7 +1051,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1149,7 +1152,7 @@ moves_loop: // When in check, search starts here
           r -= 2;
 
       // Decrease reduction if opponent's move count is high (~1 Elo)
-      if ((ss-1)->moveCount > 7)
+      if ((ss-1)->moveCount > vv1 - vv2 * PvNode)
           r--;
 
       // Increase reduction for cut nodes (~3 Elo)
