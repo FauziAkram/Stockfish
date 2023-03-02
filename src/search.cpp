@@ -57,6 +57,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int imp1=13, imp2=103, imp3=138, imp4=14;
+  TUNE (imp1,imp2,imp3,imp4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
