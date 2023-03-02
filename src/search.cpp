@@ -1028,6 +1028,10 @@ moves_loop: // When in check, search starts here
               int history =   (*contHist[0])[movedPiece][to_sq(move)]
                             + (*contHist[1])[movedPiece][to_sq(move)]
                             + (*contHist[3])[movedPiece][to_sq(move)];
+                            
+              int fprSs = 0;
+              if (!(ss-1)->inCheck)
+                  fprSs = (ss-1)->staticEval / 29 ;
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 5
@@ -1041,14 +1045,14 @@ moves_loop: // When in check, search starts here
 
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
-                  && lmrDepth < 13
-                  && ss->staticEval + 103 + 138 * lmrDepth <= alpha)
+                  && lmrDepth < 12
+                  && ss->staticEval + 101 - fprSs + 141 * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
