@@ -1031,7 +1031,7 @@ moves_loop: // When in check, search starts here
                             
               int fprSs = 0;
               if (!(ss-1)->inCheck)
-                  fprSs = (ss-1)->staticEval / 29 ;
+                  fprSs = (ss-1)->staticEval / 28 ;
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 5
@@ -1045,7 +1045,7 @@ moves_loop: // When in check, search starts here
 
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
-                  && lmrDepth < 12
+                  && lmrDepth < 13
                   && ss->staticEval + 101 - fprSs + 141 * lmrDepth <= alpha)
                   continue;
 
