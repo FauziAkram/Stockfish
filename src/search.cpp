@@ -1108,7 +1108,7 @@ moves_loop: // When in check, search starts here
 
               // If the eval of ttMove is less than value, we reduce it (negative extension)
               else if (ttValue <= value)
-                  extension = -1;
+                  extension = -2;
           }
 
           // Check extensions (~1 Elo)
@@ -1326,10 +1326,10 @@ moves_loop: // When in check, search starts here
                   alpha = value;
 
                   // Reduce other moves if we have found at least one score improvement
-                  if (   depth > 1
+                  if (   depth > 2
                       && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
+                      && beta  <  11928
+                      && alpha > -11928)
                       depth -= 1;
 
                   assert(depth > 0);
