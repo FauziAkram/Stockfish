@@ -57,6 +57,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=5, xx2=9200, xx3=21, xx4=2, xx5=3;
+  TUNE(SetRange(0, 12), xx1,xx3,xx4,xx5);
+  TUNE(SetRange(4000, 14000), xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1048,7 +1052,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1063,13 +1067,13 @@ moves_loop: // When in check, search starts here
           // a reduced search on all the other moves but the ttMove and if the
           // result is lower than ttValue minus a margin, then we will extend the ttMove.
           if (   !rootNode
-              &&  depth >= 4 - (thisThread->completedDepth > 21) + 2 * (PvNode && tte->is_pv())
+              &&  depth >= xx1 - (pos.non_pawn_material() < xx2) - (thisThread->completedDepth > xx3) + xx4 * (PvNode && tte->is_pv())
               &&  move == ttMove
               && !excludedMove // Avoid recursive singular search
            /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
               &&  abs(ttValue) < VALUE_KNOWN_WIN
               && (tte->bound() & BOUND_LOWER)
-              &&  tte->depth() >= depth - 3)
+              &&  tte->depth() >= depth - xx5)
           {
               Value singularBeta = ttValue - (2 + (ss->ttPv && !PvNode)) * depth;
               Depth singularDepth = (depth - 1) / 2;
