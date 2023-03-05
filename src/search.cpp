@@ -59,8 +59,9 @@ using namespace Search;
 namespace {
   
   int xx1=5, xx2=9200, xx3=21, xx4=2, xx5=3;
-  TUNE(SetRange(0, 12), xx1,xx3,xx4,xx5);
+  TUNE(SetRange(0, 12), xx1,xx4,xx5);
   TUNE(SetRange(4000, 14000), xx2);
+  TUNE(SetRange(5, 40), xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
