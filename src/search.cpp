@@ -354,7 +354,7 @@ void Thread::search() {
           if (rootDepth >= 4)
           {
               Value prev = rootMoves[pvIdx].averageScore;
-              delta = Value(10) + int(prev) * prev / 16502;
+              delta = Value(10) + int(prev) * prev / 16700;
               alpha = std::max(prev - delta,-VALUE_INFINITE);
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
@@ -1048,7 +1048,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1331,8 +1331,8 @@ moves_loop: // When in check, search starts here
                   // Reduce other moves if we have found at least one score improvement
                   if (   depth > 1
                       && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
+                      && beta  <  10600
+                      && alpha > -10600)
                       depth -= 1;
 
                   assert(depth > 0);
