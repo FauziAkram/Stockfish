@@ -1159,6 +1159,9 @@ moves_loop: // When in check, search starts here
       // Increase reduction if ttMove is a capture (~3 Elo)
       if (ttCapture)
           r++;
+          
+      if (!ss->inCheck && thisThread->complexityAverage.value() < 128)
+          r++;
 
       // Decrease reduction for PvNodes based on depth
       if (PvNode)
