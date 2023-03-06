@@ -69,7 +69,7 @@ namespace {
   TUNE(fz42,fz44,fz47,fz48,fz49,fz50,fz51,fz52,fz53,fz54,fz55new,fz56,fz57,fz58,fz59,fz60);
   TUNE(fz61,fz64,fz65,fz68,fz69,fz70,fz72,fz75,fz77,fz79,fz80);
   TUNE(fz81,fz82,fz84,fz85,fz86,fz87,fz89,fz91,fz92,fz93,fz94,fz95,fz97,fz99,fz100);
-  TUNE(SetRange(0, 8),fz5,fz6,fz7,fz18,fz19,fz35,fz41,fz43,fz45,fz46,fz55,fz62,fz63,fz66,fz67,fz71,fz73,fz74,fz76,fz78,fz83,fz88,fz90,fz96,fz98 );
+  TUNE(SetRange(0, 8),fz5,fz6,fz7,fz18,fz19,fz35,fz41,fz43,fz45,fz46,fz55,fz62,fz63,fz66,fz67,fz71,fz73,fz74,fz76,fz78,fz83,fz88,fz90,fz96,fz98);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -87,7 +87,7 @@ namespace {
     return (r + fz2 - int(delta) * fz3 / int(rootDelta)) / 1024 + (!i && r > fz4);
   }
 
-  constexpr int futility_move_count(bool improving, Depth depth) {
+  int futility_move_count(bool improving, Depth depth) {
     return improving ? (fz5 + depth * depth)
                      : (fz6 + depth * depth) / fz7;
   }
