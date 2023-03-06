@@ -57,6 +57,19 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int fz1=154, fz2=1449, fz3=1032, fz4=941, fz5=3, fz6=3, fz7=2, fz8=340, fz9=470, fz10=1855, fz11=1947, fz12=153, fz13=10, fz14=16502, fz15=120, fz16=161, fz17=4, fz18=2, f19z=2, fz20=19;
+  int fz21=1920, fz22=156, fz23=426, fz24=252, fz25=9, fz26=280, fz27=25128, fz28=18755, fz29=19, fz30=13, fz31=253, fz32=25, fz33=168, fz34=6, fz35=3, fz36=4, fz37=825, fz38=14, fz39=186, fz40=54;
+  int fz41=3, fz42=7, fz43=2, fz44=391, fz45=2, fz46=3, fz47=6, fz48=182, fz49=230, fz50=7, fz51=206, fz52=5, fz53=4405, fz54=7278, fz55=2, fz55new=13, fz56=103, fz57=138, fz58=24, fz59=16, fz60=4;
+  int fz61=21, fz62=2, fz63=2, fz64=25, fz65=13, fz66=3, fz67=2, fz68=10, fz69=88, fz70=5705, fz71=2, fz72=7, fz73=2, fz74=1, fz75=12, fz76=3, fz77=9, fz78=3, fz79=3722, fz80=4182;
+  int fz81=11791, fz82=3992, fz83=2, fz84=58, fz85=12, fz86=588, fz87=5, fz88=2, fz89=4, fz90=1, fz91=6, fz92=10534, fz93=5, fz94=97, fz95=10, fz96=3, fz97=168, fz98=2, fz99=110, fz100=153;
+
+  TUNE(fz1,fz2,fz3,fz4,fz8,fz9,fz10,fz11,fz12,fz13,fz14,fz15,fz16,fz17,fz20);
+  TUNE(fz21,fz22,fz23,fz24,fz25,fz26,fz27,fz28,fz29,fz30,fz31,fz32,fz33,fz34,fz36,fz37,fz38,fz39,fz40);
+  TUNE(fz42,fz44,fz47,fz48,fz49,fz50,fz51,fz52,fz53,fz54,fz55new,fz56,fz57,fz58,fz59,fz60);
+  TUNE(fz61,fz64,fz65,fz68,fz69,fz70,fz72,fz75,fz77,fz79,fz80);
+  TUNE(fz81,fz82,fz84,fz85,fz86,fz87,fz89,fz91,fz92,fz93,fz94,fz95,fz97,fz99,fz100);
+  TUNE(SetRange(0, 8),fz5,fz6,fz7,fz18,fz19,fz35,fz41,fz43,fz45,fz46,fz55,fz62,fz63,fz66,fz67,fz71,fz73,fz74,fz76,fz78,fz83,fz88,fz90,fz96,fz98 );
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1041,7 +1054,7 @@ moves_loop: // When in check, search starts here
 
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
-                  && lmrDepth < fz55
+                  && lmrDepth < fz55new
                   && ss->staticEval + fz56 + fz57 * lmrDepth <= alpha)
                   continue;
 
