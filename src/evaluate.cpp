@@ -196,11 +196,11 @@ namespace {
   int faz1=1781; TUNE(SetRange(1400,2000),faz1);
   int faz2=1001; TUNE(SetRange(920,1140),faz2);
   int faz3=5; TUNE(SetRange(0,12),faz3);
-  int faz3=61; TUNE(SetRange(30, 120), faz3);
-  int faz4=406, faz5=424; TUNE(SetRange(160, 650), faz4, faz5);
-  int faz6=272; TUNE(SetRange(160, 400), faz6);
-  int faz7=748; TUNE(SetRange(610, 890), faz7);
-  int faz8=200, faz9=214; TUNE(SetRange(130, 280), faz8, faz9);
+  int faz4=61; TUNE(SetRange(30, 120), faz4);
+  int faz5=406, faz6=424; TUNE(SetRange(160, 650), faz5, faz6);
+  int faz7=272; TUNE(SetRange(160, 400), faz7);
+  int faz8=748; TUNE(SetRange(610, 890), faz8);
+  int faz9=200, faz10=214; TUNE(SetRange(130, 280), faz9, faz10);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3622);
