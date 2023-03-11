@@ -923,7 +923,7 @@ moves_loop: // When in check, search starts here
     probCutBeta = beta + 391;
     if (   ss->inCheck
         && !PvNode
-        && depth >= 2
+        && depth >= 3
         && ttCapture
         && (tte->bound() & BOUND_LOWER)
         && tte->depth() >= depth - 3
@@ -1125,7 +1125,7 @@ moves_loop: // When in check, search starts here
           else if (   PvNode
                    && move == ttMove
                    && move == ss->killers[0]
-                   && (*contHist[0])[movedPiece][to_sq(move)] >= 5705)
+                   && (*contHist[0])[movedPiece][to_sq(move)] >= 5600)
               extension = 1;
       }
 
@@ -1190,7 +1190,7 @@ moves_loop: // When in check, search starts here
                      + (*contHist[0])[movedPiece][to_sq(move)]
                      + (*contHist[1])[movedPiece][to_sq(move)]
                      + (*contHist[3])[movedPiece][to_sq(move)]
-                     - 4182;
+                     - 4100;
 
       // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
       r -= ss->statScore / (11791 + 3992 * (depth > 6 && depth < 19));
@@ -1208,7 +1208,8 @@ moves_loop: // When in check, search starts here
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
           // beyond the first move depth. This may lead to hidden double extensions.
-          Depth d = std::clamp(newDepth - r, 1, newDepth + 1);
+          bool kinginc = ss->inCheck && type_of(movedPiece) == KING && !capture;
+          Depth d = std::clamp(newDepth - r, 1, newDepth + !kinginc);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
