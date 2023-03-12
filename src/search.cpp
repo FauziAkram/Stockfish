@@ -1086,11 +1086,11 @@ moves_loop: // When in check, search starts here
 
                   // Avoid search explosion by limiting the number of double extensions
                   if (  !PvNode
-                      && value < singularBeta - 25
+                      && value < singularBeta - 22
                       && ss->doubleExtensions <= 10)
                   {
                       extension = 2;
-                      depth += depth < 13;
+                      depth += depth < 14;
                   }
               }
 
@@ -1166,7 +1166,7 @@ moves_loop: // When in check, search starts here
 
       // Decrease reduction for PvNodes based on depth
       if (PvNode)
-          r -= 1 + 12 / (3 + depth);
+          r -= 1 + 12 / (3 + depth) + thisThread->bestMoveChanges / 3 ;
 
       // Decrease reduction if ttMove has been singularly extended (~1 Elo)
       if (singularQuietLMR)
@@ -1332,8 +1332,8 @@ moves_loop: // When in check, search starts here
                   // Reduce other moves if we have found at least one score improvement
                   if (   depth > 1
                       && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
+                      && beta  <  8880
+                      && alpha > -8880)
                       depth -= 1;
 
                   assert(depth > 0);
@@ -1589,7 +1589,7 @@ moves_loop: // When in check, search starts here
           continue;
 
       // Do not search moves with bad enough SEE values (~5 Elo)
-      if (!pos.see_ge(move, Value(-110)))
+      if (!pos.see_ge(move, Value(-125)))
           continue;
     }
 
