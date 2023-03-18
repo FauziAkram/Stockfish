@@ -367,7 +367,7 @@ void Thread::search() {
           // Start with a small aspiration window and, in the case of a fail
           // high/low, re-search with a bigger window until we don't fail
           // high/low anymore.
-          int failedHighCnt = 0;
+          failedHighCnt = 0;
           while (true)
           {
               // Adjust the effective depth searched, but ensuring at least one effective increment for every
@@ -907,6 +907,11 @@ namespace {
     if (    PvNode
         && !ttMove)
         depth -= 3;
+        
+    if (rootNode
+       && depth > 4
+       && thisThread->failedHighCnt >= 2)
+        depth--;
 
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
@@ -1047,7 +1052,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
