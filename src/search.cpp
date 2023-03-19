@@ -72,6 +72,7 @@ namespace {
   dbg_mean_of(r)
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
+    dbg_mean_of(r);
     return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
   
