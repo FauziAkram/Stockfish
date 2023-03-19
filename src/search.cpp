@@ -356,6 +356,7 @@ void Thread::search() {
           {
               Value prev = rootMoves[pvIdx].averageScore;
               delta = Value(10) + int(prev) * prev / 16502;
+              dbg_mean_of(delta);
               alpha = std::max(prev - delta,-VALUE_INFINITE);
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
