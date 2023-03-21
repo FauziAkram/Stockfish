@@ -58,6 +58,12 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=1, xx2=6, xx3=1024, xx4=10534;
+  TUNE(SetRange(0, 8), xx1);
+  TUNE(SetRange(0, 18), xx2);
+  TUNE(xx3,xx4);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1048,7 +1054,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1329,10 +1335,10 @@ moves_loop: // When in check, search starts here
                   alpha = value;
 
                   // Reduce other moves if we have found at least one score improvement
-                  if (   depth > 1
-                      && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
+                  if (   depth > xx1
+                      && ((depth >= xx2 && improving && complexity > xx3) || depth < xx2)
+                      && beta  <  xx4
+                      && alpha > -xx4)
                       depth -= 1;
 
                   assert(depth > 0);
