@@ -58,6 +58,12 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=391, xx2=2, xx3=5, xx4=25000, xx5=300, xx6=300, xx7=186, xx8=54;
+  TUNE(xx1);
+  TUNE(SetRange(0, 12),xx2,xx3);
+  TUNE(xx4,xx5,xx6,xx7,xx8);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -849,7 +855,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 186 - 54 * improving;
+    probCutBeta = beta + xx7 - xx8 * improving;
 
     // Step 10. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -920,10 +926,10 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 391;
+    probCutBeta = beta + xx1;
     if (   ss->inCheck
         && !PvNode
-        && depth >= 2
+        && depth >= xx2
         && ttCapture
         && (tte->bound() & BOUND_LOWER)
         && tte->depth() >= depth - 3
@@ -931,6 +937,16 @@ moves_loop: // When in check, search starts here
         && abs(ttValue) <= VALUE_KNOWN_WIN
         && abs(beta) <= VALUE_KNOWN_WIN)
         return probCutBeta;
+        
+    if (   ss->inCheck
+        && !PvNode
+        && depth <= xx3
+        && ttMove
+        && (tte->bound() & BOUND_LOWER)
+        && ttValue != VALUE_NONE
+        && abs(ttValue) <= xx4
+        && ttValue >= beta + xx5 + xx6 * depth)
+        return ttValue;
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
                                           nullptr                   , (ss-4)->continuationHistory,
@@ -1048,7 +1064,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
