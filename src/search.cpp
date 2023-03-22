@@ -59,13 +59,12 @@ using namespace Search;
 
 namespace {
   
-  int xx1=1, xx2=6, xx3=1024, xx4=10, xx5=70, xx6=80, xx7=10534, xx8=1, xx9=1032;
+  int xx1=1, xx2=6, xx3=1024, xx4=10, xx5=70, xx6=80, xx7=10534, xx9=1032;
   TUNE(SetRange(0, 15), xx1, xx2);
   TUNE(xx3);
   TUNE(SetRange(0, 100), xx4, xx5);
   TUNE(SetRange(0, 200), xx6);
   TUNE(xx7);
-  TUNE(SetRange(0, 6), xx8);
   TUNE(xx9);
 
 
@@ -1343,7 +1342,7 @@ moves_loop: // When in check, search starts here
                       && ((depth >= xx2 && improving && complexity > xx3) || ((depth >= xx2 && (value < (xx4 * alpha + xx5 * beta) / xx6)) || depth < xx2)
                       && beta  <  xx7
                       && alpha > -xx7)
-                      depth -= xx8;
+                      depth -= 1;
 
                   assert(depth > 0);
               }
