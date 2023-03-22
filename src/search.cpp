@@ -58,6 +58,16 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=1, xx2=6, xx3=1024, xx4=10, xx5=70, xx6=80, xx7=10534, xx8=1, xx9=1032;
+  TUNE(SetRange(0, 15), xx1, xx2);
+  TUNE(xx3);
+  TUNE(SetRange(0, 100), xx4, xx5);
+  TUNE(SetRange(0, 200), xx6);
+  TUNE(xx7);
+  TUNE(SetRange(0, 6), xx8);
+  TUNE(xx9);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -72,7 +82,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * xx9 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1048,7 +1058,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1329,11 +1339,11 @@ moves_loop: // When in check, search starts here
                   alpha = value;
 
                   // Reduce other moves if we have found at least one score improvement
-                  if (   depth > 1
-                      && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
-                      depth -= 1;
+                  if (   depth > xx1
+                      && ((depth >= xx2 && improving && complexity > xx3) || ((depth >= xx2 && (value < (xx4 * alpha + xx5 * beta) / xx6)) || depth < xx2)
+                      && beta  <  xx7
+                      && alpha > -xx7)
+                      depth -= xx8;
 
                   assert(depth > 0);
               }
