@@ -87,7 +87,7 @@ enum StatsType { NoCaptures, Captures };
 /// ordering decisions. It uses 2 tables (one for each color) indexed by
 /// the move's from and to squares, see www.chessprogramming.org/Butterfly_Boards
 /// (~11 elo)
-using ButterflyHistory = Stats<int16_t, 7183, COLOR_NB, int(SQUARE_NB) * int(SQUARE_NB)>;
+using ButterflyHistory = Stats<int16_t, 7150, COLOR_NB, int(SQUARE_NB) * int(SQUARE_NB)>;
 
 /// CounterMoveHistory stores counter moves indexed by [piece][to] of the previous
 /// move, see www.chessprogramming.org/Countermove_Heuristic
@@ -97,7 +97,7 @@ using CounterMoveHistory = Stats<Move, NOT_USED, PIECE_NB, SQUARE_NB>;
 using CapturePieceToHistory = Stats<int16_t, 10692, PIECE_NB, SQUARE_NB, PIECE_TYPE_NB>;
 
 /// PieceToHistory is like ButterflyHistory but is addressed by a move's [piece][to]
-using PieceToHistory = Stats<int16_t, 29952, PIECE_NB, SQUARE_NB>;
+using PieceToHistory = Stats<int16_t, 29900, PIECE_NB, SQUARE_NB>;
 
 /// ContinuationHistory is the combined history of a given pair of moves, usually
 /// the current one given a previous one. The nested history table is based on
