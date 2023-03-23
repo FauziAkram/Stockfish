@@ -38,6 +38,12 @@
 
 namespace Stockfish {
 
+  int W[2][6] = {
+    { -57,  30, -45,  4, -68, -78 },
+    { -64, -58,  97, -6,   3, -98 }
+};
+
+TUNE(SetRange(-256, 256), W);
 namespace Search {
 
   LimitsType Limits;
@@ -58,6 +64,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=4182, xx2=12800, xx3=4410, xx4=1032;
+  TUNE(xx1, xx2, xx3, xx4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -72,7 +81,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * xx4 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1189,10 +1198,12 @@ moves_loop: // When in check, search starts here
                      + (*contHist[0])[movedPiece][to_sq(move)]
                      + (*contHist[1])[movedPiece][to_sq(move)]
                      + (*contHist[3])[movedPiece][to_sq(move)]
-                     - 4182;
+                     - xx1;
 
       // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-      r -= ss->statScore / (11791 + 3992 * (depth > 6 && depth < 19));
+      r -= (ss->statScore + (  LmrWeight[MG][type_of(movedPiece) - 1] * pos.non_pawn_material()
+                             + LmrWeight[EG][type_of(movedPiece) - 1] * (MaxMaterial - pos.non_pawn_material())) / 256)
+          / (xx2 + xx3 * (depth > 6 && depth < 19));
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
       // We use various heuristics for the sons of a node after the first son has
