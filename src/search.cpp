@@ -1201,8 +1201,8 @@ moves_loop: // When in check, search starts here
                      - xx1;
 
       // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-      r -= (ss->statScore + (  LmrWeight[MG][type_of(movedPiece) - 1] * pos.non_pawn_material()
-                             + LmrWeight[EG][type_of(movedPiece) - 1] * (MaxMaterial - pos.non_pawn_material())) / 256)
+      r -= (ss->statScore + (  W[MG][type_of(movedPiece) - 1] * pos.non_pawn_material()
+                             + W[EG][type_of(movedPiece) - 1] * (MaxMaterial - pos.non_pawn_material())) / 256)
           / (xx2 + xx3 * (depth > 6 && depth < 19));
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
