@@ -72,7 +72,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * 1100 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1189,10 +1189,16 @@ moves_loop: // When in check, search starts here
                      + (*contHist[0])[movedPiece][to_sq(move)]
                      + (*contHist[1])[movedPiece][to_sq(move)]
                      + (*contHist[3])[movedPiece][to_sq(move)]
-                     - 4182;
+                     - 4093;
 
       // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-      r -= ss->statScore / (11791 + 3992 * (depth > 6 && depth < 19));
+      if (depth > 6 && depth < 19) {
+          r -= ss->statScore / 15685;
+      } else if (depth <= 6) {
+          r -= ss->statScore / 12226;
+      } else {
+          r -= ss->statScore / 10972;
+      }
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
       // We use various heuristics for the sons of a node after the first son has
