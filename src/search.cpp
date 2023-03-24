@@ -1330,7 +1330,7 @@ moves_loop: // When in check, search starts here
 
                   // Reduce other moves if we have found at least one score improvement
                   if (   depth > 1
-                      && ((depth >= 6 && improving && complexity > 996) || (depth >= 6 && (value < (alpha + 9 * beta) / 10)) || depth < 6)
+                      && ((depth >= 6 && improving && complexity > 996) || (depth >= 6 && (value < (12 * alpha + 115 * beta) / 128)) || depth < 6)
                       && beta  <  11855
                       && alpha > -11855)
                       depth -= 1;
