@@ -72,7 +72,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1100 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * 1108 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1048,7 +1048,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1189,15 +1189,15 @@ moves_loop: // When in check, search starts here
                      + (*contHist[0])[movedPiece][to_sq(move)]
                      + (*contHist[1])[movedPiece][to_sq(move)]
                      + (*contHist[3])[movedPiece][to_sq(move)]
-                     - 4093;
+                     - 4175;
 
       // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
       if (depth > 6 && depth < 19) {
-          r -= ss->statScore / 15685;
+          r -= ss->statScore / 16127;
       } else if (depth <= 6) {
-          r -= ss->statScore / 12226;
+          r -= ss->statScore / 12067;
       } else {
-          r -= ss->statScore / 10972;
+          r -= ss->statScore / 11080;
       }
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
