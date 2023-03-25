@@ -514,7 +514,7 @@ void Thread::search() {
                 skill.best ? skill.best : skill.pick_best(multiPV)));
 }
 
-int C=240, D1=2446, D2=11, D3=8, P2=111, P1=739;
+int C=240, D1=2446, D2=11, D3=9, P2=111, P1=739;
 
 namespace {
 
@@ -1061,7 +1061,7 @@ moves_loop: // When in check, search starts here
 
               Bitboard occupied;
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, occupied, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, occupied, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
