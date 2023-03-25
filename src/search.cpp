@@ -58,6 +58,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=1449, xx2=1032, xx3=941, xx4=10, xx5=16502, xx6=4, xx7=2, xx8=340;
+  TUNE(xx1,xx2,xx3,xx4,xx5);
+  TUNE(SetRange(1, 12), xx6,xx7);
+  TUNE(xx8);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -72,7 +76,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + xx1 - int(delta) * xx2 / int(rootDelta)) / 1024 + (!i && r > xx3);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -82,7 +86,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(340 * d - 470, 1855);
+    return std::min(xx8 * d - 470, 1855);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -355,7 +359,7 @@ void Thread::search() {
           if (rootDepth >= 4)
           {
               Value prev = rootMoves[pvIdx].averageScore;
-              delta = Value(10) + int(prev) * prev / 16502;
+              delta = Value(xx4) + int(prev) * prev / xx5;
               alpha = std::max(prev - delta,-VALUE_INFINITE);
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
@@ -417,7 +421,7 @@ void Thread::search() {
               else
                   break;
 
-              delta += delta / 4 + 2;
+              delta += delta / xx6 + xx7;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
