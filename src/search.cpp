@@ -70,8 +70,8 @@ namespace {
   // Mid- and endgame weights for piece dependent reduction
   const int LmrWeight[2][6] = {
     //  Pawn, Knight, Bishop, Rook, Queen, King
-      { -63,    21,    -52,     0,   -77,   -65 }, // midgame
-      { -67,   -61,     97,    -7,     6,  -104 }  // endgame
+      { -72,    13,    -59,     3,   -69,   -59 }, // midgame
+      { -56,   -82,     85,    -5,     13,  -99 }  // endgame
   };
 
   // Reductions lookup table, initialized at startup
@@ -79,7 +79,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * 975 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1208,12 +1208,12 @@ moves_loop: // When in check, search starts here
                      + (*contHist[0])[movedPiece][to_sq(move)]
                      + (*contHist[1])[movedPiece][to_sq(move)]
                      + (*contHist[3])[movedPiece][to_sq(move)]
-                     - 4182;
+                     - 4213;
 
       // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
       r -= (ss->statScore + (  LmrWeight[MG][type_of(movedPiece) - 1] * pos.non_pawn_material()
                              + LmrWeight[EG][type_of(movedPiece) - 1] * (MaxMaterial - pos.non_pawn_material())) / 256)
-          / (11958 + 4510 * (depth > 6 && depth < 19));
+          / (11627 + 4488 * (depth > 6 && depth < 19));
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
       // We use various heuristics for the sons of a node after the first son has
