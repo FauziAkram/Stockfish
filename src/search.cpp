@@ -58,6 +58,11 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=58, xx2=12, xx3=588, xx4=10, xx5=30;
+  TUNE(xx1,xx3);
+  TUNE(SetRange(1, 40), xx2);
+  TUNE(SetRange(1, 70), xx4,xx5);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1228,8 +1233,8 @@ moves_loop: // When in check, search starts here
           {
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (alpha + 58 + 12 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 588 && ss->doubleExtensions <= 5;
+              const bool doDeeperSearch = value > (alpha + xx1 + xx2 * (newDepth - d));
+              const bool doEvenDeeperSearch = value > alpha + xx3 && ss->doubleExtensions <= 5;
               const bool doShallowerSearch = value < bestValue + newDepth;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
@@ -1239,8 +1244,8 @@ moves_loop: // When in check, search starts here
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
-              int bonus = value > alpha ?  stat_bonus(newDepth)
-                                        : -stat_bonus(newDepth);
+              int bonus = value > alpha ?  stat_bonus(newDepth) + xx4 * moveCount
+                                        : -stat_bonus(newDepth) + xx5 * moveCount;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }
