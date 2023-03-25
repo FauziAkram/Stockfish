@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=1032;
+  TUNE(xx1);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -72,7 +74,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * xx1 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -514,9 +516,9 @@ void Thread::search() {
                 skill.best ? skill.best : skill.pick_best(multiPV)));
 }
 
-int C=190, D1=2655, D2=11, D3=9, P2=89, P1=594;
+int C=238, D1=2411, D2=10, D3=8, P2=112, P1=736;
 TUNE(SetRange(-256,     512),  C); // effectively (-2, 4)
-TUNE(SetRange(    0, 5500*4), D1); // 88/(2+d) *8 == 5632/(16+8d)
+TUNE(SetRange(    0, 5000*3), D1); // 88/(2+d) *8 == 5632/(16+8d)
 TUNE(SetRange(    1,     80), D2);
 TUNE(SetRange(    1,     28), D3); 
 TUNE(SetRange(    1,   91*3), P2); // (x/9+1)x/10 *8 =~ (91x+819)x/1024, which is more tunable
