@@ -58,6 +58,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=0, xx2=0;
+  TUNE(SetRange(-8000, 8000), xx1);
+  TUNE(SetRange(-4000, 4000), xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1596,8 +1599,8 @@ moves_loop: // When in check, search starts here
 
       // Continuation history based pruning (~3 Elo)
       if (   !capture
-          && (*contHist[0])[pos.moved_piece(move)][to_sq(move)] < 0
-          && (*contHist[1])[pos.moved_piece(move)][to_sq(move)] < 0)
+          && (*contHist[0])[pos.moved_piece(move)][to_sq(move)] < xx1
+          && (*contHist[1])[pos.moved_piece(move)][to_sq(move)] < xx2)
           continue;
 
       // Do not search moves with bad enough SEE values (~5 Elo)
