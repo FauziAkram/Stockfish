@@ -1599,6 +1599,7 @@ moves_loop: // When in check, search starts here
           && (*contHist[0])[pos.moved_piece(move)][to_sq(move)] < 0
           && (*contHist[1])[pos.moved_piece(move)][to_sq(move)] < 0)
           continue;
+          dbg_mean_of((*contHist[0])[pos.moved_piece(move)][to_sq(move)]);
 
       // Do not search moves with bad enough SEE values (~5 Elo)
       if (!pos.see_ge(move, occupied, Value(-110)))
