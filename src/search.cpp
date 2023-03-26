@@ -1060,7 +1060,7 @@ moves_loop: // When in check, search starts here
 
               Bitboard occupied;
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, occupied, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, occupied, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1229,7 +1229,7 @@ moves_loop: // When in check, search starts here
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
               const bool doDeeperSearch = value > (alpha + 58 + 12 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 588 && ss->doubleExtensions <= 5;
+              const bool doEvenDeeperSearch = value > alpha + 594 && ss->doubleExtensions <= 5;
               const bool doShallowerSearch = value < bestValue + newDepth;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
@@ -1239,8 +1239,8 @@ moves_loop: // When in check, search starts here
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
-              int bonus = value > alpha ?  stat_bonus(newDepth)
-                                        : -stat_bonus(newDepth);
+              int bonus = value > alpha ?  stat_bonus(newDepth) + 10 * moveCount
+                                        : -stat_bonus(newDepth) + 28 * moveCount;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }
