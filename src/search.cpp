@@ -72,7 +72,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * 1076 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -514,6 +514,7 @@ void Thread::search() {
                 skill.best ? skill.best : skill.pick_best(multiPV)));
 }
 
+int C=232, D1=2288, D2=12, D3=9, P2=114, P1=757;
 
 namespace {
 
@@ -1060,7 +1061,7 @@ moves_loop: // When in check, search starts here
 
               Bitboard occupied;
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, occupied, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, occupied, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1177,7 +1178,7 @@ moves_loop: // When in check, search starts here
 
       // Decrease reduction for PvNodes based on depth (~2 Elo)
       if (PvNode)
-          r -= 1 + 12 / (3 + depth);
+          r -= (C + D1 / (D2 + D3 * depth) + ((P2 * ss->ply + P1) * ss->ply) / 1024) / 128; // x^2/b + x/a = (x*(a/b) + 1) * x/a, but we need tunable numerators
 
       // Decrease reduction if ttMove has been singularly extended (~1 Elo)
       if (singularQuietLMR)
