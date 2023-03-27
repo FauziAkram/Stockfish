@@ -72,7 +72,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * 1036 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -82,7 +82,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(340 * d - 470, 1855);
+    return std::min(342 * d - 470, 1855);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -1060,7 +1060,7 @@ moves_loop: // When in check, search starts here
 
               Bitboard occupied;
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, occupied, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, occupied, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1228,8 +1228,8 @@ moves_loop: // When in check, search starts here
           {
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (alpha + 58 + 12 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 588 && ss->doubleExtensions <= 5;
+              const bool doDeeperSearch = value > (alpha + 57 + 12 * (newDepth - d));
+              const bool doEvenDeeperSearch = value > alpha + 580 && ss->doubleExtensions <= 5;
               const bool doShallowerSearch = value < bestValue + newDepth;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
@@ -1239,8 +1239,8 @@ moves_loop: // When in check, search starts here
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
-              int bonus = value > alpha ?  stat_bonus(newDepth)
-                                        : -stat_bonus(newDepth);
+              int bonus = value > alpha ?  stat_bonus(newDepth) + 9 * moveCount
+                                        : -stat_bonus(newDepth) + 28 * moveCount;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }
