@@ -58,6 +58,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=426, xx2=252, xx3=1032, xx4=340;
+  TUNE (xx1,xx2,xx3,xx4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -72,17 +75,16 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1032 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * xx3 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
-    return improving ? (3 + depth * depth)
-                     : (3 + depth * depth) / 2;
+    return (3 + depth * depth) >> (improving ? 0 : 1);
   }
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(340 * d - 470, 1855);
+    return std::min(xx4 * d - 470, 1855);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -776,7 +778,7 @@ namespace {
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (eval < alpha - 426 - 252 * depth * depth)
+    if (eval < alpha - xx1 - xx2 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -839,6 +841,12 @@ namespace {
 
             if (v >= beta)
                 return nullValue;
+        }
+        else if (nullValue < alpha - xx1 - xx2 * depth * depth)
+        {
+            value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
+            if (value < alpha)
+                return value;
         }
     }
 
