@@ -58,7 +58,14 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
-
+  
+  int xx1=1, xx2=6, xx3=990, xx4=9, xx5=72, xx6=82, xx7=11838, xx8=100, xx9=75;
+  TUNE(SetRange(0, 15), xx1, xx2);
+  TUNE(xx3);
+  TUNE(SetRange(0, 100), xx4, xx5);
+  TUNE(SetRange(0, 200), xx6);
+  TUNE(xx7,xx8,xx9);
+ 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
@@ -1340,20 +1347,28 @@ moves_loop: // When in check, search starts here
 
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
-                      && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
-                      depth -= 1;
+                      if (   depth > xx1
+                      && ((depth >= xx2 && improving && complexity > xx3) || (depth >= xx2 && (value < (xx4 * alpha + xx5 * beta) / xx6)) || depth < xx2)
+                      && beta  <  xx7
+                      && value > -xx7) {
+                      bool extraReduction = alpha > -xx7 && bestValue != -VALUE_INFINITE && xx8 * (value - bestValue) > xx9 * (beta - alpha);
+                      depth -= 1 + extraReduction;
+                  }
 
                   assert(depth > 0);
+                  
+                  alpha = value;
               }
               else
               {
+                  bestValue = value;
                   ss->cutoffCnt++;
                   assert(value >= beta); // Fail high
                   break;
               }
           }
+          
+         bestValue = value;
       }
 
 
