@@ -1332,7 +1332,6 @@ moves_loop: // When in check, search starts here
 
       if (value > bestValue)
       {
-          bestValue = value;
 
           if (value > alpha)
           {
@@ -1343,7 +1342,6 @@ moves_loop: // When in check, search starts here
 
               if (PvNode && value < beta) // Update alpha! Always alpha < beta
               {
-                  alpha = value;
 
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
