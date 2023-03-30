@@ -59,8 +59,8 @@ using namespace Search;
 
 namespace {
   
-  int xx1=426, xx2=252, xx3=1032, xx4=340;
-  TUNE (xx1,xx2,xx3,xx4);
+  int xx1=426, xx2=252, xx3=1032, xx4=340, xx5=426, xx6=252;
+  TUNE (xx1,xx2,xx3,xx4,xx5,xx6);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -842,7 +842,7 @@ namespace {
             if (v >= beta)
                 return nullValue;
         }
-        else if (nullValue < alpha - xx1 - xx2 * depth * depth)
+        else if (nullValue < alpha - xx5 - xx6 * depth * depth)
         {
             value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
             if (value < alpha)
