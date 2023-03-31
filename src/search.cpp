@@ -787,18 +787,18 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 9
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 280 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 282 >= beta
         &&  eval >= beta
-        &&  eval < 25128) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < 26280) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 18755
+        && (ss-1)->statScore < 19244
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 19 * depth - improvement / 13 + 253 + complexity / 25
+        &&  ss->staticEval >= beta - 20 * depth - improvement / 14 + 233 + complexity / 25
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -842,7 +842,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 186 - 54 * improving;
+    probCutBeta = beta + 186 - 51 * improving;
 
     // Step 10. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -913,7 +913,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 391;
+    probCutBeta = beta + 413;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -1168,7 +1168,12 @@ moves_loop: // When in check, search starts here
       // Increase reduction for cut nodes (~3 Elo)
       if (cutNode)
           r += 2;
-
+          
+      if (   !ttMove
+          && !ss->inCheck
+          && eval > beta + 83)
+          r++;
+          
       // Increase reduction if ttMove is a capture (~3 Elo)
       if (ttCapture)
           r++;
@@ -1341,8 +1346,8 @@ moves_loop: // When in check, search starts here
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
                       && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
+                      && beta  <  11172
+                      && alpha > -11172)
                       depth -= 1;
 
                   assert(depth > 0);
