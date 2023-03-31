@@ -1341,7 +1341,7 @@ moves_loop: // When in check, search starts here
                       && ((depth >= 6 && improving && complexity > 982) || (depth >= 6 && (value < (8 * alpha + 73 * beta) / 83)) || depth < 6)
                       && beta  <  12008
                       && value > -12008) {
-                      bool extraReduction = alpha > -12008 && bestValue != -VALUE_INFINITE && 96 * (value - bestValue) > 78 * (beta - alpha);
+                      bool extraReduction = depth > 2 && alpha > -12008 && bestValue != -VALUE_INFINITE && 96 * (value - bestValue) > 78 * (beta - alpha);
                       depth -= 1 + extraReduction;
                   }
 
