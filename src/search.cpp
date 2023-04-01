@@ -1020,7 +1020,7 @@ moves_loop: // When in check, search starts here
                   && lmrDepth < xx1
                   && !ss->inCheck
                   && ss->staticEval + xx2 + xx3 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
-                   + std::max(-xx4, captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / xx5 < alpha)
+                   + std::max(-xx4, captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / xx5) < alpha)
                   continue;
 
               Bitboard occupied;
