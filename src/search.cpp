@@ -1058,7 +1058,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 15 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-24 * lmrDepth * lmrDepth - 16 * lmrDepth)))
                   continue;
           }
       }
@@ -1338,7 +1338,7 @@ moves_loop: // When in check, search starts here
 
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
-                      && ((depth >= 6 && improving && complexity > 982) || (depth >= 6 && (value < (8 * alpha + 73 * beta) / 83)) || depth < 6)
+                      && ((improving && complexity > 982) || (value < (8 * alpha + 73 * beta) / 83) || depth < 6)
                       && beta  <  12008
                       && value > -12008) {
                       bool extraReduction = depth > 2 && alpha > -12008 && bestValue != -VALUE_INFINITE && 96 * (value - bestValue) > 78 * (beta - alpha);
