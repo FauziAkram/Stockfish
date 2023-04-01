@@ -58,6 +58,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  xx1=1, xx2=12, xx3=3;
+  TUNE(SetRange(-6, 8), xx1);
+  TUNE(SetRange(1, 24), xx2);
+  TUNE(SetRange(0, 10), xx3);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1175,7 +1179,7 @@ moves_loop: // When in check, search starts here
 
       // Decrease reduction for PvNodes based on depth (~2 Elo)
       if (PvNode)
-          r -= 1 + 12 / (3 + depth);
+          r -= 1 + (xx1 * extension) + xx2 / (xx3 + depth);
 
       // Decrease reduction if ttMove has been singularly extended (~1 Elo)
       if (singularQuietLMR)
