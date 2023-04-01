@@ -58,7 +58,7 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
-  xx1=1, xx2=12, xx3=3;
+  int xx1=1, xx2=12, xx3=3;
   TUNE(SetRange(-6, 8), xx1);
   TUNE(SetRange(1, 24), xx2);
   TUNE(SetRange(0, 10), xx3);
