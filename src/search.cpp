@@ -58,6 +58,13 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=391, xx2=250, xx3=40, xx4=186, xx5=54;
+TUNE(SetRange(0, 900), xx1);
+TUNE(SetRange(0, 600), xx2);
+TUNE(SetRange(0, 140), xx3);
+TUNE(SetRange(0, 390), xx4);
+TUNE(SetRange(0, 120), xx5);
+  
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -779,7 +786,7 @@ namespace {
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (eval < alpha - 426 - 252 * depth * depth)
+    if (eval < alpha - 426 - 256 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -845,7 +852,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 186 - 54 * improving;
+    probCutBeta = beta + xx4 - xx5 * improving;
 
     // Step 10. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -916,7 +923,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 391;
+    probCutBeta = beta + xx1;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -927,6 +934,17 @@ moves_loop: // When in check, search starts here
         && abs(ttValue) <= VALUE_KNOWN_WIN
         && abs(beta) <= VALUE_KNOWN_WIN)
         return probCutBeta;
+        
+     probCutBeta = beta + xx2 - xx3 * improving;
+    if (!ss->inCheck
+        && !PvNode
+        && ttCapture
+        && depth <= 4
+        && (tte->bound() & BOUND_LOWER)
+        && tte->depth() >= depth - 2
+        && ttValue >= probCutBeta
+        && abs(ttValue) <= VALUE_KNOWN_WIN)
+        return ttValue;
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
                                           nullptr                   , (ss-4)->continuationHistory,
