@@ -58,6 +58,12 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=252, xx2=9, xx3=25128, xx4=280, xx5=20, xx6=168;
+  TUNE(xx1);
+  TUNE(SetRange(0, 26), xx2);
+  TUNE(xx3,xx4);
+  TUNE(SetRange(0, 55), xx5);
+  TUNE(xx6);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -779,7 +785,7 @@ namespace {
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (eval < alpha - 426 - 252 * depth * depth)
+    if (eval < alpha - 426 - xx1 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -789,11 +795,15 @@ namespace {
     // Step 8. Futility pruning: child node (~40 Elo).
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
-        &&  depth < 9
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 280 >= beta
+        &&  depth < xx2
         &&  eval >= beta
-        &&  eval < 25128) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
-        return eval;
+        &&  eval < xx3) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        {
+        if (eval - futility_margin(depth, improving) - (ss-1)->statScore / xx4 >= beta)
+            return eval;
+        else if (eval - futility_margin(depth, improving) - (ss-1)->statScore / xx4 >= beta - xx5)
+            depth = std::max(depth - 1, 1);
+        }
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
@@ -809,7 +819,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth, eval and complexity of position
-        Depth R = std::min(int(eval - beta) / 168, 6) + depth / 3 + 4 - (complexity > 825);
+        Depth R = std::min(int(eval - beta) / xx6, 6) + depth / 3 + 4 - (complexity > 825);
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
