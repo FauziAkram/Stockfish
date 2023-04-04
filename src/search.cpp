@@ -72,7 +72,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 1001 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * 947 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -82,7 +82,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(341 * d - 470, 1855);
+    return std::min(341 * d - 470, 1750);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -1323,7 +1323,6 @@ moves_loop: // When in check, search starts here
 
       if (value > bestValue)
       {
-          bestValue = value;
 
           if (value > alpha)
           {
@@ -1334,24 +1333,29 @@ moves_loop: // When in check, search starts here
 
               if (PvNode && value < beta) // Update alpha! Always alpha < beta
               {
-                  alpha = value;
 
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
-                      && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
-                      depth -= 1;
+                      && ((improving && complexity > 950) || (value < (6 * alpha + 74 * beta) / 84) || depth < 6)
+                      && beta  <  12345
+                      && value > -12345) {
+                      bool extraReduction = depth > 2 && alpha > -12345 && bestValue != -VALUE_INFINITE && 96 * (value - bestValue) > 84 * (beta - alpha);
+                      depth -= 1 + extraReduction;
+                  }
 
                   assert(depth > 0);
+                  alpha = value;
               }
               else
               {
+                  bestValue = value;
                   ss->cutoffCnt++;
                   assert(value >= beta); // Fail high
                   break;
               }
           }
+          
+          bestValue = value;
       }
 
 
