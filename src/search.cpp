@@ -58,6 +58,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=13, xx2=103, xx3=138, xx4=20, xx5=19;
+  TUNE(SetRange(0, 35), xx1);
+  TUNE(xx2,xx3);
+  TUNE(SetRange(0, 55), xx4,xx5);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -801,7 +805,7 @@ namespace {
         && (ss-1)->statScore < 18755
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 19 * depth - improvement / 13 + 253 + complexity / 25
+        &&  ss->staticEval >= beta - xx5 * depth - improvement / 13 + 253 + complexity / 25
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -989,6 +993,8 @@ moves_loop: // When in check, search starts here
       newDepth = depth - 1;
 
       Value delta = beta - alpha;
+      
+      bool almostFutPruned = false;
 
       Depth r = reduction(improving, depth, moveCount, delta, thisThread->rootDelta);
 
@@ -1054,9 +1060,13 @@ moves_loop: // When in check, search starts here
 
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
-                  && lmrDepth < 13
-                  && ss->staticEval + 103 + 138 * lmrDepth <= alpha)
-                  continue;
+                  && lmrDepth < xx1)
+              {
+                  if (ss->staticEval + xx2 + xx3 * lmrDepth <= alpha)
+                      continue;
+                  else if (ss->staticEval + xx2 + xx3 * lmrDepth <= alpha + xx4)
+                      almostFutPruned = true;
+              }
 
               lmrDepth = std::max(lmrDepth, 0);
 
@@ -1171,6 +1181,9 @@ moves_loop: // When in check, search starts here
       // Increase reduction for cut nodes (~3 Elo)
       if (cutNode)
           r += 2;
+          
+      if (almostFutPruned)
+          r++;
 
       // Increase reduction if ttMove is a capture (~3 Elo)
       if (ttCapture)
