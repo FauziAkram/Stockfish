@@ -1321,39 +1321,28 @@ moves_loop: // When in check, search starts here
               rm.score = -VALUE_INFINITE;
       }
 
-      if (value > bestValue)
-      {
-          bestValue = value;
+      if (value > bestValue) {
+    bestMove = move;
 
-          if (value > alpha)
-          {
-              bestMove = move;
+    if (PvNode && !rootNode) { // Update pv even in fail-high case
+        update_pv(ss->pv, move, (ss+1)->pv);
+    }
 
-              if (PvNode && !rootNode) // Update pv even in fail-high case
-                  update_pv(ss->pv, move, (ss+1)->pv);
-
-              if (PvNode && value < beta) // Update alpha! Always alpha < beta
-              {
-                  alpha = value;
-
-                  // Reduce other moves if we have found at least one score improvement (~1 Elo)
-                  if (   depth > 1
-                      && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
-                      depth -= 1;
-
-                  assert(depth > 0);
-              }
-              else
-              {
-                  ss->cutoffCnt++;
-                  assert(value >= beta); // Fail high
-                  break;
-              }
-          }
-      }
-
+    if (value > alpha && PvNode && value < beta) {
+        // Reduce other moves if we have found at least one score improvement
+        bool extraReduction = depth > 2 && alpha > -12345 && bestValue != -VALUE_INFINITE && 96 * (value - bestValue) > 84 * (beta - alpha);
+        depth -= 1 + extraReduction;
+        alpha = value;
+    } else {
+        bestValue = value;
+        ss->cutoffCnt++;
+        if (value >= beta) {
+            // Fail high
+            assert(value >= beta);
+            break;
+        }
+    }
+}
 
       // If the move is worse than some previously searched move, remember it to update its stats later
       if (move != bestMove)
