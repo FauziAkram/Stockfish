@@ -1336,7 +1336,7 @@ moves_loop: // When in check, search starts here
 
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
-                      && ((improving && complexity > 950) || (value < (6 * alpha + 74 * beta) / 84) || depth < 6)
+                      && ((improving && complexity > 950) || (value < (alpha + 37 * beta) / 42) || depth < 6)
                       && beta  <  12345
                       && value > -12345) {
                       bool extraReduction = depth > 2 && alpha > -12345 && bestValue != -VALUE_INFINITE && (value - bestValue) > (7 * (beta - alpha)) / 8;
