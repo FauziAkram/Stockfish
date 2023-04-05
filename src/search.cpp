@@ -1348,7 +1348,6 @@ moves_loop: // When in check, search starts here
               }
               else
               {
-                  bestValue = value;
                   ss->cutoffCnt++;
                   assert(value >= beta); // Fail high
                   break;
