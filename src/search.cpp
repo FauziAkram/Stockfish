@@ -1333,24 +1333,29 @@ moves_loop: // When in check, search starts here
 
               if (PvNode && value < beta) // Update alpha! Always alpha < beta
               {
-                  alpha = value;
 
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
-                      && depth < 6
-                      && beta  <  10534
-                      && alpha > -10534)
-                      depth -= 1;
+                      && ((improving && complexity > 971) || (value < (5 * alpha + 75 * beta) / 87) || depth < 6)
+                      && beta  <  12535
+                      && value > -12535) {
+                      bool extraReduction = depth > 2 && alpha > -12535 && bestValue != -VALUE_INFINITE && (value - bestValue) > (7 * (beta - alpha)) / 8;
+                      depth -= 1 + extraReduction;
+                  }
 
                   assert(depth > 0);
+                  alpha = value;
               }
               else
               {
+                  bestValue = value;
                   ss->cutoffCnt++;
                   assert(value >= beta); // Fail high
                   break;
               }
           }
+          
+          bestValue = value;
       }
 
 
