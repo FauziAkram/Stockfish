@@ -1353,8 +1353,6 @@ moves_loop: // When in check, search starts here
                   break;
               }
           }
-          
-          bestValue = value;
       }
 
 
