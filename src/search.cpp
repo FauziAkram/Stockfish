@@ -775,7 +775,7 @@ namespace {
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (eval < alpha - 426 - 252 * depth * depth)
+    if (eval < alpha - 426 - 256 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -797,7 +797,7 @@ namespace {
         && (ss-1)->statScore < 18755
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 19 * depth - improvement / 13 + 253 + complexity / 25
+        &&  ss->staticEval >= beta - 20 * depth - improvement / 13 + 253 + complexity / 25
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -985,6 +985,8 @@ moves_loop: // When in check, search starts here
       newDepth = depth - 1;
 
       Value delta = beta - alpha;
+      
+      bool almostFutPruned = false;
 
       Depth r = reduction(improving, depth, moveCount, delta, thisThread->rootDelta);
 
@@ -1050,9 +1052,13 @@ moves_loop: // When in check, search starts here
 
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
-                  && lmrDepth < 13
-                  && ss->staticEval + 103 + 138 * lmrDepth <= alpha)
-                  continue;
+                  && lmrDepth < 14)
+              {
+                  if (ss->staticEval + 104 + 145 * lmrDepth <= alpha)
+                      continue;
+                  else if (ss->staticEval + 104 + 145 * lmrDepth <= alpha + xx4)
+                      almostFutPruned = true;
+              }
 
               lmrDepth = std::max(lmrDepth, 0);
 
@@ -1168,6 +1174,9 @@ moves_loop: // When in check, search starts here
       if (cutNode)
           r += 2;
 
+      if (almostFutPruned)
+          r++;
+          
       // Increase reduction if ttMove is a capture (~3 Elo)
       if (ttCapture)
           r++;
