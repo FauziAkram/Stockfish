@@ -63,7 +63,7 @@ namespace {
   TUNE(SetRange(-6, 9), xx1);
   TUNE(SetRange(0, 24), xx2);
   TUNE(SetRange(0, 10), xx3);
-  TUNE(SetRange(0, 25), xx3);
+  TUNE(SetRange(0, 25), xx4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
