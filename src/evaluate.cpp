@@ -189,6 +189,8 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
+  int xx1=220;
+  TUNE(xx1);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3622);
@@ -1089,7 +1091,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
 
   // When not using NNUE, return classical complexity to caller
   if (complexity && useClassical)
-      *complexity = abs(v - psq);
+      *complexity = abs(v - psq) - 220 * (abs(psq) / 1024);
 
   return v;
 }
