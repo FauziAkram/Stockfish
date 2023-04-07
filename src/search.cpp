@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx2=220;
+  TUNE(220);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -714,6 +716,11 @@ namespace {
 
     CapturePieceToHistory& captureHistory = thisThread->captureHistory;
 
+    static constexpr auto adjust_complexity = [](Position &pos, Value eval) -> int {
+        Value psq = pos.psq_eg_stm();
+        return abs(eval - psq) - xx2 * (abs(psq) / 1024);
+    };
+
     // Step 6. Static evaluation of the position
     if (ss->inCheck)
     {
@@ -729,7 +736,7 @@ namespace {
         // Providing the hint that this node's accumulator will be used often brings significant Elo gain (13 Elo)
         Eval::NNUE::hint_common_parent_position(pos);
         eval = ss->staticEval;
-        complexity = abs(ss->staticEval - pos.psq_eg_stm());
+        complexity = adjust_complexity(pos, ss->staticEval);
     }
     else if (ss->ttHit)
     {
@@ -739,7 +746,7 @@ namespace {
             ss->staticEval = eval = evaluate(pos, &complexity);
         else // Fall back to (semi)classical complexity for TT hits, the NNUE complexity is lost
         {
-            complexity = abs(ss->staticEval - pos.psq_eg_stm());
+            complexity = adjust_complexity(pos, ss->staticEval);
             if (PvNode)
                Eval::NNUE::hint_common_parent_position(pos);
         }
