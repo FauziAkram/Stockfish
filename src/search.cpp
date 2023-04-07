@@ -841,7 +841,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 186 - 54 * improving;
+    probCutBeta = beta + 191 - 55 * improving;
 
     // Step 10. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -912,7 +912,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 391;
+    probCutBeta = beta + 385;
     if (   ss->inCheck
         && !PvNode
         && depth >= 2
@@ -923,6 +923,17 @@ moves_loop: // When in check, search starts here
         && abs(ttValue) <= VALUE_KNOWN_WIN
         && abs(beta) <= VALUE_KNOWN_WIN)
         return probCutBeta;
+        
+    probCutBeta = beta + 249 - 43 * improving;
+    if (!ss->inCheck
+        && !PvNode
+        && ttCapture
+        && depth <= 4
+        && (tte->bound() & BOUND_LOWER)
+        && tte->depth() >= depth - 2
+        && ttValue >= probCutBeta
+        && abs(ttValue) <= VALUE_KNOWN_WIN)
+        return ttValue;
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
                                           nullptr                   , (ss-4)->continuationHistory,
