@@ -1156,38 +1156,29 @@ moves_loop: // When in check, search starts here
 
       // Decrease reduction if position is or has been on the PV
       // and node is not likely to fail low. (~3 Elo)
-      if (   ss->ttPv
-          && !likelyFailLow)
-          r -= 2;
+      r -= (ss->ttPv && !likelyFailLow)*2;
 
       // Decrease reduction if opponent's move count is high (~1 Elo)
-      if ((ss-1)->moveCount > 7)
-          r--;
+      r -= (ss-1)->moveCount > 7;
 
       // Increase reduction for cut nodes (~3 Elo)
-      if (cutNode)
-          r += 2;
+      r += cutNode*2;
 
       // Increase reduction if ttMove is a capture (~3 Elo)
-      if (ttCapture)
-          r++;
+      r += ttCapture;
 
       // Decrease reduction for PvNodes based on depth (~2 Elo)
       if (PvNode)
           r -= 1 + 12 / (3 + depth);
 
       // Decrease reduction if ttMove has been singularly extended (~1 Elo)
-      if (singularQuietLMR)
-          r--;
+      r -= singularQuietLMR;
 
       // Increase reduction if next ply has a lot of fail high (~5 Elo)
-      if ((ss+1)->cutoffCnt > 3)
-          r++;
+      r += ((ss+1)->cutoffCnt > 3);
 
       // Decrease reduction if move is a killer and we have a good history (~1 Elo)
-      if (move == ss->killers[0]
-          && (*contHist[0])[movedPiece][to_sq(move)] >= 3722)
-          r--;
+      r -= (move == ss->killers[0] && (*contHist[0])[movedPiece][to_sq(move)] >= 3722);
 
       ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
                      + (*contHist[0])[movedPiece][to_sq(move)]
@@ -1243,7 +1234,7 @@ moves_loop: // When in check, search starts here
       {
           // Increase reduction for cut nodes and not ttMove (~1 Elo)
           if (!ttMove && cutNode)
-              r += 2;
+              r += (!ttMove && cutNode)*2;
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth - (r > 4), !cutNode);
       }
