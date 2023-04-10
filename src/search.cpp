@@ -58,6 +58,11 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=13, xx2=103, xx3=138, xx4=8, xx5=8, xx6=87;
+  TUNE(SetRange(0, 35), xx1);
+  TUNE(xx2,xx3);
+  TUNE(SetRange(0, 24), xx4,xx5);
+  TUNE(xx6);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1054,8 +1059,8 @@ moves_loop: // When in check, search starts here
 
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
-                  && lmrDepth < 13
-                  && ss->staticEval + 103 + 138 * lmrDepth <= alpha)
+                  && lmrDepth < xx1
+                  && ss->staticEval + xx2 + (xx3 - xx4 * (PvNode && !ttMove) + xx5 * (PvNode && ttMove)) * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
@@ -1340,7 +1345,7 @@ moves_loop: // When in check, search starts here
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
                       && (   (improving && complexity > 971)
-                          || value < (5 * alpha + 75 * beta) / 87
+                          || value < (5 * alpha + 75 * beta) / xx6
                           || depth < 6)
                       && beta  <  12535
                       && value > -12535)
