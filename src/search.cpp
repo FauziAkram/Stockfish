@@ -58,6 +58,15 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  
+  int xx1=6, xx2=182, xx3=230, xx4=206, xx5=5, xx6=4405, xx7=7278, xx8=13, xx9=87, xx10=12535;
+  TUNE(SetRange(0, 28), xx1);
+  TUNE(xx2,xx3,xx4);
+  TUNE(SetRange(0, 28), xx5);
+  TUNE(xx6,xx7);
+  TUNE(SetRange(0, 28), xx8);
+  TUNE(xx9,xx10);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -996,7 +1005,7 @@ moves_loop: // When in check, search starts here
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
-          moveCountPruning = moveCount >= futility_move_count(improving, depth);
+          moveCountPruning = (!PvNode || ttMove) && moveCount >= futility_move_count(improving, depth);
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - r, 0);
@@ -1006,15 +1015,15 @@ moves_loop: // When in check, search starts here
           {
               // Futility pruning for captures (~2 Elo)
               if (   !givesCheck
-                  && lmrDepth < 6
+                  && lmrDepth < xx1
                   && !ss->inCheck
-                  && ss->staticEval + 182 + 230 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
+                  && ss->staticEval + xx2 + xx3 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
                   continue;
 
               Bitboard occupied;
               // SEE based pruning (~11 Elo)
-              if (!pos.see_ge(move, occupied, Value(-206) * depth))
+              if (!pos.see_ge(move, occupied, Value(-xx4) * depth))
               {
                   if (depth < 2 - capture)
                       continue;
@@ -1043,19 +1052,19 @@ moves_loop: // When in check, search starts here
                             + (*contHist[3])[movedPiece][to_sq(move)];
 
               // Continuation history based pruning (~2 Elo)
-              if (   lmrDepth < 5
-                  && history < -4405 * (depth - 1))
+              if (   lmrDepth < xx5
+                  && history < -xx6 * (depth - 1))
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7278;
+              lmrDepth += history / xx7;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
-                  && lmrDepth < 13
-                  && ss->staticEval + 103 + 138 * lmrDepth <= alpha)
+                  && lmrDepth < xx8
+                  && ss->staticEval + xx9 + xx10 * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
@@ -1340,10 +1349,10 @@ moves_loop: // When in check, search starts here
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
                       && (   (improving && complexity > 971)
-                          || value < (5 * alpha + 75 * beta) / 87
+                          || value < (5 * alpha + 75 * beta) / xx11
                           || depth < 6)
-                      && beta  <  12535
-                      && value > -12535)
+                      && beta  <  xx12
+                      && value > -xx12)
                       depth -= 1;
 
                   assert(depth > 0);
