@@ -65,7 +65,7 @@ namespace {
   TUNE(SetRange(0, 28), xx5);
   TUNE(xx6,xx7);
   TUNE(SetRange(0, 28), xx8);
-  TUNE(xx9,xx10,xx1,xx12);
+  TUNE(xx9,xx10,xx11,xx12);
 
 
   // Different node types, used as a template parameter
