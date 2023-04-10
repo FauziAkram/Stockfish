@@ -59,13 +59,13 @@ using namespace Search;
 
 namespace {
   
-  int xx1=6, xx2=182, xx3=230, xx4=206, xx5=5, xx6=4405, xx7=7278, xx8=13, xx9=87, xx10=12535;
+  int xx1=6, xx2=182, xx3=230, xx4=206, xx5=5, xx6=4405, xx7=7278, xx8=13, xx9=103, xx10=138, xx11=87, xx12=12535;
   TUNE(SetRange(0, 28), xx1);
   TUNE(xx2,xx3,xx4);
   TUNE(SetRange(0, 28), xx5);
   TUNE(xx6,xx7);
   TUNE(SetRange(0, 28), xx8);
-  TUNE(xx9,xx10);
+  TUNE(xx9,xx10,xx1,xx12);
 
 
   // Different node types, used as a template parameter
