@@ -1008,7 +1008,7 @@ moves_loop: // When in check, search starts here
               if (   !givesCheck
                   && lmrDepth < 6
                   && !ss->inCheck
-                  && ss->staticEval + 182 + 230 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
+                  && ss->staticEval + 182 + 231 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
                   continue;
 
@@ -1044,12 +1044,12 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 5
-                  && history < -4405 * (depth - 1))
+                  && history < -4400 * (depth - 1))
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7278;
+              lmrDepth += history / 7270;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
@@ -1224,8 +1224,8 @@ moves_loop: // When in check, search starts here
           {
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (alpha + 58 + 12 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 588 && ss->doubleExtensions <= 5;
+              const bool doDeeperSearch = value > (alpha + 52 + 2 * depth + 12 * (newDepth - d));
+              const bool doEvenDeeperSearch = value > alpha + 587 && ss->doubleExtensions <= 5;
               const bool doShallowerSearch = value < bestValue + newDepth;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
@@ -1340,7 +1340,7 @@ moves_loop: // When in check, search starts here
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
                       && (   (improving && complexity > 971)
-                          || value < (5 * alpha + 75 * beta) / 87
+                          || value < (5 * alpha + 75 * beta) / 92
                           || depth < 6)
                       && beta  <  12535
                       && value > -12535)
