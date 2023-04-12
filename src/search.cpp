@@ -1224,8 +1224,8 @@ moves_loop: // When in check, search starts here
           {
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (alpha + 58 + 12 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 588 && ss->doubleExtensions <= 5;
+              const bool doDeeperSearch = value > (alpha + 54 + 2 * depth + 12 * (newDepth - d));
+              const bool doEvenDeeperSearch = value > alpha + 586 && ss->doubleExtensions <= 5;
               const bool doShallowerSearch = value < bestValue + newDepth;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
@@ -1340,7 +1340,7 @@ moves_loop: // When in check, search starts here
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
                       && (   (improving && complexity > 971)
-                          || value < (5 * alpha + 75 * beta) / 87
+                          || value < (5 * alpha + 75 * beta) / 92
                           || depth < 6)
                       && beta  <  12535
                       && value > -12535)
