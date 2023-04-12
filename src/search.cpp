@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=91, xx2=110;
+  TUNE(SetRange(0, 280), xx1,xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1600,7 +1602,7 @@ moves_loop: // When in check, search starts here
           continue;
 
       // Do not search moves with bad enough SEE values (~5 Elo)
-      if (!pos.see_ge(move, Value(-110)))
+      if (!pos.see_ge(move, std::min(alpha - ss->staticEval + xx1, Value(-xx2))))
           continue;
     }
 
