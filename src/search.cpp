@@ -1055,7 +1055,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 13
-                  && ss->staticEval + 103 + 138 * lmrDepth <= alpha)
+                  && ss->staticEval + 102 + (132 - 8 * (PvNode && !ttMove) + 8 * (PvNode && ttMove)) * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
@@ -1340,7 +1340,7 @@ moves_loop: // When in check, search starts here
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
                   if (   depth > 1
                       && (   (improving && complexity > 971)
-                          || value < (5 * alpha + 75 * beta) / 87
+                          || value < (5 * alpha + 75 * beta) / 84
                           || depth < 6)
                       && beta  <  12535
                       && value > -12535)
