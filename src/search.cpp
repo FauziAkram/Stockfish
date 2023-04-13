@@ -1592,7 +1592,7 @@ moves_loop: // When in check, search starts here
           continue;
 
       // Do not search moves with bad enough SEE values (~5 Elo)
-      if (!pos.see_ge(move, Value(-110)))
+      if (!pos.see_ge(move, std::min(alpha - ss->staticEval + 85, Value(-105))))
           continue;
     }
 
