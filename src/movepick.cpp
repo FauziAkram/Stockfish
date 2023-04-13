@@ -24,6 +24,9 @@
 namespace Stockfish {
 
 namespace {
+  
+  int xx1=16, xx2=16, xx3=8, xx4=8, xx5=8, xx6=8;
+  TUNE(SetRange(-10, 50), xx1,xx2,xx3,xx4,xx5,xx6);
 
   enum Stages {
     MAIN_TT, CAPTURE_INIT, GOOD_CAPTURE, REFUTATION, QUIET_INIT, QUIET, BAD_CAPTURE,
@@ -126,18 +129,18 @@ void MovePicker::score() {
                    +     (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]) / 16;
 
       else if constexpr (Type == QUIETS)
-          m.value =  2 * (*mainHistory)[pos.side_to_move()][from_to(m)]
-                   + 2 * (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
-                   +     (*continuationHistory[1])[pos.moved_piece(m)][to_sq(m)]
-                   +     (*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]
-                   +     (*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)]
-                   +     (threatenedPieces & from_sq(m) ?
+          m.value =  (xx1 * (*mainHistory)[pos.side_to_move()][from_to(m)]/8)            //(~8 Elo)
+                   + (xx2 * (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]/8)    //(~3 Elo)
+                   + (xx3 * (*continuationHistory[1])[pos.moved_piece(m)][to_sq(m)]/8)    //(~1 Elo)
+                   + (xx4 * (*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]/8)    //(~1 Elo)
+                   + (xx5 * (*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)]/8)    //(~1 Elo)
+                   +     (threatenedPieces & from_sq(m) ?                          //(~1 Elo)
                            (type_of(pos.moved_piece(m)) == QUEEN && !(to_sq(m) & threatenedByRook)  ? 50000
                           : type_of(pos.moved_piece(m)) == ROOK  && !(to_sq(m) & threatenedByMinor) ? 25000
                           :                                         !(to_sq(m) & threatenedByPawn)  ? 15000
                           :                                                                           0)
                           :                                                                           0)
-                   +     bool(pos.check_squares(type_of(pos.moved_piece(m))) & to_sq(m)) * 16384;
+                   + (xx6 * (bool(pos.check_squares(type_of(pos.moved_piece(m))) & to_sq(m)) * 16384)/8) ; //(~2 Elo)
       else // Type == EVASIONS
       {
           if (pos.capture_stage(m))
