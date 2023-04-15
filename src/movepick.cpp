@@ -129,7 +129,7 @@ void MovePicker::score() {
           m.value =  2 * (*mainHistory)[pos.side_to_move()][from_to(m)]              //(~8 Elo)
                    + 14 *(*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]/8   //(~3 Elo)
                    +     (*continuationHistory[1])[pos.moved_piece(m)][to_sq(m)]     //(~1 Elo)
-                   +     (*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]     //(~1 Elo)
+                   +     (*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]/2   //(~1 Elo)
                    + 11 *(*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)]/8   //(~1 Elo)
                    +     (threatenedPieces & from_sq(m) ?
                            (type_of(pos.moved_piece(m)) == QUEEN && !(to_sq(m) & threatenedByRook)  ? 50000
