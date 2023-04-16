@@ -58,6 +58,11 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=182, xx2=230, xx3=50, xx4=941, xx5=7, xx6=138, xx7=937;
+  TUNE(xx1,xx2,xx3,xx4);
+  TUNE(SetRange(1, 20), xx5);
+  TUNE(xx6,xx7);
+  
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -72,7 +77,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 937 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * xx7 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1007,8 +1012,8 @@ moves_loop: // When in check, search starts here
               if (   !givesCheck
                   && lmrDepth < 6
                   && !ss->inCheck
-                  && ss->staticEval + 182 + 230 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
-                   + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
+                  && ss->staticEval + xx1 + xx2 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))] + xx3 * PvNode
+                   + std::max(-xx4, captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / xx5) < alpha)
                   continue;
 
               Bitboard occupied;
@@ -1054,7 +1059,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 13
-                  && ss->staticEval + 103 + 138 * lmrDepth <= alpha)
+                  && ss->staticEval + 103 + xx6 * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
