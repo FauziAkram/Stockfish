@@ -58,6 +58,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=100, xx2=3, xx3=937;
+  TUNE(xx1);
+  TUNE(SetRange(0, 12), xx2);
+  TUNE(xx3);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -72,7 +76,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 937 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * xx3 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -558,7 +562,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, probCutBeta;
-    bool givesCheck, improving, priorCapture, singularQuietLMR;
+    bool givesCheck, improving, priorCapture, singularQuietLMR, almostRazor;
     bool capture, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, improvement, complexity;
@@ -722,6 +726,7 @@ namespace {
         // Skip early pruning when in check
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
+        almostRazor = false;
         improvement = 0;
         complexity = 0;
         goto moves_loop;
@@ -773,6 +778,7 @@ namespace {
                   : (ss-4)->staticEval != VALUE_NONE ? ss->staticEval - (ss-4)->staticEval
                   :                                    156;
     improving = improvement > 0;
+    almostRazor = false;
 
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
@@ -782,6 +788,10 @@ namespace {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
             return value;
+            
+        int max_raz = std::max(value, alpha);
+        almostRazor = (std::abs(value - alpha) * xx1 <= max_raz * xx2);
+        
     }
 
     // Step 8. Futility pruning: child node (~40 Elo).
@@ -898,12 +908,12 @@ namespace {
 
     // Step 11. If the position is not in TT, decrease depth by 2 (or by 4 if the TT entry for the current position was hit and the stored depth is greater than or equal to the current depth).
     // Use qsearch if depth is equal or below zero (~9 Elo)
-    if (    PvNode
+    if (    (PvNode || almostRazor)
         && !ttMove)
         depth -= 2 + 2 * (ss->ttHit &&  tte->depth() >= depth);
 
     if (depth <= 0)
-        return qsearch<PV>(pos, ss, alpha, beta);
+        return qsearch<PvNode ? PV : NonPV>(pos, ss, alpha, beta);
 
     if (    cutNode
         &&  depth >= 7
