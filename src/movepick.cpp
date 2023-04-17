@@ -39,10 +39,13 @@ namespace {
     for (ExtMove *sortedEnd = begin, *p = begin + 1; p < end; ++p)
         if (p->value >= limit)
         {
-            ExtMove tmp = *p, *q;
+            ExtMove tmp = *p;
+            ExtMove *q;
+
             *p = *++sortedEnd;
             for (q = sortedEnd; q != begin && *(q - 1) < tmp; --q)
-                *q = *(q - 1);
+                std::swap(*q, *(q - 1));
+
             *q = tmp;
         }
   }
