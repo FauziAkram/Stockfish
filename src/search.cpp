@@ -72,7 +72,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 957 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + 1449 - int(delta) * 949 / int(rootDelta)) / 1024 + (!i && r > 941);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1007,8 +1007,8 @@ moves_loop: // When in check, search starts here
               if (   !givesCheck
                   && lmrDepth < 6
                   && !ss->inCheck
-                  && ss->staticEval + 172 + 239 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))] + 50 * PvNode
-                   + std::max(-976, captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7) < alpha)
+                  && ss->staticEval + 169 + 237 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))] + 51 * PvNode
+                   + std::max(-966, captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7) < alpha)
                   continue;
 
               Bitboard occupied;
