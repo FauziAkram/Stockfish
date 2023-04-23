@@ -58,6 +58,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=7, xx2=2, xx3=0;
+  TUNE(SetRange(0, 20), xx1);
+  TUNE(SetRange(0, 10), xx2, xx3);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -890,9 +894,12 @@ namespace {
         return qsearch<PV>(pos, ss, alpha, beta);
 
     if (    cutNode
-        &&  depth >= 7
+        && (depth >= xx1 || (ss->ttPv && tte->depth() >= depth - xx2))
         && !ttMove)
-        depth -= 2;
+        depth -= xx2;
+        
+    if (depth <= xx3)
+        return qsearch<NonPV>(pos, ss, alpha, beta);
 
 moves_loop: // When in check, search starts here
 
