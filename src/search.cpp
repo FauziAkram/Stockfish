@@ -894,7 +894,7 @@ namespace {
         && !ttMove)
         depth -= 2;
         
-    if (depth < 0)
+    if (depth <= 0)
         return qsearch<NonPV>(pos, ss, alpha, beta);
 
 moves_loop: // When in check, search starts here
