@@ -58,9 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
-  int xx0=1, xx1=971, xx2=5, xx3=75, xx4=87, xx5=6, xx6=12535, xx7=1;
-  TUNE(SetRange(-5, 10), xx0);
-  TUNE(xx1);
+  int xx1=1, xx2=5, xx3=75, xx4=87, xx5=6, xx6=12535, xx7=1;
+  TUNE(SetRange(-5, 10), xx1);
   TUNE(SetRange(-5, 50), xx2);
   TUNE(xx3,xx4);
   TUNE(SetRange(-5, 15), xx5);
@@ -1323,10 +1322,9 @@ moves_loop: // When in check, search starts here
               if (PvNode && value < beta) // Update alpha! Always alpha < beta
               {
                   // Reduce other moves if we have found at least one score improvement (~1 Elo)
-                  if (   depth > xx0
-                      && (   (improving && complexity > xx1)
-                          || value < (xx2 * alpha + xx3 * beta) / xx4
-                          || depth < xx5)
+                  if (   depth > xx1
+                      && ( value < (xx2 * alpha + xx3 * beta) / xx4
+                           || depth < xx5)
                       && beta  <  xx6
                       && value > -xx6)
                       depth -= xx7;
