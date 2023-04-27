@@ -314,6 +314,9 @@ void Thread::search() {
   multiPV = std::min(multiPV, rootMoves.size());
 
   int searchAgainCounter = 0;
+  
+  Value prevBV = VALUE_ZERO;
+  Value jump = VALUE_ZERO;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
