@@ -59,7 +59,7 @@ using namespace Search;
 
 namespace {
   int xx1=8, xx2=16502, xx3=256;
-  TUNE(SetRange(-20, 70), xx1,xx2,xx3);
+  TUNE(xx1,xx2,xx3);
 
 
   // Different node types, used as a template parameter
