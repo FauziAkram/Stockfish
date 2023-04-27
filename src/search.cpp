@@ -348,12 +348,12 @@ void Thread::search() {
 
           // Reset aspiration window starting size
           Value prev = rootMoves[pvIdx].averageScore;
-          delta = Value(10) + int(prev) * prev / 16502;
+          delta = Value(10) + int(prev) * prev / 16113;
           alpha = std::max(prev - delta,-VALUE_INFINITE);
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
           // Adjust optimism based on root move's previousScore
-          int opt = 120 * prev / (std::abs(prev) + 161);
+          int opt = (prev < -2 ? 75 : 109) * prev / (std::abs(prev) + 170);
           optimism[ us] = Value(opt);
           optimism[~us] = -optimism[us];
 
