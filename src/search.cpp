@@ -58,6 +58,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=8, xx2=16502, xx3=256;
+  TUNE(SetRange(-20, 70), xx1,xx2,xx3);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -348,7 +351,7 @@ void Thread::search() {
 
           // Reset aspiration window starting size
           Value prev = rootMoves[pvIdx].averageScore;
-          delta = Value(10) + int(prev) * prev / 16502;
+          delta = Value(xx1) + int(prev) * prev / xx2 + jump / xx3;
           alpha = std::max(prev - delta,-VALUE_INFINITE);
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
@@ -407,7 +410,11 @@ void Thread::search() {
                   ++failedHighCnt;
               }
               else
+              {
+                  jump = Value(std::abs(prevBV - bestValue));
+                  prevBV = bestValue;
                   break;
+              }
 
               delta += delta / 4 + 2;
 
