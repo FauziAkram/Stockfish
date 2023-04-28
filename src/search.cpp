@@ -58,6 +58,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=20, xx2=-2;
+  TUNE(SetRange(0, 50), xx1);
+  TUNE(SetRange(-10, 2), xx2);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -640,6 +644,9 @@ namespace {
                 int penalty = -stat_bonus(depth);
                 thisThread->mainHistory[us][from_to(ttMove)] << penalty;
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
+                
+                if (cutNode && (ss-1)->moveCount > xx1 && prevSq != SQ_NONE && !priorCapture)
+                    update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, xx2 * penalty);
             }
         }
 
