@@ -58,6 +58,11 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1= 1449, xx2=937, xx3=1024, xx4=941, xx5=2;
+  TUNE(xx1,xx2,xx3,xx4);
+  TUNE(SetRange(1,10), xx5);
+
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -72,12 +77,12 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1449 - int(delta) * 937 / int(rootDelta)) / 1024 + (!i && r > 941);
+    return (r + xx1 - int(delta) * xx2 / int(rootDelta)) / xx3 + (!i && r > xx4);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
     return improving ? (3 + depth * depth)
-                     : (3 + depth * depth) / 2;
+                     : (3 + depth * depth) / xx5;
   }
 
   // History and stats update bonus, based on depth
