@@ -58,6 +58,12 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=6, xx2=40, xx3=1, xx4=182, xx5=230, xx6=3, xx7=7;
+  TUNE(xx1,xx2);
+  TUNE(SetRange(0, 8), xx3);
+  TUNE(xx4,xx5);
+  TUNE(SetRange(0, 10), xx6);
+  TUNE(SetRange(0, 18), xx7);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -965,6 +971,7 @@ moves_loop: // When in check, search starts here
       capture = pos.capture_stage(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      ss->rule50 = pos.rule50_count();
 
       // Calculate new depth for this move
       newDepth = depth - 1;
@@ -989,10 +996,11 @@ moves_loop: // When in check, search starts here
           {
               // Futility pruning for captures (~2 Elo)
               if (   !givesCheck
-                  && lmrDepth < 6
+                  && lmrDepth < xx1
                   && !ss->inCheck
-                  && ss->staticEval + 182 + 230 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
-                   + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
+                  && ((ss-1)->rule50 < xx2 || pos.rule50_count() >= xx3)
+                  && ss->staticEval + xx4 + xx5 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))] + (xx6 * pos.rule50_count()) * PvNode
+                   + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / xx7 < alpha)
                   continue;
 
               Bitboard occupied;
