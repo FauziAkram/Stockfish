@@ -999,7 +999,7 @@ moves_loop: // When in check, search starts here
                   && lmrDepth < xx1
                   && !ss->inCheck
                   && ((ss-1)->rule50 < xx2 || pos.rule50_count() >= xx3)
-                  && ss->staticEval + xx4 + xx5 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))] + (xx6 * pos.rule50_count()) * PvNode
+                  && ss->staticEval + xx4 + xx5 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))] + (xx6 * (ss-1)->rule50) * PvNode
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / xx7 < alpha)
                   continue;
 
