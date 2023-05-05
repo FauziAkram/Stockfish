@@ -994,7 +994,7 @@ moves_loop: // When in check, search starts here
                   && !ss->inCheck
                   && ((ss-1)->rule50 < 38 || pos.rule50_count() >= 1)
                   && ss->staticEval + 191 + 221 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))] + (3 * pos.rule50_count()) * PvNode
-                   + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
+                   + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 8 < alpha)
                   continue;
 
               Bitboard occupied;
