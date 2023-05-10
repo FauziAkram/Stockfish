@@ -1041,12 +1041,6 @@ make_v:
   }
 
 } // namespace Eval
-
-int a = 2156, b = 11, c = 13;
-
-TUNE(a);
-TUNE(SetRange(-100, 100), b);
-TUNE(SetRange(-100, 100), c);
   
 /// evaluate() is the evaluator for the outer world. It returns a static
 /// evaluation of the position from the point of view of the side to move.
