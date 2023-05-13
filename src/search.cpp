@@ -357,7 +357,7 @@ void Thread::search() {
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
           // Adjust optimism based on root move's previousScore
-          int opt = xx1 * prev / (std::abs(prev) + xx2 + xx3 * rootDepth);
+          int opt = xx1 * prev / std::max((std::abs(prev) + xx2 + xx3 * rootDepth), 1);
           optimism[ us] = Value(opt);
           optimism[~us] = -optimism[us];
 
