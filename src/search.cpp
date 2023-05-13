@@ -58,6 +58,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=102, xx2=0, xx3=20;
+  TUNE(xx1);
+  TUNE(SetRange(-200, 20), xx2);
+  TUNE(SetRange(0, 60), xx3);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -353,7 +357,7 @@ void Thread::search() {
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
           // Adjust optimism based on root move's previousScore
-          int opt = 102 * prev / (std::abs(prev) + 147);
+          int opt = xx1 * prev / (std::abs(prev) + xx2 + xx3 * rootDepth);
           optimism[ us] = Value(opt);
           optimism[~us] = -optimism[us];
 
