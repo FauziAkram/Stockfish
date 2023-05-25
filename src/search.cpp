@@ -879,7 +879,7 @@ namespace {
     // Use qsearch if depth is equal or below zero (~9 Elo)
     if (    PvNode
         && !ttMove)
-        depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth);
+        depth -= 2 + 2 * (ss->ttHit && tte->depth() > depth) + (ss->killers[0] == MOVE_NONE);;
 
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
