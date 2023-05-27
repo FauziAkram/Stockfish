@@ -1367,7 +1367,7 @@ moves_loop: // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + (bestValue < alpha - 100 * depth) + ((ss-1)->moveCount > 11) + (PvNode && depth >= 6);
+        int bonus = (depth > 5) + (PvNode || cutNode) + (bestValue < alpha - 104 * depth) + ((ss-1)->moveCount > 11) + (PvNode && depth >= 6);
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
     }
 
