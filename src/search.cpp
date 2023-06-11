@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int xx1=21, xx2=10, xx3=11, xx4=13;
+  TUNE(xx1,xx2,xx3,xx4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1075,11 +1077,11 @@ moves_loop: // When in check, search starts here
 
                   // Avoid search explosion by limiting the number of double extensions
                   if (  !PvNode
-                      && value < singularBeta - 21
-                      && ss->doubleExtensions <= 11)
+                      && value < singularBeta - xx1 - xx2 * ss->ttPv
+                      && ss->doubleExtensions <= xx3)
                   {
                       extension = 2;
-                      depth += depth < 13;
+                      depth += depth < xx4;
                   }
               }
 
