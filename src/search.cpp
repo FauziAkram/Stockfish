@@ -58,6 +58,11 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=173, xx2=6, xx3=3, xx4=4, xx5=1;
+TUNE(xx1);
+TUNE(SetRange(1, 14), xx2,xx3,xx4);
+TUNE(SetRange(0, 6), xx5);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -787,7 +792,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 173, 6) + depth / 3 + 4;
+        Depth R = std::min(int(eval - beta) / xx1, xx2) + depth / xx3 + xx4 + (xx5 * ss->ttPv);
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
