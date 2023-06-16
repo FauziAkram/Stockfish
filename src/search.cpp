@@ -58,6 +58,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=3, xx2=3, xx3=2, xx4=17329, xx5=21, xx6=12, xx7=258;
+TUNE(SetRange(1, 10), xx1,xx2,xx3);
+TUNE(xx4,xx5,xx6,xx7);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -776,10 +779,10 @@ namespace {
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 17329
+        && (ss-1)->statScore < xx4
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 21 * depth - improvement / 13 + 258
+        &&  ss->staticEval >= beta - xx5 * depth - improvement / xx6 + xx7
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly))
@@ -1142,7 +1145,7 @@ moves_loop: // When in check, search starts here
       // Decrease further on cutNodes. (~1 Elo)
       if (   ss->ttPv
           && !likelyFailLow)
-          r -= cutNode && tte->depth() >= depth + 3 ? 3 : 2;
+          r -= !PvNode && tte->depth() >= depth + xx1 ? xx2 : xx3;
 
       // Decrease reduction if opponent's move count is high (~1 Elo)
       if ((ss-1)->moveCount > 8)
