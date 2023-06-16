@@ -776,10 +776,10 @@ namespace {
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 17329
+        && (ss-1)->statScore < 16806
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 21 * depth - improvement / 13 + 258
+        &&  ss->staticEval >= beta - 21 * depth - improvement / 13 + 256
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly))
@@ -1142,7 +1142,7 @@ moves_loop: // When in check, search starts here
       // Decrease further on cutNodes. (~1 Elo)
       if (   ss->ttPv
           && !likelyFailLow)
-          r -= cutNode && tte->depth() >= depth + 3 ? 3 : 2;
+          r -= !PvNode && tte->depth() >= depth + 3 ? 3 : 2;
 
       // Decrease reduction if opponent's move count is high (~1 Elo)
       if ((ss-1)->moveCount > 8)
