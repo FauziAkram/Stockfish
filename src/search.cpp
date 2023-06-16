@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=50, xx2=50, xx3=64, xx4=11, xx5=711;
+TUNE(xx1,xx2,xx3,xx4,xx5);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1202,8 +1204,8 @@ moves_loop: // When in check, search starts here
           {
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (bestValue + 64 + 11 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 711 && ss->doubleExtensions <= 6;
+              const bool doDeeperSearch = value > (((xx1 * alpha)/100) + ((xx2 * bestValue)/100) + xx3 + xx4 * (newDepth - d));
+              const bool doEvenDeeperSearch = value > alpha + xx5 && ss->doubleExtensions <= 6;
               const bool doShallowerSearch = value < bestValue + newDepth;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
