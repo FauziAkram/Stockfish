@@ -1168,8 +1168,13 @@ moves_loop: // When in check, search starts here
       if ((ss+1)->cutoffCnt > 3)
           r++;
 
-      else if (move == ttMove)
+      if (move == ttMove)
           r--;
+
+      if (   type_of(movedPiece) == KING
+          && ss->inCheck
+          && move == ttMove)
+          r++;
 
       ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
                      + (*contHist[0])[movedPiece][to_sq(move)]
