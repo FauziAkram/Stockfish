@@ -58,9 +58,7 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
-int xx1=140, xx2=75, xx3=173, xx4=256, xx5=9, xx6=306, xx7=24923, xx8=0, xx9=168, xx10=61;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx9,xx10);
-TUNE(SetRange(-120, 120), xx8);
+int xx1=122, xx2=76, xx3=177, xx4=258, xx5=9, xx6=317, xx7=25030, xx8=-4, xx9=174, xx10=61;
 
 
   // Different node types, used as a template parameter
