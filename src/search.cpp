@@ -58,8 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
-int xx1=140, xx2=75, xx3=173, xx4=256, xx5=9, xx6=306, xx7=24923, xx8=0;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7);
+int xx1=140, xx2=75, xx3=173, xx4=256, xx5=9, xx6=306, xx7=24923, xx8=0, xx9=168, xx10=61;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx9,xx10);
 TUNE(SetRange(-120, 120), xx8);
 
 
@@ -844,7 +844,7 @@ namespace {
         && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + 168 - 61 * improving + xx8 * worsening;
+    probCutBeta = beta + xx9 - xx10 * improving + xx8 * worsening;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
