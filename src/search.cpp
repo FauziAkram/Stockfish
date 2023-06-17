@@ -58,13 +58,17 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=140, xx2=75, xx3=173, xx4=256, xx5=9, xx6=306, xx7=24923, xx8=0;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7);
+TUNE(SetRange(-120, 120), xx8);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
-  Value futility_margin(Depth d, bool improving) {
-    return Value(140 * (d - improving));
+  Value futility_margin(Depth d, bool improving, bool worsening) {
+    return Value(xx1 * (d - improving) + xx2 * worsening);
   }
 
   // Reductions lookup table, initialized at startup
@@ -75,9 +79,10 @@ namespace {
     return (r + 1372 - int(delta) * 1073 / int(rootDelta)) / 1024 + (!i && r > 936);
   }
 
-  constexpr int futility_move_count(bool improving, Depth depth) {
-    return improving ? (3 + depth * depth)
-                     : (3 + depth * depth) / 2;
+  constexpr int futility_move_count(bool improving, bool worsening, Depth depth) {
+    return improving ? (3 + depth * depth) :
+           worsening ? (3 + depth * depth) / 4 : 
+                       (3 + depth * depth) / 2;
   }
 
   // History and stats update bonus, based on depth
@@ -545,7 +550,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, probCutBeta;
-    bool givesCheck, improving, priorCapture, singularQuietLMR;
+    bool givesCheck, improving, worsening, priorCapture, singularQuietLMR;
     bool capture, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, improvement;
@@ -708,6 +713,7 @@ namespace {
         // Skip early pruning when in check
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
+        worsening = false;
         improvement = 0;
         goto moves_loop;
     }
@@ -751,8 +757,9 @@ namespace {
     // margin and the improving flag are used in various pruning heuristics.
     improvement =   (ss-2)->staticEval != VALUE_NONE ? ss->staticEval - (ss-2)->staticEval
                   : (ss-4)->staticEval != VALUE_NONE ? ss->staticEval - (ss-4)->staticEval
-                  :                                    173;
+                  :                                    xx3;
     improving = improvement > 0;
+    worsening = improvement < -xx4;
 
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
@@ -767,10 +774,10 @@ namespace {
     // Step 8. Futility pruning: child node (~40 Elo).
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
-        &&  depth < 9
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 306 >= beta
+        &&  depth < xx5
+        &&  eval - futility_margin(depth, improving, worsening) - (ss-1)->statScore / xx6 >= beta
         &&  eval >= beta
-        &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < xx7) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
@@ -837,7 +844,7 @@ namespace {
         && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + 168 - 61 * improving;
+    probCutBeta = beta + 168 - 61 * improving + xx8 * worsening;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -974,7 +981,7 @@ moves_loop: // When in check, search starts here
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
-          moveCountPruning = moveCount >= futility_move_count(improving, depth);
+          moveCountPruning = moveCount >= futility_move_count(improving, worsening, depth);
 
           // Reduced depth of the next LMR search
           int lmrDepth = newDepth - r;
