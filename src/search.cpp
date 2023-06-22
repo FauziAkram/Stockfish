@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=82, xx2=65, xx3=21, xx4=11, xx5=13;
+TUNE(xx1,xx2,xx3,xx4,xx5);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1063,7 +1065,7 @@ moves_loop: // When in check, search starts here
               && (tte->bound() & BOUND_LOWER)
               &&  tte->depth() >= depth - 3)
           {
-              Value singularBeta = ttValue - (82 + 65 * (ss->ttPv && !PvNode)) * depth / 64;
+              Value singularBeta = ttValue - (xx1 + xx2 * (ss->ttPv && !PvNode)) * depth / 64;
               Depth singularDepth = (depth - 1) / 2;
 
               ss->excludedMove = move;
@@ -1077,12 +1079,14 @@ moves_loop: // When in check, search starts here
 
                   // Avoid search explosion by limiting the number of double extensions
                   if (  !PvNode
-                      && value < singularBeta - 21
-                      && ss->doubleExtensions <= 11)
+                      && value < singularBeta - xx3
+                      && ss->doubleExtensions <= xx4)
                   {
                       extension = 2;
-                      depth += depth < 13;
+                      depth += depth < xx5;
                   }
+                  if (value >= singularBeta - singularDepth)
+                      depth--;
               }
 
               // Multi-cut pruning
