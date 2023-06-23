@@ -58,6 +58,7 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=109, xx2=141, xx3=256, xx4=15799
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -348,12 +349,13 @@ void Thread::search() {
 
           // Reset aspiration window starting size
           Value prev = rootMoves[pvIdx].averageScore;
-          delta = Value(10) + int(prev) * prev / 15799;
+          delta = Value(10) + int(prev) * prev / xx4;
           alpha = std::max(prev - delta,-VALUE_INFINITE);
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
           // Adjust optimism based on root move's previousScore
-          int opt = 109 * prev / (std::abs(prev) + 141);
+          int rootDepthAdj = std::max(1, rootDepth - 3 * (searchAgainCounter + 1) / 4);
+          int opt = xx1 * prev * (xx3 - rootDepthAdj) / ((std::abs(prev) + xx2) * xx3);
           optimism[ us] = Value(opt);
           optimism[~us] = -optimism[us];
 
