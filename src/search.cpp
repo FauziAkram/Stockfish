@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=2, xx2=3, xx3=1, xx4=2;
+TUNE(SetRange(0, 8), xx1,xx2,xx3,xx4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1141,7 +1143,7 @@ moves_loop: // When in check, search starts here
       // Decrease further on cutNodes. (~1 Elo)
       if (   ss->ttPv
           && !likelyFailLow)
-          r -= cutNode && tte->depth() >= depth + 3 ? 3 : 2;
+          r -= xx1;
 
       // Decrease reduction if opponent's move count is high (~1 Elo)
       if ((ss-1)->moveCount > 8)
@@ -1149,7 +1151,7 @@ moves_loop: // When in check, search starts here
 
       // Increase reduction for cut nodes (~3 Elo)
       if (cutNode)
-          r += 2;
+          r += (tte->depth() >= depth + xx2) && (ss->ttPv || move == ss->killers[0] || capture) ? xx3 : xx4;
 
       // Increase reduction if ttMove is a capture (~3 Elo)
       if (ttCapture)
