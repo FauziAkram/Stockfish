@@ -976,7 +976,10 @@ moves_loop: // When in check, search starts here
           moveCountPruning = moveCount >= futility_move_count(improving, depth);
 
           // Reduced depth of the next LMR search
-          int lmrDepth = newDepth - r;
+          int lmrDepth = newDepth - r - (   type_of(move) == PROMOTION
+                                                   && move != countermove
+                                                   && move != ss->killers[0]
+                                                   && move != ss->killers[1]);
 
           if (   capture
               || givesCheck)
