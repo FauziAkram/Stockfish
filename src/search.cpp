@@ -611,7 +611,10 @@ namespace {
     // At this point, if excluded, skip straight to step 6, static eval. However,
     // to save indentation, we list the condition in all code between here and there.
     if (!excludedMove)
+    {
         ss->ttPv = PvNode || (ss->ttHit && tte->is_pv());
+        ss->pvDistance = PvNode ? 0 : (ss-1)->pvDistance + ((ss-1)->moveCount != 1);
+    }
 
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
@@ -1174,10 +1177,11 @@ moves_loop: // When in check, search starts here
                      + (*contHist[0])[movedPiece][to_sq(move)]
                      + (*contHist[1])[movedPiece][to_sq(move)]
                      + (*contHist[3])[movedPiece][to_sq(move)]
-                     - 4006;
+                     - xx1 * ss->pvDistance
+                     - xx2;
 
       // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-      r -= ss->statScore / (11124 + 4740 * (depth > 5 && depth < 22));
+      r -= ss->statScore / (xx3 + xx4 * (depth > xx5 && depth < xx6));
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
       // We use various heuristics for the sons of a node after the first son has
