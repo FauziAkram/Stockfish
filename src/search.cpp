@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=6,xx2=4,xx3=2,xx4=8,xx5=2;
+TUNE(SetRange(0, 18), xx1,xx2,xx3,xx4,xx5);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -826,15 +828,15 @@ namespace {
     // Use qsearch if depth is equal or below zero (~9 Elo)
     if (    PvNode
         && !ttMove)
-        depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth);
+        depth -= (ss->ttHit && tte->depth() >= depth) ? ((ss+1)->cutoffCnt > 3 && ss->killers[0] == MOVE_NONE) ? xx1 : xx2 : xx3;
 
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
 
     if (    cutNode
-        &&  depth >= 8
+        &&  depth >= xx4
         && !ttMove)
-        depth -= 2;
+        depth -= xx5;
 
     probCutBeta = beta + 168 - 61 * improving;
 
