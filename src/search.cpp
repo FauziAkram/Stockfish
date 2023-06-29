@@ -1020,7 +1020,7 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3832 * depth)
+                  && history < -3850 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
@@ -1165,7 +1165,7 @@ moves_loop: // When in check, search starts here
 
       // Increase reduction if next ply has a lot of fail high (~5 Elo)
       if ((ss+1)->cutoffCnt > 3)
-          r++;
+          r+= ((moveCount - 1 == (ss+1)->cutoffCnt)) ? 2 : 1;
 
       else if (move == ttMove)
           r--;
