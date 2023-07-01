@@ -1184,55 +1184,49 @@ moves_loop: // When in check, search starts here
       r -= ss->statScore / (11124 + 4740 * (depth > 5 && depth < 22));
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
-      // We use various heuristics for the sons of a node after the first son has
-      // been searched. In general we would like to reduce them, but there are many
-      // cases where we extend a son if it has good chances to be "interesting".
-      if (    depth >= 2
-          &&  moveCount > 1 + (PvNode && ss->ply <= 1)
-          && (   !ss->ttPv
-              || !capture
-              || (cutNode && (ss-1)->moveCount > 1)))
-      {
-          // In general we want to cap the LMR depth search at newDepth, but when
-          // reduction is negative, we allow this move a limited search extension
-          // beyond the first move depth. This may lead to hidden double extensions.
-          Depth d = std::clamp(newDepth - r, 1, newDepth + 1);
+if (depth >= 2 && moveCount > 1 + (PvNode && ss->ply <= 1) &&
+    (!ss->ttPv || !capture || (cutNode && (ss - 1)->moveCount > 1)))
+{
+    Depth d = (newDepth - r < 1) ? 1 : ((newDepth - r > newDepth + 1) ? newDepth + 1 : newDepth - r);
 
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+    value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, d, true);
 
-          // Do full depth search when reduced LMR search fails high
-          if (value > alpha && d < newDepth)
-          {
-              // Adjust full depth search based on LMR results - if result
-              // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (bestValue + 64 + 11 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 711 && ss->doubleExtensions <= 6;
-              const bool doShallowerSearch = value < bestValue + newDepth;
+    // Do full depth search when reduced LMR search fails high
+    if (value > alpha && d < newDepth)
+    {
+        const bool doDeeperSearch = value > (bestValue + 64 + 11 * (newDepth - d));
+        const bool doEvenDeeperSearch = value > alpha + 711 && ss->doubleExtensions <= 6;
+        const bool doShallowerSearch = value < bestValue + newDepth;
 
-              ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
+        ss->doubleExtensions += doEvenDeeperSearch;
 
-              newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch;
+        newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch;
 
-              if (newDepth > d)
-                  value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
+        if (newDepth > d)
+            value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
-              int bonus = value <= alpha ? -stat_bonus(newDepth)
-                        : value >= beta  ?  stat_bonus(newDepth)
-                                         :  0;
+        int bonus = 0;
+        if (value <= alpha)
+            bonus = -stat_bonus(newDepth);
+        else if (value >= beta)
+            bonus = stat_bonus(newDepth);
 
-              update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
-          }
-      }
+        update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
+    }
+}
+// Step 18. Full depth search when LMR is skipped. If expected reduction is high, reduce its depth by 1.
+else if (!PvNode || moveCount > 1)
+{
+    // Increase reduction for cut nodes and not ttMove (~1 Elo)
+    if (!ttMove && cutNode)
+        r += 2;
 
-      // Step 18. Full depth search when LMR is skipped. If expected reduction is high, reduce its depth by 1.
-      else if (!PvNode || moveCount > 1)
-      {
-          // Increase reduction for cut nodes and not ttMove (~1 Elo)
-          if (!ttMove && cutNode)
-              r += 2;
+    value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth - (r > 3), !cutNode);
+}
 
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth - (r > 3), !cutNode);
-      }
+// For PV nodes only, do a full PV search on the first move or after a fail
+// high (in the latter case search only if value < beta), otherwise let the
+// parent node fail low with value <= alpha
 
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the
