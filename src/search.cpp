@@ -1020,12 +1020,12 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3832 * depth)
+                  && history < -3850 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / 7030;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
@@ -1200,18 +1200,21 @@ moves_loop: // When in check, search starts here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
+          const bool doShallowerSearch = value < bestValue + newDepth;
+
+              newDepth -= doShallowerSearch;
+
           // Do full depth search when reduced LMR search fails high
           if (value > alpha && d < newDepth)
           {
               // Adjust full depth search based on LMR results - if result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (bestValue + 64 + 11 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 711 && ss->doubleExtensions <= 6;
-              const bool doShallowerSearch = value < bestValue + newDepth;
+              const bool doDeeperSearch = value > (bestValue + 66 + 11 * (newDepth - d));
+              const bool doEvenDeeperSearch = value > alpha + 733 && ss->doubleExtensions <= 6;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
 
-              newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch;
+              newDepth += doDeeperSearch + doEvenDeeperSearch;
 
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
