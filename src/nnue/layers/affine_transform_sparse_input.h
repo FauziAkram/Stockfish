@@ -59,7 +59,7 @@ namespace Stockfish::Eval::NNUE::Layers {
 
 
 #if defined(USE_SSSE3)
-  alignas(CacheLineSize) static const std::uint16_t lookup_indices[256][8] = {
+  alignas(CacheLineSize) static const std::uint16_t lookup_indices[256][8] = {{
     for (int i = 0; i < 256; ++i)
     {
       int j = i;
@@ -73,12 +73,14 @@ namespace Stockfish::Eval::NNUE::Layers {
       }
     }
     return v;
-  }();
-  alignas(CacheLineSize) static const unsigned lookup_count[256] = {
+  }(),
+  };
+  alignas(CacheLineSize) static const unsigned lookup_count[256] = {{
     for (int i = 0; i < 256; ++i)
       v[i] = unsigned(std::bitset<8>(i).count());
     return v;
-  }();
+  }(),
+  };
 
   // Find indices of nonzero numbers in an int32_t array
   template<const IndexType InputDimensions>
