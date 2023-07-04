@@ -58,17 +58,11 @@ struct Network
 
   // Hash value embedded in the evaluation file
   static constexpr std::uint32_t get_hash_value() {
-    // input slice hash
-    std::uint32_t hashValue = 0xEC42E90Du;
-    hashValue ^= TransformedFeatureDimensions * 2;
-
-    hashValue = decltype(fc_0)::get_hash_value(hashValue);
-    hashValue = decltype(ac_0)::get_hash_value(hashValue);
-    hashValue = decltype(fc_1)::get_hash_value(hashValue);
-    hashValue = decltype(ac_1)::get_hash_value(hashValue);
-    hashValue = decltype(fc_2)::get_hash_value(hashValue);
-
-    return hashValue;
+    return decltype(fc_2)::get_hash_value(
+           decltype(ac_1)::get_hash_value(
+           decltype(fc_1)::get_hash_value(
+           decltype(ac_0)::get_hash_value(
+           decltype(fc_0)::get_hash_value(0xEC42E90Du) ^ (TransformedFeatureDimensions * 2)))));
   }
 
   // Read network parameters
