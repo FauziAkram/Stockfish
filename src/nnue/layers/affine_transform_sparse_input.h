@@ -59,8 +59,7 @@ namespace Stockfish::Eval::NNUE::Layers {
 
 
 #if defined(USE_SSSE3)
-  alignas(CacheLineSize) static inline const std::array<std::array<std::uint16_t, 8>, 256> lookup_indices = [](){
-    std::array<std::array<std::uint16_t, 8>, 256> v{};
+  alignas(CacheLineSize) static const std::uint16_t lookup_indices[256][8] = {
     for (int i = 0; i < 256; ++i)
     {
       int j = i;
@@ -75,8 +74,7 @@ namespace Stockfish::Eval::NNUE::Layers {
     }
     return v;
   }();
-  alignas(CacheLineSize) static inline const std::array<unsigned, 256> lookup_count = [](){
-    std::array<unsigned, 256> v;
+  alignas(CacheLineSize) static const unsigned lookup_count[256] = {
     for (int i = 0; i < 256; ++i)
       v[i] = unsigned(std::bitset<8>(i).count());
     return v;
