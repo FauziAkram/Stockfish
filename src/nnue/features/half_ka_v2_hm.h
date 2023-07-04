@@ -35,6 +35,8 @@ namespace Stockfish::Eval::NNUE::Features {
   // Feature HalfKAv2_hm: Combination of the position of own king
   // and the position of pieces. Position mirrored such that king always on e..h files.
   class HalfKAv2_hm {
+  private:
+  HalfKAv2_hm() = delete;  // Private constructor to prevent instantiation
 
     // unique number for each piece type on each square
     enum {
