@@ -82,7 +82,7 @@ namespace Stockfish::Eval::NNUE::Layers {
             _mm_load_si128(&in[i * 4 + 2]),
             _mm_load_si128(&in[i * 4 + 3]));
 
-        // Not sure if
+                // Not sure if
         words0 = _mm_srli_epi16(_mm_mulhi_epi16(words0, words0), 3);
         words1 = _mm_srli_epi16(_mm_mulhi_epi16(words1, words1), 3);
 
@@ -106,9 +106,7 @@ namespace Stockfish::Eval::NNUE::Layers {
 
       for (IndexType i = Start; i < InputDimensions; ++i) {
         output[i] = static_cast<OutputType>(
-            // really should be /127 but we need to make it fast
-            // needs to be accounted for in the trainer
-            std::max(0ll, std::min(127ll, (((long long)input[i] * input[i]) >> (2 * WeightScaleBits)) / 128)));
+            static_cast<long long>(input[i] * input[i]) >> (2 * WeightScaleBits));
       }
 
       return output;
