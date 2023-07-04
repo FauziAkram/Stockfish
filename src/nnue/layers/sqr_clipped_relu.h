@@ -82,7 +82,7 @@ namespace Stockfish::Eval::NNUE::Layers {
             _mm_load_si128(&in[i * 4 + 2]),
             _mm_load_si128(&in[i * 4 + 3]));
 
-                // Not sure if
+        // Not sure if
         words0 = _mm_srli_epi16(_mm_mulhi_epi16(words0, words0), 3);
         words1 = _mm_srli_epi16(_mm_mulhi_epi16(words1, words1), 3);
 
