@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=3, xx2=2, xx3=2;
+TUNE(SetRange(1, 8), xx1,xx2,xx3);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -409,7 +411,7 @@ void Thread::search() {
               else
                   break;
 
-              delta += delta / 3;
+              delta += delta / xx1 + xx2 + failedHighCnt / xx3;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
