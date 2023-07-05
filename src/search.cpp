@@ -58,6 +58,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=9, xx2=87, xx3=12, xx4=6, xx5=2;
+TUNE(xx1,xx2);
+TUNE(SetRange(0, 25), xx3,xx4);
+TUNE(SetRange(0, 6), xx5);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1113,8 +1117,9 @@ moves_loop: // When in check, search starts here
 
           // Check extensions (~1 Elo)
           else if (   givesCheck
-                   && depth > 9)
-              extension = 1;
+                   && depth > xx1
+                   && abs(ss->staticEval) > xx2)
+              extension = (pos.count<ALL_PIECES>() <= xx3 && (pos.count<ALL_PIECES>() - pos.count<PAWN>() <= xx3)) && pos.see_ge(move) ? xx4 : 1;
 
           // Quiet ttMove extensions (~1 Elo)
           else if (   PvNode
