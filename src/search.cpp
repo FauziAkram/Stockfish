@@ -1242,6 +1242,9 @@ moves_loop: // When in check, search starts here
       {
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;
+        
+          if (rootNode && move != ttMove && extension <= 1)
+              newDepth++;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
       }
