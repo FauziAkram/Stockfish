@@ -58,6 +58,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=2, xx2=8, xx3=1, xx4=113, xx5=12, xx6=1;
+TUNE(SetRange(0, 24), xx1,xx2,xx3,xx5,xx6);
+TUNE(xx4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -630,7 +633,7 @@ namespace {
                     update_quiet_stats(pos, ss, ttMove, stat_bonus(depth));
 
                 // Extra penalty for early quiet moves of the previous ply (~0 Elo on STC, ~2 Elo on LTC)
-                if (prevSq != SQ_NONE && (ss-1)->moveCount <= 2 && !priorCapture)
+                if (prevSq != SQ_NONE && (ss-1)->moveCount <= xx1 && !priorCapture)
                     update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + 1));
             }
             // Penalty for a quiet ttMove that fails low (~1 Elo)
@@ -1149,7 +1152,7 @@ moves_loop: // When in check, search starts here
           r -= cutNode && tte->depth() >= depth + 3 ? 3 : 2;
 
       // Decrease reduction if opponent's move count is high (~1 Elo)
-      if ((ss-1)->moveCount > 8)
+      if ((ss-1)->moveCount > xx2)
           r--;
 
       // Increase reduction for cut nodes (~3 Elo)
@@ -1192,7 +1195,7 @@ moves_loop: // When in check, search starts here
           &&  moveCount > 1 + (PvNode && ss->ply <= 1)
           && (   !ss->ttPv
               || !capture
-              || (cutNode && (ss-1)->moveCount > 1)))
+              || (cutNode && (ss-1)->moveCount > xx3)))
       {
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension
@@ -1336,6 +1339,8 @@ moves_loop: // When in check, search starts here
           }
       }
 
+      else if ((ss-1)->moveCount <= xx7)
+          ss->cutoffCnt = 0;
 
       // If the move is worse than some previously searched move, remember it, to update its stats later
       if (move != bestMove)
@@ -1376,7 +1381,7 @@ moves_loop: // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + (bestValue < alpha - 113 * depth) + ((ss-1)->moveCount > 12);
+        int bonus = (depth > 5) + (PvNode || cutNode) + (bestValue < alpha - xx5 * depth) + ((ss-1)->moveCount > xx6);
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
     }
 
