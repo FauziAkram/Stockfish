@@ -58,7 +58,7 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
-int xx1=1037, xx2=3961, xx3=7186, xx4=113, xx5=86, xx6=5168;
+int xx1=1044, xx2=3929, xx3=7597, xx4=115, xx5=93;
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1127,7 +1127,7 @@ moves_loop: // When in check, search starts here
           else if (   PvNode
                    && move == ttMove
                    && move == ss->killers[0]
-                   && (*contHist[0])[movedPiece][to_sq(move)] >= xx6)
+                   && (*contHist[0])[movedPiece][to_sq(move)] >= 5168)
               extension = 1;
       }
 
