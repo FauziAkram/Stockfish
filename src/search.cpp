@@ -58,6 +58,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=3832, xx2=0, xx3=7011;
+TUNE(xx1,xx3);
+TUNE(SetRange(-600, 600), xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1021,12 +1024,12 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3832 * depth)
+                  && history < (-xx1 * depth)+(xx2 * lmrDepth))
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / xx2;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
