@@ -58,7 +58,7 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
-int xx1=1044, xx2=3929, xx3=7597, xx4=115, xx5=93;
+int xx1=1044, xx2=4010, xx3=8108, xx4=113, xx5=98;
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
