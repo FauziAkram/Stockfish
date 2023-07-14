@@ -288,7 +288,7 @@ void Thread::search() {
 
   ss->pv = pv;
 
-  bestValue = -VALUE_INFINITE;
+  alpha = -VALUE_INFINITE;
 
   if (mainThread)
   {
@@ -1496,9 +1496,6 @@ moves_loop: // When in check, search starts here
 
             return bestValue;
         }
-
-        if (PvNode && bestValue > alpha)
-            alpha = bestValue;
 
         futilityBase = bestValue + 200;
     }
