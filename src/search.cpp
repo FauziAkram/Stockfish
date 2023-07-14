@@ -1686,11 +1686,17 @@ moves_loop: // When in check, search starts here
 
   void update_pv(Move* pv, Move move, const Move* childPv) {
 
-    for (*pv++ = move; childPv && *childPv != MOVE_NONE; )
-        *pv++ = *childPv++;
-    *pv = MOVE_NONE;
-  }
-
+  std::vector<Move> newPv; // Declare empty vector
+  newPv.reserve(MAX_PLY+1); // Reserve size
+  
+  newPv.push_back(move); // Add current move
+  
+  for (const Move* m = childPv; *m != MOVE_NONE; ++m)
+     newPv.push_back(*m);
+     
+  // Set pv to point to newPv 
+  pv = newPv.data();
+}
 
   // update_all_stats() updates stats at the end of search() when a bestMove is found
 
