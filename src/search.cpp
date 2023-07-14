@@ -1932,15 +1932,22 @@ bool RootMove::extract_ponder_from_tt(Position& pos) {
     pos.do_move(pv[0], st);
     TTEntry* tte = TT.probe(pos.key(), ttHit);
 
-    if (ttHit)
+    if (!ttHit)
     {
-        Move m = tte->move(); // Local copy to be SMP safe
-        if (MoveList<LEGAL>(pos).contains(m))
-            pv.push_back(m);
+        pos.undo_move(pv[0]);
+        return false;
     }
 
+    Move m = tte->move(); // Local copy to be SMP safe
+    if (!MoveList<LEGAL>(pos).contains(m))
+    {
+        pos.undo_move(pv[0]);
+        return false;
+    }
+
+    pv.push_back(m);
     pos.undo_move(pv[0]);
-    return pv.size() > 1;
+    return true;
 }
 
 void Tablebases::rank_root_moves(Position& pos, Search::RootMoves& rootMoves) {
