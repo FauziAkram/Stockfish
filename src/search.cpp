@@ -1749,7 +1749,7 @@ moves_loop: // When in check, search starts here
 
   void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
-    for (int i : {1, 2, 4, 6})
+    for (int i = 1; i <= 6; i += 2)
     {
         // Only update the first 2 continuation histories if we are in check
         if (ss->inCheck && i > 2)
