@@ -144,7 +144,10 @@ namespace {
         else
         {
             pos.do_move(m, st);
-            cnt = leaf ? MoveList<LEGAL>(pos).size() : perft<false>(pos, depth - 1);
+            if (leaf)
+            cnt = 1;
+        else
+            cnt = perft<false>(pos, depth - 1);
             nodes += cnt;
             pos.undo_move(m);
         }
