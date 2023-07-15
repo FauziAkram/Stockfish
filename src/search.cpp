@@ -58,6 +58,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=0, xx2=3;
+TUNE(SetRange(-150, 150), xx1);
+TUNE(SetRange(1, 10), xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -849,9 +852,9 @@ namespace {
         // there and in further interactions with transposition table cutoff depth is set to depth - 3
         // because probCut search has depth set to depth - 4 but we also do a move before it
         // So effective depth is equal to depth - 3
-        && !(   tte->depth() >= depth - 3
+        && !(   tte->depth() >= depth - xx2
              && ttValue != VALUE_NONE
-             && ttValue < probCutBeta))
+             && ttValue < probCutBeta + xx1))
     {
         assert(probCutBeta < VALUE_INFINITE);
 
