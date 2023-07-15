@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=0;
+TUNE(SetRange(-100, 100), xx1);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -778,7 +780,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 17329
         &&  eval >= beta
-        &&  eval >= ss->staticEval
+        &&  eval >= ss->staticEval + xx1 * depth
         &&  ss->staticEval >= beta - 21 * depth + 258
         && !excludedMove
         &&  pos.non_pawn_material(us)
