@@ -955,7 +955,7 @@ moves_loop: // When in check, search starts here
       if (PvNode)
           (ss+1)->pv = nullptr;
 
-      extension = 0;
+      extension = 1;
       capture = pos.capture_stage(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
