@@ -777,7 +777,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 17329
         &&  eval >= beta
-        &&  eval >= ss->staticEval
+        &&  eval >= ss->staticEval - 18 * depth
         &&  ss->staticEval >= beta - 21 * depth + 258
         && !excludedMove
         &&  pos.non_pawn_material(us)
@@ -985,7 +985,7 @@ moves_loop: // When in check, search starts here
               if (   !givesCheck
                   && lmrDepth < 7
                   && !ss->inCheck
-                  && ss->staticEval + 197 + 248 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
+                  && ss->staticEval + 197 + 256 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
                   continue;
 
@@ -1020,18 +1020,18 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3832 * depth)
+                  && history < -4020 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / 8000;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 12
-                  && ss->staticEval + 112 + 138 * lmrDepth <= alpha)
+                  && ss->staticEval + 113 + 125 * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
@@ -1063,7 +1063,7 @@ moves_loop: // When in check, search starts here
               && (tte->bound() & BOUND_LOWER)
               &&  tte->depth() >= depth - 3)
           {
-              Value singularBeta = ttValue - (82 + 65 * (ss->ttPv && !PvNode)) * depth / 64;
+              Value singularBeta = ttValue - (90 + 65 * (ss->ttPv && !PvNode)) * depth / 64;
               Depth singularDepth = (depth - 1) / 2;
 
               ss->excludedMove = move;
@@ -1375,7 +1375,7 @@ moves_loop: // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + (bestValue < alpha - 113 * depth) + ((ss-1)->moveCount > 12);
+        int bonus = (depth > 5) + (PvNode || cutNode) + (bestValue < alpha - 112 * depth) + ((ss-1)->moveCount > 12);
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
     }
 
