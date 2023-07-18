@@ -1793,7 +1793,7 @@ moves_loop: // When in check, search starts here
 
     // RootMoves are already sorted by score in descending order
     Value topScore = rootMoves[0].score;
-    int delta = std::min(topScore - rootMoves[multiPV - 1].score, PawnValueMg);
+    int delta = std::min(PawnValueMg, topScore - rootMoves[multiPV - 1].score);
     int maxScore = -VALUE_INFINITE;
     double weakness = 120 - 2 * level;
 
