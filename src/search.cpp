@@ -963,6 +963,11 @@ moves_loop: // When in check, search starts here
       // Calculate new depth for this move
       newDepth = depth - 1;
 
+      if (PvNode && ss->inCheck && depth >= 5)
+        {
+            newDepth = std::max(newDepth, depth + 2);
+        }
+
       Value delta = beta - alpha;
 
       Depth r = reduction(improving, depth, moveCount, delta, thisThread->rootDelta);
