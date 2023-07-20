@@ -966,7 +966,7 @@ moves_loop: // When in check, search starts here
       Value delta = beta - alpha;
 
       Depth r = reduction(improving, depth, moveCount, delta, thisThread->rootDelta);
-if (r < 3 && !ss->inCheck)
+if (r > 0 && r < 4 && !ss->inCheck)
 {
     if (depth < 10) r--;
     if (improving) r--;
