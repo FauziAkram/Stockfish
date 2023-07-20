@@ -58,8 +58,6 @@ namespace Eval {
 
   string currentEvalFileName = "None";
 
-  static double to_cp(Value v) { return double(v) / UCI::NormalizeToPawnValue; }
-
   /// NNUE::init() tries to load a NNUE network at startup time, or when the engine
   /// receives a UCI command "setoption name EvalFile value nn-[a-z0-9]{12}.nnue"
   /// The name of the NNUE network is always retrieved from the EvalFile option.
@@ -119,7 +117,7 @@ namespace Eval {
     {
 
         string msg1 = "Network evaluation parameters compatible with the engine must be available.";
-        string msg2 = "The option is set to true, but the network file " + eval_file + " was not loaded successfully.";
+        string msg2 = "The network file " + eval_file + " was not loaded successfully.";
         string msg3 = "The UCI option EvalFile might need to specify the full path, including the directory name, to the network file.";
         string msg4 = "The default net can be downloaded from: https://tests.stockfishchess.org/api/nn/" + std::string(EvalFileDefaultName);
         string msg5 = "The engine will be terminated now.";
@@ -157,7 +155,9 @@ Value Eval::evaluate(const Position& pos) {
 
   // Blend optimism with nnue complexity and (semi)classical complexity
   optimism += optimism * (nnueComplexity + abs(psq - nnue)) / 512;
-  v = (nnue * (945 + npm) + optimism * (150 + npm)) / 1024;
+
+  v = (  nnue     * (915 + npm + 9 * pos.count<PAWN>())
+       + optimism * (154 + npm +     pos.count<PAWN>())) / 1024;
 
   // Damp down the evaluation linearly when shuffling
   v = v * (200 - pos.rule50_count()) / 214;
@@ -192,11 +192,11 @@ std::string Eval::trace(Position& pos) {
   Value v;
   v = NNUE::evaluate(pos, false);
   v = pos.side_to_move() == WHITE ? v : -v;
-  ss << "NNUE evaluation        " << to_cp(v) << " (white side)\n";
+  ss << "NNUE evaluation        " << 0.01 * UCI::to_cp(v) << " (white side)\n";
 
   v = evaluate(pos);
   v = pos.side_to_move() == WHITE ? v : -v;
-  ss << "Final evaluation       " << to_cp(v) << " (white side)";
+  ss << "Final evaluation       " << 0.01 * UCI::to_cp(v) << " (white side)";
   ss << " [with scaled NNUE, ...]";
   ss << "\n";
 
