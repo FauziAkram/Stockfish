@@ -843,6 +843,7 @@ namespace {
         depth -= 2;
     else
         depth -= 3;
+    }
 
     probCutBeta = beta + 168 - 61 * improving;
 
