@@ -1706,7 +1706,7 @@ moves_loop: // When in check, search starts here
 
     if (!pos.capture_stage(bestMove))
     {
-        int bestMoveBonus = bestValue > beta + 145 ? quietMoveBonus  // larger bonus
+        int bestMoveBonus = bestValue > beta + 145 ? quietMoveBonus + depth   // larger bonus
                                             : stat_bonus(depth);     // smaller bonus
 
         // Increase stats for the best move in case it was a quiet move
