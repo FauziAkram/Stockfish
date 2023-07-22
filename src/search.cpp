@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=0;
+TUNE(SetRange(-200, 200), xx1);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1768,6 +1770,7 @@ moves_loop: // When in check, search starts here
     {
         ss->killers[1] = ss->killers[0];
         ss->killers[0] = move;
+        bonus += xx1;
     }
 
     Color us = pos.side_to_move();
