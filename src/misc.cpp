@@ -744,9 +744,6 @@ string workingDirectory; // path of the working directory
 void init([[maybe_unused]] int argc, char* argv[]) {
     string pathSeparator;
 
-    // extract the path+name of the executable binary
-    binaryDirectory = argv[0];
-
 #ifdef _WIN32
     pathSeparator = "\\";
   #ifdef _MSC_VER
