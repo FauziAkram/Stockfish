@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=9,xx2=306, xx3=24923;
+TUNE(xx1,xx2,xx3);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -766,10 +768,10 @@ namespace {
     // Step 8. Futility pruning: child node (~40 Elo).
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
-        &&  depth < 9
-        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 306 >= beta
+        &&  depth < xx1
+        &&  eval - futility_margin(depth-1, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / xx2 >= beta
         &&  eval >= beta
-        &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < xx3) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
