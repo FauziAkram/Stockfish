@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=6;
+TUNE(SetRange(1, 100), xx1);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -71,7 +73,7 @@ namespace {
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
-    int r = Reductions[d] * Reductions[mn];
+    int r = Reductions[d] * Reductions[mn]* (d/xx1);
     return (r + 1372 - int(delta) * 1073 / int(rootDelta)) / 1024 + (!i && r > 936);
   }
 
