@@ -62,9 +62,11 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
+  float aggressiveness = 1.0;
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((140 - 40 * noTtCutNode) * (d - improving));
+    int base_margin = (140 - 40 * noTtCutNode) * aggressiveness;
+    return Value(base_margin * (d - improving)); 
   }
 
   // Reductions lookup table initialized at startup
@@ -771,6 +773,8 @@ namespace {
         &&  eval >= beta
         &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
+    // Increase aggressiveness as time runs out
+    aggressiveness *= 1.01;
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
