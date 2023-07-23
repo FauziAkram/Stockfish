@@ -58,14 +58,21 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=120, xx2=20, xx3=160, xx4=50;
+TUNE(SetRange(-20, 400), xx1,xx3);
+TUNE(SetRange(-20, 120), xx2,xx4);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
-  Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((140 - 40 * noTtCutNode) * (d - improving));
-  }
+  Value futility_margin(Depth d, bool pv, bool noTtCutNode, bool improving) {
+    if (pv)
+    return Value((xx1 - xx2 * noTtCutNode) * (d - improving)); // Lower margin for PV
+  
+    else
+    return Value((xx3 - xx4 * noTtCutNode) * (d - improving)); // Higher margin for non-PV
+}
 
   // Reductions lookup table initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
