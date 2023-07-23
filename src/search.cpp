@@ -63,8 +63,10 @@ namespace {
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
+  float avg_depth;
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((140 - 40 * noTtCutNode) * (d - improving));
+    Depth relative_depth = d - avg_depth;
+    return Value((140 - 40 * noTtCutNode) * (relative_depth - improving));
   }
 
   // Reductions lookup table initialized at startup
@@ -771,6 +773,8 @@ namespace {
         &&  eval >= beta
         &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
+   // Update avg depth 
+   avg_depth = avg_depth * 0.99 + depth * 0.01;
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
