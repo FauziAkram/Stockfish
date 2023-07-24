@@ -1768,6 +1768,7 @@ moves_loop: // When in check, search starts here
     {
         ss->killers[1] = ss->killers[0];
         ss->killers[0] = move;
+        bonus += 24;
     }
 
     Color us = pos.side_to_move();
