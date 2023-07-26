@@ -792,6 +792,7 @@ namespace {
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
 
+        update_continuation_histories(ss, NO_PIECE, SQ_NONE, stat_bonus(depth));
         pos.do_null_move(st);
 
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
@@ -804,6 +805,7 @@ namespace {
             nullValue = std::min(nullValue, VALUE_TB_WIN_IN_MAX_PLY-1);
 
             if (thisThread->nmpMinPly || depth < 14)
+                update_quiet_stats(pos, ss, MOVE_NULL, stat_bonus(depth));
                 return nullValue;
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed
@@ -1744,8 +1746,12 @@ moves_loop: // When in check, search starts here
 
   void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
+    if (pc == NO_PIECE) {
     for (int i : {1, 2, 4, 6})
     {
+      if (is_ok((ss-i)->currentMove))
+        (ss-i)->continuationHistory[pc][SQ_NONE] << bonus; 
+    }
         // Only update the first 2 continuation histories if we are in check
         if (ss->inCheck && i > 2)
             break;
