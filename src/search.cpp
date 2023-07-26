@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=30;
+TUNE(SetRange(0, 70), xx1);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1037,7 +1039,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-27 * lmrDepth * lmrDepth - 16 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-xx1 * lmrDepth * lmrDepth)))
                   continue;
           }
       }
