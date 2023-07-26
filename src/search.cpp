@@ -794,6 +794,13 @@ namespace {
 
         pos.do_null_move(st);
 
+        // Update history after null move is played
+
+        if (ss->inCheck)
+        (*(ss-1)->continuationHistory)[pos.king_square(us)][SQUARE_NONE] << stat_bonus(depth);
+        else
+        (*(ss-2)->continuationHistory)[pos.king_square(us)][SQUARE_NONE] << stat_bonus(depth);
+
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
 
         pos.undo_null_move();
