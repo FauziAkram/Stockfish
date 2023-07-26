@@ -860,7 +860,7 @@ namespace {
         int reductionn = (std::abs(evalDiff) > 20) ? depth / 4 : 0;
 
         // Reduce depth further if the position evaluation difference is significant
-        depth -= reduction;
+        depth -= reductionn;
 
         assert(probCutBeta < VALUE_INFINITE);
 
