@@ -825,8 +825,10 @@ namespace {
     // (or by 4 if the TT entry for the current position was hit and the stored depth is greater than or equal to the current depth).
     // Use qsearch if depth is equal or below zero (~9 Elo)
     if (    PvNode
-        && !ttMove)
-        depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth);
+        && !ttMove) {
+        int ttDepthDiff = tte->depth() >= depth ? (tte->depth() - depth) : 0;
+        depth -= ttMove ? (ttDepthDiff + 2) : (ttDepthDiff + 4);
+}
 
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
@@ -852,6 +854,14 @@ namespace {
              && ttValue != VALUE_NONE
              && ttValue < probCutBeta))
     {
+        
+        // Calculate the position evaluation difference to determine reduction amount
+        int evalDiff = ss->staticEval - (ss - 1)->staticEval;
+        int reductionn = (std::abs(evalDiff) > 20) ? depth / 4 : 0;
+
+        // Reduce depth further if the position evaluation difference is significant
+        depth -= reduction;
+
         assert(probCutBeta < VALUE_INFINITE);
 
         MovePicker mp(pos, ttMove, probCutBeta - ss->staticEval, &captureHistory);
