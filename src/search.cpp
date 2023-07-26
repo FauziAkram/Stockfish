@@ -58,6 +58,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=413, xx2=0;
+TUNE(xx1);
+TUNE(SetRange(-120, 120), xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -892,7 +895,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 413;
+    probCutBeta = beta + xx1 + xx2 * improving;
     if (   ss->inCheck
         && !PvNode
         && ttCapture
