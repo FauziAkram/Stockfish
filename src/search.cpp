@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=5, xx2=3;
+TUNE(SetRange(1, 11), xx1,xx2);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -983,7 +985,7 @@ moves_loop: // When in check, search starts here
           {
               // Futility pruning for captures (~2 Elo)
               if (   !givesCheck
-                  && lmrDepth < 7
+                  && lmrDepth < xx1 + ss->ply/xx2
                   && !ss->inCheck
                   && ss->staticEval + 197 + 248 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
