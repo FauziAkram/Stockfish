@@ -58,6 +58,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=0;
+TUNE(SetRange(-20, 200), xx1);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1543,7 +1545,7 @@ moves_loop: // When in check, search starts here
 
                 futilityValue = futilityBase + PieceValue[EG][pos.piece_on(to_sq(move))];
 
-                if (futilityValue <= alpha)
+                if (futilityValue <= alpha + xx1)
                 {
                     bestValue = std::max(bestValue, futilityValue);
                     continue;
