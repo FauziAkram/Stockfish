@@ -783,7 +783,7 @@ namespace {
         &&  pos.non_pawn_material(us)
         &&  ss->ply >= thisThread->nmpMinPly
         &&  beta > VALUE_TB_LOSS_IN_MAX_PLY
-        &&  depth > 2)
+        &&  depth > 1)
     {
         assert(eval - beta >= 0);
 
