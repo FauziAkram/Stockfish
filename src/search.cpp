@@ -1207,7 +1207,10 @@ moves_loop: // When in check, search starts here
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
 
-              newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch;
+              if (doDeeperSearch)
+              newDepth += std::min(1, std::max(0, (newDepth - d) / 3));
+              else if (doShallowerSearch)
+              newDepth -= std::min(1, std::max(0, (d - newDepth) / 3));
 
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
