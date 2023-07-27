@@ -1227,7 +1227,13 @@ moves_loop: // When in check, search starts here
           if (!ttMove && cutNode)
               r += 2;
 
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth - (r > 3), !cutNode);
+          int delta = 30; // Initial window size
+    while (true) {
+    value = -search<NonPV>(pos, ss+1, alpha, alpha + delta, newDepth - (r > 3), !cutNode);
+    if (value > alpha && value < beta)
+        break; // If the value is within the window, stop searching
+    delta += delta / 2; // Increase the window size for next iteration
+      }
       }
 
       // For PV nodes only, do a full PV search on the first move or after a fail
