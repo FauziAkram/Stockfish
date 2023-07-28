@@ -832,7 +832,7 @@ namespace {
         &&  depth <= 3
         &&  pos.non_pawn_material(us)
         &&  ttMove
-        && tte->depth() >= depth - 2))
+        && tte->depth() >= depth - 2)
         depth -= std::clamp((depth - tte->depth()) / 4, 0, 3);
 
     if (depth <= 0)
