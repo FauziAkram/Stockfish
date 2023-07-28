@@ -65,10 +65,10 @@ namespace {
   // Futility margin
   Value futility_margin(Depth d, bool pv, bool noTtCutNode, bool improving) {
     if (pv)
-    return Value((114 - 17 * noTtCutNode) * (d - improving)); // Lower margin for PV
+    return Value((93 - 13 * noTtCutNode) * (d - improving)); // Lower margin for PV
 
     else
-    return Value((140 - 53 * noTtCutNode) * (d - improving)); // Higher margin for non-PV
+    return Value((146 - 57 * noTtCutNode) * (d - improving)); // Higher margin for non-PV
   }
 
   // Reductions lookup table initialized at startup
