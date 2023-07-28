@@ -828,6 +828,13 @@ namespace {
         && !ttMove)
         depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth);
 
+    if (    PvNode
+        &&  depth <= 3
+        &&  pos.non_pawn_material(us)
+        &&  ttMove
+        && tte->depth() >= depth - 2))
+        depth -= std::clamp((depth - tte->depth()) / 4, 0, 3);
+
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
 
