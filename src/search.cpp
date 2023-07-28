@@ -58,6 +58,10 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=50, xx2=3;
+TUNE(SetRange(-20, 140), xx1);
+TUNE(SetRange(-1, 10), xx2);
+
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1092,6 +1096,9 @@ moves_loop: // When in check, search starts here
               // a softbound.
               else if (singularBeta >= beta)
                   return singularBeta;
+
+              else if (value >= beta + xx1)
++                  extension = -xx2;
 
               // If the eval of ttMove is greater than beta, we reduce it (negative extension) (~7 Elo)
               else if (ttValue >= beta)
