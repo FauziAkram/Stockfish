@@ -37,10 +37,11 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-namespace {
 int xx1=50, xx2=3;
 TUNE(SetRange(-20, 140), xx1);
 TUNE(SetRange(-1, 10), xx2);
+namespace {
+
 namespace Search {
 
   LimitsType Limits;
