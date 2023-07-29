@@ -892,7 +892,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 413;
+    probCutBeta = beta + 399 - 12 * improving;
     if (   ss->inCheck
         && !PvNode
         && ttCapture
