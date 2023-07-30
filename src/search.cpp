@@ -37,6 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=50;
+TUNE(SetRange(-100, 550), xx1);
 
 namespace Search {
 
@@ -1768,7 +1770,7 @@ moves_loop: // When in check, search starts here
 
     Color us = pos.side_to_move();
     Thread* thisThread = pos.this_thread();
-    thisThread->mainHistory[us][from_to(move)] << bonus;
+    thisThread->mainHistory[us][from_to(move)] << (bonus + xx1);
     update_continuation_histories(ss, pos.moved_piece(move), to_sq(move), bonus);
 
     // Update countermove history
