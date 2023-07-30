@@ -37,6 +37,10 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=12, xx2=14362, xx3=12393, xx4=4, xx5=7, xx6=3, xx7=12;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(0, 16), xx4,xx5,xx6);
+TUNE(xx7);
 
 namespace Search {
 
@@ -1320,10 +1324,10 @@ moves_loop: // When in check, search starts here
               {
                   // Reduce other moves if we have found at least one score improvement (~2 Elo)
                   if (   depth > 2
-                      && depth < 12
-                      && beta  <  14362
-                      && value > -12393)
-                      depth -= 2;
+                      && depth < xx1
+                      && beta  <  xx2
+                      && value > -xx3)
+                      depth -= (depth > xx4 && depth < xx5 && (ss-1)->moveCount <= 1) ? 3 : ((depth > xx6 && depth < xx7) ? 2 : 1);
 
                   assert(depth > 0);
                   alpha = value; // Update alpha! Always alpha < beta
