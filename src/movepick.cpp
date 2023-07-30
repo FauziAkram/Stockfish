@@ -139,6 +139,9 @@ void MovePicker::score() {
           m.value +=     (*continuationHistory[3])[pc][to];
           m.value +=     (*continuationHistory[5])[pc][to];
 
+          if (pos.see(m) >= 0) // Bonus for positive SEE
+          m.value += pos.see(m) * 5;
+
           // bonus for checks
           m.value += bool(pos.check_squares(pt) & to) * 16384;
 
