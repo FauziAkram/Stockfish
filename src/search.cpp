@@ -1698,7 +1698,7 @@ moves_loop: // When in check, search starts here
     Piece moved_piece = pos.moved_piece(bestMove);
     PieceType captured;
 
-    int quietMoveBonus = stat_bonus(depth + 1);
+    int quietMoveBonus = stat_bonus(depth + 1 + ss->doubleExtension);
 
     if (!pos.capture_stage(bestMove))
     {
