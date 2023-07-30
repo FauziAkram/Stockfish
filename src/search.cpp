@@ -1543,7 +1543,7 @@ moves_loop: // When in check, search starts here
 
                 futilityValue = futilityBase + PieceValue[EG][pos.piece_on(to_sq(move))];
 
-                if (futilityValue <= alpha)
+                if (futilityValue <= alpha + 10)
                 {
                     bestValue = std::max(bestValue, futilityValue);
                     continue;
