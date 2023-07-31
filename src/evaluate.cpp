@@ -79,7 +79,6 @@ namespace Eval {
     #endif
 
     for (const string& directory : dirs)
-        if (currentEvalFileName != eval_file)
         {
             if (directory != "<internal>")
             {
