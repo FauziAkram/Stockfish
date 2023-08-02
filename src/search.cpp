@@ -1017,10 +1017,10 @@ moves_loop: // When in check, search starts here
               int history =   (*contHist[0])[movedPiece][to_sq(move)]
                             + (*contHist[1])[movedPiece][to_sq(move)]
                             + (*contHist[3])[movedPiece][to_sq(move)];
-
+              int bonus5 = (depth > 5) ? -3832 : -1000; //Lower threshold for lower depths
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3832 * depth)
+                  && (history < bonus5 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
