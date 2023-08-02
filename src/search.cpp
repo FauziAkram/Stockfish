@@ -37,6 +37,9 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=30, xx2=30;
+TUNE(SetRange(0, 90), xx1);
+TUNE(SetRange(-20, 120), xx2);
 
 namespace Search {
 
@@ -1037,7 +1040,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-27 * lmrDepth * lmrDepth - 16 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-xx1 * lmrDepth * lmrDepth - xx2)))
                   continue;
           }
       }
