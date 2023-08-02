@@ -1020,7 +1020,7 @@ moves_loop: // When in check, search starts here
               int bonus5 = (depth > 5) ? -3832 : -1000; //Lower threshold for lower depths
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && (history < bonus5 * depth)
+                  && (history < bonus5 * depth))
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
