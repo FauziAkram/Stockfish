@@ -37,6 +37,9 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=456, xx2=252, xx3=16;
+TUNE(xx1,xx2);
+TUNE(SetRange(0, 65), xx3);
 
 namespace Search {
 
@@ -756,10 +759,10 @@ namespace {
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (eval < alpha - 456 - 252 * depth * depth)
+    if (eval < alpha - xx1 - xx2 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
-        if (value < alpha)
+        if (value < alpha + xx3 * bool(pos.non_pawn_material(us)))
             return value;
     }
 
