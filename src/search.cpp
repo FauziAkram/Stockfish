@@ -980,7 +980,7 @@ moves_loop: // When in check, search starts here
 
           if (   capture
               || givesCheck
-+             || type_of(move) == PROMOTION)
+              || type_of(move) == PROMOTION)
           {
               // Futility pruning for captures (~2 Elo)
               if (   !givesCheck
