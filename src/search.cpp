@@ -979,7 +979,8 @@ moves_loop: // When in check, search starts here
           int lmrDepth = newDepth - r;
 
           if (   capture
-              || givesCheck)
+              || givesCheck
++             || type_of(move) == PROMOTION)
           {
               // Futility pruning for captures (~2 Elo)
               if (   !givesCheck
@@ -1107,7 +1108,8 @@ moves_loop: // When in check, search starts here
           }
 
           // Check extensions (~1 Elo)
-          else if (   givesCheck
+          else if (  (givesCheck
+                      || type_of(move) == PROMOTION)
                    && depth > 9)
               extension = 1;
 
