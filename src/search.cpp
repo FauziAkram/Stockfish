@@ -917,6 +917,7 @@ moves_loop: // When in check, search starts here
 
     value = bestValue;
     moveCountPruning = singularQuietLMR = false;
+    ss->mcp = false;
 
     // Indicate PvNodes that will probably fail low if the node was searched
     // at a depth equal to or greater than the current depth, and the result of this search was a fail low.
@@ -973,7 +974,7 @@ moves_loop: // When in check, search starts here
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
-          moveCountPruning = moveCount >= futility_move_count(improving, depth);
+          ss->mcp = moveCountPruning = moveCount >= futility_move_count(improving, depth);
 
           // Reduced depth of the next LMR search
           int lmrDepth = newDepth - r;
@@ -1323,7 +1324,7 @@ moves_loop: // When in check, search starts here
                       && depth < 12
                       && beta  <  14362
                       && value > -12393)
-                      depth -= 2;
+                      depth -= (ss-1)->mcp ? 3 : 2;
 
                   assert(depth > 0);
                   alpha = value; // Update alpha! Always alpha < beta
