@@ -827,7 +827,7 @@ namespace {
     if (    PvNode
         && !ttMove)
         && eval < beta
-        depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth) + std::min(int(beta - eval) / 128, 2);
+        depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth) + std::min(int(beta - eval) / 512, 2);
 
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
