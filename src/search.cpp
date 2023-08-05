@@ -37,6 +37,9 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=95, xx2=20;
+TUNE(xx1);
+TUNE(SetRange(-100, 100), xx2);
 
 namespace Search {
 
@@ -1569,7 +1572,7 @@ moves_loop: // When in check, search starts here
                 continue;
 
             // Do not search moves with bad enough SEE values (~5 Elo)
-            if (!pos.see_ge(move, Value(-95)))
+            if (!pos.see_ge(move, Value(-xx1 + (givesCheck ? xx2 : 0))))
                 continue;
         }
 
