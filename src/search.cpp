@@ -1534,6 +1534,7 @@ moves_loop: // When in check, search starts here
         {
             // Futility pruning and moveCount pruning (~10 Elo)
             if (   !givesCheck
+                && !capture
                 &&  to_sq(move) != prevSq
                 &&  futilityBase > -VALUE_KNOWN_WIN
                 &&  type_of(move) != PROMOTION)
