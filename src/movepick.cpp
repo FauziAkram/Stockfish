@@ -22,7 +22,8 @@
 #include "movepick.h"
 
 namespace Stockfish {
-
+int xx1=50000, xx2=25000, xx3=15000, xx4=50000, xx5=10000, xx6=20000, xx7=25000, xx8=10000, xx9=15000, xx10=3000;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10;
 namespace {
 
   enum Stages {
@@ -144,20 +145,20 @@ void MovePicker::score() {
 
           // bonus for escaping from capture
           m.value += threatenedPieces & from ?
-                       (pt == QUEEN && !(to & threatenedByRook)  ? 50000
-                      : pt == ROOK  && !(to & threatenedByMinor) ? 25000
-                      :                !(to & threatenedByPawn)  ? 15000
+                       (pt == QUEEN && !(to & threatenedByRook)  ? xx1
+                      : pt == ROOK  && !(to & threatenedByMinor) ? xx2
+                      :                !(to & threatenedByPawn)  ? xx3
                       :                                            0 )
                       :                                            0 ;
 
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
-                        (pt == QUEEN ?   bool(to & threatenedByRook)  * 50000
-                                       + bool(to & threatenedByMinor) * 10000
-                                       + bool(to & threatenedByPawn)  * 20000
-                       : pt == ROOK  ?   bool(to & threatenedByMinor) * 25000
-                                       + bool(to & threatenedByPawn)  * 10000
-                       : pt != PAWN ?    bool(to & threatenedByPawn)  * 15000
+                        (pt == QUEEN ?   bool(to & threatenedByRook)  * xx4
+                                       + bool(to & threatenedByMinor) * xx5
+                                       + bool(to & threatenedByPawn)  * xx6
+                       : pt == ROOK  ?   bool(to & threatenedByMinor) * xx7
+                                       + bool(to & threatenedByPawn)  * xx8
+                       : pt != PAWN ?    bool(to & threatenedByPawn)  * xx9
                        :                                                0 )
                        :                                                0 ;
       }
@@ -252,7 +253,7 @@ top:
           endMoves = generate<QUIETS>(pos, cur);
 
           score<QUIETS>();
-          partial_insertion_sort(cur, endMoves, -3000 * depth);
+          partial_insertion_sort(cur, endMoves, -xx10 * depth);
       }
 
       ++stage;
