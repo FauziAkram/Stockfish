@@ -23,7 +23,7 @@
 
 namespace Stockfish {
 int xx1=50000, xx2=25000, xx3=15000, xx4=50000, xx5=10000, xx6=20000, xx7=25000, xx8=10000, xx9=15000, xx10=3000;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10);
 namespace {
 
   enum Stages {
