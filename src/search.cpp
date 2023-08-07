@@ -38,7 +38,7 @@
 
 namespace Stockfish {
 int xx1=0, xx2=6;
-TUNE(SetRange(0, 30), xx1);
+TUNE(SetRange(0, 30), xx1,xx2);
 
 namespace Search {
 
