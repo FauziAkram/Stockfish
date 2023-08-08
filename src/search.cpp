@@ -37,6 +37,9 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=1, xx2=4, xx3=22;
+TUNE(SetRange(0, 30), xx1,xx2);
+TUNE(SetRange(0, 46), xx3);
 
 namespace Search {
 
@@ -1157,7 +1160,7 @@ moves_loop: // When in check, search starts here
 
       // Decrease reduction for PvNodes based on depth (~2 Elo)
       if (PvNode)
-          r -= 1 + (depth < 6);
+          r -= (depth > xx1) + (depth < xx2 || depth > xx3);
 
       // Decrease reduction if ttMove has been singularly extended (~1 Elo)
       if (singularQuietLMR)
