@@ -1448,9 +1448,9 @@ moves_loop: // When in check, search starts here
 
     // Step 3. Transposition table lookup
     posKey = pos.key();
-    tte = TT.probe(posKey, ss->ttHit);
+    TTEntry* tte = TT.probe(posKey, ss->ttHit);
     ttValue = ss->ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
-    ttMove = ss->ttHit ? tte->move() : MOVE_NONE;
+    Move ttMove = tte ? tte->move() : MOVE_NONE;
     pvHit = ss->ttHit && tte->is_pv();
 
     // At non-PV nodes we check for an early TT cutoff
