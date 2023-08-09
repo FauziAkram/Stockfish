@@ -75,7 +75,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta, bool ttHit) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + xx0 + (xx1 * (ttHit && i)) - int(delta) * 1073 / int(rootDelta)) / 1024 + (!i && r > 936);
+    return (r + xx0 + (xx1 * (ttHit && !i)) - int(delta) * 1073 / int(rootDelta)) / 1024 + (!i && r > 936);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
