@@ -37,6 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=4000;
+TUNE(SetRange(-2000, 9000), xx1);
 
 namespace Search {
 
@@ -1031,7 +1033,8 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 12
-                  && ss->staticEval + 112 + 138 * lmrDepth <= alpha)
+                  && ss->staticEval + 112 + 138 * lmrDepth <= alpha
+                  && (*contHist[0])[movedPiece][to_sq(move)] < xx1)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
