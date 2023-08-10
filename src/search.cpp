@@ -37,9 +37,10 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-int xx0=1372, xx1=0;
+int xx0=1372, xx1=-30, xx2=1073, xx3=936;
 TUNE(xx0);
 TUNE(SetRange(-1000, 1000), xx1);
+TUNE(xx2,xx3);
 
 namespace Search {
 
@@ -75,7 +76,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta, bool ttHit) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + xx0 + (xx1 * ttHit) - int(delta) * 1073 / int(rootDelta)) / 1024 + (!i && r > 936);
+    return (r + xx0 + (xx1 * ttHit) - int(delta) * xx2 / int(rootDelta)) / 1024 + (!i && r > xx3);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
