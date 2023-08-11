@@ -1027,7 +1027,7 @@ moves_loop: // When in check, search starts here
             && PvNode
             && (ss-1)->moveCount > 8
             && ttCapture
-            && move == ss->killers[1]
+            && move == (ss->killers[1] || ss->killers[0])
             && (ss-1)->ttPv
             && likelyFailLow)
             r += 2;
