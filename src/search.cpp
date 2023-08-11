@@ -1030,6 +1030,7 @@ moves_loop: // When in check, search starts here
             && move == (ss->killers[1] || ss->killers[0])
             && (ss-1)->ttPv
             && likelyFailLow)
+                dbg_mean_of(1)
             r += 2;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
