@@ -1024,7 +1024,7 @@ moves_loop: // When in check, search starts here
                   continue;
 
               if (   ttCapture
-              && move == (ss->killers[1] || ss->killers[0])
+              && move == ss->killers[1]
               && (ss-1)->ttPv
               && likelyFailLow){
               dbg_mean_of(1);
