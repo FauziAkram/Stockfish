@@ -1023,6 +1023,13 @@ moves_loop: // When in check, search starts here
                   && history < -3832 * depth)
                   continue;
 
+              if (   ttCapture
+              && move == (ss->killers[1] || ss->killers[0])
+              && (ss-1)->ttPv
+              && likelyFailLow){
+              dbg_mean_of(1)
+              r ++;}
+
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
               lmrDepth += history / 7011;
