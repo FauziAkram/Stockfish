@@ -1026,9 +1026,8 @@ moves_loop: // When in check, search starts here
               if (   ttCapture
               && (move == ss->killers[0] || move == ss->killers[1])
               && (ss-1)->ttPv
-              && likelyFailLow){
-              dbg_mean_of(1);
-              r ++;}
+              && likelyFailLow)
+              r ++;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
