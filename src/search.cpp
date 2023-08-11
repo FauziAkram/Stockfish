@@ -1023,6 +1023,15 @@ moves_loop: // When in check, search starts here
                   && history < -3832 * depth)
                   continue;
 
+              if (   improving
+            && PvNode
+            && (ss-1)->moveCount > 8
+            && ttCapture
+            && move == ss->killers[1]
+            && (ss-1)->ttPv
+            && likelyFailLow)
+            r += 2;
+
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
               lmrDepth += history / 7011;
