@@ -1027,7 +1027,7 @@ moves_loop: // When in check, search starts here
               && (move == ss->killers[0] || move == ss->killers[1])
               && (ss-1)->ttPv
               && likelyFailLow)
-              r ++;
+              r += 2;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
