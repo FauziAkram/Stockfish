@@ -1023,8 +1023,8 @@ moves_loop: // When in check, search starts here
                   && history < -3832 * depth)
                   continue;
 
-             if (   (move == ss->killers[0] || move == ss->killers[1])
-              && (ss-1)->ttPv
+             if (   ttCapture
+              && (move == ss->killers[0] || move == ss->killers[1])
               && likelyFailLow)
               r ++;
 
