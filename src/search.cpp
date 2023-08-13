@@ -1098,7 +1098,7 @@ moves_loop: // When in check, search starts here
           else if (   PvNode
                    && move == ttMove
                    && move == ss->killers[0]
-                   && (*contHist[0])[movedPiece][to_sq(move)] >= 5168)
+                   && (*contHist[0])[movedPiece][to_sq(move)] >= 5000)
               extension = 1;
       }
 
@@ -1304,7 +1304,7 @@ moves_loop: // When in check, search starts here
                   // Reduce other moves if we have found at least one score improvement (~2 Elo)
                   if (   depth > 2
                       && depth < 12
-                      && beta  <  14362
+                      && beta  <  14350
                       && value > -12393)
                       depth -= 2;
 
