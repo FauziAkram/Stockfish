@@ -1151,6 +1151,13 @@ moves_loop: // When in check, search starts here
       else if (move == ttMove)
           r--;
 
+      if (   is_ok((ss-2)->killers[1])
+          && from_sq(move) == from_sq((ss-2)->killers[1])
+          && (*contHist[0])[movedPiece][to_sq(move)] <= 0
+          && move != ttMove
+          && type_of(move) != PROMOTION)
+          r++;
+
       ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
                      + (*contHist[0])[movedPiece][to_sq(move)]
                      + (*contHist[1])[movedPiece][to_sq(move)]
