@@ -1155,7 +1155,7 @@ moves_loop: // When in check, search starts here
           && from_sq(move) == from_sq((ss-2)->killers[1])
           && (*contHist[0])[movedPiece][to_sq(move)] <= 0
           && thisThread->captureHistory[movedPiece][to_sq(move)][type_of(pos.captured_piece())] <= 0
-          && move != ttMove
+          && move != ttMove)
           r++;
 
       ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
