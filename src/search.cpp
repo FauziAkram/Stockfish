@@ -1506,8 +1506,6 @@ moves_loop: // When in check, search starts here
                                       contHist,
                                       prevSq);
 
-    int quietCheckEvasions = 0;
-
     // Step 5. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
     while ((move = mp.next_move()) != MOVE_NONE)
@@ -1553,7 +1551,7 @@ moves_loop: // When in check, search starts here
             // We prune after the second quiet check evasion move, where being 'in check' is
             // implicitly checked through the counter, and being a 'quiet move' apart from
             // being a tt move is assumed after an increment because captures are pushed ahead.
-            if (quietCheckEvasions > 1)
+            if (!capture && ss->inCheck)
                 break;
 
             // Continuation history based pruning (~3 Elo)
@@ -1576,8 +1574,6 @@ moves_loop: // When in check, search starts here
                                                                   [capture]
                                                                   [pos.moved_piece(move)]
                                                                   [to_sq(move)];
-
-        quietCheckEvasions += !capture && ss->inCheck;
 
         // Step 7. Make and search the move
         pos.do_move(move, st, givesCheck);
