@@ -1152,7 +1152,7 @@ moves_loop: // When in check, search starts here
           r--;
 
       if (   is_ok((ss-2)->killers[1])
-          && from_sq(move) == from_sq((ss-2)->killers[1])
+          && move == (ss-2)->killers[1]
           && (*contHist[0])[movedPiece][to_sq(move)] <= 0
           && thisThread->captureHistory[movedPiece][to_sq(move)][type_of(pos.captured_piece())] <= 0
           && type_of(move) != PROMOTION)
