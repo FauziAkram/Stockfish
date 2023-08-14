@@ -1675,9 +1675,12 @@ moves_loop: // When in check, search starts here
 
   void update_pv(Move* pv, Move move, const Move* childPv) {
 
-    for (*pv++ = move; childPv && *childPv != MOVE_NONE; )
-        *pv++ = *childPv++;
-    *pv = MOVE_NONE;
+  if (childPv && *childPv != MOVE_NONE) {
+    *pv++ = *childPv++;
+    while (*childPv != MOVE_NONE)
+       *pv++ = *childPv++;
+  }
+  *pv = MOVE_NONE;
   }
 
 
