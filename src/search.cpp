@@ -1673,7 +1673,7 @@ moves_loop: // When in check, search starts here
 
   // update_pv() adds current move and appends child pv[]
 
-  void update_pv(Move* pv, Move move, const Move* childPv) {
+  void update_pv(Move* pv, const Move* childPv) {
 
   if (childPv && *childPv != MOVE_NONE) {
     *pv++ = *childPv++;
