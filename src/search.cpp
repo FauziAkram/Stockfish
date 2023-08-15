@@ -37,6 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0;
+TUNE(SetRange(-5000, 5000), xx1,xx2);
 
 namespace Search {
 
@@ -1153,8 +1155,8 @@ moves_loop: // When in check, search starts here
 
       if (   is_ok((ss-2)->killers[1])
           && from_sq(move) == from_sq((ss-2)->killers[1])
-          && (*contHist[0])[movedPiece][to_sq(move)] <= 0
-          && thisThread->captureHistory[movedPiece][to_sq(move)][type_of(pos.captured_piece())] <= 0
+          && (*contHist[0])[movedPiece][to_sq(move)] <= xx1
+          && thisThread->captureHistory[movedPiece][to_sq(move)][type_of(pos.captured_piece())] <= xx2
           && type_of(move) != PROMOTION)
           r++;
 
