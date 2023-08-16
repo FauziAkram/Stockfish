@@ -1527,8 +1527,7 @@ moves_loop: // When in check, search starts here
         if (bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
         {
             // Futility pruning and moveCount pruning (~10 Elo)
-            if (   !givesCheck
-                &&  to_sq(move) != prevSq
+            if (    to_sq(move) != prevSq
                 &&  futilityBase > -VALUE_KNOWN_WIN
                 &&  type_of(move) != PROMOTION)
             {
