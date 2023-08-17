@@ -978,6 +978,10 @@ moves_loop: // When in check, search starts here
           // Reduced depth of the next LMR search
           int lmrDepth = newDepth - r;
 
+          // Extend more in tactical positions
+          if (pos.non_pawn_material() < 5000)
+          extension += 1;
+
           if (   capture
               || givesCheck)
           {
