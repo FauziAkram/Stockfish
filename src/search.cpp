@@ -37,7 +37,12 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-
+int xx1=8, xx2=10, xx3=15799, xx4=9, xx5=14000;
+TUNE(SetRange(0, 22), xx1);
+TUNE(SetRange(0, 30), xx2);
+TUNE(SetRange(0, 30000), xx3);
+TUNE(SetRange(0, 30), xx4);
+TUNE(SetRange(0, 30000), xx5);
 namespace Search {
 
   LimitsType Limits;
@@ -348,7 +353,8 @@ void Thread::search() {
 
           // Reset aspiration window starting size
           Value prev = rootMoves[pvIdx].averageScore;
-          delta = Value(10) + int(prev) * prev / 15799;
+          delta = depth < xx1 ? Value(xx2) + int(prev) * prev / xx3  
+                              : Value(xx4) + int(prev) * prev / xx5;
           alpha = std::max(prev - delta,-VALUE_INFINITE);
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
