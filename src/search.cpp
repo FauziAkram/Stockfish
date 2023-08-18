@@ -348,7 +348,8 @@ void Thread::search() {
 
           // Reset aspiration window starting size
           Value prev = rootMoves[pvIdx].averageScore;
-          delta = Value(10) + int(prev) * prev / 15799;
+          delta = rootDepth < 8 ? Value(10) + int(prev) * prev / 16055  
+                                : Value(8)  + int(prev) * prev / 13455;
           alpha = std::max(prev - delta,-VALUE_INFINITE);
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
@@ -892,7 +893,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 413;
+    probCutBeta = beta + 409;
     if (   ss->inCheck
         && !PvNode
         && ttCapture
@@ -1001,12 +1002,12 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3832 * depth)
+                  && history < -3836 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / 6998;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
