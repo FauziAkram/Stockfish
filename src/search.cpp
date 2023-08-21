@@ -1151,12 +1151,12 @@ moves_loop: // When in check, search starts here
       else if (move == ttMove)
           r--;
 
-      if (moveCount == 9 && capture)
-      {dbg_mean_of(1);
-          r--;}
-      //if (moveCount == 8 && capture)
+      //if (moveCount == 9 && capture)
       //{dbg_mean_of(1);
       //    r--;}
+      if (moveCount == 8 && capture)
+      {dbg_mean_of(1);
+          r--;}
       //if (moveCount == 10 && capture)
       //{dbg_mean_of(1);
       //    r--;}
