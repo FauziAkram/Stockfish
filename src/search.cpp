@@ -1100,7 +1100,7 @@ moves_loop: // When in check, search starts here
               extension = 1;
         
           else if (pos.non_pawn_material() < 6000)
-          extension += 1;
+          extension -= 1;
       }
 
       // Add extension to new depth
