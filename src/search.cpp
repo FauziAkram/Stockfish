@@ -37,7 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-
+int xx1=4000;
+TUNE(xx1);
 namespace Search {
 
   LimitsType Limits;
@@ -1151,7 +1152,7 @@ moves_loop: // When in check, search starts here
       else if (move == ttMove)
           r--;
 
-      if (pos.non_pawn_material() < 3500)
+      if (pos.non_pawn_material() < xx1)
           r--;
 
       ss->statScore =  2 * thisThread->mainHistory[us][from_to(move)]
