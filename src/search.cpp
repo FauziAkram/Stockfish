@@ -1552,7 +1552,7 @@ moves_loop: // When in check, search starts here
                     bestValue = std::max(bestValue, futilityBase);
                     continue;
                 }
-                if (!capture && !ss->inCheck && ss->staticEval + 90 <= alpha)
+                if (!capture && !ss->inCheck && ss->staticEval + 100 <= alpha)
                     continue;
             }
 
