@@ -64,7 +64,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    int margins[] = {130, 238, 402, 520, 721, 841, 102, 1243};
+    int margins[] = {130, 238, 402, 520, 721, 841, 1024, 1243};
     return Value((margins[d - 1]) - 145 * improving - 38 * noTtCutNode * (d - improving));
   }
 
