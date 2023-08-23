@@ -64,8 +64,8 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    int margins[] = {125, 247, 412, 531, 719, 857, 1030, 1235};
-    return Value((margins[d - 1]) - 142 * improving - 38 * noTtCutNode * (d - improving));
+    int margins[] = {130, 238, 402, 520, 721, 841, 102, 1243};
+    return Value((margins[d - 1]) - 145 * improving - 38 * noTtCutNode * (d - improving));
   }
 
   // Reductions lookup table initialized at startup
@@ -757,7 +757,7 @@ namespace {
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (eval < alpha - 456 - 252 * depth * depth)
+    if (eval < alpha - 456 - 256 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -1002,7 +1002,7 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3832 * depth)
+                  && history < -3850 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
