@@ -1552,6 +1552,8 @@ moves_loop: // When in check, search starts here
                     bestValue = std::max(bestValue, futilityBase);
                     continue;
                 }
+                if (!capture && !ss->inCheck && ss->staticEval + 90 <= alpha)
+                    continue;
             }
 
             // We prune after the second quiet check evasion move, where being 'in check' is
