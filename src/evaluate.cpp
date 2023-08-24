@@ -54,7 +54,8 @@ using namespace std;
 
 namespace Stockfish {
 int xx1=14, xx2=8, xx3=200, xx4=214;
-TUNE(xx1,xx2,xx3,xx4);
+TUNE(SetRange(1, 28), xx1,xx2);
+TUNE(SetRange(1, 450), xx3,xx4);
 
 namespace Eval {
 
