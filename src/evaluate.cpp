@@ -53,6 +53,8 @@
 using namespace std;
 
 namespace Stockfish {
+int xx1=14, xx2=8, xx3=200, xx4=214;
+TUNE(xx1,xx2,xx3,xx4);
 
 namespace Eval {
 
@@ -163,7 +165,8 @@ Value Eval::evaluate(const Position& pos) {
        + optimism * (154 + npm +     pos.count<PAWN>())) / 1024;
 
   // Damp down the evaluation linearly when shuffling
-  v = v * (200 - pos.rule50_count()) / 214;
+  int used50_count=pos.rule50_count() < xx1 ? 0 : ((pos.rule50_count()-xx1) / xx2) * xx2 + xx1;
+  v = v * (xx3 - used50_count) / xx4;
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
