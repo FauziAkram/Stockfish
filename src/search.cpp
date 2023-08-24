@@ -37,7 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-
+int xx1=1372, xx2=1073, xx3=936, xx4=3832, xx5=138;
+TUNE(xx1,xx2,xx3,xx4,xx5);
 namespace Search {
 
   LimitsType Limits;
@@ -71,8 +72,8 @@ namespace {
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
-    int r = Reductions[d] * Reductions[mn];
-    return (r + 1372 - int(delta) * 1073 / int(rootDelta)) / 1024 + (!i && r > 936);
+    int r = (Reductions[d] + 1) * (Reductions[mn] + 1);
+    return (r + xx1 - int(delta) * xx2 / int(rootDelta)) / 1024 + (!i && r > xx3);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1001,7 +1002,7 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3832 * depth)
+                  && history < -xx4 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
@@ -1012,7 +1013,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 12
-                  && ss->staticEval + 112 + 138 * lmrDepth <= alpha)
+                  && ss->staticEval + 112 + xx5 * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
