@@ -71,8 +71,8 @@ namespace {
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
-    int r = Reductions[d] * Reductions[mn];
-    return (r + 1372 - int(delta) * 1073 / int(rootDelta)) / 1024 + (!i && r > 936);
+    int r = (Reductions[d] + 1) * (Reductions[mn] + 1);
+    return (r + 1315 - int(delta) * 1066 / int(rootDelta)) / 1024 + (!i && r > 947);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -1012,7 +1012,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 12
-                  && ss->staticEval + 112 + 138 * lmrDepth <= alpha)
+                  && ss->staticEval + 112 + 142 * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
