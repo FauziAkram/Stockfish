@@ -598,6 +598,7 @@ namespace {
     ss->doubleExtensions = (ss-1)->doubleExtensions;
     Square prevSq        = is_ok((ss-1)->currentMove) ? to_sq((ss-1)->currentMove) : SQ_NONE;
     ss->statScore        = 0;
+    ss->dr               = false;
 
     // Step 4. Transposition table lookup.
     excludedMove = ss->excludedMove;
@@ -607,6 +608,7 @@ namespace {
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ss->ttHit    ? tte->move() : MOVE_NONE;
     ttCapture = ttMove && pos.capture_stage(ttMove);
+    ss->ttm = ttMove;
 
     // At this point, if excluded, skip straight to step 6, static eval. However,
     // to save indentation, we list the condition in all code between here and there.
@@ -826,7 +828,12 @@ namespace {
     // Use qsearch if depth is equal or below zero (~9 Elo)
     if (    PvNode
         && !ttMove)
-        depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth);
+    {
+        depth -= 4 + 2 * (ss->ttHit && tte->depth() >= depth);
+        ss->dr = true;
+    }
+    else if (PvNode && depth <= 5 && !rootNode && !(ss-1)->ttm)
+        depth += 3;
 
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
@@ -1138,6 +1145,9 @@ moves_loop: // When in check, search starts here
 
       // Decrease reduction for PvNodes (~2 Elo)
       if (PvNode)
+          r--;
+
+      if (!rootNode && ttMove && (ss-1)->dr)
           r--;
 
       // Decrease reduction if ttMove has been singularly extended (~1 Elo)
