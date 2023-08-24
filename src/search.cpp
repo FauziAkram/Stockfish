@@ -857,6 +857,8 @@ namespace {
         MovePicker mp(pos, ttMove, probCutBeta - ss->staticEval, &captureHistory);
 
         while ((move = mp.next_move()) != MOVE_NONE)
+            if (capture && !givesCheck && quietCount > 0)
+            move.value += PawnValue;
             if (move != excludedMove && pos.legal(move))
             {
                 assert(pos.capture_stage(move));
