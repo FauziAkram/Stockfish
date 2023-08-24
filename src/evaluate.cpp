@@ -163,7 +163,8 @@ Value Eval::evaluate(const Position& pos) {
        + optimism * (154 + npm +     pos.count<PAWN>())) / 1024;
 
   // Damp down the evaluation linearly when shuffling
-  v = v * (200 - pos.rule50_count()) / 214;
+  int used50_count=pos.rule50_count() < 14 ? 0 : ((pos.rule50_count() - 14) / 7) * 7 + 14;
+  v = v * (191 - used50_count) / 221;
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
