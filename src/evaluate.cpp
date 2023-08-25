@@ -53,7 +53,12 @@
 using namespace std;
 
 namespace Stockfish {
-
+int xx1=126, xx2=915, xx3=9, xx4=154, xx5=14, xx6=14, xx7=7, xx8=7, xx9=14, xx10=188, xx11=216;
+TUNE(xx1,xx2);
+TUNE(SetRange(1, 28), xx3);
+TUNE(xx4);
+TUNE(SetRange(1, 28), xx5,xx6,xx7,xx8,xx9);
+TUNE(SetRange(1, 420), xx10,xx11);
 namespace Eval {
 
   string currentEvalFileName = "None";
@@ -153,17 +158,18 @@ Value Eval::evaluate(const Position& pos) {
   Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
   int material =  pos.non_pawn_material(stm) - pos.non_pawn_material(~stm)
-                + 126 * (pos.count<PAWN>(stm) - pos.count<PAWN>(~stm));
+                + xx1 * (pos.count<PAWN>(stm) - pos.count<PAWN>(~stm));
 
   // Blend optimism and eval with nnue complexity and material imbalance
   optimism += optimism * (nnueComplexity + abs(material - nnue)) / 512;
   nnue     -= nnue     * (nnueComplexity + abs(material - nnue)) / 32768;
 
-  v = (  nnue     * (915 + npm + 9 * pos.count<PAWN>())
-       + optimism * (154 + npm +     pos.count<PAWN>())) / 1024;
+  v = (  nnue     * (xx2 + npm + xx3 * pos.count<PAWN>())
+       + optimism * (xx4 + npm +     pos.count<PAWN>())) / 1024;
 
   // Damp down the evaluation linearly when shuffling
-  v = v * (200 - pos.rule50_count()) / 214;
+  int used50_count=pos.rule50_count() < xx5 ? 0 : ((pos.rule50_count() - xx6) / xx7) * xx8 + xx9;
+  v = v * (xx10 - used50_count) / xx11;
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
