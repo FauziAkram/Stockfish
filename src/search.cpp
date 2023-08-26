@@ -772,6 +772,20 @@ namespace {
         &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
+    if (   moveCount > 1
+    && depth > 4
+    && quietCount >= 2
+    && !cutNode
+    && !singularQuietLMR
+    && !excludedMove
+    && !priorCapture)
+{
+    if (ss->statScore < -2864 * depth
+        || (ss-1)->statScore < -2800 * depth
+        || (ss-2)->statScore < -2500 * depth)
+        return eval;
+}
+
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
