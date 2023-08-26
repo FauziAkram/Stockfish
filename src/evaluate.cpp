@@ -159,11 +159,11 @@ Value Eval::evaluate(const Position& pos) {
   optimism += optimism * (nnueComplexity + abs(material - nnue)) / 512;
   nnue     -= nnue     * (nnueComplexity + abs(material - nnue)) / 32768;
 
-  v = (  nnue     * (932 + npm + 8 * pos.count<PAWN>())
+  v = (  nnue     * (932 + npm + 9 * pos.count<PAWN>())
        + optimism * (153 + npm +     pos.count<PAWN>())) / 1024;
 
   // Damp down the evaluation linearly when shuffling
-  int used50_count=pos.rule50_count() < 15 ? 0 : ((pos.rule50_count() - 15) / 8) * 7 + 14;
+  int used50_count=pos.rule50_count() < 15 ? 0 : ((pos.rule50_count() - 15) / 7) * 7 + 14;
   v = v * (181 - used50_count) / 203;
 
   // Guarantee evaluation does not hit the tablebase range
