@@ -779,7 +779,7 @@ namespace {
     && !singularQuietLMR
     && !excludedMove
     && !priorCapture)
-{
+{   dbg_mean_of(1);
     if (ss->statScore < -2864 * depth
         || (ss-1)->statScore < -2800 * depth
         || (ss-2)->statScore < -2500 * depth)
