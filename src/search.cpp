@@ -37,7 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-
+int xx1=420, xx2=6, xx3=25000, xx4=140, xx5=40, xx6=9, xx7=306, xx8=24923;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 namespace Search {
 
   LimitsType Limits;
@@ -64,7 +65,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((140 - 40 * noTtCutNode) * (d - improving));
+    return Value((xx4 - xx5 * noTtCutNode) * (d - improving));
   }
 
   // Reductions lookup table initialized at startup
@@ -766,10 +767,10 @@ namespace {
     // Step 8. Futility pruning: child node (~40 Elo).
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
-        &&  depth < 9
-        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 306 >= beta
+        &&  depth < xx6
+        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / xx7 >= beta
         &&  eval >= beta
-        &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < xx8) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
@@ -902,6 +903,10 @@ moves_loop: // When in check, search starts here
         && abs(ttValue) <= VALUE_KNOWN_WIN
         && abs(beta) <= VALUE_KNOWN_WIN)
         return probCutBeta;
+
+    Value futMargin = Value(xx1 * depth);
+    if (depth < xx2 && ss->inCheck && !ss->ttPv && (tte->bound() & BOUND_LOWER) && ttValue >= beta + futMargin && ttValue < xx3)
+        return ttValue;
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
                                           nullptr                   , (ss-4)->continuationHistory,
