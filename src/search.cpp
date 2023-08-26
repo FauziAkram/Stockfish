@@ -1209,6 +1209,16 @@ moves_loop: // When in check, search starts here
       // Step 18. Full-depth search when LMR is skipped. If expected reduction is high, reduce its depth by 1.
       else if (!PvNode || moveCount > 1)
       {
+          if (moveCount > 1 && !capture && !ttMove && depth > 4)
+      {
+           int threshold = 35 + depth * 18 + (depth * depth) / 2;
+           if (ss->staticEval + threshold < alpha)
+        {
+            return alpha - 1;
+        }
+      }
+
+        
           // Increase reduction for cut nodes and not ttMove (~1 Elo)
           if (!ttMove && cutNode)
               r += 2;
