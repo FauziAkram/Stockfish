@@ -931,7 +931,7 @@ moves_loop: // When in check, search starts here
     {
       assert(is_ok(move));
 
-      if (move == excludedMove)
+      if (move == excludedMove || type_of(move) == EN_PASSANT)
           continue;
 
       // At root obey the "searchmoves" option and skip moves not listed in Root
