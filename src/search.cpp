@@ -64,7 +64,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((140 - 40 * noTtCutNode) * (d - improving));
+    return Value((136 - 40 * noTtCutNode) * (d - improving));
   }
 
   // Reductions lookup table initialized at startup
@@ -767,9 +767,9 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 9
-        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 306 >= beta
+        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 294 >= beta
         &&  eval >= beta
-        &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < 25236) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
@@ -903,6 +903,10 @@ moves_loop: // When in check, search starts here
         && abs(beta) <= VALUE_KNOWN_WIN)
         return probCutBeta;
 
+    Value futMargin = Value(386 * depth);
+    if (depth < 6 && ss->inCheck && !ss->ttPv && (tte->bound() & BOUND_LOWER) && ttValue >= beta + futMargin && ttValue < 25865)
+        return ttValue;
+
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
                                           nullptr                   , (ss-4)->continuationHistory,
                                           nullptr                   , (ss-6)->continuationHistory };
@@ -1012,7 +1016,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 12
-                  && ss->staticEval + 112 + 138 * lmrDepth <= alpha)
+                  && ss->staticEval + 115 + 138 * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
