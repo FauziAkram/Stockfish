@@ -199,15 +199,7 @@ namespace Stockfish::Eval::NNUE {
           static_assert((NumLanes * LaneSize) % RegisterSize == 0);
 
           const int ideal = (NumLanes * LaneSize) / RegisterSize;
-          if (ideal <= MaxRegisters)
-            return ideal;
-
-          // Look for the largest divisor of the ideal register count that is smaller than MaxRegisters
-          for (int divisor = MaxRegisters; divisor > 1; --divisor)
-            if (ideal % divisor == 0)
-              return divisor;
-
-          return 1;
+          return std::min(ideal, MaxRegisters);
       }
 
       static constexpr int NumRegs     = BestRegisterCount<vec_t, WeightType, TransformedFeatureDimensions, NumRegistersSIMD>();
