@@ -37,7 +37,11 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-
+int xx1= 17329, xx2= 0, xx3= 0, xx4= 21, xx5=258;
+TUNE(xx1);
+TUNE(SetRange(-100, 100), xx2);
+TUNE(SetRange(-400, 400), xx3);
+TUNE(xx4,xx5);
 namespace Search {
 
   LimitsType Limits;
@@ -775,10 +779,10 @@ namespace {
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 17329
+        && (ss-1)->statScore < xx1
         &&  eval >= beta
-        &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 21 * depth + 258
+        &&  eval >= ss->staticEval + xx2 * depth + xx3
+        &&  ss->staticEval >= beta - xx4 * depth + xx5
         && !excludedMove
         &&  pos.non_pawn_material(us)
         &&  ss->ply >= thisThread->nmpMinPly
