@@ -855,8 +855,8 @@ namespace {
         assert(probCutBeta < VALUE_INFINITE);
 
         bool useTTM =  pos.capture_stage(ttMove)
-                     || ((   ttValue >= probCutBeta + 500) 
-                          && (tte->depth() >= depth - 4) 
+                     || ((   ttValue >= probCutBeta + 450) 
+                          && (tte->depth() >= depth - 3) 
                           && (ttValue != VALUE_NONE));
 
         MovePicker mp(pos, useTTM ? ttMove : MOVE_NONE, probCutBeta - ss->staticEval, &captureHistory);
