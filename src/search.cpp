@@ -828,8 +828,15 @@ namespace {
         && !ttMove)
         depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth);
 
+    if (    !ss->ttPv
+        && depth < 6
+        && eval > beta + 80
+        && !ttMove){
+        dbg_mean_of(1);
+        depth -= 2};
+
     if (depth <= 0)
-        return qsearch<PV>(pos, ss, alpha, beta);
+        return qsearch<PvNode ? PV : NonPV>(pos, ss, alpha, beta);
 
     if (    cutNode
         &&  depth >= 8
