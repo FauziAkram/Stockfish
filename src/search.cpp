@@ -37,6 +37,10 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=6, xx2=80, xx3=2;
+TUNE(SetRange(-10, 20), xx1);
+TUNE(SetRange(-100, 200), xx2);
+TUNE(SetRange(-2, 6), xx3);
 
 namespace Search {
 
@@ -829,11 +833,10 @@ namespace {
         depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth);
 
     if (    !ss->ttPv
-        && depth < 6
-        && eval > beta + 80
-        && !ttMove){
-        dbg_mean_of(1);
-        depth -= 2;}
+        && depth < xx1
+        && eval > beta + xx2
+        && !ttMove)
+        depth -= xx3;
 
     if (depth <= 0)
         return qsearch<PvNode ? PV : NonPV>(pos, ss, alpha, beta);
