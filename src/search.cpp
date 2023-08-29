@@ -833,7 +833,7 @@ namespace {
         && eval > beta + 80
         && !ttMove){
         dbg_mean_of(1);
-        depth -= 2};
+        depth -= 2;}
 
     if (depth <= 0)
         return qsearch<PvNode ? PV : NonPV>(pos, ss, alpha, beta);
