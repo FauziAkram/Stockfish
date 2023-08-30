@@ -214,7 +214,7 @@ top:
       endMoves = generate<CAPTURES>(pos, cur);
 
       score<CAPTURES>();
-      partial_insertion_sort(cur, endMoves, std::numeric_limits<int>::min());
+      partial_insertion_sort(cur, endMoves, -5000);
       ++stage;
       goto top;
 
