@@ -37,6 +37,10 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=140, xx2=40, xx3=20, xx4=20, xx5=9, xx6=8, xx7=306, xx8=24923, xx9=7, xx10=197, xx11=248;
+TUNE(xx1);
+TUNE(SetRange(-20, 100), xx2,xx3,xx4);
+TUNE(xx5,xx6,xx7,xx8,xx9,xx10,xx11);
 
 namespace Search {
 
@@ -63,8 +67,8 @@ namespace {
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
-  Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((140 - 40 * noTtCutNode) * (d - improving));
+  Value futility_margin(Depth d, bool noTtCutNode, bool cutoff, bool improving) {
+    return Value((xx1 - (xx2 * noTtCutNode) - (xx3 * improving) - (xx4 * cutoff)) * (d - improving));
   }
 
   // Reductions lookup table initialized at startup
@@ -766,10 +770,10 @@ namespace {
     // Step 8. Futility pruning: child node (~40 Elo).
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
-        &&  depth < 9
-        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 306 >= beta
+        &&  depth < xx5
+        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, ss->cutoffCnt > xx6, improving) - (ss-1)->statScore / xx7 >= beta
         &&  eval >= beta
-        &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < xx8) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
@@ -983,9 +987,9 @@ moves_loop: // When in check, search starts here
           {
               // Futility pruning for captures (~2 Elo)
               if (   !givesCheck
-                  && lmrDepth < 7
+                  && lmrDepth < xx9
                   && !ss->inCheck
-                  && ss->staticEval + 197 + 248 * lmrDepth + PieceValue[pos.piece_on(to_sq(move))]
+                  && ss->staticEval + xx10 + xx11 * lmrDepth + PieceValue[pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
                   continue;
 
