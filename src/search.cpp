@@ -789,6 +789,9 @@ namespace {
         // Null move dynamic reduction based on depth and eval
         Depth R = std::min(int(eval - beta) / 173, 6) + depth / 3 + 4;
 
+        // Apply late move reductions to null move search depth
+        Depth nullDepth = std::max(0, newDepth - R);
+      
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
 
