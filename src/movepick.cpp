@@ -160,6 +160,9 @@ void MovePicker::score() {
                        : pt != PAWN ?    bool(to & threatenedByPawn)  * 15000
                        :                                                0 )
                        :                                                0 ;
+          // malus for move repetitions will make the engine less likely to play moves that were just retracted, avoiding pointless shuffling.
+          int repetition = pos.repetition_count(m);
+          m.value -= 5000 * repetition;
       }
       
       else // Type == EVASIONS
