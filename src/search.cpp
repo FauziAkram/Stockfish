@@ -37,6 +37,9 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0;
+TUNE(SetRange(-100, 100), xx1);
+TUNE(SetRange(-420, 420), xx2);
 
 namespace Search {
 
@@ -776,9 +779,8 @@ namespace {
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 17329
-        &&  eval >= beta
-        &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 21 * depth + 258
+        &&  eval >= ss->staticEval + xx1 * depth + xx2
+        &&  ss->staticEval >= beta
         && !excludedMove
         &&  pos.non_pawn_material(us)
         &&  ss->ply >= thisThread->nmpMinPly
