@@ -797,7 +797,7 @@ namespace {
 
         pos.do_null_move(st);
 
-        Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
+        Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, nullDepth, depth-R, !cutNode);
 
         pos.undo_null_move();
 
@@ -813,9 +813,9 @@ namespace {
 
             // Do verification search at high depths, with null move pruning disabled
             // until ply exceeds nmpMinPly.
-            thisThread->nmpMinPly = ss->ply + 3 * (depth-R) / 4;
+            thisThread->nmpMinPly = ss->ply + 3 * (nullDepth - R) / 4;
 
-            Value v = search<NonPV>(pos, ss, beta-1, beta, depth-R, false);
+            Value v = search<NonPV>(pos, ss, beta-1, beta, nullDepth, depth-R, false);
 
             thisThread->nmpMinPly = 0;
 
