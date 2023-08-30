@@ -782,7 +782,8 @@ namespace {
         && !excludedMove
         &&  pos.non_pawn_material(us)
         &&  ss->ply >= thisThread->nmpMinPly
-        &&  beta > VALUE_TB_LOSS_IN_MAX_PLY)
+        &&  beta > VALUE_TB_LOSS_IN_MAX_PLY
+        && !cutNode)
     {
         assert(eval - beta >= 0);
 
