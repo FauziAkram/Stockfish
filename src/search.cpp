@@ -797,7 +797,7 @@ namespace {
 
         pos.do_null_move(st);
 
-        Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, nullDepth, depth-R, !cutNode);
+        Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, nullDepth, !cutNode);
 
         pos.undo_null_move();
 
@@ -815,7 +815,7 @@ namespace {
             // until ply exceeds nmpMinPly.
             thisThread->nmpMinPly = ss->ply + 3 * (nullDepth - R) / 4;
 
-            Value v = search<NonPV>(pos, ss, beta-1, beta, nullDepth, depth-R, false);
+            Value v = search<NonPV>(pos, ss, beta-1, beta, nullDepth, false);
 
             thisThread->nmpMinPly = 0;
 
