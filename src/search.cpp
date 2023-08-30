@@ -37,6 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
+int xx1=300;
+TUNE(SetRange(-1000, 1000), xx1);
 
 namespace Search {
 
@@ -728,7 +730,10 @@ namespace {
         // ttValue can be used as a better position evaluation (~7 Elo)
         if (    ttValue != VALUE_NONE
             && (tte->bound() & (ttValue > eval ? BOUND_LOWER : BOUND_UPPER)))
-            eval = ttValue;
+            std::abs(ttValue - eval) <= xx1)
+    {
+        eval = ttValue;
+    }
     }
     else
     {
