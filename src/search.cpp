@@ -833,9 +833,9 @@ namespace {
 
     if (    !ss->ttPv
         && depth < 6
-        && eval > beta + 110
+        && eval > beta + 120
         && !ttMove)
-        depth -= 2;
+        depth --;
 
     if (    cutNode
         &&  depth >= 8
