@@ -37,10 +37,7 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-int xx1=140, xx2=40, xx3=20, xx4=20, xx5=9, xx6=8, xx7=306, xx8=24923, xx9=7, xx10=197, xx11=248;
-TUNE(xx1);
-TUNE(SetRange(-20, 100), xx2,xx3,xx4);
-TUNE(xx5,xx6,xx7,xx8,xx9,xx10,xx11);
+int xx1=137, xx2=41, xx3=21, xx4=21, xx5=9, xx6=8, xx7=308, xx8=24624, xx9=7, xx10=196, xx11=246;
 
 namespace Search {
 
