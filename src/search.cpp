@@ -37,7 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-
+int xx1=63, xx2=11124, xx3=4740, xx4=5, xx5=22;
+TUNE(xx1,xx2,xx3,xx4,xx5);
 namespace Search {
 
   LimitsType Limits;
@@ -58,6 +59,73 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+
+    constexpr int LMRMoveCountOffset[64][2] = {
+    { -1356,   -92 },
+    { -1149, -1198 },
+    {  -796, -1065 },
+    {  -104,  -395 },
+    {   843,   913 },
+    {  -923,  1856 },
+    {  -794,  1711 },
+    { -1159,  1199 },
+    {  -120,  -332 },
+    {  -290,  -299 },
+    {  -247,  -793 },
+    {  1049,  -267 },
+    {  2147,   593 },
+    {  2784,   803 },
+    {  2155,   827 },
+    {  1496,  -169 },
+    {  1093,   798 },
+    {    -3,   953 },
+    { -1607,   284 },
+    { -4022,  -697 },
+    { -2752, -3487 },
+    { -1885, -3658 },
+    {   243, -3762 },
+    {   103, -1732 },
+    {   595,   121 },
+    { -1067,   834 },
+    {  -527,   512 },
+    { -1191,   415 },
+    {  -133,  -389 },
+    {  -675,  -144 },
+    { -1323,  1593 },
+    {   -74,  1483 },
+    {   961,  2242 },
+    {  2137,  -269 },
+    {  1519,   386 },
+    {   515,   -50 },
+    {  -230,   693 },
+    { -1542,  1289 },
+    { -1462,   729 },
+    { -1075,  1172 },
+    {   289,   158 },
+    {  -961,  1709 },
+    {  -602,   510 },
+    {  -505,  3149 },
+    {   542,  1342 },
+    {   470,  1773 },
+    {   587,  -525 },
+    {  2379,   -53 },
+    {  3243,   444 },
+    {  2334,  -515 },
+    {   756,  -668 },
+    {  1097, -1786 },
+    {   412,    18 },
+    {  -131,     8 },
+    { -1227,   886 },
+    {   331,  -100 },
+    {  -825,   -36 },
+    { -1004,   356 },
+    { -1489,   632 },
+    {   768,  1202 },
+    {   798,  -118 },
+    {   685, -1162 },
+    {  -383, -1811 },
+    {  -751, -1408 },
+  };
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -1163,7 +1231,8 @@ moves_loop: // When in check, search starts here
                      - 4006;
 
       // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-      r -= ss->statScore / (11124 + 4740 * (depth > 5 && depth < 22));
+      r -=  (ss->statScore + LMRMoveCountOffset[std::min(moveCount, xx1)][capture])
+          / (xx2 + xx3 * (depth > xx4 && depth < xx5))
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
       // We use various heuristics for the sons of a node after the first son has
