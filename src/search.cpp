@@ -837,6 +837,7 @@ namespace {
         depth -= 2;
 
     if (    !ss->ttPv
+        && depth > 1
         && depth < 6
         && eval > beta + 140
         && !ttMove)
