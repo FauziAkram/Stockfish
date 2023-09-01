@@ -64,7 +64,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool cutoff, bool improving) {
-    return Value((155 - (40 * noTtCutNode) - (17 * improving) - (21 * cutoff)) * (d - improving));
+    return Value((159 - (39 * noTtCutNode) - (16 * improving) - (18 * cutoff)) * (d - improving));
   }
 
   // Reductions lookup table initialized at startup
@@ -767,9 +767,9 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 9
-        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, ss->cutoffCnt > 8, improving) - (ss-1)->statScore / 317 >= beta
+        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, ss->cutoffCnt > 8, improving) - (ss-1)->statScore / 321 >= beta
         &&  eval >= beta
-        &&  eval < 25228) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < 24666) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
@@ -985,7 +985,7 @@ moves_loop: // When in check, search starts here
               if (   !givesCheck
                   && lmrDepth < 7
                   && !ss->inCheck
-                  && ss->staticEval + 205 + 239 * lmrDepth + PieceValue[pos.piece_on(to_sq(move))]
+                  && ss->staticEval + 196 + 242 * lmrDepth + PieceValue[pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
                   continue;
 
