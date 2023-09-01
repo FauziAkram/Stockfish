@@ -37,8 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-int xx1=63, xx2=11124, xx3=4740, xx4=5, xx5=22;
-TUNE(xx1,xx2,xx3,xx4,xx5);
+xx2=11124, xx3=4740, xx4=5, xx5=22;
+TUNE(xx2,xx3,xx4,xx5);
 namespace Search {
 
   LimitsType Limits;
@@ -1231,7 +1231,7 @@ moves_loop: // When in check, search starts here
                      - 4006;
 
       // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-      r -=  (ss->statScore + LMRMoveCountOffset[std::min(moveCount, xx1)][capture])
+      r -=  (ss->statScore + LMRMoveCountOffset[std::min(moveCount, 63)][capture])
           / (xx2 + xx3 * (depth > xx4 && depth < xx5));
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
