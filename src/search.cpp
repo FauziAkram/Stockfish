@@ -767,7 +767,7 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 9
-        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, ss->cutoffCnt > 8, improving) - (ss-1)->statScore / 321 >= beta
+        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, ss->cutoffCnt > 9, improving) - (ss-1)->statScore / 321 >= beta
         &&  eval >= beta
         &&  eval < 24666) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
@@ -983,7 +983,7 @@ moves_loop: // When in check, search starts here
           {
               // Futility pruning for captures (~2 Elo)
               if (   !givesCheck
-                  && lmrDepth < 7
+                  && lmrDepth < 6
                   && !ss->inCheck
                   && ss->staticEval + 196 + 242 * lmrDepth + PieceValue[pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
