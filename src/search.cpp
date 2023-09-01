@@ -836,6 +836,12 @@ namespace {
         && !ttMove)
         depth -= 2;
 
+    if (    !ss->ttPv
+        && depth < 6
+        && eval > beta + 140
+        && !ttMove)
+        depth --;
+
     probCutBeta = beta + 168 - 61 * improving;
 
     // Step 11. ProbCut (~10 Elo)
