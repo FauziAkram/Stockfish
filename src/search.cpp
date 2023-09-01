@@ -37,7 +37,7 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-xx2=11124, xx3=4740, xx4=5, xx5=22;
+int xx2=11124, xx3=4740, xx4=5, xx5=22;
 TUNE(xx2,xx3,xx4,xx5);
 namespace Search {
 
