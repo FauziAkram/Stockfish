@@ -37,7 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-
+int xx1= 5000;
+Tune(xx1);
 namespace Search {
 
   LimitsType Limits;
@@ -1741,7 +1742,8 @@ moves_loop: // When in check, search starts here
   // by moves at ply -1, -2, -4, and -6 with current move.
 
   void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
-
+  bonus = std::min(bonus, xx1);
+    
     for (int i : {1, 2, 4, 6})
     {
         // Only update the first 2 continuation histories if we are in check
