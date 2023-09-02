@@ -37,8 +37,8 @@
 #include "nnue/evaluate_nnue.h"
 
 namespace Stockfish {
-int xx1= 3500;
-TUNE(xx1);
+int xx1=5, xx2=800, xx3=12, xx4= 3500, xx5=336, xx6=547, xx7=1561;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7);
 namespace Search {
 
   LimitsType Limits;
@@ -83,7 +83,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(336 * d - 547, 1561);
+    return std::min(xx5 * d - xx6, xx7);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -1357,8 +1357,8 @@ moves_loop: // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + (bestValue < alpha - 800) + ((ss-1)->moveCount > 12);
-        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, std::min((stat_bonus(depth) * bonus), xx1));
+        int bonus = (depth > xx1) + (PvNode || cutNode) + (bestValue < alpha - xx2) + ((ss-1)->moveCount > xx3) + ((ss-2)->moveCount == 1);
+        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, std::min((stat_bonus(depth) * bonus), xx4));
         thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus / 2;
     }
 
