@@ -1550,7 +1550,7 @@ moves_loop: // When in check, search starts here
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + xx2 * (!capture) + PieceValue[pos.piece_on(to_sq(move))];
+                futilityValue = futilityBase + xx2 * !capture + PieceValue[pos.piece_on(to_sq(move))];
 
                 if (futilityValue <= alpha)
                 {
@@ -1558,7 +1558,7 @@ moves_loop: // When in check, search starts here
                     continue;
                 }
 
-                if (futilityBase + xx3 * (!capture) <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
+                if (futilityBase + xx3 * !capture <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
                 {
                     bestValue = std::max(bestValue, futilityBase);
                     continue;
