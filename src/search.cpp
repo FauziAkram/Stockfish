@@ -46,9 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1= -50, xx2=200;
-TUNE(SetRange(-350, 350), xx1);
-TUNE(xx2);
+int xx1= 200, xx2=0, xx3=0, xx4=0, xx5=0;
+TUNE(SetRange(-350, 400), xx1,xx2,xx3,xx4,xx5);
+
 
 namespace Search {
 
@@ -1471,7 +1471,7 @@ moves_loop: // When in check, search starts here
 
     // Step 4. Static evaluation of the position
     if (ss->inCheck)
-        bestValue = futilityBase + xx1 * (!pos.capture(move) = -VALUE_INFINITE;
+        bestValue = futilityBase + xx2 * (!pos.capture(move) = -VALUE_INFINITE;
     else
     {
         if (ss->ttHit)
@@ -1504,7 +1504,7 @@ moves_loop: // When in check, search starts here
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = std::min(ss->staticEval, bestValue) + xx2;
+        futilityBase = std::min(ss->staticEval, bestValue) + xx1;
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
@@ -1544,13 +1544,13 @@ moves_loop: // When in check, search starts here
             // Futility pruning and moveCount pruning (~10 Elo)
             if (   !givesCheck
                 &&  to_sq(move) != prevSq
-                &&  futilityBase + xx1 * (!pos.capture(move) > -VALUE_KNOWN_WIN
+                &&  futilityBase + xx3 * (!pos.capture(move) > -VALUE_KNOWN_WIN
                 &&  type_of(move) != PROMOTION)
             {
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + xx1 * (!pos.capture(move) + PieceValue[pos.piece_on(to_sq(move))];
+                futilityValue = futilityBase + xx4 * (!pos.capture(move) + PieceValue[pos.piece_on(to_sq(move))];
 
                 if (futilityValue <= alpha)
                 {
@@ -1558,7 +1558,7 @@ moves_loop: // When in check, search starts here
                     continue;
                 }
 
-                if (futilityBase + xx1 * (!pos.capture(move) <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
+                if (futilityBase + xx5 * (!pos.capture(move) <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
                 {
                     bestValue = std::max(bestValue, futilityBase);
                     continue;
