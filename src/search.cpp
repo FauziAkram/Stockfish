@@ -1471,7 +1471,7 @@ moves_loop: // When in check, search starts here
 
     // Step 4. Static evaluation of the position
     if (ss->inCheck)
-        bestValue = futilityBase = -VALUE_INFINITE;
+        bestValue = futilityBase + xx1 * (!pos.capture(move) = -VALUE_INFINITE;
     else
     {
         if (ss->ttHit)
@@ -1504,7 +1504,7 @@ moves_loop: // When in check, search starts here
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = std::min(ss->staticEval, bestValue) + xx2 + xx1 * (!pos.capture(move));
+        futilityBase = std::min(ss->staticEval, bestValue) + xx2;
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
@@ -1544,13 +1544,13 @@ moves_loop: // When in check, search starts here
             // Futility pruning and moveCount pruning (~10 Elo)
             if (   !givesCheck
                 &&  to_sq(move) != prevSq
-                &&  futilityBase > -VALUE_KNOWN_WIN
+                &&  futilityBase + xx1 * (!pos.capture(move) > -VALUE_KNOWN_WIN
                 &&  type_of(move) != PROMOTION)
             {
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + PieceValue[pos.piece_on(to_sq(move))];
+                futilityValue = futilityBase + xx1 * (!pos.capture(move) + PieceValue[pos.piece_on(to_sq(move))];
 
                 if (futilityValue <= alpha)
                 {
@@ -1558,7 +1558,7 @@ moves_loop: // When in check, search starts here
                     continue;
                 }
 
-                if (futilityBase <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
+                if (futilityBase + xx1 * (!pos.capture(move) <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
                 {
                     bestValue = std::max(bestValue, futilityBase);
                     continue;
