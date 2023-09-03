@@ -92,7 +92,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(336 * d - 547, 1561);
+    return std::min(327 * d - 511, 1566);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -1365,8 +1365,8 @@ moves_loop: // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + (bestValue < alpha - 800) + ((ss-1)->moveCount > 12);
-        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
+        int bonus = (depth > 5) + (PvNode || cutNode) + (bestValue < alpha - 790) + ((ss-1)->moveCount > 13) + ((ss-2)->moveCount == 1);
+        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, std::min((stat_bonus(depth) * bonus), 3700));
         thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus / 2;
     }
 
