@@ -46,7 +46,7 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1= 200, xx2=0, xx3=0, xx4=0, xx5=0;
+int xx1= 200, xx2=0, xx3=0;
 TUNE(SetRange(-350, 400), xx1,xx2,xx3,xx4,xx5);
 
 
@@ -1471,7 +1471,7 @@ moves_loop: // When in check, search starts here
 
     // Step 4. Static evaluation of the position
     if (ss->inCheck)
-        bestValue = futilityBase + xx2 * (!pos.capture(move) = -VALUE_INFINITE;
+        bestValue = futilityBase = -VALUE_INFINITE;
     else
     {
         if (ss->ttHit)
@@ -1544,13 +1544,13 @@ moves_loop: // When in check, search starts here
             // Futility pruning and moveCount pruning (~10 Elo)
             if (   !givesCheck
                 &&  to_sq(move) != prevSq
-                &&  futilityBase + xx3 * (!pos.capture(move) > -VALUE_KNOWN_WIN
+                &&  futilityBase > -VALUE_KNOWN_WIN
                 &&  type_of(move) != PROMOTION)
             {
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + xx4 * (!pos.capture(move) + PieceValue[pos.piece_on(to_sq(move))];
+                futilityValue = futilityBase + xx2 * (!pos.capture(move) + PieceValue[pos.piece_on(to_sq(move))];
 
                 if (futilityValue <= alpha)
                 {
@@ -1558,7 +1558,7 @@ moves_loop: // When in check, search starts here
                     continue;
                 }
 
-                if (futilityBase + xx5 * (!pos.capture(move) <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
+                if (futilityBase + xx3 * (!pos.capture(move) <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
                 {
                     bestValue = std::max(bestValue, futilityBase);
                     continue;
