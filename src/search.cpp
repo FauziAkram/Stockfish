@@ -1555,7 +1555,7 @@ moves_loop: // When in check, search starts here
                     continue;
                 }
 
-                if (futilityBase + 17 * !capture - 5 * PvNode <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
+                if (futilityBase + 17 * !capture <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
                 {
                     bestValue = std::max(bestValue, futilityBase);
                     continue;
