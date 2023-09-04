@@ -46,6 +46,11 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=17280, xx2=21, xx3=258, xx4=30;
+TUNE(xx1);
+TUNE(SetRange(0, 70), xx2);
+TUNE(xx3);
+TUNE(SetRange(-10, 110), xx4);
 
 namespace Search {
 
@@ -784,10 +789,10 @@ namespace {
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 17329
+        && (ss-1)->statScore < xx1
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 21 * depth + 258
+        &&  ss->staticEval >= beta - xx2 * depth + xx3 - xx4 * cutNode
         && !excludedMove
         &&  pos.non_pawn_material(us)
         &&  ss->ply >= thisThread->nmpMinPly
