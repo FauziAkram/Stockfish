@@ -1547,7 +1547,7 @@ moves_loop: // When in check, search starts here
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + 9 * PvNode - 25 * ss->ttHit + PieceValue[pos.piece_on(to_sq(move))];
+                futilityValue = futilityBase - 28 * ss->ttHit + PieceValue[pos.piece_on(to_sq(move))];
               
                 if (futilityValue <= alpha)
                 {
