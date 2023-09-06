@@ -849,7 +849,7 @@ namespace {
         depth -= 2;
 
     probCutMargin = ProbCutMargin[std::min(depth, 26)];
-    probCutBeta = beta + probCutMargin - (probCutMargin / 4) * improving;
+    probCutBeta = beta + probCutMargin - (2 * probCutMargin / 9) * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
