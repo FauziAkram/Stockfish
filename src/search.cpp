@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=31, xx2=40, xx3=4;
+TUNE(xx1,xx2,xx3);
 namespace Search {
 
   LimitsType Limits;
@@ -175,7 +176,7 @@ void Search::init() {
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int((20.57 + std::log(Threads.size()) / 2) * std::log(i));
   for (int i = 1; i < 26 + 1; i++)
-      ProbCutMargin[i] = Value(std::sqrt(31 - i) * 40);
+      ProbCutMargin[i] = Value(std::sqrt(xx1 - i) * xx2);
 }
 
 
@@ -849,7 +850,7 @@ namespace {
         depth -= 2;
 
     probCutMargin = ProbCutMargin[std::min(depth, 26)];
-    probCutBeta = beta + probCutMargin - (probCutMargin / 4) * improving;
+    probCutBeta = beta + probCutMargin - (probCutMargin / xx3) * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
