@@ -46,7 +46,7 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=168, xx2=48, xx3=20, xx4=420
 namespace Search {
 
   LimitsType Limits;
@@ -845,7 +845,7 @@ namespace {
         && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + 168 - 61 * improving;
+    probCutBeta = beta + xx1 - xx2 * improving - xx3 * cutNode;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -901,7 +901,7 @@ namespace {
 moves_loop: // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 413;
+    probCutBeta = beta + xx4;
     if (   ss->inCheck
         && !PvNode
         && ttCapture
