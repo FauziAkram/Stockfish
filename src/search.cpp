@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=3;
+TUNE(xx1);
 namespace Search {
 
   LimitsType Limits;
@@ -796,7 +797,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 173, 6) + depth / (3 + moveCount < 3) + 4;
+        Depth R = std::min(int(eval - beta) / 173, 6) + depth / (3 + moveCount < xx1) + 4;
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
