@@ -1108,7 +1108,7 @@ moves_loop: // When in check, search starts here
                    && (*contHist[0])[movedPiece][to_sq(move)] >= 5168)
               extension = 1;
             
-          else if ((ss-1)->currentMove == MOVE_NULL && abs(ss->staticEval - (ss-1)->staticEval) > 800)
+          else if ((ss-1)->currentMove == MOVE_NULL && abs(ss->staticEval - (ss-1)->staticEval) > 1000)
               extension = 1;
       }
 
