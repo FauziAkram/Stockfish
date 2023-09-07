@@ -807,7 +807,7 @@ namespace {
 
         pos.undo_null_move();
 
-        if (nullValue >= beta)
+        if (nullValue >= beta && tte->bound() == BOUND_EXACT)
         {
             // Do not return unproven mate or TB scores
             nullValue = std::min(nullValue, VALUE_TB_WIN_IN_MAX_PLY-1);
