@@ -1541,7 +1541,7 @@ moves_loop: // When in check, search starts here
             // Futility pruning and moveCount pruning (~10 Elo)
             if (   !givesCheck
                 &&  to_sq(move) != prevSq
-                &&  futilityBase > -VALUE_KNOWN_WIN
+                &&  futilityBase - (tte->bound() & BOUND_LOWER) > -VALUE_KNOWN_WIN
                 &&  type_of(move) != PROMOTION)
             {
                 if (moveCount > 2)
