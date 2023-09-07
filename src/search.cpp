@@ -1501,7 +1501,10 @@ moves_loop: // When in check, search starts here
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = std::min(ss->staticEval, bestValue) + 200;
+        if (ttValue != VALUE_NONE)
+        futilityBase = std::min(ttValue, bestValue) + 195;
+  else
+        futilityBase = std::min(ss->staticEval, bestValue) + 195;
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
