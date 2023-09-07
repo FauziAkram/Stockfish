@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1;
+TUNE(SetRange(-5000, 5000), xx1);
 
 namespace Search {
 
@@ -1541,7 +1543,7 @@ moves_loop: // When in check, search starts here
             // Futility pruning and moveCount pruning (~10 Elo)
             if (   !givesCheck
                 &&  to_sq(move) != prevSq
-                &&  futilityBase > -VALUE_KNOWN_WIN
+                &&  futilityBase - xx1 > -VALUE_KNOWN_WIN
                 &&  type_of(move) != PROMOTION)
             {
                 if (moveCount > 2)
