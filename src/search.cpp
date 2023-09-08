@@ -908,8 +908,8 @@ moves_loop: // When in check, search starts here
         && (tte->bound() & BOUND_LOWER)
         && tte->depth() >= depth - 4
         && ttValue >= probCutBeta
-        && abs(ttValue) <= 4200
-        && abs(beta) <= 4200)
+        && abs(ttValue) <= 4278
+        && abs(beta) <= 4406)
         return probCutBeta;
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
@@ -1049,7 +1049,7 @@ moves_loop: // When in check, search starts here
               &&  move == ttMove
               && !excludedMove // Avoid recursive singular search
            /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
-              &&  abs(ttValue) < 4200
+              &&  abs(ttValue) < 4560
               && (tte->bound() & BOUND_LOWER)
               &&  tte->depth() >= depth - 3)
           {
@@ -1541,7 +1541,7 @@ moves_loop: // When in check, search starts here
             // Futility pruning and moveCount pruning (~10 Elo)
             if (   !givesCheck
                 &&  to_sq(move) != prevSq
-                &&  futilityBase > -4200 
+                &&  futilityBase > -4260 
                 &&  type_of(move) != PROMOTION)
             {
                 if (moveCount > 2)
