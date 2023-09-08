@@ -46,7 +46,7 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=600, xx2=3;
+int xx1=600, xx2=8;
 TUNE(xx1);
 TUNE(SetRange(0, 30), xx2);
 
@@ -1086,7 +1086,7 @@ moves_loop: // When in check, search starts here
               else if (singularBeta >= beta)
                   return singularBeta;
 
-              else if (ttValue >= beta && !PvNode && value >= beta + xx1 && depth > xx2)
+              else if (ttValue >= beta && !PvNode && value >= beta + xx1 && depth < xx2)
                   return beta;
 
               // If the eval of ttMove is greater than beta, we reduce it (negative extension) (~7 Elo)
