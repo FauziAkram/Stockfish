@@ -767,7 +767,7 @@ namespace {
         if (depth == 1)
             return ss->staticEval;
         else 
-            depth -= 1;
+            depth -= 2;
     }
 
     // Step 7. Razoring (~1 Elo).
