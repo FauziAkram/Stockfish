@@ -764,7 +764,7 @@ namespace {
 
     if ((ss-1)->currentMove == MOVE_NULL && ss->staticEval >= beta + 17 * depth)
     {
-        if (depth == 1)
+        if (depth < 3)
             return ss->staticEval;
         else 
             depth -= 2;
