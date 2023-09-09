@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=0, xx2=90;
+TUNE(SetRange(-1500, 1500), xx1);
+TUNE(SetRange(0, 250), xx2);
 
 namespace Search {
 
@@ -653,7 +656,7 @@ namespace {
 
         // Partial workaround for the graph history interaction problem
         // For high rule50 counts don't produce transposition table cutoffs.
-        if (pos.rule50_count() < 90)
+        if ((cutNode || ttValue <= alpha + xx1) && pos.rule50_count() < xx2)
             return ttValue;
     }
 
