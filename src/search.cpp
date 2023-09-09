@@ -762,7 +762,7 @@ namespace {
                 : (ss-4)->staticEval != VALUE_NONE ? ss->staticEval > (ss-4)->staticEval
                 : true;
 
-    if ((ss-1)->currentMove == MOVE_NULL && ss->staticEval >= beta + 17 * depth)
+    if ((ss-1)->currentMove == MOVE_NULL && ss->staticEval >= beta + 18 * depth)
     {
         if (depth < 3)
             return ss->staticEval;
