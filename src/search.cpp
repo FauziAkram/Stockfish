@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=15, xx2=1;
+TUNE(SetRange(-30, 70), xx1);
+TUNE(SetRange(0, 10), xx2);
 
 namespace Search {
 
@@ -761,6 +764,14 @@ namespace {
     improving =   (ss-2)->staticEval != VALUE_NONE ? ss->staticEval > (ss-2)->staticEval
                 : (ss-4)->staticEval != VALUE_NONE ? ss->staticEval > (ss-4)->staticEval
                 : true;
+
+    if ((ss-1)->currentMove == MOVE_NULL && ss->staticEval >= beta + xx1 * depth)
+    {
+        if (depth == 1)
+            return ss->staticEval;
+        else 
+            depth -= 1;
+    }
 
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
