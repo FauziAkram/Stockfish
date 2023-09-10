@@ -46,6 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=12, xx2=14362, xx3=12393, xx4=2, xx5=2, xx6=6, xx7=3, xx8=2;
+TUNE(SetRange(0, 30), xx1);
+TUNE(xx2,xx3);
+TUNE(SetRange(1, 20), xx4,xx5,xx6,xx7,xx8);
 
 namespace Search {
 
@@ -1314,10 +1318,10 @@ moves_loop: // When in check, search starts here
               {
                   // Reduce other moves if we have found at least one score improvement (~2 Elo)
                   if (   depth > 2
-                      && depth < 12
-                      && beta  <  14362
-                      && value > -12393)
-                      depth -= 2;
+                      && depth < xx1
+                      && beta  <  xx2
+                      && value > -xx3)
+                      depth -= (ss-1)->moveCount < xx4 && ss->moveCount < xx5 && depth < xx6 ? xx7 : xx8;
 
                   assert(depth > 0);
                   alpha = value; // Update alpha! Always alpha < beta
