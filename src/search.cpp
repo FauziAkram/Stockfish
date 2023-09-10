@@ -46,7 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=5, xx2=40, xx3=3450, xx4=6600;
+TUNE(SetRange(-20, 20), xx1);
+TUNE(SetRange(1, 250), xx2);
+TUNE(xx3,xx4);
 namespace Search {
 
   LimitsType Limits;
