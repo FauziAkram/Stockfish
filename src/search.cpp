@@ -46,9 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=5, xx2=40, xx3=3450, xx4=6600;
+int xx0=7,xx1=5, xx2=12, xx3=3450, xx4=6600;
 TUNE(SetRange(-20, 20), xx1);
-TUNE(SetRange(1, 250), xx2);
+TUNE(SetRange(0, 50), xx0, xx2);
 TUNE(xx3,xx4);
 namespace Search {
 
@@ -1012,7 +1012,7 @@ moves_loop: // When in check, search starts here
                             + (*contHist[3])[movedPiece][to_sq(move)];
 
               // Continuation history based pruning (~2 Elo)
-              if (   lmrDepth < (xx1 + ((10 * depth) / xx2))
+              if (   lmrDepth < (xx1 + (depth > xx2) + (depth > xx0))
                   && history < -xx3 * depth)
                   continue;
 
