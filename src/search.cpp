@@ -46,6 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=300, xx2=400, xx3=1000;
+TUNE(SetRange(0, 750), xx1);
+TUNE(SetRange(0, 1000), xx2);
+TUNE(SetRange(0, 2500), xx3);
 
 namespace Search {
 
@@ -1207,7 +1211,7 @@ moves_loop: // When in check, search starts here
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
-              int bonus = value <= alpha ? -stat_bonus(newDepth)
+              int bonus = value <= alpha ? -std::min(xx1 * d - xx2, xx3)
                         : value >= beta  ?  stat_bonus(newDepth)
                                          :  0;
 
