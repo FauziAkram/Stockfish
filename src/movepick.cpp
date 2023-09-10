@@ -27,6 +27,9 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=20000, xx2=8000;
+TUNE(SetRange(0, 60000), xx1);
+TUNE(SetRange(0, 16604), xx2);
 
 namespace {
 
@@ -154,6 +157,8 @@ void MovePicker::score() {
                       :                !(to & threatenedByPawn)  ? 15000
                       :                                            0 )
                       :                                            0 ;
+
+          m.value += (pos.attacks_by<KING>(~pos.side_to_move()) & to_sq(m)) ? 0 : xx1 * (pos.non_pawn_material() < xx2);
 
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
