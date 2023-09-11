@@ -155,6 +155,8 @@ void MovePicker::score() {
                       :                                            0 )
                       :                                            0 ;
 
+          m.value += (pos.attacks_by<KING>(~pos.side_to_move()) & to_sq(m)) ? 0 : 20000 * (pos.non_pawn_material() < 8500);
+
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
                         (pt == QUEEN ?   bool(to & threatenedByRook)  * 50000
