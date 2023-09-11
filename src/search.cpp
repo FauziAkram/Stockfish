@@ -92,7 +92,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(336 * d - 547, 1561);
+    return std::min(340 * d - 535, 1609);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -172,7 +172,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int((20.57 + std::log(Threads.size()) / 2) * std::log(i));
+      Reductions[i] = int((20.82 + std::log(Threads.size()) / 2) * std::log(i));
 }
 
 
@@ -358,7 +358,7 @@ void Thread::search() {
 
           // Reset aspiration window starting size
           Value prev = rootMoves[pvIdx].averageScore;
-          delta = Value(10) + int(prev) * prev / 15799;
+          delta = Value(10) + int(prev) * prev / 15941;
           alpha = std::max(prev - delta,-VALUE_INFINITE);
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
@@ -776,15 +776,15 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 9
-        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 306 >= beta
+        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 308 >= beta
         &&  eval >= beta
-        &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < 24697) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 17329
+        && (ss-1)->statScore < 17216
         &&  eval >= beta
         &&  eval >= ss->staticEval
         &&  ss->staticEval >= beta - 21 * depth + 258
@@ -845,7 +845,7 @@ namespace {
         && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + 168 - 61 * improving;
+    probCutBeta = beta + 170 - 57 * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -994,7 +994,7 @@ moves_loop: // When in check, search starts here
               if (   !givesCheck
                   && lmrDepth < 7
                   && !ss->inCheck
-                  && ss->staticEval + 197 + 248 * lmrDepth + PieceValue[pos.piece_on(to_sq(move))]
+                  && ss->staticEval + 194 + 241 * lmrDepth + PieceValue[pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 7 < alpha)
                   continue;
 
@@ -1009,13 +1009,13 @@ moves_loop: // When in check, search starts here
                             + (*contHist[3])[movedPiece][to_sq(move)];
 
               // Continuation history based pruning (~2 Elo)
-              if (   lmrDepth < 6
-                  && history < -3832 * depth)
+              if (   lmrDepth < 7
+                  && history < -3800 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / 6895;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
@@ -1045,7 +1045,7 @@ moves_loop: // When in check, search starts here
           // Their values are optimized to time controls of 180+1.8 and longer
           // so changing them requires tests at this type of time controls.
           if (   !rootNode
-              &&  depth >= 4 - (thisThread->completedDepth > 22) + 2 * (PvNode && tte->is_pv())
+              &&  depth >= 4 - (thisThread->completedDepth > 21) + 2 * (PvNode && tte->is_pv())
               &&  move == ttMove
               && !excludedMove // Avoid recursive singular search
            /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
@@ -1089,7 +1089,7 @@ moves_loop: // When in check, search starts here
 
               // If we are on a cutNode, reduce it based on depth (negative extension) (~1 Elo)
               else if (cutNode)
-                  extension = depth < 17 ? -3 : -1;
+                  extension = depth < 16 ? -3 : -1;
 
               // If the eval of ttMove is less than value, we reduce it (negative extension) (~1 Elo)
               else if (ttValue <= value)
