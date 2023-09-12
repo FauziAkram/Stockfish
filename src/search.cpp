@@ -46,7 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=140, xx2=40, xx3=0, xx4=936;
+TUNE(xx1);
+TUNE(SetRange(-40, 100), xx2,xx3);
+TUNE(xx4);
 namespace Search {
 
   LimitsType Limits;
@@ -73,7 +76,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((140 - 40 * noTtCutNode) * (d - improving));
+    return Value((xx1 - xx2 * noTtCutNode - xx3 * d) * (d - improving));
   }
 
   // Reductions lookup table initialized at startup
@@ -82,7 +85,7 @@ namespace {
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
     return  (reductionScale + 1372 - int(delta) * 1073 / int(rootDelta)) / 1024
-          + (!i && reductionScale > 936);
+          + (!i && reductionScale > xx4);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
