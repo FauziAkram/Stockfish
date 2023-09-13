@@ -139,11 +139,6 @@ void MovePicker::score() {
 
       else if constexpr (Type == QUIETS)
       {
-          Piece     pc   = pos.moved_piece(m);
-          PieceType pt   = type_of(pos.moved_piece(m));
-          Square    from = from_sq(m);
-          Square    to   = to_sq(m);
-
           // histories
           m.value =  2 * (*mainHistory)[pos.side_to_move()][from_to(m)];
           m.value += 2 * (*continuationHistory[0])[pc][to];
