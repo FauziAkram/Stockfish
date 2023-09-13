@@ -29,7 +29,7 @@
 namespace Stockfish {
 int xx1=7, xx2=16, xx3=1000;
 TUNE(xx1,xx2);
-TUNE(SetRange(-20, 70), xx3);
+TUNE(SetRange(-200, 6000), xx3);
 
 namespace {
 
