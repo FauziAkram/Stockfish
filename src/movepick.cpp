@@ -127,6 +127,11 @@ void MovePicker::score() {
 
   for (auto& m : *this)
   {   
+
+      Square    from = from_sq(m);
+      Square    to   = to_sq(m);
+      Piece     pc   = pos.moved_piece(m);
+      PieceType pt   = type_of(pc);   
     
       if constexpr (Type == CAPTURES)
           m.value =  (7 * int(PieceValue[pos.piece_on(to)])
