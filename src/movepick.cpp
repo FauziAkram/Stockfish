@@ -231,8 +231,8 @@ top:
           return *(cur - 1);
 
       // Prepare the pointers to loop over the refutations array
-      cur = std::begin(refutations);
-      endMoves = std::end(refutations);
+      cur = refutations;
+      endMoves = cur + 3;
 
       // If the countermove is the same as a killer, skip it
       if (   refutations[0].move == refutations[2].move
