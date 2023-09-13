@@ -126,9 +126,11 @@ void MovePicker::score() {
   }
 
   for (auto& m : *this)
+  {   
+    
       if constexpr (Type == CAPTURES)
-          m.value =  (7 * int(PieceValue[pos.piece_on(to_sq(m))])
-                   + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]) / 16;
+          m.value =  (7 * int(PieceValue[pos.piece_on(to)])
+                   + (*captureHistory)[pc][to][type_of(pos.piece_on(to))]) / 16;
 
       else if constexpr (Type == QUIETS)
       {
@@ -143,9 +145,6 @@ void MovePicker::score() {
           m.value +=     (*continuationHistory[1])[pc][to];
           m.value +=     (*continuationHistory[3])[pc][to];
           m.value +=     (*continuationHistory[5])[pc][to];
-
-          // bonus for checks
-          m.value += bool(pos.check_squares(pt) & to) * 16384;
 
           // bonus for escaping from capture
           m.value += threatenedPieces & from ?
@@ -170,13 +169,16 @@ void MovePicker::score() {
       else // Type == EVASIONS
       {
           if (pos.capture_stage(m))
-              m.value =  PieceValue[pos.piece_on(to_sq(m))]
-                       - Value(type_of(pos.moved_piece(m)))
+              m.value =  PieceValue[pos.piece_on(to)]
+                       - Value(pt)
                        + (1 << 28);
           else
               m.value =  (*mainHistory)[pos.side_to_move()][from_to(m)]
-                       + (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)];
+                       + (*continuationHistory[0])[pc][to];
       }
+      // bonus for checks
+      m.value += bool(pos.check_squares(pt) & to) * 16384;
+  }
 }
 
 /// MovePicker::select() returns the next move satisfying a predicate function.
