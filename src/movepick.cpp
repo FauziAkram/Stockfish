@@ -232,7 +232,7 @@ top:
 
       // Prepare the pointers to loop over the refutations array
       cur = refutations;
-      endMoves = cur + 2;
+      endMoves = cur + 4;
 
       // If the countermove is the same as a killer, skip it
       if (   refutations[0].move == refutations[2].move
