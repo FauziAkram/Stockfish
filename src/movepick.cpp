@@ -182,7 +182,7 @@ void MovePicker::score() {
                        + (*continuationHistory[0])[pc][to];
       }
       // bonus for checks
-      m.value += bool(pos.check_squares(pt) & to) * 16384;
+      m.value += bool(pos.check_squares(pt) & to) * (16384 - 9000 * (Type == CAPTURES));
   }
 }
 
