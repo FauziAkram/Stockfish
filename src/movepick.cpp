@@ -132,7 +132,7 @@ void MovePicker::score() {
       if constexpr (Type == CAPTURES)
           m.value =  (xx1 * int(PieceValue[pos.piece_on(to_sq(m))])
                    + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]) / xx2
-                   + xx3 * (distance(from_sq(m), pos.square<KING>(~pos.side_to_move()) - distance(to_sq(m),   pos.square<KING>(~pos.side_to_move()))));
+                   + xx3 * (distance(from_sq(m), pos.square<KING>(~pos.side_to_move()) - distance(to_sq(m), pos.square<KING>(~pos.side_to_move()))));
 
       else if constexpr (Type == QUIETS)
       {
