@@ -155,6 +155,8 @@ void MovePicker::score() {
                       :                                            0 )
                       :                                            0 ;
 
+          m.value += (*counterMoveHistory)[pos.piece_on(to_sq(m))][to_sq(m)];
+
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
                         (pt == QUEEN ?   bool(to & threatenedByRook)  * 50000
