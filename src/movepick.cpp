@@ -155,6 +155,9 @@ void MovePicker::score() {
                       :                                            0 )
                       :                                            0 ;
 
+          if (m == refutations[0].move || m == refutations[1].move || m == refutations[2].move)
+          m.value += 10000;
+
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
                         (pt == QUEEN ?   bool(to & threatenedByRook)  * 50000
