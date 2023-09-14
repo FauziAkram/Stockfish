@@ -155,8 +155,7 @@ void MovePicker::score() {
                       :                                            0 )
                       :                                            0 ;
 
-          // Penalize moves that put the piece en prise
-          m.value -= (Type == QUIETS && !(threatenedPieces & from)) * 760;
+          m.value -= !(threatenedPieces & from) * 760;
 
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
