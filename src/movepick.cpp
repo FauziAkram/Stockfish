@@ -27,7 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int xx1=750;
+TUNE(xx1);
 namespace {
 
   enum Stages {
@@ -154,6 +155,8 @@ void MovePicker::score() {
                       :                !(to & threatenedByPawn)  ? 15000
                       :                                            0 )
                       :                                            0 ;
+          // Penalize moves that put the piece en prise
+          m.value -= (Type == QUIETS && !(threatenedPieces & from)) * xx1; 
 
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
