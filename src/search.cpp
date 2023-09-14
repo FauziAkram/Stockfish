@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=70, xx2=40, xx3=16, xx4=547, xx5=306, xx6=24923;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
 namespace Search {
 
   LimitsType Limits;
@@ -73,7 +74,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((140 - 40 * noTtCutNode) * (d - improving));
+    int margin2 = ( xx1 - xx2 * noTtCutNode) * (d - improving) + xx3 * d * d ;
   }
 
   // Reductions lookup table initialized at startup
@@ -92,7 +93,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(336 * d - 547, 1561);
+    return std::min(336 * d - xx4, 1561);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -775,10 +776,9 @@ namespace {
     // Step 8. Futility pruning: child node (~40 Elo).
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
-        &&  depth < 9
-        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 306 >= beta
+        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / xx5 >= beta
         &&  eval >= beta
-        &&  eval < 24923) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < xx6) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
