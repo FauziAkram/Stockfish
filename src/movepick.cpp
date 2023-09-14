@@ -27,7 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int xx1=750;
+TUNE(xx1);
 namespace {
 
   enum Stages {
@@ -156,7 +157,7 @@ void MovePicker::score() {
                       :                                            0 ;
 
           // Add a bonus for moves that target squares under threat by opponent's pieces
-          m.value += (threatenedPieces & from) * 770;
+          m.value += bool(threatenedPieces & from) * xx1;
 
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
