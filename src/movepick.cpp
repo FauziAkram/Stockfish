@@ -155,6 +155,9 @@ void MovePicker::score() {
                       :                                            0 )
                       :                                            0 ;
 
+          // Add a bonus for moves that target squares under threat by opponent's pieces
+          m.value += (Type == QUIETS && threatenedPieces & from) * 770;
+
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
                         (pt == QUEEN ?   bool(to & threatenedByRook)  * 50000
