@@ -155,8 +155,9 @@ void MovePicker::score() {
                       :                !(to & threatenedByPawn)  ? 15000
                       :                                            0 )
                       :                                            0 ;
-          // Penalize moves that put the piece en prise
-          m.value -= (Type == QUIETS && !(threatenedPieces & from)) * xx1; 
+
+          // Add a bonus for moves that target squares under threat by opponent's pieces
+          m.value += (Type == QUIETS && threatenedPieces & from) * xx1;
 
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
