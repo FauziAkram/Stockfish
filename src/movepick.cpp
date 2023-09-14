@@ -298,6 +298,9 @@ top:
       if (select<Next>([&](){ return   depth > DEPTH_QS_RECAPTURES
                                     || to_sq(*cur) == recaptureSquare; }))
           return *(cur - 1);
+    
+      ++stage;
+      [[fallthrough]];
 
       // If we did not find any move and we do not try checks, we have finished
       if (depth != DEPTH_QS_CHECKS)
