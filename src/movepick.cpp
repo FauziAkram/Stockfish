@@ -128,7 +128,7 @@ void MovePicker::score() {
   for (auto& m : *this)
       if constexpr (Type == CAPTURES)
           m.value =  (7 * int(PieceValue[pos.piece_on(to_sq(m))])
-                   + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]) / 14;
+                   + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]) / 14
                    + 720 * (distance(from_sq(m), Square(pos.square<KING>(~pos.side_to_move()) - distance(to_sq(m), pos.square<KING>(~pos.side_to_move())))));
 
       else if constexpr (Type == QUIETS)
