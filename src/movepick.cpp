@@ -27,9 +27,9 @@
 #include "position.h"
 
 namespace Stockfish {
-int xx2=16, xx3=1000;
+int xx2=15, xx3=200;
 TUNE(xx2);
-TUNE(SetRange(-200, 6000), xx3);
+TUNE(SetRange(-250, 4000), xx3);
 
 namespace {
 
