@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0;
+int xx1=200, xx2=200, xx3=200, xx4=200, xx5=200, xx6=200;
+TUNE(SetRange(-1000, 1400), xx1,xx2,xx3,xx4,xx5,xx6);
 
 namespace Search {
 
@@ -1503,7 +1504,7 @@ moves_loop: // When in check, search starts here
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = std::min(ss->staticEval, bestValue) + 200;
+        futilityBase = std::min(ss->staticEval, bestValue);
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
