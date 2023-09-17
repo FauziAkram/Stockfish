@@ -73,7 +73,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    int margin2 = ( 69 - 38 * noTtCutNode) * (d - improving) + 16 * d * d;
+    int margin2 = ( 69 - 38 * noTtCutNode) * (d - improving) + 15 * d * d;
     return Value( margin2 );
   }
 
@@ -1017,7 +1017,7 @@ moves_loop: // When in check, search starts here
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / 7000;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
