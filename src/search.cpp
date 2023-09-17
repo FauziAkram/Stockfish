@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=200, xx2=200;
+TUNE(xx1,xx2);
 namespace Search {
 
   LimitsType Limits;
@@ -1502,7 +1503,7 @@ moves_loop: // When in check, search starts here
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = std::min(ss->staticEval, bestValue) + 200;
+        futilityBase = std::min((ss->staticEval + xx1), (bestValue + xx2));
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
