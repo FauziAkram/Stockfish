@@ -73,7 +73,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    int margin2 = ( 69 - 38 * noTtCutNode) * (d - improving) + 15 * d * d;
+    int margin2 = ( 71 - 40 * noTtCutNode) * (d - improving) + 15 * d * d;
     return Value( margin2 );
   }
 
@@ -93,7 +93,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(336 * d - 570, 1561);
+    return std::min(336 * d - 559, 1561);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -779,7 +779,7 @@ namespace {
         &&  depth < 9
         &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 318 >= beta
         &&  eval >= beta
-        &&  eval < 26260) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
+        &&  eval < 26486) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
