@@ -46,8 +46,7 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=200, xx2=200, xx3=200, xx4=200, xx5=200, xx6=200;
-TUNE(SetRange(-1000, 1400), xx1,xx2,xx3,xx4,xx5,xx6);
+
 
 namespace Search {
 
@@ -1544,13 +1543,13 @@ moves_loop: // When in check, search starts here
             // Futility pruning and moveCount pruning (~10 Elo)
             if (   !givesCheck
                 &&  to_sq(move) != prevSq
-                &&  futilityBase + xx1 > -VALUE_KNOWN_WIN
+                &&  futilityBase > -VALUE_KNOWN_WIN
                 &&  type_of(move) != PROMOTION)
             {
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + xx2 + PieceValue[pos.piece_on(to_sq(move))];
+                futilityValue = futilityBase + 200 + PieceValue[pos.piece_on(to_sq(move))];
 
                 // If static eval + value of piece we are going to capture is much lower
                 // than alpha we can prune this move
@@ -1562,15 +1561,15 @@ moves_loop: // When in check, search starts here
 
                 // If static eval is much lower than alpha and move is not winning material
                 // we can prune this move
-                if (futilityBase + xx3 <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
+                if (futilityBase + 216 <= alpha && !pos.see_ge(move, VALUE_ZERO + 1))
                 {
-                    bestValue = std::max(bestValue, futilityBase + xx4);
+                    bestValue = std::max(bestValue, futilityBase + 152);
                     continue;
                 }
 
                 // If static exchange evaluation is much worse than what is needed to not
                 // fall below alpha we can prune this move
-                if (futilityBase + xx5 > alpha && !pos.see_ge(move, (alpha - futilityBase + xx6) * 4))
+                if (futilityBase + 125 > alpha && !pos.see_ge(move, (alpha - futilityBase + 130) * 4))
                 {
                     bestValue = alpha;
                     continue;
