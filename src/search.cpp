@@ -1548,7 +1548,7 @@ moves_loop: // When in check, search starts here
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + 32 + PieceValue[pos.piece_on(to_sq(move))];
+                futilityValue = futilityBase + PieceValue[pos.piece_on(to_sq(move))];
 
                 // If static eval + value of piece we are going to capture is much lower
                 // than alpha we can prune this move
