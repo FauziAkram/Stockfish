@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=2;
+TUNE(SetRange(1, 100), xx1);
 
 namespace Search {
 
@@ -607,6 +609,7 @@ namespace {
     ss->doubleExtensions = (ss-1)->doubleExtensions;
     Square prevSq        = is_ok((ss-1)->currentMove) ? to_sq((ss-1)->currentMove) : SQ_NONE;
     ss->statScore        = 0;
+    ss->research         = false;
 
     // Step 4. Transposition table lookup.
     excludedMove = ss->excludedMove;
@@ -975,6 +978,8 @@ moves_loop: // When in check, search starts here
 
       Value delta = beta - alpha;
 
+      ss->research = false;
+
       Depth r = reduction(improving, depth, moveCount, delta, thisThread->rootDelta);
 
       // Step 14. Pruning at shallow depth (~120 Elo). Depth conditions are important for mate finding.
@@ -1097,6 +1102,9 @@ moves_loop: // When in check, search starts here
                   extension = -1;
           }
 
+          else if ((ss-1)->research && moveCount <= xx1)
+              extension = -1;
+
           // Check extensions (~1 Elo)
           else if (   givesCheck
                    && depth > 9)
@@ -1206,7 +1214,10 @@ moves_loop: // When in check, search starts here
               newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch;
 
               if (newDepth > d)
+              {
+                  ss->research = true;
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
+              }
 
               int bonus = value <= alpha ? -stat_bonus(newDepth)
                         : value >= beta  ?  stat_bonus(newDepth)
