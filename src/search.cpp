@@ -46,8 +46,6 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=2;
-TUNE(SetRange(1, 100), xx1);
 
 namespace Search {
 
@@ -1102,7 +1100,7 @@ moves_loop: // When in check, search starts here
                   extension = -1;
           }
 
-          else if ((ss-1)->research && moveCount <= xx1)
+          else if ((ss-1)->research && moveCount <= 1)
               extension = -1;
 
           // Check extensions (~1 Elo)
