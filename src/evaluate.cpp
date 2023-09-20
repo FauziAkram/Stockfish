@@ -175,7 +175,7 @@ Value Eval::evaluate(const Position& pos) {
       optimism += optimism * (nnueComplexity + abs(simpleEval - nnue)) / 512;
       nnue     -= nnue     * (nnueComplexity + abs(simpleEval - nnue)) / 32768;
 
-      int npm = pos.non_pawn_material() / 32;
+      int npm = pos.non_pawn_material() / 128;
       v = (  nnue     * (915 + npm + 9 * pos.count<PAWN>())
            + optimism * (154 + npm +     pos.count<PAWN>())) / 1024;
   }
