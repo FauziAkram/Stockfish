@@ -27,8 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
-int xx1=50000, xx2=25000, xx3=15000, xx4=50000, xx5=10000, xx6=20000, xx7=25000, xx8=10000, xx9=15000, xx10=3000;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10);
+int xx1=50000, xx2=25000, xx3=15000, xx4=50000, xx5=10000, xx6=20000, xx7=25000, xx8=10000, xx9=15000, xx10=3000, xx11=16, xx12=16385;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12);
 namespace {
 
   enum Stages {
@@ -129,7 +129,7 @@ void MovePicker::score() {
   for (auto& m : *this)
       if constexpr (Type == CAPTURES)
           m.value =  (7 * int(PieceValue[pos.piece_on(to_sq(m))])
-                   + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]) / 16;
+                   + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]) / xx11;
 
       else if constexpr (Type == QUIETS)
       {
@@ -266,8 +266,8 @@ top:
 
   case QUIET:
       if (   !skipQuiets
-          && select<Next>([&](){return   *cur != refutations[0].move
-                                      && *cur != refutations[1].move
+          if (select<Next>([&](){return      (!skipQuiets || cur->value >= xx12)
+                                      && *cur != refutations[0].move
                                       && *cur != refutations[2].move;}))
           return *(cur - 1);
 
