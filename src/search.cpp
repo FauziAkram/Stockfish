@@ -1046,7 +1046,7 @@ moves_loop: // When in check, search starts here
           // scaling. Their values are optimized to time controls of 180+1.8 and longer
           // so changing them requires tests at this type of time controls.
           if (   !rootNode
-              &&  depth >= 4 - (thisThread->completedDepth > 22) + (PvNode && tte->is_pv())
+              &&  depth >= 5 - (thisThread->completedDepth > 22) + (PvNode && tte->is_pv())
               &&  move == ttMove
               && !excludedMove // Avoid recursive singular search
            /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
