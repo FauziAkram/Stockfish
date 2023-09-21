@@ -882,16 +882,16 @@ namespace {
                     nodeValue = -qsearch<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1);
 
                 // If the qsearch held, perform the regular search
-                if (value >= probCutBeta)
+                if (nodeValue >= probCutBeta)
                     nodeValue = -search<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1, depth - 4, !cutNode);
 
                 pos.undo_move(move);
 
-                if (value >= probCutBeta)
+                if (nodeValue >= probCutBeta)
                 {
                     // Save ProbCut data into transposition table
                     tte->save(posKey, value_to_tt(value, ss->ply), ss->ttPv, BOUND_LOWER, depth - 3, move, ss->staticEval);
-                    return value;
+                    return nodeValue;
                 }
             }
 
@@ -1193,13 +1193,13 @@ moves_loop: // When in check, search starts here
           nodeValue = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
           // Do a full-depth search when reduced LMR search fails high
-          if (value > alpha && d < newDepth)
+          if (nodeValue > alpha && d < newDepth)
           {
               // Adjust full-depth search based on LMR results - if the result
               // was good enough search deeper, if it was bad enough search shallower
-              const bool doDeeperSearch = value > (bestValue + 64 + 11 * (newDepth - d));
-              const bool doEvenDeeperSearch = value > alpha + 711 && ss->doubleExtensions <= 6;
-              const bool doShallowerSearch = value < bestValue + newDepth;
+              const bool doDeeperSearch = nodeValue > (bestValue + 64 + 11 * (newDepth - d));
+              const bool doEvenDeeperSearch = nodeValue > alpha + 711 && ss->doubleExtensions <= 6;
+              const bool doShallowerSearch = nodeValue < bestValue + newDepth;
 
               ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
 
@@ -1223,12 +1223,12 @@ moves_loop: // When in check, search starts here
           if (!ttMove && cutNode)
               r += 2;
 
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth - (r > 3), !cutNode);
+          nodeValue = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth - (r > 3), !cutNode);
       }
 
       // For PV nodes only, do a full PV search on the first move or after a fail high,
       // otherwise let the parent node fail low with value <= alpha and try another move.
-      if (PvNode && (moveCount == 1 || value > alpha))
+      if (PvNode && (moveCount == 1 || nodeValue > alpha))
       {
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;
@@ -1239,7 +1239,7 @@ moves_loop: // When in check, search starts here
       // Step 19. Undo move
       pos.undo_move(move);
 
-      assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
+      assert(nodeValue > -VALUE_INFINITE && value < VALUE_INFINITE);
 
       // Step 20. Check for a new best move
       // Finished searching the move. If a stop occurred, the return value of
