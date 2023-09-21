@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=100, xx2=100, xx3=100, xx4=100, xx5=150, xx6=150;
+TUNE(SetRange(1, 300), xx1,xx2,xx3,xx4);
+TUNE(SetRange(-2000, 2000), xx5,xx6);
 
 namespace Search {
 
@@ -1208,9 +1211,11 @@ moves_loop: // When in check, search starts here
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
-              int bonus = value <= alpha ? -stat_bonus(newDepth)
-                        : value >= beta  ?  stat_bonus(newDepth)
-                                         :  0;
+              int bonus = value <= alpha - xx5 ? -stat_bonus(newDepth) * xx1 / 100
+                        : value <= alpha       ? -stat_bonus(newDepth) * xx2 / 100
+                        : value >= beta + xx6  ?  stat_bonus(newDepth) * xx3 / 100
+                        : value >= beta        ?  stat_bonus(newDepth) * xx4 / 100
+                                               :  0;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }
