@@ -20,17 +20,19 @@
 #define EVALUATE_H_INCLUDED
 
 #include <string>
-#include <optional>
 
 #include "types.h"
 
 namespace Stockfish {
 
 class Position;
+enum Value : int;
 
 namespace Eval {
 
   std::string trace(Position& pos);
+
+  Value simple_eval(const Position& pos, Color c);
   Value evaluate(const Position& pos);
 
   extern std::string currentEvalFileName;
@@ -38,7 +40,7 @@ namespace Eval {
   // The default net name MUST follow the format nn-[SHA256 first 12 digits].nnue
   // for the build process (profile-build and fishtest) to work. Do not change the
   // name of the macro, as it is used in the Makefile.
-  #define EvalFileDefaultName   "nn-c38c3d8d3920.nnue"
+  #define EvalFileDefaultName   "nn-1ee1aba5ed4c.nnue"
 
   namespace NNUE {
 
