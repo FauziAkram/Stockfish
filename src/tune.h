@@ -38,9 +38,9 @@ inline Range default_range(int v) {
     return Range(2 * v, 0);
 } else if (v > 6) {
     return Range(0, 2 * v);
-} else if (v > 0 && v < 6) {
+} else if (v > 0 && v <= 6) {
     return Range(0, 12);
-} else if (v < 0 && v > -6) {
+} else if (v < 0 && v >= -6) {
     return Range(-12, 0);
 } else if (v == 0) {
     return Range(-6, 6);
