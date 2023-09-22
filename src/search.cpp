@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1= -10, xx2= -2, xx3= 0, xx4= 2, xx5= 10;
+TUNE(xx1,xx2,xx3,xx4,x5);
 namespace Search {
 
   LimitsType Limits;
@@ -92,7 +93,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(336 * d - 547, 1561);
+    return std::min(336 * d - 547, 1561+xx1+xx2+xx3+xx4+xx5+xx6);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
