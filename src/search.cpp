@@ -46,8 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=0;
-TUNE(xx1);
+int xx1=40, xx2=0;
+TUNE(xx1, xx2);
 
 namespace Search {
 
@@ -75,7 +75,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((140 - xx1 * noTtCutNode) * (d - improving));
+    return Value((140 - xx1 * noTtCutNode + xx2) * (d - improving));
   }
 
   // Reductions lookup table initialized at startup
