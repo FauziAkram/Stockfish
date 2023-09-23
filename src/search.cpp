@@ -1210,8 +1210,7 @@ moves_loop: // When in check, search starts here
 
               int bonus = value <= alpha + 346 ? -stat_bonus(newDepth) * 0.5
                         : value <= alpha       ? -stat_bonus(newDepth)
-                        : value >= beta + 431  ?  stat_bonus(newDepth)
-                        : value >= beta        ?  stat_bonus(newDepth) * 1.1
+                        : value >= beta        ?  stat_bonus(newDepth)
                                                :  0;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
