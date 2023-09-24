@@ -264,8 +264,8 @@ top:
       [[fallthrough]];
 
   case QUIET:
-      if (select<Next>([&](){return      (!skipQuiets || cur->value >= 17322)
-                                      && *cur != refutations[0].move
+      if (   !skipQuiets
+          && select<Next>([&](){return   *cur != refutations[0].move
                                       && *cur != refutations[1].move
                                       && *cur != refutations[2].move;}))
           return *(cur - 1);
