@@ -52,7 +52,10 @@
 
 
 namespace Stockfish {
-
+wint xx1=915, xx2=9, xx3=154;
+TUNE(xx1);
+TUNE(SetRange(-20, 30), xx2);
+TUNE(xx3);
 namespace Eval {
 
   std::string currentEvalFileName = "None";
@@ -176,8 +179,8 @@ Value Eval::evaluate(const Position& pos) {
       nnue     -= nnue     * (nnueComplexity + abs(simpleEval - nnue)) / 32768;
 
       int npm = pos.non_pawn_material() / 64;
-      v = (  nnue     * (915 + npm + 9 * pos.count<PAWN>())
-           + optimism * (154 + npm +     pos.count<PAWN>())) / 1024;
+      v = (  nnue     * (xx1 + npm + xx2 * pos.count<PAWN>())
+           + optimism * (xx3 + npm -     pos.count<PAWN>())) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling
