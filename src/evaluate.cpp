@@ -52,8 +52,8 @@
 
 
 namespace Stockfish {
-wint xx1=915, xx2=9, xx3=154;
-TUNE(xx1);
+int xx0=64, xx1=915, xx2=9, xx3=154;
+TUNE(xx0, xx1);
 TUNE(SetRange(-20, 30), xx2);
 TUNE(xx3);
 namespace Eval {
@@ -178,7 +178,7 @@ Value Eval::evaluate(const Position& pos) {
       optimism += optimism * (nnueComplexity + abs(simpleEval - nnue)) / 512;
       nnue     -= nnue     * (nnueComplexity + abs(simpleEval - nnue)) / 32768;
 
-      int npm = pos.non_pawn_material() / 64;
+      int npm = pos.non_pawn_material() / xx0;
       v = (  nnue     * (xx1 + npm + xx2 * pos.count<PAWN>())
            + optimism * (xx3 + npm -     pos.count<PAWN>())) / 1024;
   }
