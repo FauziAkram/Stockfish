@@ -169,15 +169,10 @@ Value Eval::evaluate(const Position& pos) {
       int nnueComplexity;
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
-      Value optimism = pos.this_thread()->optimism[stm];
-
-      // Blend optimism and eval with nnue complexity and material imbalance
-      optimism += optimism * (nnueComplexity + abs(simpleEval - nnue)) / 512;
       nnue     -= nnue     * (nnueComplexity + abs(simpleEval - nnue)) / 32768;
 
       int npm = pos.non_pawn_material() / 64;
-      v = (  nnue     * (915 + npm + 9 * pos.count<PAWN>())
-           + optimism * (154 + npm +     pos.count<PAWN>())) / 1024;
+      v = (  nnue     * (915 + npm + 9 * pos.count<PAWN>());
   }
 
   // Damp down the evaluation linearly when shuffling
@@ -202,8 +197,6 @@ std::string Eval::trace(Position& pos) {
   // Reset any global variable used in eval
   pos.this_thread()->bestValue       = VALUE_ZERO;
   pos.this_thread()->rootSimpleEval  = VALUE_ZERO;
-  pos.this_thread()->optimism[WHITE] = VALUE_ZERO;
-  pos.this_thread()->optimism[BLACK] = VALUE_ZERO;
 
   std::stringstream ss;
   ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2);
