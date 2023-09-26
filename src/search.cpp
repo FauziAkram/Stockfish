@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=400, xx2=240, xx3=100;
+TUNE(xx1,xx2);
+TUNE(SetRange(-800, 800), xx3);
 
 namespace Search {
 
@@ -765,7 +768,7 @@ namespace {
     // Step 7. Razoring (~1 Elo).
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (eval < alpha - 456 - 252 * depth * depth)
+    if (eval < alpha - xx1 - (xx2 * depth * depth) - xx3 * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
