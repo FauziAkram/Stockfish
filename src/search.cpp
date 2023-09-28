@@ -46,7 +46,7 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1= -16000, xx2=16000, xx3=109, xx3=141;
+int xx1= -16000, xx2=16000, xx3=109, xx4=141;
 TUNE(xx1,xx2,xx3,xx4);
 namespace Search {
 
