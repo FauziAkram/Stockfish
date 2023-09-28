@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1= -16000, xx2=16000, xx3=109, xx3=141;
+TUNE(xx1,xx2,xx3,xx4);
 namespace Search {
 
   LimitsType Limits;
@@ -363,7 +364,8 @@ void Thread::search() {
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
           // Adjust optimism based on root move's previousScore
-          int opt = 109 * prev / (std::abs(prev) + 141);
+          int clampedPrev = std::clamp(prev, xx1, xx2);
+          int opt = xx3 * clampedPrev / (std::abs(clampedPrev) + xx4);
           optimism[ us] = Value(opt);
           optimism[~us] = -optimism[us];
 
