@@ -46,8 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=0,xx2=0;
-TUNE(SetRange(-1500, 1500), xx1,xx2);
+int xx1=700,xx2=-700;
+TUNE(SetRange(-2500, 2500), xx1,xx2);
 
 namespace Search {
 
@@ -627,7 +627,7 @@ namespace {
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && !excludedMove
-        && tte->depth() > depth - (ttValue > beta + xx1 || beta > ttValue + xx2)
+        && tte->depth() > depth - ((ttValue - beta) > xx1 || (ttValue - beta) < xx2)
         && ttValue != VALUE_NONE // Possible in case of TT access race or if !ttHit
         && (tte->bound() & (ttValue >= beta ? BOUND_LOWER : BOUND_UPPER)))
     {
