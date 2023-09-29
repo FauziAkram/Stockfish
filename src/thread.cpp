@@ -221,7 +221,6 @@ void ThreadPool::start_thinking(Position& pos, StateListPtr& states,
 
 Thread* ThreadPool::get_best_thread() const {
 
-    Thread* bestThread = threads.front();
     std::map<Move, int64_t> votes;
     Value minScore = VALUE_NONE;
 
