@@ -1029,7 +1029,7 @@ moves_loop: // When in check, search starts here
               lmrDepth = std::max(lmrDepth, 0);
 
               // Prune moves with negative SEE (~4 Elo)
-              if (!pos.see_ge(move, Value(-31 * lmrDepth * lmrDepth)))
+              if (!capture && !pos.see_ge(move, Value(-31 * lmrDepth * lmrDepth)))
                   continue;
           }
       }
