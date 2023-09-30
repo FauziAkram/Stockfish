@@ -149,20 +149,20 @@ void MovePicker::score() {
 
           // bonus for escaping from capture
           m.value += threatenedPieces & from ?
-                       (pt == QUEEN && !(to & threatenedByRook)  ? 50000
-                      : pt == ROOK  && !(to & threatenedByMinor) ? 25000
-                      :                !(to & threatenedByPawn)  ? 15000
+                       (pt == QUEEN && !(to & threatenedByRook)  ? 48809
+                      : pt == ROOK  && !(to & threatenedByMinor) ? 24433
+                      :                !(to & threatenedByPawn)  ? 14176
                       :                                            0 )
                       :                                            0 ;
 
           // malus for putting piece en prise
           m.value -= !(threatenedPieces & from) ?
-                        (pt == QUEEN ?   bool(to & threatenedByRook)  * 50000
-                                       + bool(to & threatenedByMinor) * 10000
-                                       + bool(to & threatenedByPawn)  * 20000
-                       : pt == ROOK  ?   bool(to & threatenedByMinor) * 25000
-                                       + bool(to & threatenedByPawn)  * 10000
-                       : pt != PAWN ?    bool(to & threatenedByPawn)  * 15000
+                        (pt == QUEEN ?   bool(to & threatenedByRook)  * 51214
+                                       + bool(to & threatenedByMinor) * 10471
+                                       + bool(to & threatenedByPawn)  * 20811
+                       : pt == ROOK  ?   bool(to & threatenedByMinor) * 24353
+                                       + bool(to & threatenedByPawn)  * 9488
+                       : pt != PAWN ?    bool(to & threatenedByPawn)  * 14911
                        :                                                0 )
                        :                                                0 ;
       }
@@ -257,7 +257,7 @@ top:
           endMoves = generate<QUIETS>(pos, cur);
 
           score<QUIETS>();
-          partial_insertion_sort(cur, endMoves, -3000 * depth);
+          partial_insertion_sort(cur, endMoves, -3004 * depth);
       }
 
       ++stage;
