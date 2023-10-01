@@ -82,7 +82,7 @@ namespace {
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
     return  (reductionScale + 1372 - int(delta) * 1073 / int(rootDelta)) / 1024
-          + (!i && reductionScale > 936);
+          + (!i && reductionScale > 935);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -779,7 +779,7 @@ namespace {
         &&  depth < 9
         &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 306 >= beta
         &&  eval >= beta
-        &&  eval < 24923) // smaller than TB wins
+        &&  eval < 24925) // smaller than TB wins
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
@@ -1017,7 +1017,7 @@ moves_loop: // When in check, search starts here
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / 6950;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
@@ -1107,7 +1107,7 @@ moves_loop: // When in check, search starts here
           else if (   PvNode
                    && move == ttMove
                    && move == ss->killers[0]
-                   && (*contHist[0])[movedPiece][to_sq(move)] >= 5168)
+                   && (*contHist[0])[movedPiece][to_sq(move)] >= 5165)
               extension = 1;
       }
 
@@ -1209,7 +1209,7 @@ moves_loop: // When in check, search starts here
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
-              int bonus = value <= alpha ? -stat_bonus(newDepth)
+              int bonus = value <= alpha ? -stat_bonus(newDepth) * 4 / 5
                         : value >= beta  ?  stat_bonus(newDepth)
                                          :  0;
 
