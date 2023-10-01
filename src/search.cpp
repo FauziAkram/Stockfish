@@ -1569,7 +1569,7 @@ moves_loop: // When in check, search starts here
 
                 // If static exchange evaluation is much worse than what is needed to not
                 // fall below alpha we can prune this move
-                else if (futilityBase > alpha && !pos.see_ge(move, (alpha - futilityBase) * 4))
+                else if (!pos.see_ge(move, (alpha - futilityBase) * 4))
                 {
                     bestValue = alpha;
                     continue;
