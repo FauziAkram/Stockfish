@@ -631,26 +631,23 @@ namespace {
         && (tte->bound() & (ttValue >= beta ? BOUND_LOWER : BOUND_UPPER)))
     {
         // If ttMove is quiet, update move sorting heuristics on TT hit (~2 Elo)
-        if (ttMove)
-        {
-            if (ttValue >= beta)
-            {
-                // Bonus for a quiet ttMove that fails high (~2 Elo)
-                if (!ttCapture)
-                    update_quiet_stats(pos, ss, ttMove, stat_bonus(depth));
+        if (ttMove && !ttCapture) {
+    int penalty = -stat_bonus(depth);
 
-                // Extra penalty for early quiet moves of the previous ply (~0 Elo on STC, ~2 Elo on LTC)
-                if (prevSq != SQ_NONE && (ss-1)->moveCount <= 2 && !priorCapture)
-                    update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + 1));
-            }
-            // Penalty for a quiet ttMove that fails low (~1 Elo)
-            else if (!ttCapture)
-            {
-                int penalty = -stat_bonus(depth);
-                thisThread->mainHistory[us][from_to(ttMove)] << penalty;
-                update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
-            }
-        }
+    if (ttValue >= beta) {
+        // Bonus for a quiet ttMove that fails high (~2 Elo)
+        if (!ttCapture)
+            update_quiet_stats(pos, ss, ttMove, penalty);
+
+        // Extra penalty for early quiet moves of the previous ply (~0 Elo on STC, ~2 Elo on LTC)
+        if (prevSq != SQ_NONE && (ss-1)->moveCount <= 2 && !priorCapture)
+            update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -penalty);
+    } else {
+        // Penalty for a quiet ttMove that fails low (~1 Elo)
+        thisThread->mainHistory[us][from_to(ttMove)] << penalty;
+        update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
+    }
+    }
 
         // Partial workaround for the graph history interaction problem
         // For high rule50 counts don't produce transposition table cutoffs.
