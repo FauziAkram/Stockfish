@@ -365,7 +365,7 @@ void Thread::search() {
 
           // Adjust optimism based on root move's previousScore (~4 Elo)
           int clampedPrev = std::clamp(int(prev), -6150, 6200);
-          int opt = 105 * clampedPrev / (std::abs(clampedPrev) + 147);
+          int opt = 110 * clampedPrev / (std::abs(clampedPrev) + 140);
           optimism[ us] = Value(opt);
           optimism[~us] = -optimism[us];
 
