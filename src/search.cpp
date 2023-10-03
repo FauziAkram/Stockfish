@@ -1300,10 +1300,10 @@ moves_loop: // When in check, search starts here
           bestValue = value;
           bestMove = move;
 
-          if (value > alpha)
-          {
-              if (PvNode && !rootNode) // Update pv even in fail-high case
+              if (value > alpha && (PvNode && !rootNode)) // Update pv even in fail-high case
+              {
                   update_pv(ss->pv, move, (ss+1)->pv);
+              }
 
               if (value >= beta)
               {
@@ -1323,7 +1323,6 @@ moves_loop: // When in check, search starts here
                   assert(depth > 0);
                   alpha = value; // Update alpha! Always alpha < beta
               }
-          }
       }
 
 
@@ -1617,10 +1616,10 @@ moves_loop: // When in check, search starts here
             bestValue = value;
             bestMove = move;
 
-            if (value > alpha)
-            {
-                if (PvNode) // Update pv even in fail-high case
+                if ((value > alpha) && PvNode) // Update pv even in fail-high case
+                {
                     update_pv(ss->pv, move, (ss+1)->pv);
+                }
 
                 if (value < beta) // Update alpha here!
                     alpha = value;
@@ -1630,7 +1629,6 @@ moves_loop: // When in check, search starts here
                   assert(value >= beta); // Fail high
                   break; // Fail high
                 }              
-            }
         }
     }
 
