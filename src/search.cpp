@@ -1616,6 +1616,8 @@ moves_loop: // When in check, search starts here
         if (value > bestValue)
         {
             bestValue = value;
+            bestMove = move;
+        }
 
             if (value > alpha)
             {
@@ -1627,7 +1629,11 @@ moves_loop: // When in check, search starts here
                 if (value < beta) // Update alpha here!
                     alpha = value;
                 else
-                    break; // Fail high
+                {
+                  ss->cutoffCnt += 1 + !ttMove;
+                  assert(value >= beta); // Fail high
+                  break; // Fail high
+                }              
             }
         }
     }
