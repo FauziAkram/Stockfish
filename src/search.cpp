@@ -46,7 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1= -6150, xx2=6200, xx3=103, xx4=149;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(1, 500), xx4);
 namespace Search {
 
   LimitsType Limits;
@@ -82,7 +84,7 @@ namespace {
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
     return  (reductionScale + 1372 - int(delta) * 1073 / int(rootDelta)) / 1024
-          + (!i && reductionScale > 936);
+          + (!i && reductionScale > 935);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -364,7 +366,8 @@ void Thread::search() {
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
           // Adjust optimism based on root move's previousScore (~4 Elo)
-          int opt = 109 * prev / (std::abs(prev) + 141);
+          int clampedPrev = std::clamp(int(prev), xx1, xx2);
+          int opt = xx3 * clampedPrev / (std::abs(prev) + xx4);
           optimism[ us] = Value(opt);
           optimism[~us] = -optimism[us];
 
@@ -1017,7 +1020,7 @@ moves_loop: // When in check, search starts here
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / 6960;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
