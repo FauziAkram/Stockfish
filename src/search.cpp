@@ -364,7 +364,8 @@ void Thread::search() {
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
           // Adjust optimism based on root move's previousScore (~4 Elo)
-          int opt = 109 * prev / (std::abs(prev) + 141);
+          int clampedPrev = std::clamp(int(prev), -6150, 6200);
+          int opt = 103 * clampedPrev / (std::abs(clampedPrev) + 149);
           optimism[ us] = Value(opt);
           optimism[~us] = -optimism[us];
 
@@ -1017,7 +1018,7 @@ moves_loop: // When in check, search starts here
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / 7000;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
