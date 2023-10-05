@@ -46,7 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=3832, xx2=6960, xx3=85, xx4=100, xx5=110, xx6=431;
+TUNE(xx1,xx2);
+TUNE(SetRange(1, 300), xx3,xx4,xx5);
+TUNE(SetRange(-2000, 2000), xx6);
 namespace Search {
 
   LimitsType Limits;
@@ -1012,12 +1015,12 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3832 * depth)
+                  && history < -xx1 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 7011;
+              lmrDepth += history / xx2;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
@@ -1209,9 +1212,10 @@ moves_loop: // When in check, search starts here
               if (newDepth > d)
                   value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
-              int bonus = value <= alpha ? -stat_bonus(newDepth)
-                        : value >= beta  ?  stat_bonus(newDepth)
-                                         :  0;
+              int bonus = value <= alpha       ? -stat_bonus(newDepth) * xx3 / 100
+                        : value >= beta + xx6  ?  stat_bonus(newDepth) * xx4 / 100
+                        : value >= beta        ?  stat_bonus(newDepth) * xx5 / 100
+                                               :  0;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }
