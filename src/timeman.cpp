@@ -67,7 +67,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
   // Maximum move horizon of 40/50/60 moves, based on time left on the clock.
   int mtg;
-  TimePoint timeLeftt = limits.time[us] + limits.inc[us];
+  TimePoint timeLeftt = limits.time[us];
     if (timeLeftt < 10000) {
       mtg = limits.movestogo ? std::min(limits.movestogo, 40) : 40;// less than 10 secs left
     }
