@@ -25,6 +25,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=10000, xx2=60000, xx3=40, xx4=60, xx5=50;
+TUNE(xx1,xx2);
+TUNE(SetRange(1, 120), xx3,xx4,xx5);
 
 TimeManagement Time; // Our global time management object
 
@@ -65,8 +68,18 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       limits.npmsec = npmsec;
   }
 
-  // Maximum move horizon of 50 moves
-  int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
+  // Maximum move horizon of 40/50/60 moves, based on time left on the clock.
+  int mtg;
+  TimePoint timeLeftt = limits.time[us];
+    if (timeLeftt < xx1) {
+      mtg = limits.movestogo ? std::min(limits.movestogo, xx3) : xx3;// less than 10 secs left
+    }
+    else if (timeLeftt > xx2) { 
+      mtg = limits.movestogo ? std::min(limits.movestogo, xx4) : xx4;// more than 60 secs left
+    }
+    else {
+      mtg = limits.movestogo ? std::min(limits.movestogo, xx5) : xx5; // more than 10 sec, and less than 60 secs left
+    }
 
   // Make sure timeLeft is > 0 since we may use it as a divisor
   TimePoint timeLeft =  std::max(TimePoint(1),
