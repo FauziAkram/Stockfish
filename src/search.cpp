@@ -46,6 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=9, xx2=29462, xx3=989, xx4=0, xx5=0;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(-400, 400), xx4);
+TUNE(SetRange(-800, 800), xx5);
 
 namespace Search {
 
@@ -777,13 +781,13 @@ namespace {
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
-        &&  depth < 9
+        &&  depth < xx1
         &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 321 >= beta
         &&  eval >= beta
-        &&  eval < 29462 // smaller than TB wins
+        &&  eval < xx2 // smaller than TB wins
         && !(  !ttCapture
              && ttMove
-             && thisThread->mainHistory[us][from_to(ttMove)] < 989))
+             && thisThread->mainHistory[us][from_to(ttMove)] < xx3 + (xx4 * depth * depth) + (xx5 * depth)))
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
