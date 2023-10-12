@@ -780,10 +780,10 @@ namespace {
         &&  depth < 9
         &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 321 >= beta
         &&  eval >= beta
-        &&  eval < 29462 // smaller than TB wins
+        &&  eval < 27698 // smaller than TB wins
         && !(  !ttCapture
              && ttMove
-             && thisThread->mainHistory[us][from_to(ttMove)] < 989))
+             && thisThread->mainHistory[us][from_to(ttMove)] < 1045 + (20 * depth * depth) + (16 * depth)))
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
