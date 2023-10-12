@@ -783,7 +783,7 @@ namespace {
         &&  eval < 27698 // smaller than TB wins
         && !(  !ttCapture
              && ttMove
-             && thisThread->mainHistory[us][from_to(ttMove)] < 1045 + (20 * depth * depth) + (16 * depth)))
+             && thisThread->mainHistory[us][from_to(ttMove)] < 1045 + (22 * depth * depth)))
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
