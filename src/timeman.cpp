@@ -65,8 +65,18 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       limits.npmsec = npmsec;
   }
 
-  // Maximum move horizon of 50 moves
-  int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
+  // Maximum move horizon of 37/52/66 moves, based on time left on the clock.
+  int mtg;
+  TimePoint timeLeftt = limits.time[us];
+    if (timeLeftt < 9732) {
+      mtg = limits.movestogo ? std::min(limits.movestogo, 37) : 37;// less than 10 secs left
+    }
+    else if (timeLeftt > 60550) { 
+      mtg = limits.movestogo ? std::min(limits.movestogo, 66) : 66;// more than 60 secs left
+    }
+    else {
+      mtg = limits.movestogo ? std::min(limits.movestogo, 52) : 52; // more than 10 sec, and less than 60 secs left
+    }
 
   // Make sure timeLeft is > 0 since we may use it as a divisor
   TimePoint timeLeft =  std::max(TimePoint(1),
