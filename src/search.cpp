@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=-30, xx2=30, xx3=321, xx4=29462;
+TUNE(SetRange(-120, 120), xx1, xx2);
+TUNE(xx3, xx4);
 
 namespace Search {
 
@@ -558,7 +561,7 @@ namespace {
     bool givesCheck, improving, priorCapture, singularQuietLMR;
     bool capture, moveCountPruning, ttCapture;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount;
+    int moveCount, captureCount, quietCount, safety;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -774,16 +777,17 @@ namespace {
             return value;
     }
 
+    safety = (ss->ply & 1) ? xx1 : xx2;
+
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 9
-        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 321 >= beta
+        &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / xx3 - safety >= beta
         &&  eval >= beta
-        &&  eval < 29462 // smaller than TB wins
+        &&  eval < xx4 // smaller than TB wins
         && !(  !ttCapture
-             && ttMove
-             && thisThread->mainHistory[us][from_to(ttMove)] < 989))
+             && ttMove))
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
