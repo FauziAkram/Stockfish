@@ -46,6 +46,7 @@ ThreadPool Threads; // Global object
 Thread::Thread(size_t n) : idx(n), stdThread(&Thread::idle_loop, this) {
 
   wait_for_search_finished();
+  canExit = true;
 }
 
 
@@ -56,6 +57,7 @@ Thread::~Thread() {
 
   assert(!searching);
 
+  canExit = true;
   exit = true;
   start_searching();
   stdThread.join();
