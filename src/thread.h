@@ -45,6 +45,7 @@ class Thread {
   std::condition_variable cv;
   size_t idx;
   bool exit = false, searching = true; // Set before starting std::thread
+  std::atomic<bool> terminating = false;
   NativeThread stdThread;
 
 public:
