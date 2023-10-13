@@ -43,7 +43,7 @@ ThreadPool Threads; // Global object
 /// Thread constructor launches the thread and waits until it goes to sleep
 /// in idle_loop(). Note that 'searching' and 'exit' should be already set.
 
-Thread::Thread(size_t n) : idx(n), stdThread(&Thread::idle_loop, this) {
+Thread::Thread(size_t n) : idx(n), stdThread(&Thread::idle_loop, this), terminating(false) {
 
   wait_for_search_finished();
 }
@@ -56,7 +56,7 @@ Thread::~Thread() {
 
   assert(!searching);
 
-  exit = true;
+  terminating = true;
   start_searching();
   stdThread.join();
 }
@@ -82,6 +82,9 @@ void Thread::clear() {
 
 void Thread::start_searching() {
   mutex.lock();
+  if (exit) {
+    terminating = true;
+  }
   searching = true;
   mutex.unlock(); // Unlock before notifying saves a few CPU-cycles
   cv.notify_one(); // Wake up the thread in idle_loop()
@@ -116,9 +119,9 @@ void Thread::idle_loop() {
       std::unique_lock<std::mutex> lk(mutex);
       searching = false;
       cv.notify_one(); // Wake up anyone waiting for search finished
-      cv.wait(lk, [&]{ return searching; });
+      cv.wait(lk, [&]{ return searching || terminating; });
 
-      if (exit)
+      if (terminating)
           return;
 
       lk.unlock();
