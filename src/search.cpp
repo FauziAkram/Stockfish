@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=69, xx2=13, xx3=6, xx4=61960, xx5=8, xx6=157, xx7=65, xx8=140, xx9=208, xx10=180;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10);
 
 namespace Search {
 
@@ -467,14 +469,14 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (69 + 13 * (mainThread->bestPreviousAverageScore - bestValue)
-                                    +  6 * (mainThread->iterValue[iterIdx] - bestValue)) / 619.6;
+          double fallingEval = (xx1 + xx2 * (mainThread->bestPreviousAverageScore - bestValue)
+                                    +  xx3 * (mainThread->iterValue[iterIdx] - bestValue)) / (xx4 / 100.0);
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 8 < completedDepth ? 1.57 : 0.65;
-          double reduction = (1.4 + mainThread->previousTimeReduction) / (2.08 * timeReduction);
-          double bestMoveInstability = 1 + 1.8 * totBestMoveChanges / Threads.size();
+          timeReduction = lastBestMoveDepth + xx5 < completedDepth ? (xx6 / 100.0) : (xx7 / 100.0);
+          double reduction = ((xx8 / 100.0) + mainThread->previousTimeReduction) / ((xx9 / 100.0) * timeReduction);
+          double bestMoveInstability = 1 + (xx10 / 100.0) * totBestMoveChanges / Threads.size();
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
