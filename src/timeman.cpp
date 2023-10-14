@@ -66,7 +66,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   }
 
   // Maximum move horizon of 50 moves
-  int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
+  int mtg = limits.movestogo ? std::min(limits.movestogo, 49) : 49;
 
   // Make sure timeLeft is > 0 since we may use it as a divisor
   TimePoint timeLeft =  std::max(TimePoint(1),
@@ -84,10 +84,10 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   // game time for the current move, so also cap to 20% of available game time.
   if (limits.movestogo == 0)
   {
-      optScale = std::min(0.0120 + std::pow(ply + 3.0, 0.45) * 0.0039,
-                           0.2 * limits.time[us] / double(timeLeft))
+      optScale = std::min(0.0124 + std::pow(ply + 3.08, 0.44) * 0.0038,
+                           0.19 * limits.time[us] / double(timeLeft))
                  * optExtra;
-      maxScale = std::min(7.0, 4.0 + ply / 12.0);
+      maxScale = std::min(7.0, 3.98 + ply / 11.8);
   }
 
   // x moves in y seconds (+ z increment)
