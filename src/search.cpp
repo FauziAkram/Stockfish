@@ -771,7 +771,7 @@ namespace {
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - xx1 - (xx2 - xx3 * ((ss+1)->cutoffCnt > 3) - xx4 * ttCapture) * depth * depth)
+    if (eval < alpha - xx1 - (xx2 - xx3 * ((ss+1)->cutoffCnt > xx5) - xx4 * ttCapture) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
