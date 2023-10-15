@@ -46,10 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=492, xx2=257, xx3=200, xx4=0, xx5=3;
+int xx1=450, xx2=650, xx3=450, xx4=0;
 TUNE(xx1);
-TUNE(SetRange(-200, 600), xx2,xx3,xx4);
-TUNE(xx5);
+TUNE(SetRange(-300, 2000),xx2,xx3,xx4);
 
 namespace Search {
 
@@ -771,7 +770,7 @@ namespace {
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - xx1 - (xx2 - xx3 * ((ss+1)->cutoffCnt > 3) - xx4 * ttCapture) * depth * depth)
+    if (eval < alpha - xx1 - (xx2 - xx3 * ((ss+1)->cutoffCnt > 3) - xx4 * ttCapture) * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
