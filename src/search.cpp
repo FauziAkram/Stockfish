@@ -781,8 +781,7 @@ namespace {
         &&  eval - futility_margin(depth, cutNode && !ss->ttHit, improving) - (ss-1)->statScore / 321 >= beta
         &&  eval >= beta
         &&  eval < 29462 // smaller than TB wins
-        && !(  !ttCapture
-             && ttMove
+        && !(   ttMove
              && thisThread->mainHistory[us][from_to(ttMove)] < 989))
         return eval;
 
