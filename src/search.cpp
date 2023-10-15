@@ -769,7 +769,7 @@ namespace {
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
     if (eval < alpha - 492 - (257 - 200 * ((ss+1)->cutoffCnt > 3)) * depth * depth)
     {
-        value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
+        value = qsearch<NonPV>(pos, ss, alpha, alpha);
         if (value < alpha)
             return value;
     }
