@@ -988,7 +988,7 @@ moves_loop: // When in check, search starts here
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
           if (!moveCountPruning)
-              moveCountPruning = moveCount >= futility_move_count(improving, depth);
+              moveCountPruning = moveCount >= futility_move_count(improving, depth) + 3 * ss->ttPv;
 
           // Reduced depth of the next LMR search
           int lmrDepth = newDepth - r;
@@ -1016,18 +1016,18 @@ moves_loop: // When in check, search starts here
 
               // Continuation history based pruning (~2 Elo)
               if (   lmrDepth < 6
-                  && history < -3232 * depth)
+                  && history < -3150 * depth)
                   continue;
 
               history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-              lmrDepth += history / 5793;
+              lmrDepth += history / 6094;
               lmrDepth = std::max(lmrDepth, -2);
 
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 13
-                  && ss->staticEval + 115 + 122 * lmrDepth <= alpha)
+                  && ss->staticEval + 119 + 127 * lmrDepth <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);
@@ -1175,10 +1175,10 @@ moves_loop: // When in check, search starts here
                      + (*contHist[0])[movedPiece][to_sq(move)]
                      + (*contHist[1])[movedPiece][to_sq(move)]
                      + (*contHist[3])[movedPiece][to_sq(move)]
-                     - 3848;
+                     - 3763;
 
       // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-      r -= ss->statScore / (10216 + 3855 * (depth > 5 && depth < 23));
+      r -= ss->statScore / (10238 + 3864 * (depth > 5 && depth < 23));
 
       // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
       // We use various heuristics for the sons of a node after the first son has
@@ -1507,7 +1507,7 @@ moves_loop: // When in check, search starts here
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = std::min(ss->staticEval, bestValue) + 200;
+        futilityBase = std::min(ss->staticEval, bestValue) + 206;
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
