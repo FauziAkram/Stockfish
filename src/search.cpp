@@ -768,7 +768,7 @@ namespace {
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
     if (   !PvNode
-        &&  eval < alpha - 492 - (257 - 200 * ((ss+1)->cutoffCnt > 3)) * depth * depth))
+        &&  eval < alpha - 492 - (257 - 200 * ((ss+1)->cutoffCnt > 3)) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
