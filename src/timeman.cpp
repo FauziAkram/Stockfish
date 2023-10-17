@@ -79,12 +79,18 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   // Default is 100 and changing this value will probably lose elo.
   timeLeft = slowMover * timeLeft / 100;
 
+  double longTimeConstant = 0.0042; // Constant for long-time controls
+  double shortTimeConstant = 0.0036; // Constant for short-time controls
+
+  // Adjust the constant based on the available time
+  double timeConstant = limits.time[us] > 30000 ? longTimeConstant : shortTimeConstant;
+  
   // x basetime (+ z increment)
   // If there is a healthy increment, timeLeft can exceed actual available
   // game time for the current move, so also cap to 20% of available game time.
   if (limits.movestogo == 0)
   {
-      optScale = std::min(0.0120 + std::pow(ply + 3.0, 0.45) * 0.0039,
+      optScale = std::min(0.0120 + std::pow(ply + 3.0, 0.45) * timeConstant,
                            0.2 * limits.time[us] / double(timeLeft))
                  * optExtra;
       maxScale = std::min(7.0, 4.0 + ply / 12.0);
