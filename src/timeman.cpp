@@ -81,9 +81,13 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
   double longTimeConstant = 0.0042; // Constant for long-time controls
   double shortTimeConstant = 0.0036; // Constant for short-time controls
+  double longMaxScale = 4.2; // MaxScale for long-time controls
+  double shortMaxScale = 3.8; // MaxScale for short-time controls
 
   // Adjust the constant based on the available time
   double timeConstant = limits.time[us] > 30000 ? longTimeConstant : shortTimeConstant;
+  // Adjust the maxScale constant based on the available time
+  double maxScaleConstant = limits.time[us] > 30000 ? longMaxScale : shortMaxScale;
   
   // x basetime (+ z increment)
   // If there is a healthy increment, timeLeft can exceed actual available
@@ -93,7 +97,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       optScale = std::min(0.0120 + std::pow(ply + 3.0, 0.45) * timeConstant,
                            0.2 * limits.time[us] / double(timeLeft))
                  * optExtra;
-      maxScale = std::min(7.0, 4.0 + ply / 12.0);
+      maxScale = std::min(7.0, maxScaleConstant + ply / 12.0);
   }
 
   // x moves in y seconds (+ z increment)
