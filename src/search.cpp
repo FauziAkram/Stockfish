@@ -774,7 +774,7 @@ namespace {
         {
             if (!priorCapture && prevSq != SQ_NONE)
             {
-                int bonus = (depth > 6) + (PvNode || cutNode) + (value < alpha - 681) + ((ss-1)->moveCount > 11);
+                int bonus = (depth > 6) + (PvNode || cutNode) + (value < alpha - 681) + ((ss-1)->moveCount > 12);
                 update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
                 thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus * 63 / 100;
             }
