@@ -92,7 +92,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min(334 * d - 531, 1538);
+    return std::min(337 * d - 490, 1464);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -767,11 +767,19 @@ namespace {
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - 492 - (257 - 200 * ((ss+1)->cutoffCnt > 3)) * depth * depth)
+    if (eval < alpha - 472 - (266 - 183 * ((ss+1)->cutoffCnt > 3)) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
+        {
+            if (!priorCapture && prevSq != SQ_NONE)
+            {
+                int bonus = (depth > 6) + (PvNode || cutNode) + (value < alpha - 681) + ((ss-1)->moveCount > 11);
+                update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
+                thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus * 63 / 100;
+            }
             return value;
+        }
     }
 
     // Step 8. Futility pruning: child node (~40 Elo)
@@ -783,7 +791,7 @@ namespace {
         &&  eval < 29462 // smaller than TB wins
         && !(  !ttCapture
              && ttMove
-             && thisThread->mainHistory[us][from_to(ttMove)] < 989))
+             && thisThread->mainHistory[us][from_to(ttMove)] < 992))
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
@@ -1371,9 +1379,9 @@ moves_loop: // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - 653) + ((ss-1)->moveCount > 11);
+        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - 681) + ((ss-1)->moveCount > 10);
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
-        thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus / 2;
+        thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus * 59 / 100;
     }
 
     if (PvNode)
