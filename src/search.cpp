@@ -782,7 +782,7 @@ namespace {
         &&  eval >= beta
         &&  eval < 29462 // smaller than TB wins
         && !(  !ttCapture
-             && ttMove)
+             && ttMove))
         return eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
