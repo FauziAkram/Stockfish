@@ -1097,6 +1097,7 @@ bool Position::see_ge(Move m, Value threshold) const {
           occupied ^= least_significant_square_bb(bb);
 
           attackers |= attacks_bb<BISHOP>(to, occupied) & pieces(BISHOP, QUEEN);
+          attackers |= pawn_attacks_bb(stm, to) & pieces(stm, PAWN);
       }
 
       else if ((bb = stmAttackers & pieces(KNIGHT)))
