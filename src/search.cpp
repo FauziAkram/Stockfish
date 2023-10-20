@@ -1176,7 +1176,9 @@ moves_loop: // When in check, search starts here
                      + (*contHist[1])[movedPiece][to_sq(move)]
                      + (*contHist[3])[movedPiece][to_sq(move)]
                      - 3848;
-
+      
+      int historyDiffs[8];
+      std::fill(historyDiffs, historyDiffs + 8, 0);
       int numDiffs = 0;
       int totalDiff = 0;
 
