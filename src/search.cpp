@@ -1189,7 +1189,7 @@ moves_loop: // When in check, search starts here
           historyDiffs[numDiffs] = abs(ttValue - ss->staticEval); // save newest
           numDiffs = (numDiffs + 1) % 8; // rotate buffer
   
-          ss->statScore += totalDiff / 8; // use smoothed average  
+          ss->statScore += totalDiff * depth / 96; // use smoothed average  
           }
 
       // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
