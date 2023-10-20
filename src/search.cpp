@@ -1177,6 +1177,19 @@ moves_loop: // When in check, search starts here
                      + (*contHist[3])[movedPiece][to_sq(move)]
                      - 3848;
 
+      int numDiffs = 0;
+      int totalDiff = 0;
+
+      if (abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY && ss->staticEval != VALUE_NONE)
+          {
+          totalDiff -= historyDiffs[numDiffs]; // subtract oldest
+          totalDiff += abs(ttValue - ss->staticEval); // add newest
+          historyDiffs[numDiffs] = abs(ttValue - ss->staticEval); // save newest
+          numDiffs = (numDiffs + 1) % 8; // rotate buffer
+  
+          ss->statScore += totalDiff / 8; // use smoothed average  
+          }
+
       // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
       r -= ss->statScore / (10216 + 3855 * (depth > 5 && depth < 23));
 
