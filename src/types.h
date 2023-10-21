@@ -177,7 +177,7 @@ enum Value : int {
   KnightValue = 781,
   BishopValue = 825,
   RookValue   = 1276,
-  QueenValue  = 2538,
+  QueenValue  = 2560,
 };
 
 enum PieceType {
