@@ -41,12 +41,9 @@ struct ExtMove {
   Move move;
   int value;
 
-  operator Move() const { return move; }
-  void operator=(Move m) { move = m; }
+  explicit ExtMove(Move m) : move(m), value(0) {}  // Constructor to set move and value
 
-  // Inhibit unwanted implicit conversions to Move
-  // with an ambiguity that yields to a compile error.
-  operator float() const = delete;
+  void operator=(Move m) { move = m; }
 };
 
 inline bool operator<(const ExtMove& f, const ExtMove& s) {
