@@ -163,9 +163,11 @@ Value Eval::evaluate(const Position& pos) {
                                  + abs(pos.this_thread()->rootSimpleEval);
 
   if (lazy)
+  {
       v = Value(simpleEval);
       if (pos.count<BISHOP>(stm) == 2)
           v += BishopPairBonus;
+  }
   else
   {
       int nnueComplexity;
