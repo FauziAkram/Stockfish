@@ -162,14 +162,10 @@ Value Eval::evaluate(const Position& pos) {
                                  + abs(pos.this_thread()->bestValue)
                                  + abs(pos.this_thread()->rootSimpleEval);
 
-  Color c = pos.side_to_move();
-  bool hasBishopPair = pos.count<BISHOP>(c) == 2;
-  if (hasBishopPair){
-    v += BishopPairBonus;}
-    return v;
-
   if (lazy)
       v = Value(simpleEval);
+      if (pos.count<BISHOP>(stm) == 2)
+          v += BishopPairBonus;
   else
   {
       int nnueComplexity;
