@@ -1099,7 +1099,7 @@ moves_loop:  // When in check, search starts here
         if ((ss - 1)->moveCount > 7)
             r--;
 
-        if (moveCountPruning && !improving)
+        if (moveCountPruning && !PvNode)
             r++;
 
         // Increase reduction for cut nodes (~3 Elo)
