@@ -966,6 +966,13 @@ moves_loop:  // When in check, search starts here
 
             if (capture || givesCheck)
             {
+               
+                if (!givesCheck
+                    &&  to_sq(move) != prevSq
+                    &&  type_of(move) != PROMOTION
+                    &&  moveCount >= 4 + 2 * depth * depth)
+                   continue;
+              
                 // Futility pruning for captures (~2 Elo)
                 if (!givesCheck && lmrDepth < 7 && !ss->inCheck
                     && ss->staticEval + 188 + 206 * lmrDepth + PieceValue[pos.piece_on(to_sq(move))]
