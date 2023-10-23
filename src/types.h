@@ -178,7 +178,7 @@ enum Value : int {
     // identify the material on the board.
     PawnValue   = 208,
     KnightValue = 783,
-    BishopValue = 817,
+    BishopValue = 830,
     RookValue   = 1272,
     QueenValue  = 2536,
 };
