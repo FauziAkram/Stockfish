@@ -46,7 +46,11 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=681, xx2=10, xx3=59, xx4=337, xx5=490, xx6=1464;
+int zz1=472, zz2=266, zz3=183;
+int rr1=653, rr2=11, rr3=60;
+int tt1=126, tt2=42, tt3=1560, tt4=945, tt5=791, tt6=3498, tt7=7815, tt8=80, tt9=122,tt10=27;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,zz1,zz2,zz3,rr1,rr2,rr3,tt1,tt2,tt3,tt4,tt5,tt6,tt7,tt8,tt9,tt10);
 namespace Search {
 
 LimitsType Limits;
@@ -77,7 +81,7 @@ enum NodeType {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((126 - 42 * noTtCutNode) * (d - improving));
+    return Value((tt1 - tt2 * noTtCutNode) * (d - improving));
 }
 
 // Reductions lookup table initialized at startup
@@ -85,8 +89,8 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + 1560 - int(delta) * 945 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 791);
+    return (reductionScale + tt3 - int(delta) * tt4 / int(rootDelta)) / 1024
+         + (!i && reductionScale > tt5);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -94,7 +98,7 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(334 * d - 531, 1538); }
+int stat_bonus(Depth d) { return std::min(xx4 * d - xx5, xx6); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Thread* thisThread) {
@@ -761,11 +765,19 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - 492 - (257 - 200 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
+    if (eval < alpha - zz1 - (zz2 - zz3 * ((ss+1)->cutoffCnt > 3)) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
+        {
+            if (!priorCapture && prevSq != SQ_NONE)
+            {
+                int bonus = (depth > 6) + (PvNode || cutNode) + (value < alpha - rr1) + ((ss-1)->moveCount > rr2);
+                update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
+                thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus * rr3 / 100;
+            }
             return value;
+        }
     }
 
     // Step 8. Futility pruning: child node (~40 Elo)
@@ -991,22 +1003,22 @@ moves_loop:  // When in check, search starts here
                             + (*contHist[3])[movedPiece][to_sq(move)];
 
                 // Continuation history based pruning (~2 Elo)
-                if (lmrDepth < 6 && history < -3498 * depth)
+                if (lmrDepth < 6 && history < -tt6 * depth)
                     continue;
 
                 history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-                lmrDepth += history / 7815;
-                lmrDepth = std::max(lmrDepth, -2);
+                lmrDepth += history / tt7;
+                lmrDepth = std::max(lmrDepth, -1);
 
                 // Futility pruning: parent node (~13 Elo)
-                if (!ss->inCheck && lmrDepth < 13 && ss->staticEval + 80 + 122 * lmrDepth <= alpha)
+                if (!ss->inCheck && lmrDepth < 13 && ss->staticEval + tt8 + tt9 * lmrDepth <= alpha)
                     continue;
 
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE (~4 Elo)
-                if (!pos.see_ge(move, Value(-27 * lmrDepth * lmrDepth)))
+                if (!pos.see_ge(move, Value(-tt10 * lmrDepth * lmrDepth)))
                     continue;
             }
         }
@@ -1316,12 +1328,10 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - 653)
-                  + ((ss - 1)->moveCount > 11);
+        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - xx1) + ((ss-1)->moveCount > xx2);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
-        thisThread->mainHistory[~us][from_to((ss - 1)->currentMove)]
-          << stat_bonus(depth) * bonus / 2;
+        thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus * xx3 / 100;
     }
 
     if (PvNode)
