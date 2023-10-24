@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=6, xx2=6;
+TUNE(SetRange(1, 100), xx1,xx2);
 
 namespace Search {
 
@@ -966,6 +968,11 @@ moves_loop:  // When in check, search starts here
 
             if (capture || givesCheck)
             {
+                if (!givesCheck
+                    &&  to_sq(move) != prevSq
+                    &&  moveCount >= xx1 + xx2 * depth)
+                   continue;
+              
                 // Futility pruning for captures (~2 Elo)
                 if (!givesCheck && lmrDepth < 7 && !ss->inCheck
                     && ss->staticEval + 188 + 206 * lmrDepth + PieceValue[pos.piece_on(to_sq(move))]
