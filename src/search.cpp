@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=2, xx2=3, xx3=3;
+TUNE(SetRange(-2, 10), xx1,xx2,xx3);
 
 namespace Search {
 
@@ -1106,7 +1108,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes (~3 Elo)
         if (cutNode)
-            r += 2;
+            r += xx1 - (depth < tte->depth() - xx2) + (depth > tte->depth() + xx3);
 
         // Increase reduction if ttMove is a capture (~3 Elo)
         if (ttCapture)
