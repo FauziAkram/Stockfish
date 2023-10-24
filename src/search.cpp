@@ -971,7 +971,7 @@ moves_loop:  // When in check, search starts here
             {
                 if (!givesCheck
                     &&  to_sq(move) != prevSq
-                    &&  moveCount >= 8 + 10 * depth)
+                    &&  moveCount >= 7 + 9 * depth)
                    continue;
               
                 // Futility pruning for captures (~2 Elo)
