@@ -1129,7 +1129,7 @@ moves_loop:  // When in check, search starts here
             r++;
 
         // Decrease reduction for first generated move (ttMove)
-        else if (move == ttMove)
+        else if (move == ttMove && PvNode)
             r--;
 
         ss->statScore = 2 * thisThread->mainHistory[us][from_to(move)]
