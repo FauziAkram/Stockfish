@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1= 10;
+TUNE(SetRange(-10, 30), xx1);
 
 namespace Search {
 
@@ -1130,7 +1132,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for first generated move (ttMove)
         else if (move == ttMove)
-            r = 1 - !PvNode;
+            r = 1 - (!PvNode && depth < xx1);
 
         ss->statScore = 2 * thisThread->mainHistory[us][from_to(move)]
                       + (*contHist[0])[movedPiece][to_sq(move)]
