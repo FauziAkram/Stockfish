@@ -77,7 +77,7 @@ enum NodeType {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((127 - 42 * noTtCutNode) * (d - improving));
+    return Value((126 - 42 * noTtCutNode) * (d - improving));
 }
 
 // Reductions lookup table initialized at startup
@@ -85,8 +85,8 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + 1454 - int(delta) * 944 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 817);
+    return (reductionScale + 1426 - int(delta) * 971 / int(rootDelta)) / 1024
+         + (!i && reductionScale > 825);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -94,7 +94,7 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(358 * d - 474, 1581); }
+int stat_bonus(Depth d) { return std::min(356 * d - 483, 1609); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Thread* thisThread) {
@@ -761,16 +761,16 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - 479 - (264 - 177 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
+    if (eval < alpha - 486 - (270 - 180 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
         {
             if (!priorCapture && prevSq != SQ_NONE)
             {
-                int bonus = (depth > 6) + (PvNode || cutNode) + (value < alpha - 649) + ((ss-1)->moveCount > 12);
+                int bonus = (depth > 6) + (PvNode || cutNode) + (value < alpha - 629) + ((ss-1)->moveCount > 11);
                 update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth) * bonus);
-                thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus * 0.54;
+                thisThread->mainHistory[~us][from_to((ss-1)->currentMove)] << stat_bonus(depth) * bonus / 2;
             }
             return value;
         }
@@ -999,16 +999,16 @@ moves_loop:  // When in check, search starts here
                             + (*contHist[3])[movedPiece][to_sq(move)];
 
                 // Continuation history based pruning (~2 Elo)
-                if (lmrDepth < 6 && history < -3667 * depth)
+                if (lmrDepth < 6 && history < -3745 * depth)
                     continue;
 
                 history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-                lmrDepth += history / 7699;
+                lmrDepth += history / 7230;
                 lmrDepth = std::max(lmrDepth, -1);
 
                 // Futility pruning: parent node (~13 Elo)
-                if (!ss->inCheck && lmrDepth < 13 && ss->staticEval + 75 + 120 * lmrDepth <= alpha)
+                if (!ss->inCheck && lmrDepth < 13 && ss->staticEval + 76 + 118 * lmrDepth <= alpha)
                     continue;
 
                 lmrDepth = std::max(lmrDepth, 0);
@@ -1324,12 +1324,12 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - 657)
+        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - 684)
                   + ((ss - 1)->moveCount > 10);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
         thisThread->mainHistory[~us][from_to((ss - 1)->currentMove)]
-          << stat_bonus(depth) * bonus * 0.61;
+          << stat_bonus(depth) * bonus * 0.62;
     }
 
     if (PvNode)
