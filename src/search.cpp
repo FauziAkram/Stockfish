@@ -46,9 +46,6 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=75, xx2=122, xx3=80, xx4=0;
-TUNE(SetRange(-20, 280), xx1,xx2,xx3);
-TUNE(SetRange(-800, 800), xx4);
 
 namespace Search {
 
@@ -1003,7 +1000,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, -2);
 
                 // Futility pruning: parent node (~13 Elo)
-                if (!ss->inCheck && lmrDepth < 13 && ss->staticEval + xx1 + xx2 * lmrDepth <= alpha + xx3 * (ss->staticEval > bestValue + xx4))
+                if (!ss->inCheck && lmrDepth < 13 && ss->staticEval + 81 + 123 * lmrDepth <= alpha + 80 * (ss->staticEval > bestValue))
                     continue;
 
                 lmrDepth = std::max(lmrDepth, 0);
