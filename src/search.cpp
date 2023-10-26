@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=5, xx2=2;
+TUNE(SetRange(-20, 30), xx1,xx2);
 
 namespace Search {
 
@@ -962,7 +964,7 @@ moves_loop:  // When in check, search starts here
         {
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
             if (!moveCountPruning)
-                moveCountPruning = moveCount >= futility_move_count(improving, depth);
+                moveCountPruning = moveCount >= futility_move_count(improving, depth) + xx1 * ss->ttPv + xx2 * PvNode;
 
             // Reduced depth of the next LMR search
             int lmrDepth = newDepth - r;
