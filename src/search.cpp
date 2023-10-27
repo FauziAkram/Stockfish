@@ -773,7 +773,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
                 update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                               stat_bonus(depth) * bonus);
                 thisThread->mainHistory[~us][from_to((ss - 1)->currentMove)]
-                  << stat_bonus(depth) * bonus / 2;
+                  << stat_bonus(depth) * bonus * 3 / 5;
             }
             return value;
         }
