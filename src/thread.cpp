@@ -66,9 +66,9 @@ Thread::~Thread() {
 void Thread::clear() {
 
     counterMoves.fill(MOVE_NONE);
-    mainHistory.fill(0);
+    mainHistory.fill(7);
     captureHistory.fill(0);
-    pawnHistory.fill(0);
+    pawnHistory.fill(-4);
 
     for (bool inCheck : {false, true})
         for (StatsType c : {NoCaptures, Captures})
