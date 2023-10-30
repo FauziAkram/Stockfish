@@ -67,7 +67,7 @@ void Thread::clear() {
 
     counterMoves.fill(MOVE_NONE);
     mainHistory.fill(0);
-    captureHistory.fill(84);
+    captureHistory.fill(108);
     pawnHistory.fill(0);
 
     for (bool inCheck : {false, true})
