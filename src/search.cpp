@@ -83,10 +83,10 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
 // Reductions lookup table initialized at startup
 int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
-Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
+Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta, bool capture) {
     int reductionScale = Reductions[d] * Reductions[mn];
     return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 808);
+         + (!i && !capture && reductionScale > 808);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
