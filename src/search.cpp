@@ -1015,8 +1015,14 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, -1);
 
                 // Futility pruning: parent node (~13 Elo)
-                if (!ss->inCheck && lmrDepth < 13 && ss->staticEval + 77 + 124 * lmrDepth <= alpha)
-                    continue;
+                if (!ss->inCheck && lmrDepth < 13) {
+    // Introduce dynamic reduction based on history heuristics and position evaluation
+    int dynamicReduction = calculateDynamicReduction(ss, lmrDepth);
+    
+    // Check for dynamic reduction against alpha
+    if (ss->staticEval + 77 + 124 * lmrDepth - dynamicReduction <= alpha)
+        continue;
+    }
 
                 lmrDepth = std::max(lmrDepth, 0);
 
