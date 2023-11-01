@@ -1101,6 +1101,10 @@ moves_loop:  // When in check, search starts here
         ss->doubleExtensions = (ss - 1)->doubleExtensions + (extension == 2);
 
         // Speculative prefetch as early as possible
+        if (move == mp.next_move()) {
+        prefetch(TT.first_entry(pos.key_after(mp.next_move())));
+        }
+
         prefetch(TT.first_entry(pos.key_after(move)));
 
         // Update the current move (this must be done after singular extension search)
