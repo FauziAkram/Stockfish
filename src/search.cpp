@@ -1018,7 +1018,7 @@ moves_loop:  // When in check, search starts here
                 if (!ss->inCheck && lmrDepth < 13 && ss->staticEval + 77 + 124 * lmrDepth <= alpha)
                     continue;
 
-                lmrDepth = std::max(lmrDepth, 0);
+                lmrDepth = std::max(lmrDepth - 2, 0);
 
                 // Prune moves with negative SEE (~4 Elo)
                 if (!pos.see_ge(move, Value(-26 * lmrDepth * lmrDepth)))
