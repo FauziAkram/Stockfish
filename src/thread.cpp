@@ -36,7 +36,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=0, xx2=85, xx3=0, xx4=-60;
+TUNE(SetRange(-1000, 1000), xx1,xx2,xx3,xx4);
 ThreadPool Threads;  // Global object
 
 
@@ -66,15 +67,15 @@ Thread::~Thread() {
 void Thread::clear() {
 
     counterMoves.fill(MOVE_NONE);
-    mainHistory.fill(0);
-    captureHistory.fill(0);
-    pawnHistory.fill(0);
+    mainHistory.fill(xx1);
+    captureHistory.fill(xx2);
+    pawnHistory.fill(xx3);
 
     for (bool inCheck : {false, true})
         for (StatsType c : {NoCaptures, Captures})
             for (auto& to : continuationHistory[inCheck][c])
                 for (auto& h : to)
-                    h->fill(-71);
+                    h->fill(xx4);
 }
 
 
