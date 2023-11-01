@@ -1484,7 +1484,16 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
 
     // Step 5. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
-    while ((move = mp.next_move()) != MOVE_NONE)
+    // Rank moves by likelihood
+auto rankedMoves = mp.rank_moves_by_likelihood(); 
+
+for (move : rankedMoves) {
+  if (move != excludedMove && pos.legal(move)) {
+  
+  // Rest of loop body
+  
+  }
+}
     {
         assert(is_ok(move));
 
