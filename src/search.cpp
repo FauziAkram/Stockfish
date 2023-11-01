@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int rr1=2, rr2=8, xx1=15335, xx2=103, xx3=33, xx4=34, xx5=119, xx6=116, xx7=40, xx8=12, xx9=123, xx10=300, xx11=51, xx12=700;
+TUNE(SetRange(0, 22), rr1,rr2);
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12);
 
 namespace Search {
 
@@ -364,13 +367,13 @@ void Thread::search() {
 
             // Reset aspiration window starting size
             Value avg = rootMoves[pvIdx].averageScore;
-            delta     = Value(10) + int(avg) * avg / 15335;
+            delta     = Value(10) + int(avg) * avg / xx1;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 103 * (avg + 33) / (std::abs(avg + 34) + 119);
-            optimism[~us] = -116 * (avg + 40) / (std::abs(avg + 12) + 123);
+            optimism[us]  = xx2 * (avg + xx3) / (std::abs(avg + xx4) + xx5);
+            optimism[~us] = -xx6 * (avg + xx7) / (std::abs(avg + xx8) + xx9);
 
             // Start with a small aspiration window and, in the case of a fail
             // high/low, re-search with a bigger window until we don't fail
@@ -401,7 +404,7 @@ void Thread::search() {
                 // When failing high/low give some update (without cluttering
                 // the UI) before a re-search.
                 if (mainThread && multiPV == 1 && (bestValue <= alpha || bestValue >= beta)
-                    && Time.elapsed() > 3000)
+                    && Time.elapsed() > xx10)
                     sync_cout << UCI::pv(rootPos, rootDepth) << sync_endl;
 
                 // In case of failing low/high increase aspiration window and
@@ -431,7 +434,7 @@ void Thread::search() {
             // Sort the PV lines searched so far and update the GUI
             std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
 
-            if (mainThread && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
+            if (mainThread && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > xx10))
                 sync_cout << UCI::pv(rootPos, rootDepth) << sync_endl;
         }
 
@@ -951,7 +954,7 @@ moves_loop:  // When in check, search starts here
 
         ss->moveCount = ++moveCount;
 
-        if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+        if (rootNode && thisThread == Threads.main() && Time.elapsed() > xx10)
             sync_cout << "info depth " << depth << " currmove "
                       << UCI::move(move, pos.is_chess960()) << " currmovenumber "
                       << moveCount + thisThread->pvIdx << sync_endl;
@@ -1121,7 +1124,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes (~3 Elo)
         if (cutNode)
-            r += 2;
+            r += rr1 - (depth < rr2 && ttMove);
 
         // Increase reduction if ttMove is a capture (~3 Elo)
         if (ttCapture)
@@ -1174,8 +1177,8 @@ moves_loop:  // When in check, search starts here
             {
                 // Adjust full-depth search based on LMR results - if the result
                 // was good enough search deeper, if it was bad enough search shallower.
-                const bool doDeeperSearch     = value > (bestValue + 51 + 10 * (newDepth - d));
-                const bool doEvenDeeperSearch = value > alpha + 700 && ss->doubleExtensions <= 6;
+                const bool doDeeperSearch     = value > (bestValue + xx11 + 10 * (newDepth - d));
+                const bool doEvenDeeperSearch = value > alpha + xx12 && ss->doubleExtensions <= 6;
                 const bool doShallowerSearch  = value < bestValue + newDepth;
 
                 ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
