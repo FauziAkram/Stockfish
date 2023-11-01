@@ -864,7 +864,15 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         MovePicker mp(pos, ttMove, probCutBeta - ss->staticEval, &captureHistory,
                       thisThread->pawnHistory);
 
-        while ((move = mp.next_move()) != MOVE_NONE)
+        auto rankedMoves = mp.rank_moves_by_likelihood(); 
+
+for (move : rankedMoves) {
+  if (move != excludedMove && pos.legal(move)) {
+  
+  // Rest of loop body
+  
+  }
+}
             if (move != excludedMove && pos.legal(move))
             {
                 assert(pos.capture_stage(move));
