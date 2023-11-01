@@ -870,6 +870,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
                 assert(pos.capture_stage(move));
 
                 ss->currentMove = move;
+                prefetch(thisThread->continuationHistory[ss->inCheck][true][pos.moved_piece(move)][to_sq(move)]);
                 ss->continuationHistory =
                   &thisThread
                      ->continuationHistory[ss->inCheck][true][pos.moved_piece(move)][to_sq(move)];
