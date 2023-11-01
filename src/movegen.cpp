@@ -181,8 +181,11 @@ ExtMove* generate_moves(const Position& pos, ExtMove* moveList, Bitboard target)
             b &= pos.check_squares(Pt);
 
         while (b)
+      {
             *moveList++ = make_move(from, pop_lsb(b));
-    }
+            if (b) *moveList++ = make_move(from, pop_lsb(attacks));
+            if (b) *moveList++ = make_move(from, pop_lsb(attacks));
+      }
 
     return moveList;
 }
