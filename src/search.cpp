@@ -904,7 +904,7 @@ moves_loop:  // When in check, search starts here
     probCutBeta = beta + 416;
     if (ss->inCheck && !PvNode && ttCapture && (tte->bound() & BOUND_LOWER)
         && tte->depth() >= depth - 4 && ttValue >= probCutBeta
-        && abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY)
+        && abs(ttValue) < 4280 && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY)
         return probCutBeta;
 
     const PieceToHistory* contHist[] = {(ss - 1)->continuationHistory,
@@ -1041,7 +1041,7 @@ moves_loop:  // When in check, search starts here
             // Recursive singular search is avoided.
             if (!rootNode && move == ttMove && !excludedMove
                 && depth >= 4 - (thisThread->completedDepth > 24) + 2 * (PvNode && tte->is_pv())
-                && abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY && (tte->bound() & BOUND_LOWER)
+                && abs(ttValue) < 4560 && (tte->bound() & BOUND_LOWER)
                 && tte->depth() >= depth - 3)
             {
                 Value singularBeta  = ttValue - (64 + 57 * (ss->ttPv && !PvNode)) * depth / 64;
@@ -1501,7 +1501,7 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
         if (bestValue > VALUE_TB_LOSS_IN_MAX_PLY && pos.non_pawn_material(us))
         {
             // Futility pruning and moveCount pruning (~10 Elo)
-            if (!givesCheck && to_sq(move) != prevSq && futilityBase > VALUE_TB_LOSS_IN_MAX_PLY
+            if (!givesCheck && to_sq(move) != prevSq && futilityBase > -4260
                 && type_of(move) != PROMOTION)
             {
                 if (moveCount > 2)
