@@ -401,7 +401,7 @@ void Thread::search() {
                 // When failing high/low give some update (without cluttering
                 // the UI) before a re-search.
                 if (mainThread && multiPV == 1 && (bestValue <= alpha || bestValue >= beta)
-                    && Time.elapsed() > 3000)
+                    && Time.elapsed() > 2900)
                     sync_cout << UCI::pv(rootPos, rootDepth) << sync_endl;
 
                 // In case of failing low/high increase aspiration window and
@@ -431,7 +431,7 @@ void Thread::search() {
             // Sort the PV lines searched so far and update the GUI
             std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
 
-            if (mainThread && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
+            if (mainThread && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 2900))
                 sync_cout << UCI::pv(rootPos, rootDepth) << sync_endl;
         }
 
@@ -951,7 +951,7 @@ moves_loop:  // When in check, search starts here
 
         ss->moveCount = ++moveCount;
 
-        if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+        if (rootNode && thisThread == Threads.main() && Time.elapsed() > 2900)
             sync_cout << "info depth " << depth << " currmove "
                       << UCI::move(move, pos.is_chess960()) << " currmovenumber "
                       << moveCount + thisThread->pvIdx << sync_endl;
