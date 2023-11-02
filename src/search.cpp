@@ -364,13 +364,13 @@ void Thread::search() {
 
             // Reset aspiration window starting size
             Value avg = rootMoves[pvIdx].averageScore;
-            delta     = Value(10) + int(avg) * avg / 15335;
+            delta     = Value(10) + int(avg) * avg / 15312;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 103 * (avg + 33) / (std::abs(avg + 34) + 119);
-            optimism[~us] = -116 * (avg + 40) / (std::abs(avg + 12) + 123);
+            optimism[us]  = 100 * (avg + 34) / (std::abs(avg + 32) + 125);
+            optimism[~us] = -121 * (avg + 38) / (std::abs(avg + 12) + 124);
 
             // Start with a small aspiration window and, in the case of a fail
             // high/low, re-search with a bigger window until we don't fail
@@ -1121,7 +1121,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes (~3 Elo)
         if (cutNode)
-            r += 2;
+            r += 2 - (depth < 8 && ttMove);
 
         // Increase reduction if ttMove is a capture (~3 Elo)
         if (ttCapture)
@@ -1174,8 +1174,8 @@ moves_loop:  // When in check, search starts here
             {
                 // Adjust full-depth search based on LMR results - if the result
                 // was good enough search deeper, if it was bad enough search shallower.
-                const bool doDeeperSearch     = value > (bestValue + 51 + 10 * (newDepth - d));
-                const bool doEvenDeeperSearch = value > alpha + 700 && ss->doubleExtensions <= 6;
+                const bool doDeeperSearch     = value > (bestValue + 52 + 10 * (newDepth - d));
+                const bool doEvenDeeperSearch = value > alpha + 720 && ss->doubleExtensions <= 6;
                 const bool doShallowerSearch  = value < bestValue + newDepth;
 
                 ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
