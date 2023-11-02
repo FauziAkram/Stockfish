@@ -369,8 +369,8 @@ void Thread::search() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 103 * (avg + 33) / (std::abs(avg + 34) + 119);
-            optimism[~us] = -116 * (avg + 40) / (std::abs(avg + 12) + 123);
+            optimism[us]  = 102 * (avg + 33) / (std::abs(avg + 34) + 120);
+            optimism[~us] = -118 * (avg + 39) / (std::abs(avg + 12) + 123);
 
             // Start with a small aspiration window and, in the case of a fail
             // high/low, re-search with a bigger window until we don't fail
@@ -861,7 +861,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     {
         assert(probCutBeta < VALUE_INFINITE);
 
-        MovePicker mp(pos, ttMove, probCutBeta - ss->staticEval, &captureHistory,
+        MovePicker mp(pos, ttMove, probCutBeta - ss->staticEval + 50, &captureHistory,
                       thisThread->pawnHistory);
 
         while ((move = mp.next_move()) != MOVE_NONE)
@@ -1175,7 +1175,7 @@ moves_loop:  // When in check, search starts here
                 // Adjust full-depth search based on LMR results - if the result
                 // was good enough search deeper, if it was bad enough search shallower.
                 const bool doDeeperSearch     = value > (bestValue + 51 + 10 * (newDepth - d));
-                const bool doEvenDeeperSearch = value > alpha + 700 && ss->doubleExtensions <= 6;
+                const bool doEvenDeeperSearch = value > alpha + 702 && ss->doubleExtensions <= 6;
                 const bool doShallowerSearch  = value < bestValue + newDepth;
 
                 ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
@@ -1185,8 +1185,8 @@ moves_loop:  // When in check, search starts here
                 if (newDepth > d)
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
-                int bonus = value <= alpha ? -stat_bonus(newDepth)
-                          : value >= beta  ? stat_bonus(newDepth)
+                int bonus = value <= alpha ? -stat_bonus(newDepth) * 4 / 5
+                          : value >= beta  ?  stat_bonus(newDepth)
                                            : 0;
 
                 update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
