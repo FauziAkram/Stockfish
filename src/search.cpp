@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=12, xx2=62, xx3=123, xx4=77, xx5=127, xx6=6, xx7=3645, xx8=7836, xx9=26, xx10=239, xx11=291;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11);
 namespace Search {
 
 LimitsType Limits;
@@ -982,7 +983,7 @@ moves_loop:  // When in check, search starts here
                 {
                     Piece capturedPiece = pos.piece_on(to_sq(move));
                     int   futilityEval =
-                      ss->staticEval + 239 + 291 * lmrDepth + PieceValue[capturedPiece]
+                      ss->staticEval + xx10 + xx1 * lmrDepth + PieceValue[capturedPiece]
                       + captureHistory[movedPiece][to_sq(move)][type_of(capturedPiece)] / 7;
                     if (futilityEval < alpha)
                         continue;
@@ -1000,22 +1001,22 @@ moves_loop:  // When in check, search starts here
                             + thisThread->pawnHistory[pawn_structure(pos)][movedPiece][to_sq(move)];
 
                 // Continuation history based pruning (~2 Elo)
-                if (lmrDepth < 6 && history < -3645 * depth)
+                if (lmrDepth < xx6 && history < -xx7 * depth)
                     continue;
 
                 history += 2 * thisThread->mainHistory[us][from_to(move)];
 
-                lmrDepth += history / 7836;
+                lmrDepth += history / xx8;
                 lmrDepth = std::max(lmrDepth, -1);
 
                 // Futility pruning: parent node (~13 Elo)
-                if (!ss->inCheck && lmrDepth < 13 && ss->staticEval + 77 + 124 * lmrDepth <= alpha)
+                if (!ss->inCheck && lmrDepth < xx1 && ss->staticEval + (bestValue < ss->staticEval - xx2 ? xx3 : xx4) + xx5 * lmrDepth <= alpha)
                     continue;
 
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE (~4 Elo)
-                if (!pos.see_ge(move, Value(-26 * lmrDepth * lmrDepth)))
+                if (!pos.see_ge(move, Value(-xx9 * lmrDepth * lmrDepth)))
                     continue;
             }
         }
