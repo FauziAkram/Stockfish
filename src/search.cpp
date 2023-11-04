@@ -1153,7 +1153,7 @@ moves_loop:  // When in check, search starts here
 
         if (extension < -2)
             r += xx1 + xx2 + xx3;
-        if (extension < -2)
+        if (extension == -2)
             r += xx1 + xx2;
         if (extension == -1)
             r += xx1;
