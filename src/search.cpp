@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx0=0, xx1=0, xx2=0, xx3=0, xx4=0, xx5=0;
+TUNE(SetRange(-10, 10), xx0,xx1,xx2,xx3,xx4,xx5);
 
 namespace Search {
 
@@ -1139,7 +1141,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for first generated move (ttMove)
         else if (move == ttMove)
-            r--;
+            r = 0;
 
         ss->statScore = 2 * thisThread->mainHistory[us][from_to(move)]
                       + (*contHist[0])[movedPiece][to_sq(move)]
@@ -1148,6 +1150,19 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
         r -= ss->statScore / (10216 + 3855 * (depth > 5 && depth < 23));
+
+        if (extension < -2)
+            r += xx1 + xx2 + xx3;
+        if (extension < -2)
+            r += xx1 + xx2;
+        if (extension == -1)
+            r += xx1;
+        if (extension == 0)
+            r += xx0;
+        if (extension == 1)
+            r += xx4;
+        if (extension > 1)
+            r += xx4 + xx5;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
