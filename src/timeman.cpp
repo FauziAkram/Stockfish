@@ -64,8 +64,8 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
         limits.npmsec = npmsec;
     }
 
-    // Maximum move horizon of 50 moves
-    int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
+    double mtgConstant = 37 + (66 - 37) * (1 - 1 / (1 + std::exp(0.05 * (limits.time[us] / 1000.0 - 30))));
+    int mtg = limits.movestogo ? std::min(limits.movestogo, static_cast<int>(mtgConstant)) : static_cast<int>(mtgConstant);
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
     TimePoint timeLeft = std::max(TimePoint(1), limits.time[us] + limits.inc[us] * (mtg - 1)
