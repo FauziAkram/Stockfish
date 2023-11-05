@@ -1166,6 +1166,9 @@ moves_loop:  // When in check, search starts here
         if (extension < -2)
             r ++;
 
+        if (extension > 1)
+            r ++;
+
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
         // been searched. In general, we would like to reduce them, but there are many
