@@ -1094,7 +1094,7 @@ moves_loop:  // When in check, search starts here
 
             // Check extensions (~1 Elo)
             else if (givesCheck && depth > 9)
-                extension = 1;
+                extension = 1 + move == ss->killers[0];
 
             // Quiet ttMove extensions (~1 Elo)
             else if (PvNode && move == ttMove && move == ss->killers[0]
