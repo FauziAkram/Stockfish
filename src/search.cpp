@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=4194, xx2=15000;
+TUNE(xx1,xx2);
 namespace Search {
 
 LimitsType Limits;
@@ -1098,7 +1099,8 @@ moves_loop:  // When in check, search starts here
 
             // Quiet ttMove extensions (~1 Elo)
             else if (PvNode && move == ttMove && move == ss->killers[0]
-                     && (*contHist[0])[movedPiece][to_sq(move)] >= 4194)
+                     && (*contHist[0])[movedPiece][to_sq(move)] >= xx1
+                     && (ss - 1)->statScore < xx2)
                 extension = 1;
         }
 
