@@ -47,7 +47,7 @@
 
 namespace Stockfish {
 int xx1=10;
-tune(xx1);
+TUNE(xx1);
 namespace Search {
 
 LimitsType Limits;
