@@ -1137,6 +1137,9 @@ moves_loop:  // When in check, search starts here
         if (PvNode)
             r--;
 
+        if (!PvNode && !cutNode && ss->ttPv && depth < 10)
+            r++;
+
         // Decrease reduction if a quiet ttMove has been singularly extended (~1 Elo)
         if (singularQuietLMR)
             r--;
