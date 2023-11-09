@@ -1142,9 +1142,6 @@ moves_loop:  // When in check, search starts here
         if (singularQuietLMR)
             r--;
 
-        if (!PvNode && !cutNode && ss->ttPv && depth < xx1)
-            r++;
-
         // Increase reduction on repetition (~1 Elo)
         if (move == (ss - 4)->currentMove && pos.has_repeated())
             r += 2;
@@ -1165,6 +1162,9 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
         r -= ss->statScore / (10216 + 3855 * (depth > 5 && depth < 23));
+
+        if (!PvNode && !cutNode && ss->ttPv && depth < xx1)
+            r++;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
