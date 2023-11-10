@@ -991,7 +991,7 @@ moves_loop:  // When in check, search starts here
                 }
 
                 // SEE based pruning for captures and checks (~11 Elo)
-                if (!pos.see_ge(move, Value(-185) * depth))
+                if ((ss->inCheck || ss->staticEval - 290 * depth < alpha) && !pos.see_ge(move, Value(-185) * depth))
                     continue;
             }
             else
