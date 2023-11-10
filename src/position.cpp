@@ -474,14 +474,13 @@ void Position::update_slider_blockers(Color c) const {
 
 // Computes a bitboard of all pieces which attack a
 // given square. Slider attacks use the occupied bitboard to indicate occupancy.
-Bitboard Position::attackers_to(Square s, Bitboard occupied) const {
+Bitboard Position::attackers_to(Square s) const {
 
     return (pawn_attacks_bb(BLACK, s) & pieces(WHITE, PAWN))
-         | (pawn_attacks_bb(WHITE, s) & pieces(BLACK, PAWN))
-         | (attacks_bb<KNIGHT>(s) & pieces(KNIGHT))
-         | (attacks_bb<ROOK>(s, occupied) & pieces(ROOK, QUEEN))
-         | (attacks_bb<BISHOP>(s, occupied) & pieces(BISHOP, QUEEN))
-         | (attacks_bb<KING>(s) & pieces(KING));
+         | attacks_bb<KNIGHT>(s)  
+         | attacks_bb<ROOK>(s)
+         | attacks_bb<BISHOP>(s)
+         | (attacks_bb<KING>(s) & pieces(KING));         
 }
 
 
