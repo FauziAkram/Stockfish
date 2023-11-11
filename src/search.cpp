@@ -604,7 +604,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     (ss + 2)->cutoffCnt                         = 0;
     ss->doubleExtensions                        = (ss - 1)->doubleExtensions;
     Square prevSq = is_ok((ss - 1)->currentMove) ? to_sq((ss - 1)->currentMove) : SQ_NONE;
-    ss->statScore = 0;
+    if (rootNode)
+		(ss + 2)->statScore = 0;
+	  else
+		ss->statScore = 0;
 
     // Step 4. Transposition table lookup.
     excludedMove = ss->excludedMove;
