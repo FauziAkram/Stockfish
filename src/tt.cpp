@@ -117,8 +117,18 @@ TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
     TTEntry* const tte   = first_entry(key);
     const uint16_t key16 = uint16_t(key);  // Use the low 16 bits as key inside the cluster
 
-    for (int i = 0; i < ClusterSize; ++i)
-        if (tte[i].key16 == key16 || !tte[i].depth8)
+    // Unroll the loop for potential performance gain
+for (int i = 0; i < ClusterSize; i += 2) {
+    if (tte[i].key16 == key16 || !tte[i].depth8) {
+        // Handle the first entry
+
+        if (i + 1 < ClusterSize && (tte[i + 1].key16 == key16 || !tte[i + 1].depth8)) {
+            // Handle the second entry
+        }
+
+        break;  // Exit loop early
+    }
+}
         {
             tte[i].genBound8 =
               uint8_t(generation8 | (tte[i].genBound8 & (GENERATION_DELTA - 1)));  // Refresh
