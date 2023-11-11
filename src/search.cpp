@@ -46,7 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=657, xx2=10, xx3=2, xx4=200, xx5=50;
+TUNE(xx1,xx2);
+TUNE(SetRange(0, 10), xx3);
+TUNE(xx4,xx5);
 namespace Search {
 
 LimitsType Limits;
@@ -1338,12 +1341,12 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - 657)
-                  + ((ss - 1)->moveCount > 10);
+        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - xx1)
+                  + ((ss - 1)->moveCount > xx2);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                      stat_bonus(depth) * bonus);
+          std::max(depth > xx3 ? (depth - xx3) * xx4 : 0, stat_bonus(depth) * bonus));
         thisThread->mainHistory[~us][from_to((ss - 1)->currentMove)]
-          << stat_bonus(depth) * bonus / 2;
+          << stat_bonus(depth) * bonus * xx5 / 100;
     }
 
     if (PvNode)
