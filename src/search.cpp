@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx0=1400, xx1=18000, xx2=500;
+TUNE(xx1,xx2,xx3);
 namespace Search {
 
 LimitsType Limits;
@@ -85,7 +86,7 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
+    return (reductionScale + xx0 - int(delta) * 976 / int(rootDelta)) / 1024
          + (!i && reductionScale > 808);
 }
 
@@ -186,7 +187,7 @@ uint64_t perft(Position& pos, Depth depth) {
 void Search::init() {
 
     for (int i = 1; i < MAX_MOVES; ++i)
-        Reductions[i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i));
+        Reductions[i] = int((xx1 / 1000.0 + std::log(Threads.size()) * xx2 / 1000) * std::log(i));
 }
 
 
