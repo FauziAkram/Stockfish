@@ -85,7 +85,7 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
+    return (reductionScale + 1465 - int(delta) * 976 / int(rootDelta)) / 1024
          + (!i && reductionScale > 808);
 }
 
@@ -186,7 +186,7 @@ uint64_t perft(Position& pos, Depth depth) {
 void Search::init() {
 
     for (int i = 1; i < MAX_MOVES; ++i)
-        Reductions[i] = int((20.37 + std::log(Threads.size())) * std::log(i));
+        Reductions[i] = int((19.80 + std::log(Threads.size())) * std::log(i));
 }
 
 
