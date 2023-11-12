@@ -46,7 +46,12 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=103, xx2=14, xx3=119, xx4=116, xx5=0, xx6=123;
+TUNE(xx1);
+TUNE(SetRange(-100, 100), xx2);
+TUNE(xx3,xx4);
+TUNE(SetRange(-100, 100), xx5);
+TUNE(xx6);
 namespace Search {
 
 LimitsType Limits;
@@ -372,8 +377,8 @@ void Thread::search() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 103 * avg / (std::abs(avg) + 119);
-            optimism[~us] = -116 * avg / (std::abs(avg) + 123);
+            optimism[us]  = xx1 * avg / (std::abs(avg + xx2) + xx3);
+            optimism[~us] = -xx4 * avg / (std::abs(avg + xx5) + xx6);
 
             // Start with a small aspiration window and, in the case of a fail
             // high/low, re-search with a bigger window until we don't fail
