@@ -874,6 +874,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
 
                 // Perform a preliminary qsearch to verify that the move holds
                 value = -qsearch<NonPV>(pos, ss + 1, -probCutBeta, -probCutBeta + 1);
+                pos.undo_move(move);
+
+                if (value >= beta)
+                    break;
 
                 // If the qsearch held, perform the regular search
                 if (value >= probCutBeta)
