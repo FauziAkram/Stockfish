@@ -185,7 +185,7 @@ uint64_t perft(Position& pos, Depth depth) {
 // Called at startup to initialize various lookup tables
 void Search::init() {
 
-    for (int d = 1; d < MAX_DEPTH; ++d)
+    for (int d = 1; d < MAX_PLY; ++d)
     {
         for (int i = 1; i < MAX_MOVES; ++i)
         {
