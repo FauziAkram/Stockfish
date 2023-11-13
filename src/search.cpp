@@ -77,7 +77,7 @@ enum NodeType {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((125 - 43 * noTtCutNode) * (d - improving));
+    return Value((124 - 43 * noTtCutNode) * (d - improving));
 }
 
 // Reductions lookup table initialized at startup
@@ -85,8 +85,8 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 808);
+    return (reductionScale + 1465 - int(delta) * 976 / int(rootDelta)) / 1024
+         + (!i && reductionScale > 820);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -186,7 +186,7 @@ uint64_t perft(Position& pos, Depth depth) {
 void Search::init() {
 
     for (int i = 1; i < MAX_MOVES; ++i)
-        Reductions[i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i));
+        Reductions[i] = int((19.80 + std::log(Threads.size()) / 2) * std::log(i));
 }
 
 
@@ -778,7 +778,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
                - (ss - 1)->statScore / 321
              >= beta
-        && eval >= beta && eval < 29462  // smaller than TB wins
+        && eval >= beta && eval < 29400  // smaller than TB wins
         && (!ttMove || ttCapture))
         return eval;
 
@@ -1012,7 +1012,7 @@ moves_loop:  // When in check, search starts here
 
                 // Futility pruning: parent node (~13 Elo)
                 if (!ss->inCheck && lmrDepth < 13
-                    && ss->staticEval + (bestValue < ss->staticEval - 62 ? 123 : 77)
+                    && ss->staticEval + (bestValue < ss->staticEval - 62 ? 124 : 77)
                            + 127 * lmrDepth
                          <= alpha)
                     continue;
@@ -1338,10 +1338,10 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - 657)
+        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - 693)
                   + ((ss - 1)->moveCount > 10);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                      stat_bonus(depth) * bonus);
+        std::max(depth > 3 ? (depth - 2) * 237 : 223, stat_bonus(depth) * bonus));
         thisThread->mainHistory[~us][from_to((ss - 1)->currentMove)]
           << stat_bonus(depth) * bonus / 2;
     }
