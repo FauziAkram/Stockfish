@@ -1568,7 +1568,7 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
 
         // Step 7. Make and search the move
         pos.do_move(move, st, givesCheck);
-        value = -qsearch<nodeType>(pos, ss + 1, -beta, -alpha, depth - 1);
+        value = -qsearch<nodeType>(pos, ss + 1, -beta, -alpha, newDepth);
         pos.undo_move(move);
 
         assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
