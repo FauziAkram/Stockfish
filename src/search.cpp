@@ -1187,7 +1187,7 @@ moves_loop:  // When in check, search starts here
 
                 ss->doubleExtensions = ss->doubleExtensions + doEvenDeeperSearch;
 
-                newDepth += doDeeperSearch - doShallowerSearch + doEvenDeeperSearch;
+                newDepth += doDeeperSearch - doShallowerSearch + 2 * doEvenDeeperSearch;
 
                 if (newDepth > d)
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
