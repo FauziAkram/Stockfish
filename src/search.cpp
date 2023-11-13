@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=20000, xx2=20000;
+TUNE(xx1,xx2);
 namespace Search {
 
 LimitsType Limits;
@@ -189,7 +190,8 @@ void Search::init() {
     {
         for (int i = 1; i < MAX_MOVES; ++i)
         {
-            Reductions[d][i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i));
+            Reductions[d][i] = int((xx1 / 1000.0 + std::log(Threads.size()) / 2) * std::log(d))
+              * int((xx2 / 1000.0 + std::log(Threads.size()) / 2) * std::log(i));
         }
     }
 }
