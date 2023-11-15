@@ -1106,6 +1106,9 @@ moves_loop:  // When in check, search starts here
                      && captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))]
                           > 4000)
                 extension = 1;
+
+            if (ss->staticEval > (ss-2)->staticEval && (ss-2)->staticEval > (ss-4)->staticEval)
+                extension++; 
         }
 
         // Add extension to new depth
