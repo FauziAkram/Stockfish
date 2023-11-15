@@ -1107,8 +1107,8 @@ moves_loop:  // When in check, search starts here
                           > 4000)
                 extension = 1;
 
-            if (ss->staticEval > (ss-2)->staticEval && (ss-2)->staticEval > (ss-4)->staticEval)
-                extension++; 
+            if (ss->staticEval < (ss-2)->staticEval && (ss-2)->staticEval < (ss-4)->staticEval)
+                extension--;
         }
 
         // Add extension to new depth
