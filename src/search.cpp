@@ -964,7 +964,7 @@ moves_loop:  // When in check, search starts here
 
         Value delta = beta - alpha;
 
-        Depth r = reduction(improving, depth, moveCount, delta, thisThread->rootDelta, capture);
+        Depth r = reduction(depth, moveCount, delta, thisThread->rootDelta, capture);
 
         // Step 14. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
