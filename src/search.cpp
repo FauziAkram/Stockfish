@@ -85,8 +85,8 @@ int Reductions[MAX_PLY][MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d][mn];
-    return (reductionScale + 1469 - int(delta) * 947 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 837);
+    return (reductionScale + 1480 - int(delta) * 946 / int(rootDelta)) / 1024
+         + (!i && reductionScale > 843);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -190,7 +190,7 @@ void Search::init() {
         for (int i = 1; i < MAX_MOVES; ++i)
         {
             Reductions[d][i] = int((21.50 + std::log(Threads.size()) / 2) * std::log(d))
-              * int((20.00 + std::log(Threads.size()) / 2) * std::log(i));
+              * int((20.00 * std::log(i));
         }
     }
 }
