@@ -1156,7 +1156,7 @@ moves_loop:  // When in check, search starts here
             r++;
 
         if (ss->staticEval > (ss-2)->staticEval && (ss-2)->staticEval > (ss-4)->staticEval)
-            r += 1 + ((ss-4)->staticEval > (ss-6)->staticEval));
+            r += 1 + ((ss-4)->staticEval > (ss-6)->staticEval);
 
         // Set reduction to 0 for first generated move (ttMove)
         // Nullifies all previous reduction adjustments to ttMove and leaves only history to do them
