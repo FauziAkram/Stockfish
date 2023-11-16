@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0;
+TUNE(SetRange(-1000, 1000), xx1,xx2);
 
 namespace Search {
 
@@ -1155,7 +1157,7 @@ moves_loop:  // When in check, search starts here
         if ((ss + 1)->cutoffCnt > 3)
             r++;
 
-        if (ss->staticEval > (ss-2)->staticEval && (ss-2)->staticEval > (ss-4)->staticEval)
+        if (ss->staticEval > (ss-2)->staticEval + xx1 && (ss-2)->staticEval > (ss-4)->staticEval + xx2)
             r++;
 
         // Set reduction to 0 for first generated move (ttMove)
