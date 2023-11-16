@@ -81,12 +81,13 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
 }
 
 // Reductions lookup table initialized at startup
-int Reductions[MAX_MOVES];  // [depth or moveNumber]
+int Reductions_depth[MAX_PLY];  // [depth]
+int Reductions_moves[MAX_MOVES];  // [moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
-    int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 808);
+    int reductionScale = Reductions_depth[d] * Reductions_moves[mn];
+    return (reductionScale + 1469 - int(delta) * 947 / int(rootDelta)) / 1024
+         + (!i && reductionScale > 840);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -185,8 +186,11 @@ uint64_t perft(Position& pos, Depth depth) {
 // Called at startup to initialize various lookup tables
 void Search::init() {
 
-    for (int i = 1; i < MAX_MOVES; ++i)
-        Reductions[i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i));
+    for (int d = 1; d < MAX_PLY; ++d)
+        Reductions_depth[d] = int((21.50 + std::log(Threads.size()) / 2) * std::log(d));
+
+    for (int mn = 1; mn < MAX_MOVES; ++mn)
+        Reductions_moves[mn] = int((19.85 + std::log(Threads.size()) / 2) * std::log(mn));
 }
 
 
