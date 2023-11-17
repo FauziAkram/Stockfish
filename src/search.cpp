@@ -842,7 +842,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
 
     // For cutNodes without a ttMove, we decrease depth by 2
     // if current depth >= 8.
-    if (cutNode && depth >= 8 && !ttMove)
+    if (cutNode && depth >= 7 && !ttMove)
         depth -= 2;
 
     probCutBeta = beta + 168 - 70 * improving;
@@ -1026,7 +1026,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE (~4 Elo)
-                if (!pos.see_ge(move, Value(-26 * lmrDepth * lmrDepth)))
+                if (!pos.see_ge(move, Value(-27 * lmrDepth * lmrDepth)))
                     continue;
             }
         }
@@ -1709,7 +1709,7 @@ void update_all_stats(const Position& pos,
         thisThread->pawnHistory[pawn_structure(pos)][moved_piece][to_sq(bestMove)]
           << quietMoveBonus;
 
-        int moveMalus = bestValue > beta + 168 ? quietMoveMalus      // larger malus
+        int moveMalus = bestValue > beta + 166 ? quietMoveMalus      // larger malus
                                                : stat_malus(depth);  // smaller malus
 
         // Decrease stats for all non-best quiet moves
