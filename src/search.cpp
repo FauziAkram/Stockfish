@@ -1559,7 +1559,7 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
                 continue;
 
             // Do not search moves with bad enough SEE values (~5 Elo)
-            if (!PvNode && !pos.see_ge(move, Value(-87)))
+            if (!PvNode && !pos.see_ge(move, Value(-93)))
                 continue;
         }
 
