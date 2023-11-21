@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=21000, xx2=20000, xx3=1420, xx4=976, xx5=880, xx6=10216, xx7=1501 , xx8=1478;
+TUNE(xx1,xx2,xx3,xx4,xx5);
 namespace Search {
 
 LimitsType Limits;
@@ -81,12 +82,12 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
 }
 
 // Reductions lookup table initialized at startup
-int Reductions[MAX_MOVES];  // [depth or moveNumber]
+int Reductions[MAX_PLY][MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
-    int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 808);
+    int reductionScale = Reductions[d][mn];
+    return (reductionScale + xx3 - int(delta) * xx4 / int(rootDelta)) / 1024
+         + (!i && reductionScale > xx5);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -94,10 +95,10 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(364 * d - 438, 1501); }
+int stat_bonus(Depth d) { return std::min(364 * d - 438, xx7); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(452 * d - 452, 1478); }
+int stat_malus(Depth d) { return std::min(452 * d - 452, xx8); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Thread* thisThread) {
@@ -185,8 +186,14 @@ uint64_t perft(Position& pos, Depth depth) {
 // Called at startup to initialize various lookup tables
 void Search::init() {
 
-    for (int i = 1; i < MAX_MOVES; ++i)
-        Reductions[i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i));
+    for (int d = 1; d < MAX_PLY; ++d)
+    {
+        for (int i = 1; i < MAX_MOVES; ++i)
+        {
+            Reductions[d][i] = int((xx1 / 1000.0 + std::log(Threads.size()) / 2) * std::log(d))
+              * int((xx2 / 1000.0 + std::log(Threads.size()) / 2) * std::log(i));
+        }
+    }
 }
 
 
@@ -835,7 +842,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
-    if (cutNode && depth >= 8 && !ttMove)
+    if (cutNode && depth >= 7 && !ttMove)
         depth -= 2;
 
     probCutBeta = beta + 168 - 70 * improving;
@@ -1019,7 +1026,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE (~4 Elo)
-                if (!pos.see_ge(move, Value(-26 * lmrDepth * lmrDepth)))
+                if (!pos.see_ge(move, Value(-27 * lmrDepth * lmrDepth)))
                     continue;
             }
         }
@@ -1165,7 +1172,7 @@ moves_loop:  // When in check, search starts here
                       + (*contHist[3])[movedPiece][to_sq(move)] - 3848;
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-        r -= ss->statScore / (10216 + 3855 * (depth > 5 && depth < 23));
+        r -= ss->statScore / (xx6 + 3855 * (depth > 5 && depth < 23));
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
@@ -1700,7 +1707,7 @@ void update_all_stats(const Position& pos,
         thisThread->pawnHistory[pawn_structure(pos)][moved_piece][to_sq(bestMove)]
           << quietMoveBonus;
 
-        int moveMalus = bestValue > beta + 168 ? quietMoveMalus      // larger malus
+        int moveMalus = bestValue > beta + 166 ? quietMoveMalus      // larger malus
                                                : stat_malus(depth);  // smaller malus
 
         // Decrease stats for all non-best quiet moves
