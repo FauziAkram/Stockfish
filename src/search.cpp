@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=50, xx2=10, xx3=10;
+TUNE(xx1);
+TUNE(SetRange(-20, 80), xx2,xx3);
 
 namespace Search {
 
@@ -1189,7 +1192,7 @@ moves_loop:  // When in check, search starts here
                 // Adjust full-depth search based on LMR results - if the result
                 // was good enough search deeper, if it was bad enough search shallower.
                 const bool doDeeperSearch =
-                  value > (bestValue + 51 + 10 * (newDepth - d));             // (~1 Elo)
+                  value > (bestValue + xx1 + xx2 * newDepth - xx3 * d);             // (~1 Elo)
                 const bool doShallowerSearch = value < bestValue + newDepth;  // (~2 Elo)
 
                 newDepth += doDeeperSearch - doShallowerSearch;
