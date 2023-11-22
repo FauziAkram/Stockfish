@@ -46,6 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=9, xx2=1, xx3=13;
+TUNE(SetRange(1, 28), xx1);
+TUNE(SetRange(-4, 4), xx2);
+TUNE(SetRange(1, 45), xx3);
 
 namespace Search {
 
@@ -1092,8 +1096,8 @@ moves_loop:  // When in check, search starts here
             }
 
             // Check extensions (~1 Elo)
-            else if (givesCheck && depth > 9)
-                extension = 1;
+            else if (givesCheck && depth > xx1)
+                extension = xx2 + (depth > xx3);
 
             // Quiet ttMove extensions (~1 Elo)
             else if (PvNode && move == ttMove && move == ss->killers[0]
