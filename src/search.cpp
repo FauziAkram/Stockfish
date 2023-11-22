@@ -85,8 +85,8 @@ int Reductions[MAX_PLY][MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d][mn];
-    return (reductionScale + 1389 - int(delta) * 964 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 900);
+    return (reductionScale + 1376 - int(delta) * 951 / int(rootDelta)) / 1024
+         + (!i && reductionScale > 888);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -94,10 +94,10 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(364 * d - 438, 1515); }
+int stat_bonus(Depth d) { return std::min(364 * d - 438, 1534); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(452 * d - 452, 1469); }
+int stat_malus(Depth d) { return std::min(452 * d - 452, 1439); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Thread* thisThread) {
@@ -189,8 +189,8 @@ void Search::init() {
     {
         for (int i = 1; i < MAX_MOVES; ++i)
         {
-            Reductions[d][i] = int((20.81 + std::log(Threads.size()) / 2) * std::log(d))
-              * int((19.69 + std::log(Threads.size()) / 2) * std::log(i));
+            Reductions[d][i] = int((21.00 + std::log(Threads.size()) / 2) * std::log(d))
+              * int((19.31 + std::log(Threads.size()) / 2) * std::log(i));
         }
     }
 }
@@ -373,7 +373,7 @@ void Thread::search() {
 
             // Reset aspiration window starting size
             Value avg = rootMoves[pvIdx].averageScore;
-            delta     = Value(10) + int(avg) * avg / 15335;
+            delta     = Value(10) + int(avg) * avg / 15320;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
@@ -782,9 +782,9 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 9
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
-               - (ss - 1)->statScore / 321
+               - (ss - 1)->statScore / 320
              >= beta
-        && eval >= beta && eval < 29462  // smaller than TB wins
+        && eval >= beta && eval < 29450  // smaller than TB wins
         && (!ttMove || ttCapture))
         return eval;
 
@@ -902,7 +902,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
 moves_loop:  // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 416;
+    probCutBeta = beta + 415;
     if (ss->inCheck && !PvNode && ttCapture && (tte->bound() & BOUND_LOWER)
         && tte->depth() >= depth - 4 && ttValue >= probCutBeta
         && abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY && abs(beta) < VALUE_TB_WIN_IN_MAX_PLY)
@@ -1171,7 +1171,7 @@ moves_loop:  // When in check, search starts here
                       + (*contHist[3])[movedPiece][to_sq(move)] - 3848;
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-        r -= ss->statScore / (10308 + 3855 * (depth > 5 && depth < 23));
+        r -= ss->statScore / (10309 + 3856 * (depth > 5 && depth < 23));
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
