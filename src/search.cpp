@@ -1190,9 +1190,11 @@ moves_loop:  // When in check, search starts here
                 // was good enough search deeper, if it was bad enough search shallower.
                 const bool doDeeperSearch =
                   value > (bestValue + 51 + 10 * (newDepth - d));             // (~1 Elo)
+                const bool doEvenDeeperSearch =
+                  value > (bestValue + 100 + 20 * (newDepth - d));
                 const bool doShallowerSearch = value < bestValue + newDepth;  // (~2 Elo)
 
-                newDepth += doDeeperSearch - doShallowerSearch;
+                newDepth += doDeeperSearch + doEvenDeeperSearch - doShallowerSearch;
 
                 if (newDepth > d)
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
