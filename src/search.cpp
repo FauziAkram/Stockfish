@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=100, xx2=100, xx3=200;
+TUNE(SetRange(-200, 600), xx1,xx2,xx3);
 
 namespace Search {
 
@@ -769,7 +771,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
-            return value;
+            return (xx1 * value + xx2 * alpha) / xx3;
     }
 
     // Step 8. Futility pruning: child node (~40 Elo)
