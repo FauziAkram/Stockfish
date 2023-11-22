@@ -46,8 +46,7 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=21000, xx2=20000, xx3=1420, xx4=976, xx5=880, xx6=10216, xx7=1501 , xx8=1478;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
+
 namespace Search {
 
 LimitsType Limits;
@@ -86,8 +85,8 @@ int Reductions[MAX_PLY][MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d][mn];
-    return (reductionScale + xx3 - int(delta) * xx4 / int(rootDelta)) / 1024
-         + (!i && reductionScale > xx5);
+    return (reductionScale + 1389 - int(delta) * 964 / int(rootDelta)) / 1024
+         + (!i && reductionScale > 900);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -95,10 +94,10 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(364 * d - 438, xx7); }
+int stat_bonus(Depth d) { return std::min(364 * d - 438, 1515); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(452 * d - 452, xx8); }
+int stat_malus(Depth d) { return std::min(452 * d - 452, 1469); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Thread* thisThread) {
@@ -190,8 +189,8 @@ void Search::init() {
     {
         for (int i = 1; i < MAX_MOVES; ++i)
         {
-            Reductions[d][i] = int((xx1 / 1000.0 + std::log(Threads.size()) / 2) * std::log(d))
-              * int((xx2 / 1000.0 + std::log(Threads.size()) / 2) * std::log(i));
+            Reductions[d][i] = int((20.81 + std::log(Threads.size()) / 2) * std::log(d))
+              * int((19.69 + std::log(Threads.size()) / 2) * std::log(i));
         }
     }
 }
