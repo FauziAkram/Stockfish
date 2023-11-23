@@ -769,7 +769,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
-            return (136 * value + 76 * alpha) / 208;
+            return (5 * value + 3 * alpha) / 8;
     }
 
     // Step 8. Futility pruning: child node (~40 Elo)
