@@ -768,7 +768,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     if (eval < alpha - 474 - (270 - 174 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
-        return (5 * value + 3 * alpha) / 8;
+        return (3 * value + alpha) / 4;
             return value;
     }
 
