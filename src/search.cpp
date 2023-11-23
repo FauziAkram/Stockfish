@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=100, xx2=100;
+TUNE(SetRange(-100, 500), xx1,xx2);
 
 namespace Search {
 
@@ -1692,7 +1694,7 @@ void update_all_stats(const Position& pos,
 
     if (!pos.capture_stage(bestMove))
     {
-        int bestMoveBonus = bestValue > beta + 168 ? quietMoveBonus      // larger bonus
+        int bestMoveBonus = bestValue > beta + 168 ? quietMoveBonus * xx1 / 100      // larger bonus
                                                    : stat_bonus(depth);  // smaller bonus
 
         // Increase stats for the best move in case it was a quiet move
@@ -1700,7 +1702,7 @@ void update_all_stats(const Position& pos,
         thisThread->pawnHistory[pawn_structure(pos)][moved_piece][to_sq(bestMove)]
           << quietMoveBonus;
 
-        int moveMalus = bestValue > beta + 168 ? quietMoveMalus      // larger malus
+        int moveMalus = bestValue > beta + 165 ? quietMoveMalus * xx2 / 100      // larger malus
                                                : stat_malus(depth);  // smaller malus
 
         // Decrease stats for all non-best quiet moves
