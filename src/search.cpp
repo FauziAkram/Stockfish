@@ -46,8 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=xx5=10216, xx2=xx6=3855, xx3=xx7=5, xx4,xx8=23;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8;
+int xx1=10216, xx2=3855, xx3=5, xx4=23, xx5=10216, xx6=3855, xx7=5, xx8=23;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 namespace Search {
 
 LimitsType Limits;
