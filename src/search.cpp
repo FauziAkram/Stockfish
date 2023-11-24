@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=125, xx2=43, xx3=40, xx4=8, xx5=321, xx6=29462;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
 namespace Search {
 
 LimitsType Limits;
@@ -76,8 +77,8 @@ enum NodeType {
 };
 
 // Futility margin
-Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((125 - 43 * noTtCutNode) * (d - improving));
+Value futility_margin(Depth d, bool noTtCutNode, bool cutoff, bool improving) {
+    return Value((xx1 - xx2 * noTtCutNode - xx3 * cutoff) * (d - improving));
 }
 
 // Reductions lookup table initialized at startup
@@ -86,7 +87,7 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
     return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 808);
+         + (!i && reductionScale > 810);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -775,10 +776,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 9
-        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
-               - (ss - 1)->statScore / 321
+        && eval - futility_margin(depth, cutNode && !ss->ttHit, ss->cutoffCnt > xx4 improving)
+               - (ss - 1)->statScore / xx5
              >= beta
-        && eval >= beta && eval < 29462  // smaller than TB wins
+        && eval >= beta && eval < xx6  // smaller than TB wins
         && (!ttMove || ttCapture))
         return eval;
 
