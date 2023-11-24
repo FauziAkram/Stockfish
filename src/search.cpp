@@ -85,8 +85,8 @@ int Reductions[MAX_PLY][MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d][mn];
-    return (reductionScale + 1389 - int(delta) * 964 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 900);
+    return (reductionScale + 1355 - int(delta) * 964 / int(rootDelta)) / 1024
+         + (!i && reductionScale > 863);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -94,10 +94,10 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(364 * d - 438, 1515); }
+int stat_bonus(Depth d) { return std::min(364 * d - 438, 1509); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(452 * d - 452, 1469); }
+int stat_malus(Depth d) { return std::min(452 * d - 452, 1402); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Thread* thisThread) {
@@ -189,8 +189,8 @@ void Search::init() {
     {
         for (int i = 1; i < MAX_MOVES; ++i)
         {
-            Reductions[d][i] = int((20.81 + std::log(Threads.size()) / 2) * std::log(d))
-              * int((19.69 + std::log(Threads.size()) / 2) * std::log(i));
+            Reductions[d][i] = int((20.00 + std::log(Threads.size()) / 2) * std::log(d))
+              * int((19.14 + std::log(Threads.size()) / 2) * std::log(i));
         }
     }
 }
@@ -784,7 +784,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
                - (ss - 1)->statScore / 321
              >= beta
-        && eval >= beta && eval < 29462  // smaller than TB wins
+        && eval >= beta && eval < 29450  // smaller than TB wins
         && (!ttMove || ttCapture))
         return eval;
 
@@ -1171,7 +1171,7 @@ moves_loop:  // When in check, search starts here
                       + (*contHist[3])[movedPiece][to_sq(move)] - 3848;
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-        r -= ss->statScore / (10308 + 3855 * (depth > 5 && depth < 23));
+        r -= ss->statScore / (10428 + 3855 * (depth > 5 && depth < 23));
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
