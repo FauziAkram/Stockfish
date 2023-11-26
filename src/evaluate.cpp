@@ -52,6 +52,9 @@ const unsigned int         gEmbeddedNNUESize    = 1;
 
 
 namespace Stockfish {
+int xx1=0, xx2=100, xx3=200, xx4=214;
+TUNE(SetRange(0, 100), xx1,xx2);
+TUNE(SetRange(0, 450), xx3,xx4);
 
 namespace Eval {
 
@@ -186,7 +189,8 @@ Value Eval::evaluate(const Position& pos) {
     }
 
     // Damp down the evaluation linearly when shuffling
-    v = v * (200 - shuffling) / 214;
+    int dumb = std::clamp(pos.rule50_count(), xx1, xx2);
+    v = v * (xx3 - shuffling) / xx4;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
