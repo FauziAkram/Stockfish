@@ -190,7 +190,7 @@ Value Eval::evaluate(const Position& pos) {
 
     // Damp down the evaluation linearly when shuffling
     int dumb = std::clamp(pos.rule50_count(), xx1, xx2);
-    v = v * (xx3 - shuffling) / xx4;
+    v = v * (xx3 - dumb) / xx4;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
