@@ -52,7 +52,7 @@ const unsigned int         gEmbeddedNNUESize    = 1;
 
 
 namespace Stockfish {
-int xx1=0, xx2=100, xx3=200, xx4=214;
+int xx1=3, xx2=75, xx3=200, xx4=214;
 TUNE(SetRange(0, 100), xx1,xx2);
 TUNE(SetRange(0, 450), xx3,xx4);
 
