@@ -200,10 +200,10 @@ ExtMove* generate_all(const Position& pos, ExtMove* moveList) {
     // Skip generating non-king moves when in double check
     if (Type != EVASIONS || !more_than_one(pos.checkers()))
     {
-        target = Type == EVASIONS     ? between_bb(ksq, lsb(pos.checkers()))
-               : Type == NON_EVASIONS ? ~pos.pieces(Us)
-               : Type == CAPTURES     ? pos.pieces(~Us)
-                                      : ~pos.pieces();  // QUIETS || QUIET_CHECKS
+        target = Type == EVASIONS                        ? between_bb(ksq, lsb(pos.checkers()))
+               : (Type == NON_EVASIONS || Type == QUIETS)? ~pos.pieces(Us)
+               : Type == CAPTURES                        ? pos.pieces(~Us)
+                                                         : ~pos.pieces();  // QUIET_CHECKS
 
         moveList = generate_pawn_moves<Us, Type>(pos, moveList, target);
         moveList = generate_moves<Us, KNIGHT, Checks>(pos, moveList, target);
