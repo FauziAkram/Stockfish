@@ -86,7 +86,7 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
     return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 808);
+         + (!i && reductionScale > 810);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -97,7 +97,7 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 int stat_bonus(Depth d) { return std::min(364 * d - 438, 1501); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(452 * d - 452, 1478); }
+int stat_malus(Depth d) { return std::min(452 * d - 452, 1476); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Thread* thisThread) {
@@ -741,9 +741,9 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         ss->staticEval = eval = evaluate(pos);
         // Save static evaluation into the transposition table
         if (eval < beta - 10)
-+            tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
-+        else
-+            tte->save(posKey, eval, false, BOUND_LOWER, DEPTH_NONE, MOVE_NONE, ss->staticEval);
+            tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
+        else
+            tte->save(posKey, eval, false, BOUND_LOWER, DEPTH_NONE, MOVE_NONE, ss->staticEval);
     }
 
     // Use static evaluation difference to improve quiet move ordering (~4 Elo)
@@ -779,7 +779,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 9
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
-               - (ss - 1)->statScore / 321
+               - (ss - 1)->statScore / 320
              >= beta
         && eval >= beta && eval < 29462  // smaller than TB wins
         && (!ttMove || ttCapture))
