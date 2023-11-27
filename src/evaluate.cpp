@@ -186,7 +186,7 @@ Value Eval::evaluate(const Position& pos) {
     }
 
     // Damp down the evaluation linearly when shuffling
-    int dumb = std::max(pos.rule50_count(), 84);
+    int dumb = std::min(pos.rule50_count(), 84);
     v = v * (190 - dumb) / 225;
 
     // Guarantee evaluation does not hit the tablebase range
