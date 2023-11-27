@@ -69,42 +69,6 @@ ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard ta
     Bitboard pawnsOn7    = pos.pieces(Us, PAWN) & TRank7BB;
     Bitboard pawnsNotOn7 = pos.pieces(Us, PAWN) & ~TRank7BB;
 
-    // Single and double pawn pushes, no promotions
-    if constexpr (Type != CAPTURES)
-    {
-        Bitboard b1 = shift<Up>(pawnsNotOn7) & emptySquares;
-        Bitboard b2 = shift<Up>(b1 & TRank3BB) & emptySquares;
-
-        if constexpr (Type == EVASIONS)  // Consider only blocking squares
-        {
-            b1 &= target;
-            b2 &= target;
-        }
-
-        if constexpr (Type == QUIET_CHECKS)
-        {
-            // To make a quiet check, you either make a direct check by pushing a pawn
-            // or push a blocker pawn that is not on the same file as the enemy king.
-            // Discovered check promotion has been already generated amongst the captures.
-            Square   ksq              = pos.square<KING>(Them);
-            Bitboard dcCandidatePawns = pos.blockers_for_king(Them) & ~file_bb(ksq);
-            b1 &= pawn_attacks_bb(Them, ksq) | shift<Up>(dcCandidatePawns);
-            b2 &= pawn_attacks_bb(Them, ksq) | shift<Up + Up>(dcCandidatePawns);
-        }
-
-        while (b1)
-        {
-            Square to   = pop_lsb(b1);
-            *moveList++ = make_move(to - Up, to);
-        }
-
-        while (b2)
-        {
-            Square to   = pop_lsb(b2);
-            *moveList++ = make_move(to - Up - Up, to);
-        }
-    }
-
     // Promotions and underpromotions
     if (pawnsOn7)
     {
@@ -157,6 +121,42 @@ ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard ta
 
             while (b1)
                 *moveList++ = make<EN_PASSANT>(pop_lsb(b1), pos.ep_square());
+        }
+    }
+  
+    // Single and double pawn pushes, no promotions
+    if constexpr (Type != CAPTURES)
+    {
+        Bitboard b1 = shift<Up>(pawnsNotOn7) & emptySquares;
+        Bitboard b2 = shift<Up>(b1 & TRank3BB) & emptySquares;
+
+        if constexpr (Type == EVASIONS)  // Consider only blocking squares
+        {
+            b1 &= target;
+            b2 &= target;
+        }
+
+        if constexpr (Type == QUIET_CHECKS)
+        {
+            // To make a quiet check, you either make a direct check by pushing a pawn
+            // or push a blocker pawn that is not on the same file as the enemy king.
+            // Discovered check promotion has been already generated amongst the captures.
+            Square   ksq              = pos.square<KING>(Them);
+            Bitboard dcCandidatePawns = pos.blockers_for_king(Them) & ~file_bb(ksq);
+            b1 &= pawn_attacks_bb(Them, ksq) | shift<Up>(dcCandidatePawns);
+            b2 &= pawn_attacks_bb(Them, ksq) | shift<Up + Up>(dcCandidatePawns);
+        }
+
+        while (b1)
+        {
+            Square to   = pop_lsb(b1);
+            *moveList++ = make_move(to - Up, to);
+        }
+
+        while (b2)
+        {
+            Square to   = pop_lsb(b2);
+            *moveList++ = make_move(to - Up - Up, to);
         }
     }
 
