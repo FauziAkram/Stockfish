@@ -619,7 +619,7 @@ ifeq ($(prefetch),yes)
 		CXXFLAGS += -msse
 	endif
 else
-	CXXFLAGS += -DNO_PREFETCH
+	CXXFLAGS += -DNO_PREFETCH -fno-exceptions
 endif
 
 ifeq ($(popcnt),yes)
