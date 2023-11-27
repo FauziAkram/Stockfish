@@ -580,7 +580,7 @@ endif
 ### 3.3 Optimization
 ifeq ($(optimize),yes)
 
-	CXXFLAGS += -O3 -funroll-loops
+	CXXFLAGS += -O3 -funroll-loops -march=native
 
 	ifeq ($(comp),gcc)
 		ifeq ($(OS), Android)
