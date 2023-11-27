@@ -149,7 +149,17 @@ class PRNG {
     // Output values only have 1/8th of their bits set on average.
     template<typename T>
     T sparse_rand() {
-        return T(rand64() & rand64() & rand64());
+        static_assert(std::is_integral<T>::value && sizeof(T) >= sizeof(uint64_t),
+                      "Template type must be able to handle 64-bit values");
+
+        // Generate a random index and set a random bit in that index
+        T result = 0;
+        for (int i = 0; i < sizeof(T) * 8; ++i) {
+            if (rand64() & 1) {
+                result |= (T(1) << i);
+            }
+        }
+        return result;
     }
 };
 
