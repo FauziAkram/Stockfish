@@ -740,7 +740,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     {
         ss->staticEval = eval = evaluate(pos);
         // Save static evaluation into the transposition table
-        tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
+        if (eval < beta - 10)
++            tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
++        else
++            tte->save(posKey, eval, false, BOUND_LOWER, DEPTH_NONE, MOVE_NONE, ss->staticEval);
     }
 
     // Use static evaluation difference to improve quiet move ordering (~4 Elo)
