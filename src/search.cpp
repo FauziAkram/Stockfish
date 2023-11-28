@@ -1145,6 +1145,11 @@ moves_loop:  // When in check, search starts here
         if (PvNode)
             r--;
 
+        
+        if (!PvNode && !cutNode && ss->ttPv && depth < xx1) {
+            r++;
+            depth =- xx2;}
+
         // Decrease reduction if a quiet ttMove has been singularly extended (~1 Elo)
         if (singularQuietLMR)
             r--;
@@ -1169,10 +1174,6 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
         r -= ss->statScore / (10216 + 3855 * (depth > 5 && depth < 23));
-
-        if (!PvNode && !cutNode && ss->ttPv && depth < xx1) {
-            r++;
-            depth =- xx2;}
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
