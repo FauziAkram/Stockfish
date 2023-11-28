@@ -46,9 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=12, xx2=0;
+int xx1=12;
 TUNE(SetRange(0, 30), xx1);
-TUNE(SetRange(-5, 5), xx2);
 
 namespace Search {
 
@@ -1146,9 +1145,8 @@ moves_loop:  // When in check, search starts here
             r--;
 
         
-        if (!PvNode && !cutNode && ss->ttPv && depth < xx1) {
+        if (!PvNode && !cutNode && ss->ttPv && depth < xx1)
             r++;
-            depth =- xx2;}
 
         // Decrease reduction if a quiet ttMove has been singularly extended (~1 Elo)
         if (singularQuietLMR)
