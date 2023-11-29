@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=150, xx2=0;
+TUNE(SetRange(0, 500), xx1);
+TUNE(SetRange(-300, 700), xx2);
 
 namespace Search {
 
@@ -988,6 +991,9 @@ moves_loop:  // When in check, search starts here
                     if (futilityEval < alpha)
                         continue;
                 }
+              
+                if (!givesCheck && !ss->inCheck && ss->staticEval + xx1 * depth * depth + xx2 * depth <= alpha && !pos.see_ge(move, Value(1)))
+                  continue;
 
                 // SEE based pruning for captures and checks (~11 Elo)
                 if (!pos.see_ge(move, Value(-185) * depth))
