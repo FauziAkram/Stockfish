@@ -1106,7 +1106,7 @@ moves_loop:  // When in check, search starts here
                           > 4000)
                 extension = 1;
               
-            else if (pos.count<ALL_PIECES>() < 6 && captureOrPromotion)
+            else if (pos.count<ALL_PIECES>() < 6 && pos.capture_or_promotion(move))
                 extension = 1;
         }
 
