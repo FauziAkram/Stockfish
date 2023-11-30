@@ -791,7 +791,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 150, 6) + (depth + improving) / 4 + 4;
+        Depth R = std::min(int(eval - beta) / 150, 6) + (depth + 2 * improving) / 4 + 4;
 
         ss->currentMove         = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
