@@ -795,10 +795,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
 
         // Null move dynamic reduction based on depth and eval
         int depthValues[] = {xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15};
-      if depth < 16
-        int depthValue = depthValues[depth - 1];
-      else
-        int depthValue = depth;
+        int depthValue = depth < 16? depthValues[std::min(depth, 15) - 1]: (depth * 4);
       
         Depth R = std::min(int(eval - beta) / 152, 6) + depthValue / 12 + 4;
 
