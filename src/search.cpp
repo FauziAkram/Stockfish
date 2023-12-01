@@ -46,9 +46,11 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=4, xx2=8, xx3=12, xx4=16, xx5=20, xx6=24, xx7=28, xx8=32,
-xx9=36, xx10=40, xx11=44, xx12=48, xx13=52, xx14=56, xx15=60;
+int xx1=8, xx2=16, xx3=13, xx4=12, xx5=21, xx6=36, xx7=42, xx8=32,
+xx9=32, xx10=41, xx11=53, xx12=51, xx13=60, xx14=56, xx15=62, xx16=40, xx17=4;
 TUNE(SetRange(-80, 400), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15);
+TUNE(xx16);
+TUNE(SetRange(-2, 16), xx17);
 
 namespace Search {
 
@@ -795,9 +797,9 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
 
         // Null move dynamic reduction based on depth and eval
         int depthValues[] = {xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15};
-        int depthValue = depth < 16? depthValues[std::min(depth, 15) - 1]: (depth * 4);
+        int depthValue = depth < 16? depthValues[std::min(depth, 15) - 1]: (depth * xx16 / 10);
       
-        Depth R = std::min(int(eval - beta) / 152, 6) + depthValue / 12 + 4;
+        Depth R = std::min(int(eval - beta) / 152, 6) + depthValue / 12 + xx17;
 
         ss->currentMove         = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
