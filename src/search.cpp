@@ -1212,7 +1212,7 @@ moves_loop:  // When in check, search starts here
             if (!ttMove && cutNode)
                 r += 2;
 
-            else if (!ss->ttPv)
+            else
                 r++;
 
             // Note that if expected reduction is high, we reduce search depth by 1 here
