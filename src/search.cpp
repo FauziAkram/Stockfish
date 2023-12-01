@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=4, xx2=8, xx3=12, xx4=16, xx5=20, xx6=24, xx7=28, xx8=32,
+xx9=36, xx10=40, xx11=44, xx12=48, xx13=52, xx14=56, xx15=60;
+TUNE(SetRange(-80, 400), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15);
 
 namespace Search {
 
@@ -791,7 +794,13 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 152, 6) + depth / 3 + 4;
+        int depthValues[] = {xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15};
+      if depth < 16
+        int depthValue = depthValues[depth - 1];
+      else
+        int depthValue = depth;
+      
+        Depth R = std::min(int(eval - beta) / 152, 6) + depthValue / 12 + 4;
 
         ss->currentMove         = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
