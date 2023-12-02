@@ -794,7 +794,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         int depthValues[] = {2, 12, 12, 14, 22, 39, 48, 30, 32, 46, 42, 42, 53, 61, 75};
         int depthValue = depth < 16 ? depthValues[std::min(depth, 15) - 1]: (depth * 44 / 10);
 
-        Depth R = std::min(int(eval - beta) / 152, 6) + depthValue / 12 + 5;
+        Depth R = std::min(int(eval - beta) / 152, 6) + depthValue / 12 + 4;
 
         ss->currentMove         = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
