@@ -308,7 +308,7 @@ void Thread::search() {
 
     ss->pv = pv;
 
-    bestValue = -VALUE_INFINITE;
+    bestValue = rootSimpleEval;
 
     if (mainThread)
     {
