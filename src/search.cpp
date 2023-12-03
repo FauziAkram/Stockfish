@@ -46,6 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=1487, xx2=976, xx3=810, xx4=20370, xx5=0, xx6=20370, xx7=0;
+TUNE(xx1,xx2,xx3,xx4,xx6);
+TUNE(SetRange(-20, 20), xx5, xx7);
+
 
 namespace Search {
 
@@ -85,8 +89,8 @@ int Reductions[2][MAX_MOVES];  // [improving][depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[i][d] * Reductions[i][mn];
-    return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 808);
+    return (reductionScale + xx1 - int(delta) * xx2 / int(rootDelta)) / 1024
+         + (!i && reductionScale > xx3);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -186,8 +190,8 @@ uint64_t perft(Position& pos, Depth depth) {
 void Search::init() {
 
     for (int i = 1; i < MAX_MOVES; ++i) {
-    Reductions[1][i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i));
-    Reductions[0][i] = Reductions[1][i] + 2;
+    Reductions[1][i] = int((xx4 / 1000.0 + std::log(Threads.size()) / 2) * std::log(i)) + xx5;
+    Reductions[0][i] = int((xx6 / 1000.0 + std::log(Threads.size()) / 2) * std::log(i)) + xx7;
     }
 }
 
