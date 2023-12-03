@@ -85,7 +85,7 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 int ReductionsNonImproving[MAX_MOVES];
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
-    int reductionTable = improving ? Reductions : ReductionsNonImproving;
+    int reductionTable = i ? Reductions : ReductionsNonImproving;
     int reductionScale = reductionTable[d] * reductionTable[mn];
     return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
          + (!i && reductionScale > 808);
