@@ -186,8 +186,8 @@ uint64_t perft(Position& pos, Depth depth) {
 void Search::init() {
 
     for (int i = 1; i < MAX_MOVES; ++i) {
-    Reductions[0][i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i));
-    Reductions[1][i] = Reductions[0][i] + 2;
+    Reductions[1][i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i));
+    Reductions[0][i] = Reductions[1][i] + 2;
     }
 }
 
