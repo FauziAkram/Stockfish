@@ -82,9 +82,11 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
 
 // Reductions lookup table initialized at startup
 int Reductions[MAX_MOVES];  // [depth or moveNumber]
+int ReductionsNonImproving[MAX_MOVES];
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
-    int reductionScale = Reductions[d] * Reductions[mn];
+    int reductionTable = improving ? Reductions : ReductionsNonImproving;
+    int reductionScale = reductionTable[d] * reductionTable[mn];
     return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
          + (!i && reductionScale > 808);
 }
@@ -186,7 +188,10 @@ uint64_t perft(Position& pos, Depth depth) {
 void Search::init() {
 
     for (int i = 1; i < MAX_MOVES; ++i)
-        Reductions[i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i));
+        for (int i = 1; i < MAX_MOVES; ++i) {
+    Reductions[i] = int((20.37 + std::log(Threads.size()) / 2) * std::log(i)); 
+    ReductionsNonImproving[i] = Reductions[i] + 2; // Extra reduction 
+    }
 }
 
 
