@@ -1213,23 +1213,23 @@ moves_loop:  // When in check, search starts here
                 r += 2;
             int rrr = 0;
             if (r > 3)
-            {rrr = xx1;}
+            rrr = xx1;
             if (r ==3)
-            {rrr = xx2;}
+            rrr = xx2;
             if (r ==2)
-            {rrr = xx3;}
+            rrr = xx3;
             if (r ==1)
-            {rrr = xx4;}
+            rrr = xx4;
             if (r ==0)
-            {rrr = xx5;}
+            rrr = xx5;
             if (r ==-1)
-            {rrr = xx6;}
+            rrr = xx6;
             if (r ==-2)
-            {rrr = xx7;}
+            rrr = xx7;
             if (r ==-3)
-            {rrr = xx8;}
+            rrr = xx8;
             if (r < -3)
-            {rrr = xx9;}
+            rrr = xx9;
 
             // Note that if expected reduction is high, we reduce search depth by 1 here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth + rrr, !cutNode);
