@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=-1, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0, xx9=0;
+TUNE(SetRange(-5, 5), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9);
 namespace Search {
 
 LimitsType Limits;
@@ -1210,9 +1211,28 @@ moves_loop:  // When in check, search starts here
             // Increase reduction if ttMove is not present (~1 Elo)
             if (!ttMove)
                 r += 2;
+            int rrr = 0;
+            if (r > 3)
+            {rrr = xx1;}
+            if (r ==3)
+            {rrr = xx2;}
+            if (r ==2)
+            {rrr = xx3;}
+            if (r ==1)
+            {rrr = xx4;}
+            if (r ==0)
+            {rrr = xx5;}
+            if (r ==-1)
+            {rrr = xx6;}
+            if (r ==-2)
+            {rrr = xx7;}
+            if (r ==-3)
+            {rrr = xx8;}
+            if (r < -3)
+            {rrr = xx9;}
 
             // Note that if expected reduction is high, we reduce search depth by 1 here
-            value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth - (r > 3), !cutNode);
+            value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth + rrr, !cutNode);
         }
 
         // For PV nodes only, do a full PV search on the first move or after a fail high,
