@@ -86,7 +86,7 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
     return (reductionScale + 1486 - int(delta) * 976 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 810);
+         + (!i && reductionScale > 820);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -94,10 +94,10 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(291 * d - 350, 1200); }
+int stat_bonus(Depth d) { return std::min(292 * d - 348, 1204); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(361 * d - 361, 1182); }
+int stat_malus(Depth d) { return std::min(365 * d - 359, 1179); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Thread* thisThread) {
