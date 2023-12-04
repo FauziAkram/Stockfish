@@ -1196,23 +1196,23 @@ moves_loop:  // When in check, search starts here
                 newDepth += doDeeperSearch - doShallowerSearch;
               
             if (r > 3)
-            {rrr = xx1};
+            {int rrr = xx1};
             if (r ==3)
-            {rrr = xx2};
+            {int rrr = xx2};
             if (r ==2)
-            {rrr = xx3};
+            {int rrr = xx3};
             if (r ==1)
-            {rrr = xx4};
+            {int rrr = xx4};
             if (r ==0)
-            {rrr = xx5};
+            {int rrr = xx5};
             if (r ==-1)
-            {rrr = xx6};
+            {int rrr = xx6};
             if (r ==-2)
-            {rrr = xx7};
+            {int rrr = xx7};
             if (r ==-3)
-            {rrr = xx8};
+            {int rrr = xx8};
             if (r < -3)
-            {rrr = xx9};
+            {int rrr = xx9};
               
                 if (newDepth > d)
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth + rrr, !cutNode);
