@@ -85,8 +85,8 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + 1487 - int(delta) * 976 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 808);
+    return (reductionScale + 1490 - int(delta) * 976 / int(rootDelta)) / 1024
+         + (!i && reductionScale > 822);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -94,10 +94,10 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(291 * d - 350, 1200); }
+int stat_bonus(Depth d) { return std::min(283 * d - 346, 1190); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(361 * d - 361, 1182); }
+int stat_malus(Depth d) { return std::min(366 * d - 361, 1182); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Thread* thisThread) {
@@ -367,12 +367,12 @@ void Thread::search() {
 
             // Reset aspiration window starting size
             Value avg = rootMoves[pvIdx].averageScore;
-            delta     = Value(10) + int(avg) * avg / 15335;
+            delta     = Value(10) + int(avg) * avg / 15000;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 110 * avg / (std::abs(avg) + 121);
+            optimism[us]  = 111 * avg / (std::abs(avg) + 120);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
@@ -765,7 +765,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - 474 - (270 - 174 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
+    if (eval < alpha - 474 - (274 - 172 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -778,7 +778,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
                - (ss - 1)->statScore / 321
              >= beta
-        && eval >= beta && eval < 29462  // smaller than TB wins
+        && eval >= beta && eval < 29100  // smaller than TB wins
         && (!ttMove || ttCapture))
         return (eval + beta) / 2;
 
@@ -835,7 +835,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
-    if (cutNode && depth >= 8 && !ttMove)
+    if (cutNode && depth >= 7 && !ttMove)
         depth -= 2;
 
     probCutBeta = beta + 168 - 70 * improving;
@@ -1097,13 +1097,13 @@ moves_loop:  // When in check, search starts here
 
             // Quiet ttMove extensions (~1 Elo)
             else if (PvNode && move == ttMove && move == ss->killers[0]
-                     && (*contHist[0])[movedPiece][to_sq(move)] >= 4194)
+                     && (*contHist[0])[movedPiece][to_sq(move)] >= 4206)
                 extension = 1;
 
             // Recapture extensions (~1 Elo)
             else if (PvNode && move == ttMove && to_sq(move) == prevSq
                      && captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))]
-                          > 4000)
+                          > 3994)
                 extension = 1;
         }
 
@@ -1475,7 +1475,7 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = ss->staticEval + 200;
+        futilityBase = ss->staticEval + 195;
     }
 
     const PieceToHistory* contHist[] = {(ss - 1)->continuationHistory,
@@ -1555,7 +1555,7 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
                 continue;
 
             // Do not search moves with bad enough SEE values (~5 Elo)
-            if (!pos.see_ge(move, Value(-90)))
+            if (!pos.see_ge(move, Value(-89)))
                 continue;
         }
 
