@@ -77,74 +77,6 @@ namespace {
 // Version number or dev.
 constexpr std::string_view version = "dev";
 
-// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
-// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
-// can toggle the logging of std::cout and std:cin at runtime whilst preserving
-// usual I/O functionality, all without changing a single line of code!
-// Idea from http://groups.google.com/group/comp.lang.c++/msg/1d941c0f26ea0d81
-
-struct Tie: public std::streambuf {  // MSVC requires split streambuf for cin and cout
-
-    Tie(std::streambuf* b, std::streambuf* l) :
-        buf(b),
-        logBuf(l) {}
-
-    int sync() override { return logBuf->pubsync(), buf->pubsync(); }
-    int overflow(int c) override { return log(buf->sputc(char(c)), "<< "); }
-    int underflow() override { return buf->sgetc(); }
-    int uflow() override { return log(buf->sbumpc(), ">> "); }
-
-    std::streambuf *buf, *logBuf;
-
-    int log(int c, const char* prefix) {
-
-        static int last = '\n';  // Single log file
-
-        if (last == '\n')
-            logBuf->sputn(prefix, 3);
-
-        return last = logBuf->sputc(char(c));
-    }
-};
-
-class Logger {
-
-    Logger() :
-        in(std::cin.rdbuf(), file.rdbuf()),
-        out(std::cout.rdbuf(), file.rdbuf()) {}
-    ~Logger() { start(""); }
-
-    std::ofstream file;
-    Tie           in, out;
-
-   public:
-    static void start(const std::string& fname) {
-
-        static Logger l;
-
-        if (l.file.is_open())
-        {
-            std::cout.rdbuf(l.out.buf);
-            std::cin.rdbuf(l.in.buf);
-            l.file.close();
-        }
-
-        if (!fname.empty())
-        {
-            l.file.open(fname, std::ifstream::out);
-
-            if (!l.file.is_open())
-            {
-                std::cerr << "Unable to open debug log file " << fname << std::endl;
-                exit(EXIT_FAILURE);
-            }
-
-            std::cin.rdbuf(&l.in);
-            std::cout.rdbuf(&l.out);
-        }
-    }
-};
-
 }  // namespace
 
 
@@ -313,13 +245,6 @@ std::string compiler_info() {
 constexpr int MaxDebugSlots = 32;
 
 namespace {
-
-template<size_t N>
-struct DebugInfo {
-    std::atomic<int64_t> data[N] = {0};
-
-    constexpr inline std::atomic<int64_t>& operator[](int index) { return data[index]; }
-};
 
 DebugInfo<2> hit[MaxDebugSlots];
 DebugInfo<2> mean[MaxDebugSlots];
