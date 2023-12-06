@@ -214,7 +214,7 @@ void MovePicker::score() {
         }
 }
 
-std::sort(this->moves.begin(), this->moves.end(), [](const ExtMove& a, const ExtMove& b) {
+std::sort(moves.begin(), moves.end(), [](const ExtMove& a, const ExtMove& b) {
     return a.value > b.value;
 });
 
