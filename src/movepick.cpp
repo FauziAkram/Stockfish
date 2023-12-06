@@ -214,9 +214,9 @@ void MovePicker::score() {
         }
 }
 
-std::sort(this->begin(), this->end(), [](const ExtMove& a, const ExtMove& b) {
+std::sort(begin(), end(), [](const ExtMove& a, const ExtMove& b) {
     return a.value > b.value;
-});
+});  
 
 // Returns the next move satisfying a predicate function.
 // It never returns the TT move.
