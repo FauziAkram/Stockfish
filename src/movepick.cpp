@@ -61,7 +61,6 @@ enum Stages {
 // Sort moves in descending order up to and including
 // a given limit. The order of moves smaller than the limit is left unspecified.
 void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
-
     std::sort(begin, end, [limit](const ExtMove& a, const ExtMove& b) {
         return a.value >= limit && (b.value < limit || a.value > b.value);
     });
@@ -213,10 +212,6 @@ void MovePicker::score() {
                         + (*pawnHistory)[pawn_structure(pos)][pos.moved_piece(m)][to_sq(m)];
         }
 }
-
-std::sort(moves.begin(), moves.end(), [](const ExtMove& a, const ExtMove& b) {
-    return a.value > b.value;
-});
 
 // Returns the next move satisfying a predicate function.
 // It never returns the TT move.
