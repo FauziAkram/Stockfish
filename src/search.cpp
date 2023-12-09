@@ -46,6 +46,11 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=0, xx2=-14, xx3=-14, xx4=1449, xx5=1449;
+TUNE(SetRange(-20, 20), xx1);
+TUNE(SetRange(-40, 20), xx2);
+TUNE(SetRange(-60, 40), xx3);
+TUNE(xx4,xx5);
 
 namespace Search {
 
@@ -746,7 +751,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // Use static evaluation difference to improve quiet move ordering (~4 Elo)
     if (is_ok((ss - 1)->currentMove) && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-14 * int((ss - 1)->staticEval + ss->staticEval), -1449, 1449);
+        int bonus = std::clamp(int( xx1 * (ss - 2)->staticEval + xx2 * (ss - 1)->staticEval + xx3 * ss->staticEval), -xx4, xx5);
         thisThread->mainHistory[~us][from_to((ss - 1)->currentMove)] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && type_of((ss - 1)->currentMove) != PROMOTION)
             thisThread->pawnHistory[pawn_structure(pos)][pos.piece_on(prevSq)][prevSq] << bonus / 4;
