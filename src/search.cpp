@@ -1491,9 +1491,6 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
 
     int quietCheckEvasions = 0;
 
-    if (PvNode && !ss->inCheck && !ttMove)
-        depth--;
-
     // Step 5. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
     while ((move = mp.next_move()) != MOVE_NONE)
