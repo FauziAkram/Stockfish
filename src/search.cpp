@@ -644,7 +644,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
             // Penalty for a quiet ttMove that fails low (~1 Elo)
             else if (!ttCapture)
             {
-                int penalty = -stat_malus(depth + (depth > 4));
+                int penalty = -stat_malus(depth + (depth > 3));
                 thisThread->mainHistory[us][from_to(ttMove)] << penalty;
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
