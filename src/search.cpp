@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=66, xx2=14, xx3=6, xx4=5830, xx5=8, xx6=156, xx7=69, xx8=140, xx9=203, xx10=179, x11=5000, xx12=500, xx13=1500;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11);
 namespace Search {
 
 LimitsType Limits;
@@ -469,21 +470,21 @@ void Thread::search() {
         // Do we have time for the next iteration? Can we stop searching now?
         if (Limits.use_time_management() && !Threads.stop && !mainThread->stopOnPonderhit)
         {
-            double fallingEval = (66 + 14 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 6 * (mainThread->iterValue[iterIdx] - bestValue))
-                               / 583.0;
-            fallingEval = std::clamp(fallingEval, 0.5, 1.5);
+            double fallingEval = (xx1 + xx2 * (mainThread->bestPreviousAverageScore - bestValue)
+                                    +  xx3 * (mainThread->iterValue[iterIdx] - bestValue)) / (xx4 / 10.0);
+          
+            fallingEval = std::clamp(fallingEval, (xx12 / 1000), (xx13 / 1000));
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.56 : 0.69;
-            double reduction = (1.4 + mainThread->previousTimeReduction) / (2.03 * timeReduction);
-            double bestMoveInstability = 1 + 1.79 * totBestMoveChanges / Threads.size();
+            timeReduction = lastBestMoveDepth + xx5 < completedDepth ? (xx6 / 100.0) : (xx7 / 100.0);
+            double reduction = ((xx8 / 100.0) + mainThread->previousTimeReduction) / ((xx9 / 100.0) * timeReduction);
+            double bestMoveInstability = 1 + (xx10 / 100.0) * totBestMoveChanges / Threads.size();
 
             double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
-                totalTime = std::min(500.0, totalTime);
+                totalTime = std::min((xx11 / 10.0), totalTime);
 
             // Stop the search if we have exceeded the totalTime
             if (Time.elapsed() > totalTime)
