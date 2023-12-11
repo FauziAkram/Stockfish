@@ -79,8 +79,8 @@ enum NodeType {
 };
 
 // Futility margin
-Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((116 - 44 * noTtCutNode + xx1 * pos.count<PAWN>()) * (d - improving));
+Value futility_margin(Depth d, bool noTtCutNode, bool improving, const Position& pos) {
+    return Value((116 - 44 * noTtCutNode + xx1 * pos.count<PAWN>(pos.side_to_move())) * (d - improving));
 }
 
 // Reductions lookup table initialized at startup
