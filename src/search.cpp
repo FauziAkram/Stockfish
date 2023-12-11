@@ -778,7 +778,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 9
-        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
+        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, pos)
                - (ss - 1)->statScore / 337
               + xx2 * pos.count<PAWN>()
              >= beta
