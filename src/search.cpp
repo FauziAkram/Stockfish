@@ -46,7 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0;
+TUNE(SetRange(-200, 200), xx1,xx2,xx3,xx4);
+TUNE(SetRange(-20, 20), xx5,xx6);
+TUNE(SetRange(-600, 600), xx7,xx8);
 namespace Search {
 
 LimitsType Limits;
@@ -372,7 +375,7 @@ void Thread::search() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 121 * avg / (std::abs(avg) + 109);
+            optimism[us]  = (121 + (xx7 * rootPos.count<PAWN>()) / 100) * avg / (std::abs(avg) + (109 + (xx8 * rootPos.count<PAWN>()) / 100));
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
@@ -777,6 +780,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     if (!ss->ttPv && depth < 9
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
                - (ss - 1)->statScore / 337
+              + xx2 * pos.count<PAWN>()
              >= beta
         && eval >= beta && eval < 29008  // smaller than TB wins
         && (!ttMove || ttCapture))
@@ -838,7 +842,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     if (cutNode && depth >= 8 && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + 163 - 67 * improving + xx2 * pos.count<PAWN>();
+    probCutBeta = beta + 163 - 67 * improving + xx3 * pos.count<PAWN>();
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -983,7 +987,7 @@ moves_loop:  // When in check, search starts here
                 {
                     Piece capturedPiece = pos.piece_on(to_sq(move));
                     int   futilityEval =
-                      ss->staticEval + 238 + xxx * pos.count<PAWN>() + 305 * lmrDepth + PieceValue[capturedPiece]
+                      ss->staticEval + 238 + xx4 * pos.count<PAWN>() + 305 * lmrDepth + PieceValue[capturedPiece]
                       + captureHistory[movedPiece][to_sq(move)][type_of(capturedPiece)] / 7;
                     if (futilityEval < alpha)
                         continue;
@@ -1691,7 +1695,7 @@ void update_all_stats(const Position& pos,
 
     if (!pos.capture_stage(bestMove))
     {
-        int bestMoveBonus = bestValue > beta + 173 ? quietMoveBonus + xx3 * pos.count<PAWN>()     // larger bonus
+        int bestMoveBonus = bestValue > beta + 173 ? quietMoveBonus + xx5 * pos.count<PAWN>()     // larger bonus
                                                    : stat_bonus(depth);  // smaller bonus
 
         // Increase stats for the best move in case it was a quiet move
@@ -1699,7 +1703,7 @@ void update_all_stats(const Position& pos,
         thisThread->pawnHistory[pawn_structure(pos)][moved_piece][to_sq(bestMove)]
           << quietMoveBonus;
 
-        int moveMalus = bestValue > beta + 165 ? quietMoveMalus + xx4 * pos.count<PAWN>()      // larger malus
+        int moveMalus = bestValue > beta + 165 ? quietMoveMalus + xx6 * pos.count<PAWN>()      // larger malus
                                                : stat_malus(depth);  // smaller malus
 
         // Decrease stats for all non-best quiet moves
@@ -1707,10 +1711,10 @@ void update_all_stats(const Position& pos,
         {
             thisThread->pawnHistory[pawn_structure(pos)][pos.moved_piece(quietsSearched[i])]
                                    [to_sq(quietsSearched[i])]
-              << -quietMoveMalus;
-            thisThread->mainHistory[us][from_to(quietsSearched[i])] << -quietMoveMalus;
+              << -moveMalus;
+            thisThread->mainHistory[us][from_to(quietsSearched[i])] << -moveMalus;
             update_continuation_histories(ss, pos.moved_piece(quietsSearched[i]),
-                                          to_sq(quietsSearched[i]), -quietMoveMalus);
+                                          to_sq(quietsSearched[i]), -moveMalus);
         }
     }
     else
