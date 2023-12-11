@@ -95,7 +95,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
     // game time for the current move, so also cap to 20% of available game time.
     if (limits.movestogo == 0)
     {
-        optScale = std::min((zz3/10000.0) + std::pow(ply + (zz4/100.0), (zz5/100.0))) * optConstant,
+        optScale = std::min((zz3/10000.0) + std::pow(ply + (zz4/100.0), (zz5/100.0)) * optConstant,
                             (zz7/1000.0) * limits.time[us] / double(timeLeft))
                  * optExtra;
         maxScale = std::min((zz8/100.0), maxConstant + ply / (zz10/100.0));
