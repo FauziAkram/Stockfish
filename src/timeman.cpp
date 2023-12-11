@@ -25,6 +25,10 @@
 #include "uci.h"
 
 namespace Stockfish {
+int zz1=50, zz2=100, zz3=120, zz4=300, zz5=45, zz6=39, zz7=20, zz8=700, zz9=400, zz10=1200, zz11=80;
+TUNE(zz1,zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz11);
+TUNE(SetRange(1, 200), zz2);
+TUNE(SetRange(1, 2400), zz10);
 
 TimeManagement Time;  // Our global time management object
 
@@ -65,7 +69,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
     }
 
     // Maximum move horizon of 50 moves
-    int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
+    int mtg = limits.movestogo ? std::min(limits.movestogo, zz1) : zz1;
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
     TimePoint timeLeft = std::max(TimePoint(1), limits.time[us] + limits.inc[us] * (mtg - 1)
@@ -80,17 +84,17 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
     // A user may scale time usage by setting UCI option "Slow Mover"
     // Default is 100 and changing this value will probably lose elo.
-    timeLeft = slowMover * timeLeft / 100;
+    timeLeft = slowMover * timeLeft / zz2;
 
     // x basetime (+ z increment)
     // If there is a healthy increment, timeLeft can exceed actual available
     // game time for the current move, so also cap to 20% of available game time.
     if (limits.movestogo == 0)
     {
-        optScale = std::min(0.0120 + std::pow(ply + 3.3, 0.44) * optConstant,
-                            0.2 * limits.time[us] / double(timeLeft))
+        optScale = std::min((zz3/10000.0) + std::pow(ply + (zz4/100.0), (zz5/100.0))) * optConstant,
+                            (zz7/100.0) * limits.time[us] / double(timeLeft))
                  * optExtra;
-        maxScale = std::min(6.8, maxConstant + ply / 12.2);
+        maxScale = std::min((zz8/100.0), maxConstant + ply / (zz10/100.0));
     }
 
     // x moves in y seconds (+ z increment)
@@ -103,7 +107,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
     // Limit the maximum possible time for this move
     optimumTime = TimePoint(optScale * timeLeft);
     maximumTime =
-      TimePoint(std::min(0.84 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
+      TimePoint(std::min((zz11/100.0) * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (Options["Ponder"])
         optimumTime += optimumTime / 4;
