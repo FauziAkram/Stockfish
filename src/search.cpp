@@ -49,7 +49,11 @@ namespace Stockfish {
 int xx1=66, xx2=14, xx3=6, xx4=5830, xx5=8, xx6=156, xx7=69, xx8=140;
 int xx9=203, xx10=179, xx11=5000, xx12=500, xx13=1500;
 int yy1=11, yy2=1247, yy3=308, yy4=760, yy5=3400;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11);
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(1, 12401), xx4);
+TUNE(xx5,xx6,xx7,xx8);
+TUNE(SetRange(1, 417), xx9);
+TUNE(xx10,xx11);
 TUNE(yy1,yy2,yy3,yy4,yy5);
 namespace Search {
 
