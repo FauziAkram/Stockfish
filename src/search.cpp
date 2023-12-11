@@ -46,8 +46,11 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=66, xx2=14, xx3=6, xx4=5830, xx5=8, xx6=156, xx7=69, xx8=140, xx9=203, xx10=179, x11=5000, xx12=500, xx13=1500;
+int xx1=66, xx2=14, xx3=6, xx4=5830, xx5=8, xx6=156, xx7=69, xx8=140;
+int xx9=203, xx10=179, x11=5000, xx12=500, xx13=1500;
+int yy1=11, yy2=1247, yy3=308, yy4=760, yy5=3400;
 TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11);
+TUNE(yy1,yy2,yy3,yy4,yy5);
 namespace Search {
 
 LimitsType Limits;
@@ -481,6 +484,15 @@ void Thread::search() {
             double bestMoveInstability = 1 + (xx10 / 100.0) * totBestMoveChanges / Threads.size();
 
             double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+
+            if (completedDepth > yy1
+                && std::abs(bestValue) < 5*UCI::NormalizeToPawnValue
+                && rootMoves.size() > 1
+                && !rootMoves[0].scoreUpperbound) {
+                double bestMargin = double(bestValue-rootMoves[1].upperScore)/UCI::NormalizeToPawnValue;
+                double bestMarginRed = (yy2 / 1000.0)-(yy3 / 1000.0)*std::clamp(bestMargin, (yy4 / 1000.0), (yy5 / 1000.0));
+                totalTime *= bestMarginRed;
+            }
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -1245,6 +1257,8 @@ moves_loop:  // When in check, search starts here
 
             rm.averageScore =
               rm.averageScore != -VALUE_INFINITE ? (2 * value + rm.averageScore) / 3 : value;
+            rm.upperScore =
+              rm.upperScore != -VALUE_INFINITE ? std::min((15 * rm.upperScore  + value) / 16, value) : value;
 
             // PV move or new best move?
             if (moveCount == 1 || value > alpha)
