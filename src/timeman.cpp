@@ -26,12 +26,13 @@
 
 namespace Stockfish {
 int zz1=50, zz2=100, zz3=120, zz4=330, zz5=44, zz7=200, zz8=680, zz10=1220;
-int zz11=84, zz12=335, zz13=480, zz14=360, zz15=300, zz16=270, zz17=;
+int zz11=84, zz12=335, zz13=30, zz14=480, zz15=360, zz16=300, zz17=270;
+int zz18=125 , zz19=1000 , zz20=1120 ;
 TUNE(zz1);
 TUNE(SetRange(1, 200), zz2);
 TUNE(zz3,zz4,zz5,zz7,zz8);
 TUNE(SetRange(1, 2400), zz10);
-TUNE(zz11,zz12,zz13,zz14,zz15,zz16,zz17);
+TUNE(zz11,zz12,zz13,zz14,zz15,zz16,zz17,zz18,zz19,zz20);
 
 TimeManagement Time;  // Our global time management object
 
@@ -79,7 +80,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
                                                   - moveOverhead * (2 + mtg));
 
     // Use extra time with larger increments
-    double optExtra = std::clamp(1.0 + 12.5 * limits.inc[us] / limits.time[us], 1.0, 1.12);
+    double optExtra = std::clamp(1.0 + (zz18/10.0) * limits.inc[us] / limits.time[us], (zz19/100.0), (zz20/100.0));
 
     // Calculate time constants based on current time left.
     double optConstant = std::min((zz12/100000.0) + (zz13/100000.0) * std::log10(limits.time[us] / 1000.0), (zz14/100000.0));
