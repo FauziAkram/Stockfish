@@ -26,12 +26,12 @@
 
 namespace Stockfish {
 int zz1=50, zz2=100, zz3=120, zz4=330, zz5=44, zz7=200, zz8=680, zz10=1220;
-int zz11=84, zz12=335, zz13=480, zz14=360, zz15=300, zz16=270;
+int zz11=84, zz12=335, zz13=480, zz14=360, zz15=300, zz16=270, zz17=;
 TUNE(zz1);
 TUNE(SetRange(1, 200), zz2);
 TUNE(zz3,zz4,zz5,zz7,zz8);
 TUNE(SetRange(1, 2400), zz10);
-TUNE(zz11,zz12,zz13,zz14,zz15,zz16);
+TUNE(zz11,zz12,zz13,zz14,zz15,zz16,zz17);
 
 TimeManagement Time;  // Our global time management object
 
