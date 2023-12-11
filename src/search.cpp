@@ -476,14 +476,14 @@ void Thread::search() {
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.56 : 0.69;
-            double reduction = (1.4 + mainThread->previousTimeReduction) / (2.03 * timeReduction);
-            double bestMoveInstability = 1 + 1.79 * totBestMoveChanges / Threads.size();
+            double reduction = (1.5 + mainThread->previousTimeReduction) / (2.15 * timeReduction);
+            double bestMoveInstability = 1 + 1.89 * totBestMoveChanges / Threads.size();
 
             double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
-                totalTime = std::min(500.0, totalTime);
+                totalTime = std::min(532.0, totalTime);
 
             // Stop the search if we have exceeded the totalTime
             if (Time.elapsed() > totalTime)
