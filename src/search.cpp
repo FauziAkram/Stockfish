@@ -917,6 +917,7 @@ moves_loop:  // When in check, search starts here
 
     value            = bestValue;
     moveCountPruning = singularQuietLMR = false;
+    ss->mcp = false;
 
     // Indicate PvNodes that will probably fail low if the node was searched
     // at a depth equal to or greater than the current depth, and the result
@@ -969,9 +970,15 @@ moves_loop:  // When in check, search starts here
         // Depth conditions are important for mate finding.
         if (!rootNode && pos.non_pawn_material(us) && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
         {
+            if (ss->mcp
+                && ss->inCheck
+                && !capture
+                && !givesCheck)
+                continue;
+          
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
             if (!moveCountPruning)
-                moveCountPruning = moveCount >= futility_move_count(improving, depth);
+                ss->mcp = moveCountPruning = moveCount >= futility_move_count(improving, depth);
 
             // Reduced depth of the next LMR search
             int lmrDepth = newDepth - r;
@@ -1304,7 +1311,7 @@ moves_loop:  // When in check, search starts here
                 {
                     // Reduce other moves if we have found at least one score improvement (~2 Elo)
                     if (depth > 2 && depth < 12 && beta < 13782 && value > -11541)
-                        depth -= 2;
+                        depth -= (ss-1)->mcp && (ss-1)->moveCount > 8 ? 3 : 2;
 
                     assert(depth > 0);
                     alpha = value;  // Update alpha! Always alpha < beta
