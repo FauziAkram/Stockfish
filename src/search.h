@@ -69,7 +69,6 @@ struct RootMove {
     }
 
     Value             score           = -VALUE_INFINITE;
-    Value             upperScore      = -VALUE_INFINITE;
     Value             previousScore   = -VALUE_INFINITE;
     Value             averageScore    = -VALUE_INFINITE;
     Value             uciScore        = -VALUE_INFINITE;
