@@ -777,6 +777,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     if (!ss->ttPv && depth < 9
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
                - (ss - 1)->statScore / 337
+              + 20 * pos.count<PAWN>()
              >= beta
         && eval >= beta && eval < 29008  // smaller than TB wins
         && (!ttMove || ttCapture))
