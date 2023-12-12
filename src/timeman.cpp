@@ -80,7 +80,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
                                                   - moveOverhead * (2 + mtg));
 
     // Use extra time with larger increments
-    double optExtra = std::clamp(1.0 + (zz18/10.0) * limits.inc[us] / limits.time[us], (zz19/100.0), (zz20/100.0));
+    double optExtra = std::clamp(1.0 + (zz18/10.0) * limits.inc[us] / limits.time[us], (zz19/1000.0), (zz20/1000.0));
 
     // Calculate time constants based on current time left.
     double optConstant = std::min((zz12/100000.0) + (zz13/100000.0) * std::log10(limits.time[us] / 1000.0), (zz14/100000.0));
