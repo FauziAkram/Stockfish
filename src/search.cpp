@@ -469,17 +469,26 @@ void Thread::search() {
         // Do we have time for the next iteration? Can we stop searching now?
         if (Limits.use_time_management() && !Threads.stop && !mainThread->stopOnPonderhit)
         {
-            double fallingEval = (66 + 14 * (mainThread->bestPreviousAverageScore - bestValue)
+            double fallingEval = (66 + 13 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 6 * (mainThread->iterValue[iterIdx] - bestValue))
-                               / 596.0;
+                               / 592.0;
             fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.56 : 0.69;
-            double reduction = (1.0 + mainThread->previousTimeReduction) / (2.2 * timeReduction);
+            double reduction = (1.0 + mainThread->previousTimeReduction) / (2.3 * timeReduction);
             double bestMoveInstability = 1 + 1.79 * totBestMoveChanges / Threads.size();
 
             double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+
+            if (completedDepth > 12
+                && std::abs(bestValue) < 5*UCI::NormalizeToPawnValue
+                && rootMoves.size() > 1
+                && !rootMoves[0].scoreUpperbound) {
+                double bestMargin = double(bestValue-rootMoves[1].upperScore)/UCI::NormalizeToPawnValue;
+                double bestMarginRed = 0.696 - 0.282 * std::clamp(bestMargin, 0.8, 3.6);
+                totalTime *= bestMarginRed;
+            }
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -1244,6 +1253,8 @@ moves_loop:  // When in check, search starts here
 
             rm.averageScore =
               rm.averageScore != -VALUE_INFINITE ? (2 * value + rm.averageScore) / 3 : value;
+            rm.upperScore =
+              rm.upperScore != -VALUE_INFINITE ? std::min((15 * rm.upperScore  + value) / 16, value) : value;
 
             // PV move or new best move?
             if (moveCount == 1 || value > alpha)
