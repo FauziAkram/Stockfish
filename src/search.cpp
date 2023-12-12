@@ -469,8 +469,8 @@ void Thread::search() {
         // Do we have time for the next iteration? Can we stop searching now?
         if (Limits.use_time_management() && !Threads.stop && !mainThread->stopOnPonderhit)
         {
-            double fallingEval = (66 + 14 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 6 * (mainThread->iterValue[iterIdx] - bestValue))
+            double fallingEval = (66 + 13 * (mainThread->bestPreviousAverageScore - bestValue)
+                                  + 5 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 596.0;
             fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
