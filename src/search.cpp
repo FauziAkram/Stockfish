@@ -373,7 +373,7 @@ void Thread::search() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = (xx1 * rootPos.count<PAWN>(us)) + 121 * avg / (std::abs(avg) + 109);
+            optimism[us]  = (xx1 * rootPos.count<PAWN>(us)) + (121 * avg) / (std::abs(avg) + 109);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
