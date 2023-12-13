@@ -1516,7 +1516,7 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + PieceValue[pos.piece_on(to_sq(move))] - 4 * pos.count<PAWN>(us);
+                futilityValue = futilityBase + PieceValue[pos.piece_on(to_sq(move))] - 4 * pos.count<PAWN>(~us);
 
                 // If static eval + value of piece we are going to capture is much lower
                 // than alpha we can prune this move.
