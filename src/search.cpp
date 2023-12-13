@@ -835,10 +835,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
-    if (cutNode && depth >= 8 && !ttMove)
+    if (cutNode && depth >= 7 && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + 163 - 67 * improving;
+    probCutBeta = beta + 164 - 64 * improving + 14 * pos.count<PAWN>();
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
