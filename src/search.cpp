@@ -46,6 +46,11 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=2, xx2=18, xx3=38, xx4=72, xx5=138, xx6=242;
+int xx7=486, xx8=882, xx9=1374, xx10=1626;
+TUNE(SetRange(-50, 100), xx1,xx2,xx3);
+TUNE(SetRange(0, 200), xx4);
+TUNE(xx5,xx6,xx7,xx8,xx9,xx10);
 
 namespace Search {
 
@@ -1165,6 +1170,31 @@ moves_loop:  // When in check, search starts here
                       + (*contHist[0])[movedPiece][to_sq(move)]
                       + (*contHist[1])[movedPiece][to_sq(move)]
                       + (*contHist[3])[movedPiece][to_sq(move)] - 3817;
+
+        int fauzi = 0;
+
+        if (pos.rule50_count() < 3)
+        fauzi = xx1;
+        else if (pos.rule50_count() < 6)
+        fauzi = xx1+xx2;
+        else if (pos.rule50_count() < 9)
+        fauzi = xx1+xx2+xx3;
+        else if (pos.rule50_count() < 12)
+        fauzi = xx1+xx2+xx3+xx4;
+        else if (pos.rule50_count() < 17)
+        fauzi = xx1+xx2+xx3+xx4+xx5;
+        else if (pos.rule50_count() < 22)
+        fauzi = xx1+xx2+xx3+xx4+xx5+xx6;
+        else if (pos.rule50_count() < 32)
+        fauzi = xx1+xx2+xx3+xx4+xx5+xx6+xx7;
+        else if (pos.rule50_count() < 42)
+        fauzi = xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8;
+        else if (pos.rule50_count() < 54)
+        fauzi = xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8+xx9;
+        else
+        fauzi = xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8+xx9+xx10;
+      
+        ss->statScore -= fauzi;
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
         r -= ss->statScore / 14767;
