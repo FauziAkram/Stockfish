@@ -47,9 +47,9 @@
 
 namespace Stockfish {
 int xx1=2, xx2=18, xx3=38, xx4=72, xx5=138, xx6=242;
-int xx7=486, xx8=882, xx9=1374, xx10=1626;
+int xx7=486, xx8=882, xx9=1374, xx10=1626, xx11=2000;
 
-TUNE(SetRange(-2000, 10000)xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10);
+TUNE(SetRange(-2000, 18000)xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11);
 
 namespace Search {
 
@@ -1190,8 +1190,10 @@ moves_loop:  // When in check, search starts here
         fauzi = xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8;
         else if (pos.rule50_count() < 54)
         fauzi = xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8+xx9;
-        else
+        else if (pos.rule50_count() < 80)
         fauzi = xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8+xx9+xx10;
+        else
+        fauzi = xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8+xx9+xx10+xx11;
       
         ss->statScore -= fauzi;
 
