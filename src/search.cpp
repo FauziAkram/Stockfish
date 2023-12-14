@@ -49,11 +49,7 @@ namespace Stockfish {
 int xx1=2, xx2=18, xx3=38, xx4=72, xx5=138, xx6=242;
 int xx7=486, xx8=882, xx9=1374, xx10=1626;
 
-template <int D>
-Range centeredRange(int v) { return Range(v-3*D,v+3*D); }
-
-TUNE(SetRange(-100, 500), xx1,xx2,xx3);
-TUNE(SetRange(centeredRange<v>)xx4,xx5,xx6,xx7,xx8,xx9,xx10);
+TUNE(SetRange(-2000, 10000)xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10);
 
 namespace Search {
 
