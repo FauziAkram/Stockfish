@@ -52,8 +52,6 @@ int xx7=486, xx8=882, xx9=1374, xx10=1626;
 template <int D>
 Range centeredRange(int v) { return Range(v-3*D,v+3*D); }
 
-TUNE(SetRange(centeredRange<16384>), CheckBonus);
-
 TUNE(SetRange(-100, 500), xx1,xx2,xx3);
 TUNE(SetRange(centeredRange<v>)xx4,xx5,xx6,xx7,xx8,xx9,xx10);
 
