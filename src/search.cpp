@@ -823,7 +823,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
             if (v >= beta)
                 return nullValue;
         }
-      else if (depth > 1 && totalTime < 5000.0)
+      else if (depth > 1 && Time.elapsed() < 5000.0)
             depth--;
     }
 
