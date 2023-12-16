@@ -46,8 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1= 1000;
-TUNE(SetRange(1, 1316134), xx1);
+int xx1= 1000000;
+TUNE(SetRange(1, 1316134000), xx1);
 
 namespace Search {
 
@@ -825,7 +825,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
             if (v >= beta)
                 return nullValue;
         }
-      else if (depth > 1 && (1000 * thisThread->nodes < xx1))
+      else if (depth > 1 && thisThread->nodes < xx1)
             depth--;
     }
 
