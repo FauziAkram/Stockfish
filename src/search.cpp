@@ -46,7 +46,7 @@
 #include "uci.h"
 
 namespace Stockfish {
-uint64_t xx1 = 1000000;
+int signed xx1 = 1000000;
 TUNE(SetRange(1, 1316134000), xx1);
 
 namespace Search {
