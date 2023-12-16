@@ -762,14 +762,14 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     if (depth < 8) {
     improving = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
-                                                   : true};
+                                                   : true; }
 
     else {
     improving = (ss - 2)->staticEval != VALUE_NONE && (ss - 4)->staticEval != VALUE_NONE ?
                  ss->staticEval > std::max((ss - 2)->staticEval, (ss - 4)->staticEval)
               : (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
-                                                   : true} ;
+                                                   : true; }
 
 
     // Step 7. Razoring (~1 Elo)
