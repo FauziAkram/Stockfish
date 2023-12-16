@@ -47,7 +47,9 @@
 
 namespace Stockfish {
 int xx1=656, xx2=20000, xx3=13, xx4=1555, xx5=1452;
+int zz1=0, zz2=0, zz3=0, zz4=0, zz5=0;
 TUNE(xx1,xx2,xx3,xx4,xx5);
+TUNE(SetRange(-20, 20), zz1,zz2,zz3,zz4,zz5);
 
 namespace Search {
 
@@ -1346,8 +1348,8 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - xx1)
-                  + ((ss - 1)->moveCount > 10) + ((ss - 1)->statScore < -xx2);
+        int bonus = zz1 * (depth > 6) + zz2 * (PvNode || cutNode) + zz3 * (bestValue < alpha - xx1)
+                  + zz4 * ((ss - 1)->moveCount > 10) + zz5 * ((ss - 1)->statScore < -xx2);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
         thisThread->mainHistory[~us][from_to((ss - 1)->currentMove)]
