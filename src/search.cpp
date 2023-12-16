@@ -825,7 +825,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
             if (v >= beta)
                 return nullValue;
         }
-      else if (depth > 1 && (1000 * thisThread->nodes() < xx1))
+      else if (depth > 1 && (1000 * thisThread->nodes < xx1))
             depth--;
     }
 
