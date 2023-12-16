@@ -622,7 +622,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         ss->ttPv = PvNode || (ss->ttHit && tte->is_pv());
 
     // At non-PV nodes we check for an early TT cutoff
-    if (!PvNode && !excludedMove && && tte->depth() > (depth - ((ss-1)->currentMove == MOVE_NULL))
+    if (!PvNode && !excludedMove && tte->depth() > (depth - ((ss-1)->currentMove == MOVE_NULL))
         && ttValue != VALUE_NONE  // Possible in case of TT access race or if !ttHit
         && (tte->bound() & (ttValue >= beta ? BOUND_LOWER : BOUND_UPPER)))
     {
