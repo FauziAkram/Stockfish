@@ -761,7 +761,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // false otherwise. The improving flag is used in various pruning heuristics.
     improving = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
-                                                   : true;
+                                                   : {
+      dbg_mean_of(1);
+      true;
+}
 
     // Step 7. Razoring (~1 Elo)
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
