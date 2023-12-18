@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0;
+TUNE(SetRange(-5000, 5000), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 
 namespace Search {
 
@@ -761,17 +763,17 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // check at our previous move we look at static evaluation at move prior to it
     // and if we were in check at move prior to it flag is set to true) and is
     // false otherwise. The improving flag is used in various pruning heuristics.
-    improving1 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
-              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
+    improving1 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx1
+              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx2
                                                    : true;
-    improving2 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
-              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
+    improving2 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx3
+              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx4
                                                    : true;
-    improving3 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
-              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
+    improving3 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx5
+              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx6
                                                    : true;
-    improving4 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
-              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
+    improving4 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx7
+              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx8
                                                    : true;
 
     // Step 7. Razoring (~1 Elo)
