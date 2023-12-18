@@ -76,7 +76,7 @@ enum NodeType {
 };
 
 // Futility margin
-Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
+Value futility_margin(Depth d, bool noTtCutNode) {
     return Value((116 - 44 * noTtCutNode) * d);
 }
 
