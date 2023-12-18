@@ -77,7 +77,7 @@ enum NodeType {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((116 - 44 * noTtCutNode) * (d - improving));
+    return Value(((116 + 100 * improving) - (44 - 18 * improving) * noTtCutNode) * (d - improving));
 }
 
 // Reductions lookup table initialized at startup
