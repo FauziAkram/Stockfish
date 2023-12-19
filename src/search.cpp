@@ -719,6 +719,8 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         // Skip early pruning when in check
         ss->staticEval = eval = VALUE_NONE;
         improving1             = false;
+        improving2             = false;
+        improving3             = false;
         improving4             = false;
         goto moves_loop;
     }
