@@ -767,16 +767,20 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // false otherwise. The improving flag is used in various pruning heuristics.
     improving1 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx1
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx2
-                                                   : true;
+              : (ss - 6)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 6)->staticEval
+                                                   : false;
     improving2 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx3
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx4
-                                                   : true;
+              : (ss - 6)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 6)->staticEval
+                                                   : false;
     improving3 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx5
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx6
-                                                   : true;
+              : (ss - 6)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 6)->staticEval
+                                                   : false;
     improving4 = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx7
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx8
-                                                   : true;
+              : (ss - 6)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 6)->staticEval
+                                                   : false;
 
     // Step 7. Razoring (~1 Elo)
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
