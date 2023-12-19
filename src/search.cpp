@@ -91,8 +91,8 @@ Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
          + (!i && reductionScale > 880);
 }
 
-constexpr int futility_move_count(bool improving2, Depth depth) {
-    return improving2 ? (3 + depth * depth) : (3 + depth * depth) / 2;
+constexpr int futility_move_count(bool improving, Depth depth) {
+    return improving ? (3 + depth * depth) : (3 + depth * depth) / 2;
 }
 
 // History and stats update bonus, based on depth
@@ -978,7 +978,7 @@ moves_loop:  // When in check, search starts here
 
         Value delta = beta - alpha;
 
-        Depth r = reduction(improving4, depth, moveCount, delta, thisThread->rootDelta);
+        Depth r = reduction(improving2, depth, moveCount, delta, thisThread->rootDelta);
 
         // Step 14. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
