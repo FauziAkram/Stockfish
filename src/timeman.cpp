@@ -74,18 +74,18 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
     double optExtra = std::clamp(1.0 + 12.4 * limits.inc[us] / limits.time[us], 1.0, 1.11);
 
     // Calculate time constants based on current time left.
-    double optConstant = std::min(0.00334 + 0.0003 * std::log10(limits.time[us] / 1000.0), 0.0049);
-    double maxConstant = std::max(3.3 + 3.0 * std::log10(limits.time[us] / 1000.0), 2.76);
+    double optConstant = std::min(0.00334 + 0.00031 * std::log10(limits.time[us] / 1000.0), 0.0048);
+    double maxConstant = std::max(3.25 + 3.0 * std::log10(limits.time[us] / 1000.0), 2.75);
 
     // x basetime (+ z increment)
     // If there is a healthy increment, timeLeft can exceed actual available
     // game time for the current move, so also cap to 20% of available game time.
     if (limits.movestogo == 0)
     {
-        optScale = std::min(0.0120 + std::pow(ply + 3.1, 0.44) * optConstant,
+        optScale = std::min(0.0120 + std::pow(ply + 3.1, 0.45) * optConstant,
                             0.2 * limits.time[us] / double(timeLeft))
                  * optExtra;
-        maxScale = std::min(6.92, maxConstant + ply / 12.2);
+        maxScale = std::min(6.92, maxConstant + ply / 12.3);
     }
 
     // x moves in y seconds (+ z increment)
