@@ -475,9 +475,9 @@ void Thread::search() {
             fallingEval = std::clamp(fallingEval, 0.51, 1.53);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.56 : 0.71;
-            double reduction = (1.39 + mainThread->previousTimeReduction) / (2.23 * timeReduction);
-            double bestMoveInstability = 1 + 1.79 * totBestMoveChanges / Threads.size();
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.58 : 0.71;
+            double reduction = (1.38 + mainThread->previousTimeReduction) / (2.23 * timeReduction);
+            double bestMoveInstability = 1 + 1.8 * totBestMoveChanges / Threads.size();
 
             double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
