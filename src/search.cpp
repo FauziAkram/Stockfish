@@ -46,7 +46,11 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=120, xx2=5, xx3=120;
+int xx4=1652, xx5=1546, xx6=18782;
+TUNE(xx1);
+TUNE(SetRange(-100, 100), xx2);
+TUNE(xx3,xx4,xx5,xx6);
 namespace Search {
 
 LimitsType Limits;
@@ -372,7 +376,7 @@ void Thread::search() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 121 * avg / (std::abs(avg) + 109);
+            optimism[us]  = (xx1 - xx2 * rootPos.count<PAWN>(us)) * avg / (std::abs(avg) + xx3);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
@@ -748,7 +752,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // Use static evaluation difference to improve quiet move ordering (~4 Elo)
     if (is_ok((ss - 1)->currentMove) && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-13 * int((ss - 1)->staticEval + ss->staticEval), -1555, 1452);
+        int bonus = std::clamp(-13 * int((ss - 1)->staticEval + ss->staticEval), -xx4, xx5)
         thisThread->mainHistory[~us][from_to((ss - 1)->currentMove)] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && type_of((ss - 1)->currentMove) != PROMOTION)
             thisThread->pawnHistory[pawn_structure(pos)][pos.piece_on(prevSq)][prevSq] << bonus / 4;
@@ -1344,7 +1348,7 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + (bestValue < alpha - 656)
+        int bonus = (depth > 6) + (PvNode || cutNode) + ((ss - 1)->statScore < -xx6)
                   + ((ss - 1)->moveCount > 10);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
