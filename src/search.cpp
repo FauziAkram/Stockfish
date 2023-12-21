@@ -372,7 +372,7 @@ void Thread::search() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = (119 + 4 * rootPos.count<PAWN>(us)) * avg / (std::abs(avg) + 112);
+            optimism[us]  = 120 * avg / (std::abs(avg) + 110);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
@@ -748,7 +748,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // Use static evaluation difference to improve quiet move ordering (~4 Elo)
     if (is_ok((ss - 1)->currentMove) && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-13 * int((ss - 1)->staticEval + ss->staticEval), -1602, 1488);
+        int bonus = std::clamp(-13 * int((ss - 1)->staticEval + ss->staticEval), -1603, 1488);
         thisThread->mainHistory[~us][from_to((ss - 1)->currentMove)] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && type_of((ss - 1)->currentMove) != PROMOTION)
             thisThread->pawnHistory[pawn_structure(pos)][pos.piece_on(prevSq)][prevSq] << bonus / 4;
@@ -1344,7 +1344,7 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + ((ss - 1)->statScore < -19559)
+        int bonus = (depth > 6) + (PvNode || cutNode) + ((ss - 1)->statScore < -19136)
                   + ((ss - 1)->moveCount > 10);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
