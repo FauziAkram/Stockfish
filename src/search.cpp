@@ -763,7 +763,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     improving = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
                                                    : true;
-    improvingmore = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + 75
+    improvingmore = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + 100
                   : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
                                                        : true;
 
