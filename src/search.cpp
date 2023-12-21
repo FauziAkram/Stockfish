@@ -76,8 +76,8 @@ enum NodeType {
 };
 
 // Futility margin
-Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((116 - 44 * noTtCutNode) * (d - improving));
+Value futility_margin(Depth d, bool noTtCutNode, bool notworsening) {
+    return Value((116 - 44 * noTtCutNode) * (d - notworsening));
 }
 
 // Reductions lookup table initialized at startup
@@ -553,7 +553,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     Move     ttMove, move, excludedMove, bestMove;
     Depth    extension, newDepth;
     Value    bestValue, value, ttValue, eval, maxValue, probCutBeta;
-    bool     givesCheck, improving, priorCapture, singularQuietLMR;
+    bool     givesCheck, notworsening, improving, priorCapture, singularQuietLMR;
     bool     capture, moveCountPruning, ttCapture;
     Piece    movedPiece;
     int      moveCount, captureCount, quietCount;
@@ -716,6 +716,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         // Skip early pruning when in check
         ss->staticEval = eval = VALUE_NONE;
         improving             = false;
+        notworsening          = false;
         goto moves_loop;
     }
     else if (excludedMove)
@@ -762,6 +763,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     improving = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
                                                    : true;
+  
+    notworsening = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval - 150
+                 : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval - 50
+                                                      : true;
 
     // Step 7. Razoring (~1 Elo)
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
@@ -777,7 +782,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 9
-        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
+        && eval - futility_margin(depth, cutNode && !ss->ttHit, notworsening)
                - (ss - 1)->statScore / 337
              >= beta
         && eval >= beta && eval < 29008  // smaller than TB wins
@@ -973,7 +978,7 @@ moves_loop:  // When in check, search starts here
         {
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
             if (!moveCountPruning)
-                moveCountPruning = moveCount >= futility_move_count(improving, depth);
+                moveCountPruning = moveCount >= futility_move_count(notworsening, depth);
 
             // Reduced depth of the next LMR search
             int lmrDepth = newDepth - r;
