@@ -553,7 +553,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     Move     ttMove, move, excludedMove, bestMove;
     Depth    extension, newDepth;
     Value    bestValue, value, ttValue, eval, maxValue, probCutBeta;
-    bool     givesCheck, improving, priorCapture, singularQuietLMR;
+    bool     givesCheck, improving, improvingmore, priorCapture, singularQuietLMR;
     bool     capture, moveCountPruning, ttCapture;
     Piece    movedPiece;
     int      moveCount, captureCount, quietCount;
@@ -716,6 +716,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         // Skip early pruning when in check
         ss->staticEval = eval = VALUE_NONE;
         improving             = false;
+        improvingmore         = false;
         goto moves_loop;
     }
     else if (excludedMove)
@@ -762,6 +763,9 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     improving = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval
               : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
                                                    : true;
+    improvingmore = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + 75
+                  : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
+                                                       : true;
 
     // Step 7. Razoring (~1 Elo)
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
