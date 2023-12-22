@@ -46,11 +46,7 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=0, xx2=0, xx3=125, xx4=0;
-int zz1=1652, zz2=1546, zz3=18782, zz4=121, zz5=109;
 
-TUNE(SetRange(-4000, 4000),xx1,xx2,xx3,xx4);
-TUNE(zz1,zz2,zz3,zz4,zz5);
 namespace Search {
 
 LimitsType Limits;
@@ -376,7 +372,7 @@ void Thread::search() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = zz4 * avg / (std::abs(avg) + zz5);
+            optimism[us]  = 120 * avg / (std::abs(avg) + 116);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
@@ -764,12 +760,12 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // check at our previous move we look at static evaluation at move prior to it
     // and if we were in check at move prior to it flag is set to true) and is
     // false otherwise. The improving flag is used in various pruning heuristics.
-    improving = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx1
-              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx2
+    improving = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + 13
+              : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + 51
                                                    : true;
 
-    improvingmore = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + xx3
-                  : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + xx4
+    improvingmore = (ss - 2)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 2)->staticEval + 100
+                  : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval + 80
                                                        : true;
 
     // Step 7. Razoring (~1 Elo)
@@ -1353,7 +1349,7 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + ((ss - 1)->statScore < -zz3)
+        int bonus = (depth > 6) + (PvNode || cutNode) + ((ss - 1)->statScore < -18292)
                   + ((ss - 1)->moveCount > 10);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
