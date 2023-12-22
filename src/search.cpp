@@ -1163,21 +1163,21 @@ moves_loop:  // When in check, search starts here
         else if (move == ttMove)
             r = 0;
       
-        if (pos.rule50_count() > 10 && pos.rule50_count() < 19)
+        if (pos.rule50_count() >= 10 && pos.rule50_count() < 19)
             r += xx1;
-        if (pos.rule50_count() > 20 && pos.rule50_count() < 29)
+        if (pos.rule50_count() >= 20 && pos.rule50_count() < 29)
             r += xx1+xx2;
-        if (pos.rule50_count() > 30 && pos.rule50_count() < 39)
+        if (pos.rule50_count() >= 30 && pos.rule50_count() < 39)
             r += xx1+xx2+xx3;
-        if (pos.rule50_count() > 40 && pos.rule50_count() < 49)
+        if (pos.rule50_count() >= 40 && pos.rule50_count() < 49)
             r += xx1+xx2+xx3+xx4;
-        if (pos.rule50_count() > 50 && pos.rule50_count() < 59)
+        if (pos.rule50_count() >= 50 && pos.rule50_count() < 59)
             r += xx1+xx2+xx3+xx4+xx5;
-        if (pos.rule50_count() > 60 && pos.rule50_count() < 69)
+        if (pos.rule50_count() >= 60 && pos.rule50_count() < 69)
             r += xx1+xx2+xx3+xx4+xx5+xx6;
-        if (pos.rule50_count() > 70 && pos.rule50_count() < 79)
+        if (pos.rule50_count() >= 70 && pos.rule50_count() < 79)
             r += xx1+xx2+xx3+xx4+xx5+xx6+xx7;
-        if (pos.rule50_count() > 80)
+        if (pos.rule50_count() >= 80)
             r += xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8;
 
         ss->statScore = 2 * thisThread->mainHistory[us][from_to(move)]
