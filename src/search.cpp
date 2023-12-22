@@ -1163,21 +1163,21 @@ moves_loop:  // When in check, search starts here
         else if (move == ttMove)
             r = 0;
       
-        if (pos.rule50_count() > 10 && pos.rule50_count() < 19)
+        if (thisThread->nodes <= 100000)
             r += xx1;
-        if (pos.rule50_count() > 20 && pos.rule50_count() < 29)
+        if (thisThread->nodes <= 200000 && thisThread->nodes > 100000)
             r += xx1+xx2;
-        if (pos.rule50_count() > 30 && pos.rule50_count() < 39)
+        if (thisThread->nodes <= 300000 && thisThread->nodes > 200000)
             r += xx1+xx2+xx3;
-        if (pos.rule50_count() > 40 && pos.rule50_count() < 49)
+        if (thisThread->nodes <= 400000 && thisThread->nodes > 300000)
             r += xx1+xx2+xx3+xx4;
-        if (pos.rule50_count() > 50 && pos.rule50_count() < 59)
+        if (thisThread->nodes <= 500000 && thisThread->nodes > 400000)
             r += xx1+xx2+xx3+xx4+xx5;
-        if (pos.rule50_count() > 60 && pos.rule50_count() < 69)
+        if (thisThread->nodes <= 600000 && thisThread->nodes > 500000)
             r += xx1+xx2+xx3+xx4+xx5+xx6;
-        if (pos.rule50_count() > 70 && pos.rule50_count() < 79)
+        if (thisThread->nodes <= 700000 && thisThread->nodes > 600000)
             r += xx1+xx2+xx3+xx4+xx5+xx6+xx7;
-        if (pos.rule50_count() > 80)
+        if (thisThread->nodes > 700000)
             r += xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8;
 
         ss->statScore = 2 * thisThread->mainHistory[us][from_to(move)]
