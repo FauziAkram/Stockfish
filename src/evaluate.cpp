@@ -53,8 +53,7 @@ const unsigned int         gEmbeddedNNUESize    = 1;
 
 
 namespace Stockfish {
-int ee1=200, ee2=214;
-TUNE(ee1,ee2);
+
 namespace Eval {
 
 std::string currentEvalFileName = "None";
@@ -188,7 +187,7 @@ Value Eval::evaluate(const Position& pos) {
     }
 
     // Damp down the evaluation linearly when shuffling
-    v = v * (ee1 - shuffling) / ee2;
+    v = v * (203 - shuffling) / 214;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
