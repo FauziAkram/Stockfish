@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0;
+TUNE(SetRange(-10, 10), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 
 namespace Search {
 
@@ -1156,6 +1158,23 @@ moves_loop:  // When in check, search starts here
         if ((ss + 1)->cutoffCnt > 3)
             r++;
 
+        if (pos.rule50_count() > 10 && pos.rule50_count() < 19)
+            r += xx1;
+        if (pos.rule50_count() > 20 && pos.rule50_count() < 29)
+            r += xx1+xx2;
+        if (pos.rule50_count() > 30 && pos.rule50_count() < 39)
+            r += xx1+xx2+xx3;
+        if (pos.rule50_count() > 40 && pos.rule50_count() < 49)
+            r += xx1+xx2+xx3+xx4;
+        if (pos.rule50_count() > 50 && pos.rule50_count() < 59)
+            r += xx1+xx2+xx3+xx4+xx5;
+        if (pos.rule50_count() > 60 && pos.rule50_count() < 69)
+            r += xx1+xx2+xx3+xx4+xx5+xx6;
+        if (pos.rule50_count() > 70 && pos.rule50_count() < 79)
+            r += xx1+xx2+xx3+xx4+xx5+xx6+xx7;
+        if (pos.rule50_count() > 80)
+            r += xx1+xx2+xx3+xx4+xx5+xx6+xx7+xx8;
+          
         // Set reduction to 0 for first picked move (ttMove) (~2 Elo)
         // Nullifies all previous reduction adjustments to ttMove and leaves only history to do them
         else if (move == ttMove)
