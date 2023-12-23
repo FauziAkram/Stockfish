@@ -1162,7 +1162,7 @@ moves_loop:  // When in check, search starts here
             r = 0;
 
         if (pos.rule50_count() >= 40)
-            r += 2;
+            r ++;
 
         ss->statScore = 2 * thisThread->mainHistory[us][from_to(move)]
                       + (*contHist[0])[movedPiece][to_sq(move)]
