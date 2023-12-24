@@ -1162,7 +1162,7 @@ moves_loop:  // When in check, search starts here
             r = 0;
 
         if (thisThread->nodes <= 700000 && thisThread->nodes > 600000)
-            r += 3;
+            r += 2;
 
         ss->statScore = 2 * thisThread->mainHistory[us][from_to(move)]
                       + (*contHist[0])[movedPiece][to_sq(move)]
