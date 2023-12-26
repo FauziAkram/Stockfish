@@ -47,7 +47,7 @@
 
 namespace Stockfish {
 int xx0=0, xx1=10, xx2=-10, xx3=0, xx4=0;
-TUNE(SetRange(-100, 100), xx0,xx1,xx2,xx3,xx4);
+TUNE(SetRange(-125, 125), xx0,xx1,xx2,xx3,xx4);
 
 namespace Search {
 
