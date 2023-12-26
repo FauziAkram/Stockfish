@@ -27,6 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
+int zz1=3130;
+TUNE(SetRange(0, 15000), zz1);
 
 namespace {
 
@@ -300,7 +302,7 @@ top:
             endMoves = generate<QUIETS>(pos, cur);
 
             score<QUIETS>();
-            partial_insertion_sort(cur, endMoves, -1960 - 3130 * depth);
+            partial_insertion_sort(cur, endMoves, -zz1 - 3130 * depth);
         }
 
         ++stage;
