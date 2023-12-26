@@ -1526,11 +1526,11 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
 
                 Piece pieceToBeCaptured = pos.piece_on(to_sq(move));
                 futilityValue = futilityBase + PieceValue[pieceToBeCaptured]
-                             + (type_of(someMovedPiece) == PAWN) * xx0 * pos.count<PAWN>() / 10
-                             + (type_of(someMovedPiece) == KNIGHT) * xx1 * pos.count<PAWN>() / 10
-                             + (type_of(someMovedPiece) == BISHOP) * xx2 * pos.count<PAWN>() / 10
-                             + (type_of(someMovedPiece) == ROOK) * xx3 * pos.count<PAWN>() / 10
-                             + (type_of(someMovedPiece) == QUEEN) * xx4 * pos.count<PAWN>() / 10;
+                             + (type_of(pieceToBeCaptured) == PAWN)   * xx0 * pos.count<PAWN>() / 10
+                             + (type_of(pieceToBeCaptured) == KNIGHT) * xx1 * pos.count<PAWN>() / 10
+                             + (type_of(pieceToBeCaptured) == BISHOP) * xx2 * pos.count<PAWN>() / 10
+                             + (type_of(pieceToBeCaptured) == ROOK)   * xx3 * pos.count<PAWN>() / 10
+                             + (type_of(pieceToBeCaptured) == QUEEN)  * xx4 * pos.count<PAWN>() / 10;
 
            
                 // If static eval + value of piece we are going to capture is much lower
