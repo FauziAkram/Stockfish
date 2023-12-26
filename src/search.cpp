@@ -46,6 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx0=0, xx1=10, xx2=-10, xx3=0, xx4=0;
+TUNE(SetRange(-100, 100), xx0,xx1,xx2,xx3,xx4);
 
 namespace Search {
 
@@ -1522,8 +1524,14 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + PieceValue[pos.piece_on(to_sq(move))];
+                Piece someMovedPiece = pos.piece_on(to_sq(move));
+         futilityValue       = futilityBase + PieceValue[someMovedPiece]
+                             + (type_of(someMovedPiece) == KNGIHT) * xx1 * pos.count<PAWN>() / 10
+                             + (type_of(someMovedPiece) == BISHOP) * xx2 * pos.count<PAWN>() / 10
+                             + (type_of(someMovedPiece) == ROOK) * xx3 * pos.count<PAWN>() / 10
+                             + (type_of(someMovedPiece) == QUEEN) * xx4 * pos.count<PAWN>() / 10;
 
+           
                 // If static eval + value of piece we are going to capture is much lower
                 // than alpha we can prune this move.
                 if (futilityValue <= alpha)
