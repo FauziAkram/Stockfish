@@ -1144,10 +1144,6 @@ moves_loop:  // When in check, search starts here
         if (PvNode)
             r--;
 
-        // Decrease reduction if a quiet ttMove has been singularly extended (~1 Elo)
-        if (singularQuietLMR)
-            r--;
-
         // Increase reduction on repetition (~1 Elo)
         if (move == (ss - 4)->currentMove && pos.has_repeated())
             r += 2;
@@ -1160,6 +1156,10 @@ moves_loop:  // When in check, search starts here
         // Nullifies all previous reduction adjustments to ttMove and leaves only history to do them
         else if (move == ttMove)
             r = 0;
+
+        // Decrease reduction if a quiet ttMove has been singularly extended (~1 Elo)
+        if (singularQuietLMR)
+            r--;
 
         ss->statScore = 2 * thisThread->mainHistory[us][from_to(move)]
                       + (*contHist[0])[movedPiece][to_sq(move)]
