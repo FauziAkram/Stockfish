@@ -1132,10 +1132,6 @@ moves_loop:  // When in check, search starts here
         if ((ss - 1)->moveCount > 7)
             r--;
 
-        // Increase reduction for cut nodes (~3 Elo)
-        if (cutNode)
-            r += 2;
-
         // Increase reduction if ttMove is a capture (~3 Elo)
         if (ttCapture)
             r++;
@@ -1160,6 +1156,10 @@ moves_loop:  // When in check, search starts here
         // Nullifies all previous reduction adjustments to ttMove and leaves only history to do them
         else if (move == ttMove)
             r = 0;
+
+        // Increase reduction for cut nodes (~3 Elo)
+        if (cutNode)
+            r += 2;
 
         ss->statScore = 2 * thisThread->mainHistory[us][from_to(move)]
                       + (*contHist[0])[movedPiece][to_sq(move)]
