@@ -1524,6 +1524,7 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
 
                 Piece pieceToBeCaptured = pos.piece_on(to_sq(move));
                 futilityValue = futilityBase + PieceValue[pieceToBeCaptured]
+                             - (type_of(pieceToBeCaptured) == BISHOP) * pos.count<PAWN>() / 2;
                              + (type_of(pieceToBeCaptured) == QUEEN) * pos.count<PAWN>() / 2;
 
                 // If static eval + value of piece we are going to capture is much lower
