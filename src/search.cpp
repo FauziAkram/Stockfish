@@ -1782,9 +1782,6 @@ void update_quiet_stats(const Position& pos, Stack* ss, Move move, int bonus) {
         ss->killers[0] = move;
     }
 
-    Color   us         = pos.side_to_move();
-    Thread* thisThread = pos.this_thread();
-    thisThread->mainHistory[us][from_to(move)] << bonus;
     update_continuation_histories(ss, pos.moved_piece(move), to_sq(move), bonus);
 
     // Update countermove history
