@@ -46,6 +46,10 @@ struct StateInfo {
     int    pliesFromNull;
     Square epSquare;
 
+    // Used by NNUE
+    Eval::NNUE::Accumulator accumulator;
+    DirtyPiece              dirtyPiece;
+
     // Not copied when making a move (will be recomputed anyhow)
     Key        key;
     Bitboard   checkersBB;
@@ -55,10 +59,6 @@ struct StateInfo {
     Bitboard   checkSquares[PIECE_TYPE_NB];
     Piece      capturedPiece;
     int        repetition;
-
-    // Used by NNUE
-    Eval::NNUE::Accumulator accumulator;
-    DirtyPiece              dirtyPiece;
 };
 
 
