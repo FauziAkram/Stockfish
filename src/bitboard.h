@@ -229,17 +229,12 @@ inline Bitboard attacks_bb(Square s, Bitboard occupied) {
 
     assert((Pt != PAWN) && (is_ok(s)));
 
-    switch (Pt)
-    {
-    case BISHOP :
-        return BishopMagics[s].attacks[BishopMagics[s].index(occupied)];
-    case ROOK :
-        return RookMagics[s].attacks[RookMagics[s].index(occupied)];
-    case QUEEN :
-        return attacks_bb<BISHOP>(s, occupied) | attacks_bb<ROOK>(s, occupied);
-    default :
-        return PseudoAttacks[Pt][s];
+    Bitboard pseudoAttacks = PseudoAttacks[Pt][s];
+    if (Pt == BISHOP || Pt == ROOK || Pt == QUEEN) {
+    Bitboard index = (Pt == BISHOP) ? BishopMagics[s].index(occupied) : RookMagics[s].index(occupied);
+    return (Pt == QUEEN) ? (attacks_bb<BISHOP>(s, occupied) | attacks_bb<ROOK>(s, occupied)) : BishopMagics[s].attacks[index];
     }
+return pseudoAttacks;
 }
 
 // Returns the attacks by the given piece
