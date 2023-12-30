@@ -25,8 +25,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-int zz1=50;
-int zz11=84, zz12=335, zz13=30, zz14=480, zz15=360, zz16=300, zz17=270;
+int zz1=48;
+int zz11=84, zz12=334, zz13=310, zz14=480, zz15=325, zz16=300, zz17=275;
 int vv1=88, vv2=1164, vv3=88, vv4=630, vv5=150, vv6=110;
 TUNE(zz1);
 TUNE(zz11,zz12,zz13,zz14,zz15,zz16,zz17,zz18,zz19,zz20);
@@ -82,7 +82,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
     double optExtra = std::clamp(1.0 + 12.5 * limits.inc[us] / limits.time[us], 1.0, 1.11);
 
     // Calculate time constants based on current time left.
-    double optConstant = std::min((zz12/100000.0) + (zz13/100000.0) * std::log10(limits.time[us] / 1000.0), (zz14/100000.0));
+    double optConstant = std::min((zz12/100000.0) + (zz13/1000000.0) * std::log10(limits.time[us] / 1000.0), (zz14/100000.0));
     double maxConstant = std::max((zz15/100.0) + (zz16/100.0) * std::log10(limits.time[us] / 1000.0), (zz17/100.0));
 
     // x basetime (+ z increment)
