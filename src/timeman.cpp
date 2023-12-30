@@ -29,7 +29,7 @@ int zz1=48;
 int zz11=84, zz12=334, zz13=310, zz14=480, zz15=325, zz16=300, zz17=275;
 int vv1=88, vv2=1164, vv3=88, vv4=630, vv5=150, vv6=110;
 TUNE(zz1);
-TUNE(zz11,zz12,zz13,zz14,zz15,zz16,zz17,zz18,zz19,zz20);
+TUNE(zz11,zz12,zz13,zz14,zz15,zz16,zz17);
 TUNE(vv1);
 TUNE(SetRange(1, 3201), vv2);
 TUNE(vv3,vv4,vv5,vv6);
