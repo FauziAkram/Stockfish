@@ -476,21 +476,21 @@ void Thread::search() {
         // Do we have time for the next iteration? Can we stop searching now?
         if (Limits.use_time_management() && !Threads.stop && !mainThread->stopOnPonderhit)
         {
-            double fallingEval = (xx1 + xx2 * (mainThread->bestPreviousAverageScore - bestValue)
-                                    +  xx3 * (mainThread->iterValue[iterIdx] - bestValue)) / (xx4 / 10.0);
+            double fallingEval = (xx0 + xx1 * (mainThread->bestPreviousAverageScore - bestValue)
+                                    +  xx2 * (mainThread->iterValue[iterIdx] - bestValue)) / (xx3 / 10.0);
 
-            fallingEval = std::clamp(fallingEval, (xx12 / 1000.0), (xx13 / 1000.0));
+            fallingEval = std::clamp(fallingEval, (xx4 / 1000.0), (xx5 / 1000.0));
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction = lastBestMoveDepth + xx5 < completedDepth ? (xx6 / 100.0) : (xx7 / 100.0);
-            double reduction = ((xx8 / 100.0) + mainThread->previousTimeReduction) / ((xx9 / 100.0) * timeReduction);
-            double bestMoveInstability = 1 + (xx10 / 100.0) * totBestMoveChanges / Threads.size();
+            timeReduction = lastBestMoveDepth + xx6 < completedDepth ? (xx7 / 100.0) : (xx8 / 100.0);
+            double reduction = ((xx9 / 100.0) + mainThread->previousTimeReduction) / ((xx10 / 100.0) * timeReduction);
+            double bestMoveInstability = 1 + (xx11 / 100.0) * totBestMoveChanges / Threads.size();
 
             double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
-                totalTime = std::min((xx11 / 10.0), totalTime);
+                totalTime = std::min((xx12 / 10.0), totalTime);
 
             // Stop the search if we have exceeded the totalTime
             if (Time.elapsed() > totalTime)
