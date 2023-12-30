@@ -46,13 +46,16 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx0=66, xx1=14, xx2=6, xx3=5830, xx4=500, xx5=1500, xx6=8, xx7=156, xx8=69, xx9=140;
-int xx10=203, xx11=179, xx12=5000;
-TUNE(xx0,xx1,xx2);
+int xx0=65, xx1=14, xx2=6, xx3=6224, xx4=510, xx5=1530, xx6=8, xx7=158, xx8=71, xx9=138;
+int xx10=223, xx11=180, xx12=5000;
+TUNE(xx0);
+// TUNE (xx1,xx2); not this time
 TUNE(SetRange(1, 12401), xx3);
-TUNE(xx4,xx5,xx6,xx7,xx8,xx9);
+TUNE(xx4,xx5);
+//TUNE(xx6); not this time
+TUNE(xx7,xx8,xx9);
 TUNE(SetRange(1, 417), xx10);
-TUNE(xx11);
+TUNE(xx11,xx12);
 
 namespace Search {
 
