@@ -175,7 +175,7 @@ inline Bitboard line_bb(Square s1, Square s2) {
 // between_bb(SQ_E6, SQ_F8) will return a bitboard with the square F8. This trick
 // allows to generate non-king evasion moves faster: the defending piece must either
 // interpose itself to cover the check or capture the checking piece.
-inline Bitboard between_bb(Square s1, Square s2) {
+constexpr Bitboard between_bb(Square s1, Square s2) {
 
     assert(is_ok(s1) && is_ok(s2));
 
