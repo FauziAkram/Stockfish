@@ -48,16 +48,9 @@
 namespace Stockfish {
 int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0;
 int xx9=0, xx10=0, xx11=0, xx12=0, xx13=0, xx14=0, xx15=0, xx16=0;
-TUNE(SetRange(0, 1), xx1);
-TUNE(SetRange(0, 2), xx2);
-TUNE(SetRange(0, 3), xx3);
-TUNE(SetRange(0, 4), xx4);
-TUNE(SetRange(0, 5), xx5);
-TUNE(SetRange(0, 6), xx6);
-TUNE(SetRange(0, 7), xx7);
-TUNE(SetRange(0, 7), xx8);
-TUNE(SetRange(0, 7), xx9);
-TUNE(SetRange(0, 10),xx10,xx11,xx12,xx13,xx14,xx15,xx16);
+
+TUNE(SetRange(-2, 2),xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9);
+TUNE(SetRange(-3, 3),xx10,xx11,xx12,xx13,xx14,xx15,xx16);
 
 namespace Search {
 
@@ -838,38 +831,22 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
                 return nullValue;
         }
       else {
-        if (depth == 1)
+        if (depth >= 2 && depth <= 3)
         depth -= xx1;
-        if (depth == 2)
+        if (depth >= 4 && depth <= 5)
         depth -= xx2;
-        if (depth == 3)
+        if (depth >= 6 && depth <= 7)
         depth -= xx3;
-        if (depth == 4)
+        if (depth >= 8 && depth <= 9)
         depth -= xx4;
-        if (depth == 5)
+        if (depth >= 10 && depth <= 11)
         depth -= xx5;
-        if (depth == 6)
+        if (depth >= 12 && depth <= 13)
         depth -= xx6;
-        if (depth == 7)
+        if (depth >= 14 && depth <= 15)
         depth -= xx7;
-        if (depth == 8)
+        if (depth >= 16)
         depth -= xx8;
-        if (depth == 9)
-        depth -= xx9;
-        if (depth == 10)
-        depth -= xx10;
-        if (depth == 11)
-        depth -= xx11;
-        if (depth == 12)
-        depth -= xx12;
-        if (depth == 13)
-        depth -= xx13;
-        if (depth == 14)
-        depth -= xx14;
-        if (depth == 15)
-        depth -= xx15;
-        if (depth > 15)
-        depth -= xx16;
       }
       
       
