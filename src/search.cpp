@@ -54,7 +54,7 @@ TUNE(SetRange(-10, 3), xx3);
 TUNE(SetRange(-10, 4), xx4);
 TUNE(SetRange(-10, 5), xx5);
 TUNE(SetRange(-10, 6), xx6);
-TUNE(SetRange(-10, 10), xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16);
+TUNE(SetRange(-10, 10),xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16);
 
 namespace Search {
 
