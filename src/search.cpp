@@ -785,10 +785,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // check at our previous move we look at static evaluation at move prior to it
     // and if we were in check at move prior to it flag is set to true) and is
     // false otherwise. The improving flag is used in various pruning heuristics.
-    improving = (ss - 2)->staticEval != VALUE_NONE  ? ss->staticEval > (ss - 2)->staticEval + 6
-              : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + 54;
+    improving = (ss - 2)->staticEval != VALUE_NONE  ? ss->staticEval > (ss - 2)->staticEval
+              : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + 50;
 
-    improving2 = (ss - 2)->staticEval != VALUE_NONE  ? ss->staticEval > (ss - 2)->staticEval + 35
+    improving2 = (ss - 2)->staticEval != VALUE_NONE  ? ss->staticEval > (ss - 2)->staticEval + 100
               : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + 25;
 
     // Step 7. Razoring (~1 Elo)
