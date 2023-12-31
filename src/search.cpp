@@ -48,13 +48,16 @@
 namespace Stockfish {
 int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0;
 int xx9=0, xx10=0, xx11=0, xx12=0, xx13=0, xx14=0, xx15=0, xx16=0;
-TUNE(SetRange(-10, 1), xx1);
-TUNE(SetRange(-10, 2), xx2);
-TUNE(SetRange(-10, 3), xx3);
-TUNE(SetRange(-10, 4), xx4);
-TUNE(SetRange(-10, 5), xx5);
-TUNE(SetRange(-10, 6), xx6);
-TUNE(SetRange(-10, 10),xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16);
+TUNE(SetRange(0, 1), xx1);
+TUNE(SetRange(0, 2), xx2);
+TUNE(SetRange(0, 3), xx3);
+TUNE(SetRange(0, 4), xx4);
+TUNE(SetRange(0, 5), xx5);
+TUNE(SetRange(0, 6), xx6);
+TUNE(SetRange(0, 7), xx7);
+TUNE(SetRange(0, 7), xx8);
+TUNE(SetRange(0, 7), xx9);
+TUNE(SetRange(0, 10),xx10,xx11,xx12,xx13,xx14,xx15,xx16);
 
 namespace Search {
 
