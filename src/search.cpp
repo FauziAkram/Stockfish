@@ -46,9 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=0, xx2=50, xx3=100, xx4=25, xx5=116 ,xx6=44, xx7=3, xx8=3, xx9=163, xx10=67;
+int xx1=0, xx2=50, xx3=100, xx4=25, xx5=116 ,xx6=44, xx7=163, xx8=67;
 TUNE(SetRange(-3700, 3700),xx1,xx2,xx3,xx4);
-TUNE(xx5,xx6,xx7,xx8,xx9,xx10);
+TUNE(xx5,xx6,xx7,xx8);
 namespace Search {
 
 LimitsType Limits;
@@ -92,7 +92,7 @@ Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
-    return improving ? (xx7 + depth * depth) : (xx8 + depth * depth) / 2;
+    return improving ? (3 + depth * depth) : (3 + depth * depth) / 2;
 }
 
 // Guarantee evaluation does not hit the tablebase range
@@ -870,7 +870,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     if (cutNode && depth >= 8 && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + xx9 - xx10 * improving;
+    probCutBeta = beta + xx7 - xx8 * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
