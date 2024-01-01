@@ -46,8 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=60, xx2=60, xx3=60 xx4=60, xx5=60 , xx6=60 , xx7=60 , xx8=60 , xx9=60 , xx10=60 , xx11=60 , xx12=60 ;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12);
+int xx1=60, xx2=60, xx3=60, xx4=60, xx5=60, xx6=60, xx7=60, xx8=60, xx9=60 ,xx10=60 ,xx11=60 ,xx12=60, xx13=14;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13);
 namespace Search {
 
 LimitsType Limits;
@@ -854,7 +854,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         || (xx8>50? !pos.non_pawn_material(us): false) || (xx9? ss->ply < thisThread->nmpMinPly: false)
         || (xx10>50? beta <= VALUE_TB_LOSS_IN_MAX_PLY: false))
         && ((xx11>50? nullValue < beta: false) || (xx12>50? nullValue >= VALUE_TB_WIN_IN_MAX_PLY: false))
-        && depth >= 16)
+        && depth >= xx13)
         depth-- ;
     }
 
