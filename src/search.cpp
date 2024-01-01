@@ -849,18 +849,11 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
             if (v >= beta)
                 return nullValue;
         }
-      if (( xx1>50? PvNode : false)
-        || ( xx2>50? (ss - 1)->currentMove == MOVE_NULL : false)
-        || (ss - 1)->statScore >= 17496
-        || eval < beta
-        || eval < ss->staticEval
-        || ss->staticEval < beta - 23 * depth + 304
-        || excludedMove
-        || !pos.non_pawn_material(us)
-        || ss->ply < thisThread->nmpMinPly
+      if ((PvNode || (ss - 1)->currentMove == MOVE_NULL || (ss - 1)->statScore >= 17496 || eval < beta
+        || eval < ss->staticEval || ss->staticEval < beta - 23 * depth + 304 || excludedMove
+        || !pos.non_pawn_material(us) || ss->ply < thisThread->nmpMinPly
         || beta <= VALUE_TB_LOSS_IN_MAX_PLY)
-        && (nullValue < beta
-        || nullValue >= VALUE_TB_WIN_IN_MAX_PLY)
+        && (nullValue < beta || nullValue >= VALUE_TB_WIN_IN_MAX_PLY)
         && depth >= 16)
         depth-- ;
     }
