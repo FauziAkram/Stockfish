@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=50, xx2=50;
+TUNE(xx1,xx2);
 namespace Search {
 
 LimitsType Limits;
@@ -848,6 +849,20 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
             if (v >= beta)
                 return nullValue;
         }
+      if (( xx1>50? PvNode : false)
+        || ( xx2>50? (ss - 1)->currentMove == MOVE_NULL : false)
+        || (ss - 1)->statScore >= 17496
+        || eval < beta
+        || eval < ss->staticEval
+        || ss->staticEval < beta - 23 * depth + 304
+        || excludedMove
+        || !pos.non_pawn_material(us)
+        || ss->ply < thisThread->nmpMinPly
+        || beta <= VALUE_TB_LOSS_IN_MAX_PLY)
+        && (nullValue < beta
+        || nullValue >= VALUE_TB_WIN_IN_MAX_PLY)
+        && depth >= 16)
+        depth-- ;
     }
 
     // Step 10. Internal iterative reductions (~9 Elo)
