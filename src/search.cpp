@@ -46,9 +46,7 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=0, xx2=50, xx3=100, xx4=25, xx5=116 ,xx6=44, xx7=163, xx8=67;
-TUNE(SetRange(-3700, 3700),xx1,xx2,xx3,xx4);
-TUNE(xx5,xx6,xx7,xx8);
+
 namespace Search {
 
 LimitsType Limits;
@@ -79,7 +77,7 @@ enum NodeType {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return Value((xx5 - xx6 * noTtCutNode) * (d - improving));
+    return Value((111 - 43 * noTtCutNode) * (d - improving));
 }
 
 // Reductions lookup table initialized at startup
@@ -788,10 +786,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // and if we were in check at move prior to it flag is set to true) and is
     // false otherwise. The improving flag is used in various pruning heuristics.
     improving = (ss - 2)->staticEval != VALUE_NONE
-                ? ss->staticEval > (ss - 2)->staticEval + xx1
-                : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + xx2;
-    improving2 = (ss - 2)->staticEval != VALUE_NONE  ? ss->staticEval > (ss - 2)->staticEval + xx3
-              : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + xx4;
+                ? ss->staticEval > (ss - 2)->staticEval
+                : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + 59;
+    improving2 = (ss - 2)->staticEval != VALUE_NONE  ? ss->staticEval > (ss - 2)->staticEval + 93
+              : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + 50;
 
     // Step 7. Razoring (~1 Elo)
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
@@ -870,7 +868,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     if (cutNode && depth >= 8 && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + xx7 - xx8 * improving;
+    probCutBeta = beta + 165 - 65 * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
