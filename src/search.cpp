@@ -46,8 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=60, xx2=60, xx3=60, xx4=60, xx5=60, xx6=60, xx7=60, xx8=60, xx9=60 ,xx10=60 ,xx11=60 ,xx12=60, xx13=14;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13);
+int xx1=60, xx2=60, xx3=60, xx4=60, xx5=60, xx6=60, xx8=60, xx9=60 ,xx10=60 ,xx11=60 ,xx12=60, xx13=14;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx8,xx9,xx10,xx11,xx12,xx13);
 namespace Search {
 
 LimitsType Limits;
@@ -850,7 +850,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
                 return nullValue;
         }
       if (((xx1 > 50? PvNode : false) || (xx2>50? (ss - 1)->currentMove == MOVE_NULL: false) || (xx3>50? (ss - 1)->statScore >= 17496: false) || (xx4>50? eval < beta: false)
-        || (xx5>50? eval < ss->staticEval: false) || (xx6>50? ss->staticEval < beta - 23 * depth + 304: false) || (xx7>50? excludedMove: false)
+        || (xx5>50? eval < ss->staticEval: false) || (xx6>50? ss->staticEval < beta - 23 * depth + 304: false) || excludedMove
         || (xx8>50? !pos.non_pawn_material(us): false) || (xx9? ss->ply < thisThread->nmpMinPly: false)
         || (xx10>50? beta <= VALUE_TB_LOSS_IN_MAX_PLY: false))
         && ((xx11>50? nullValue < beta: false) || (xx12>50? nullValue >= VALUE_TB_WIN_IN_MAX_PLY: false))
