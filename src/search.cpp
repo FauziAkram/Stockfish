@@ -1180,7 +1180,7 @@ moves_loop:  // When in check, search starts here
             r += 2;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
-        if ((ss + 1)->cutoffCnt > 3 && xx4<50? (pos.rule50_count() >= 40 : 2>1))
+        if ((ss + 1)->cutoffCnt > 3 && (xx4<50? pos.rule50_count() >= 40 : 2>1))
             r++;
 
         // Set reduction to 0 for first picked move (ttMove) (~2 Elo)
