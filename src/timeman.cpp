@@ -74,7 +74,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
     double optExtra = std::clamp(1.0 + 12.5 * limits.inc[us] / limits.time[us], 1.0, 1.11);
 
     // Calculate time constants based on current time left.
-    double minConstant = std::min(0.0054, std::max(0.0044, 0.0035 + 0.0003 * std::log10(limits.time[us] / 1000.0)));
+    double minConstant = std::min(0.0054, std::max(0.0044, 0.0035 + 0.0007 * std::log10(limits.time[us] / 1000.0)));
     double optConstant = std::min(0.00334 + 0.0003 * std::log10(limits.time[us] / 1000.0), minConstant);
     double maxConstant = std::max(3.4 + 3.0 * std::log10(limits.time[us] / 1000.0), 2.76);
 
