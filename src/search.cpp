@@ -848,6 +848,12 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
             if (v >= beta)
                 return nullValue;
         }
+      if ((PvNode ||(ss - 1)->currentMove == MOVE_NULL) || eval < beta
+        || ss->staticEval < beta - 23 * depth + 304 || excludedMove
+        || !pos.non_pawn_material(us) || ss->ply < thisThread->nmpMinPly)
+        && (nullValue < beta || nullValue >= VALUE_TB_WIN_IN_MAX_PLY)
+        && depth >= 13)
+        depth-- ;
     }
 
     // Step 10. Internal iterative reductions (~9 Elo)
