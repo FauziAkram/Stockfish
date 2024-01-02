@@ -848,6 +848,8 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
             if (v >= beta)
                 return nullValue;
         }
+      else if (depth >= 1)
+        depth-- ;
     }
 
     // Step 10. Internal iterative reductions (~9 Elo)
