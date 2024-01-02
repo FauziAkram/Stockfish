@@ -46,7 +46,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int xx1=60, xx2=60, xx3=60, xx4=60, zz1=60, zz2=60, zz3=60, zz4=60;
+TUNE(xx1,xx2,xx3,xx4,zz1,zz2,zz3,zz4);
 namespace Search {
 
 LimitsType Limits;
@@ -1151,35 +1152,35 @@ moves_loop:  // When in check, search starts here
         pos.do_move(move, st, givesCheck);
 
         // Decrease reduction if position is or has been on the PV (~4 Elo)
-        if (ss->ttPv && !likelyFailLow)
+        if (ss->ttPv && !likelyFailLow && zz1<50? pos.rule50_count() < 10 : true)
             r -= cutNode && tte->depth() >= depth ? 3 : 2;
 
         // Decrease reduction if opponent's move count is high (~1 Elo)
-        if ((ss - 1)->moveCount > 7)
+        if ((ss - 1)->moveCount > 7 && zz2<50? pos.rule50_count() < 10 : true)
             r--;
 
         // Increase reduction for cut nodes (~3 Elo)
-        if (cutNode)
+        if (cutNode && xx1<50? pos.rule50_count() >= 40 : true)
             r += 2;
 
         // Increase reduction if ttMove is a capture (~3 Elo)
-        if (ttCapture)
+        if (ttCapture && xx2<50? pos.rule50_count() >= 40 : true)
             r++;
 
         // Decrease reduction for PvNodes (~2 Elo)
-        if (PvNode)
+        if (PvNode && zz3<50? pos.rule50_count() < 10 : true)
             r--;
 
         // Decrease reduction if a quiet ttMove has been singularly extended (~1 Elo)
-        if (singularQuietLMR)
+        if (singularQuietLMR && zz4<50? pos.rule50_count() < 10 : true)
             r--;
 
         // Increase reduction on repetition (~1 Elo)
-        if (move == (ss - 4)->currentMove && pos.has_repeated())
+        if (move == (ss - 4)->currentMove && pos.has_repeated() && xx3<50? pos.rule50_count() >= 40 : true)
             r += 2;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
-        if ((ss + 1)->cutoffCnt > 3)
+        if ((ss + 1)->cutoffCnt > 3 && xx4<50? pos.rule50_count() >= 40 : true)
             r++;
 
         // Set reduction to 0 for first picked move (ttMove) (~2 Elo)
