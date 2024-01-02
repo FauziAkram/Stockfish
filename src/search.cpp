@@ -46,8 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=60, xx2=60, xx3=60, xx4=60, zz1=60, zz2=60, zz3=60, zz4=60;
-TUNE(xx1,xx2,xx3,xx4,zz1,zz2,zz3,zz4);
+int xx1=60, xx2=60, xx3=60, xx4=60, yy1=60, yy2=60, yy3=60, yy4=60;
+int zz1=60, zz2=60, zz3=60, zz4=60, ww1=60, ww2=60, ww3=60, ww4=60;
+TUNE(xx1,xx2,xx3,xx4,yy1,yy2,yy3,yy4);
+TUNE(zz1,zz2,zz3,zz4,ww1,ww2,ww3,ww4);
 namespace Search {
 
 LimitsType Limits;
@@ -1152,35 +1154,35 @@ moves_loop:  // When in check, search starts here
         pos.do_move(move, st, givesCheck);
 
         // Decrease reduction if position is or has been on the PV (~4 Elo)
-        if (ss->ttPv && !likelyFailLow && (zz1<50? pos.rule50_count() < 10 : true))
+        if (ss->ttPv && !likelyFailLow && (zz1<50? pos.rule50_count() < 10 : true) && (ww1<50? pos.rule50_count() < 20 : true))
             r -= cutNode && tte->depth() >= depth ? 3 : 2;
 
         // Decrease reduction if opponent's move count is high (~1 Elo)
-        if ((ss - 1)->moveCount > 7 && (zz2<50? pos.rule50_count() < 10 : true))
+        if ((ss - 1)->moveCount > 7 && (zz2<50? pos.rule50_count() < 10 : true) && (ww2<50? pos.rule50_count() < 20 : true))
             r--;
 
         // Increase reduction for cut nodes (~3 Elo)
-        if (cutNode && (xx1<50? pos.rule50_count() >= 40 : true))
+        if (cutNode && (xx1<50? pos.rule50_count() >= 40 : true) && (yy1<50? pos.rule50_count() >= 20 : true))
             r += 2;
 
         // Increase reduction if ttMove is a capture (~3 Elo)
-        if (ttCapture && (xx2<50? pos.rule50_count() >= 40 : true))
+        if (ttCapture && (xx2<50? pos.rule50_count() >= 40 : true) && (yy2<50? pos.rule50_count() >= 20 : true))
             r++;
 
         // Decrease reduction for PvNodes (~2 Elo)
-        if (PvNode && (zz3<50? pos.rule50_count() < 10 : true))
+        if (PvNode && (zz3<50? pos.rule50_count() < 10 : true) && (ww3<50? pos.rule50_count() < 20 : true))
             r--;
 
         // Decrease reduction if a quiet ttMove has been singularly extended (~1 Elo)
-        if (singularQuietLMR && (zz4<50? pos.rule50_count() < 10 : true))
+        if (singularQuietLMR && (zz4<50? pos.rule50_count() < 10 : true) && (ww4<50? pos.rule50_count() < 20 : true))
             r--;
 
         // Increase reduction on repetition (~1 Elo)
-        if (move == (ss - 4)->currentMove && pos.has_repeated() && (xx3<50? pos.rule50_count() >= 40 : true))
+        if (move == (ss - 4)->currentMove && pos.has_repeated() && (xx3<50? pos.rule50_count() >= 40 : true) && (yy3<50? pos.rule50_count() >= 20 : true))
             r += 2;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
-        if ((ss + 1)->cutoffCnt > 3 && (xx4<50? pos.rule50_count() >= 40 : true))
+        if ((ss + 1)->cutoffCnt > 3 && (xx4<50? pos.rule50_count() >= 40 : true) && (yy4<50? pos.rule50_count() >= 20 : true))
             r++;
 
         // Set reduction to 0 for first picked move (ttMove) (~2 Elo)
