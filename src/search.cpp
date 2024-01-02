@@ -1152,35 +1152,35 @@ moves_loop:  // When in check, search starts here
         pos.do_move(move, st, givesCheck);
 
         // Decrease reduction if position is or has been on the PV (~4 Elo)
-        if (ss->ttPv && !likelyFailLow && zz1<50? pos.rule50_count() < 10 : true)
+        if (ss->ttPv && !likelyFailLow && zz1<50? pos.rule50_count() < 10 : 2>1)
             r -= cutNode && tte->depth() >= depth ? 3 : 2;
 
         // Decrease reduction if opponent's move count is high (~1 Elo)
-        if ((ss - 1)->moveCount > 7 && zz2<50? pos.rule50_count() < 10 : true)
+        if ((ss - 1)->moveCount > 7 && zz2<50? pos.rule50_count() < 10 : 2>1)
             r--;
 
         // Increase reduction for cut nodes (~3 Elo)
-        if (cutNode && xx1<50? pos.rule50_count() >= 40 : true)
+        if (cutNode && xx1<50? pos.rule50_count() >= 40 : 2>1)
             r += 2;
 
         // Increase reduction if ttMove is a capture (~3 Elo)
-        if (ttCapture && xx2<50? pos.rule50_count() >= 40 : true)
+        if (ttCapture && xx2<50? pos.rule50_count() >= 40 : 2>1)
             r++;
 
         // Decrease reduction for PvNodes (~2 Elo)
-        if (PvNode && zz3<50? pos.rule50_count() < 10 : true)
+        if (PvNode && zz3<50? pos.rule50_count() < 10 : 2>1)
             r--;
 
         // Decrease reduction if a quiet ttMove has been singularly extended (~1 Elo)
-        if (singularQuietLMR && zz4<50? pos.rule50_count() < 10 : true)
+        if (singularQuietLMR && zz4<50? pos.rule50_count() < 10 : 2>1)
             r--;
 
         // Increase reduction on repetition (~1 Elo)
-        if (move == (ss - 4)->currentMove && pos.has_repeated() && xx3<50? pos.rule50_count() >= 40 : true)
+        if (move == (ss - 4)->currentMove && pos.has_repeated() && xx3<50? pos.rule50_count() >= 40 : 2>1)
             r += 2;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
-        if ((ss + 1)->cutoffCnt > 3 && xx4<50? pos.rule50_count() >= 40 : true)
+        if ((ss + 1)->cutoffCnt > 3 && xx4<50? pos.rule50_count() >= 40 : 2>1)
             r++;
 
         // Set reduction to 0 for first picked move (ttMove) (~2 Elo)
