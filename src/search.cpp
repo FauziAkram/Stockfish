@@ -1042,8 +1042,8 @@ moves_loop:  // When in check, search starts here
                 if (!ss->inCheck && (improving? lmrDepth < xx1: lmrDepth < xx2) 
                     && (improving? (ss->staticEval + (bestValue < ss->staticEval - xx3 ? xx4 : xx5)
                            + xx6 * lmrDepth
-                         <= alpha): ss->staticEval + (bestValue < ss->staticEval - xx7 ? xx8 : xx9)
-                           + xx10 * lmrDepth))
+                         <= alpha): (ss->staticEval + (bestValue < ss->staticEval - xx7 ? xx8 : xx9)
+                           + xx10 * lmrDepth <= alpha)))
                     continue;
 
                 lmrDepth = std::max(lmrDepth, 0);
