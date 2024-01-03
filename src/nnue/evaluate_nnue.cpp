@@ -379,7 +379,7 @@ std::string trace(Position& pos) {
 
 
 // Load eval, from a file stream or a memory stream
-bool load_eval(std::string name, std::istream& stream) {
+bool load_eval(const std::string name, std::istream& stream) {
 
     initialize();
     fileName = name;
