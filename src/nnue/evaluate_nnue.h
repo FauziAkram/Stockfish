@@ -66,11 +66,11 @@ using AlignedPtr = std::unique_ptr<T, AlignedDeleter<T>>;
 template<typename T>
 using LargePagePtr = std::unique_ptr<T, LargePageDeleter<T>>;
 
-std::string trace(Position& pos);
+std::string trace(const Position& pos);
 Value       evaluate(const Position& pos, bool adjusted = false, int* complexity = nullptr);
 void        hint_common_parent_position(const Position& pos);
 
-bool load_eval(std::string name, std::istream& stream);
+bool load_eval(const std::string name, std::istream& stream);
 bool save_eval(std::ostream& stream);
 bool save_eval(const std::optional<std::string>& filename);
 
