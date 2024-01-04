@@ -110,6 +110,7 @@ struct Tie: public std::streambuf {  // MSVC requires split streambuf for cin an
 class Logger {
 
     Logger() :
+        file(),
         in(std::cin.rdbuf(), file.rdbuf()),
         out(std::cout.rdbuf(), file.rdbuf()) {}
     ~Logger() { start(""); }
