@@ -86,9 +86,10 @@ ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard ta
             b2 &= pawn_attacks_bb(Them, ksq) | shift<Up + Up>(dcCandidatePawns);
         }
 
+        Square to;
         while (b1)
         {
-            Square to   = pop_lsb(b1);
+            to   = pop_lsb(b1);
             *moveList++ = Move(to - Up, to);
         }
 
