@@ -36,7 +36,7 @@ ExtMove* make_promotions(ExtMove* moveList, [[maybe_unused]] Square to) {
     if constexpr (Type == CAPTURES || all)
         *moveList++ = Move::make<PROMOTION>(to - D, to, QUEEN);
 
-    if constexpr ((Type == CAPTURES && Enemy) || (Type == QUIETS && !Enemy) || all)
+    if constexpr ((Type == CAPTURES) || (Type == QUIETS && !Enemy) || all)
     {
         *moveList++ = Move::make<PROMOTION>(to - D, to, ROOK);
         *moveList++ = Move::make<PROMOTION>(to - D, to, BISHOP);
