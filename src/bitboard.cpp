@@ -173,9 +173,6 @@ void init_magics(PieceType pt, Bitboard table[], Magic magics[]) {
             occupancy[size] = b;
             reference[size] = sliding_attack(pt, s, b);
 
-            if (HasPext)
-                m.attacks[pext(b, m.mask)] = reference[size];
-
             size++;
             b = (b - m.mask) & m.mask;
         } while (b);
@@ -184,6 +181,9 @@ void init_magics(PieceType pt, Bitboard table[], Magic magics[]) {
             continue;
 
         PRNG rng(seeds[Is64Bit][rank_of(s)]);
+
+        if (HasPext)
+            continue;
 
         // Find a magic for square 's' picking up an (almost) random number
         // until we find the one that passes the verification test.
