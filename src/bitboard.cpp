@@ -182,9 +182,6 @@ void init_magics(PieceType pt, Bitboard table[], Magic magics[]) {
 
         PRNG rng(seeds[Is64Bit][rank_of(s)]);
 
-        if (HasPext)
-            continue;
-
         // Find a magic for square 's' picking up an (almost) random number
         // until we find the one that passes the verification test.
         for (int i = 0; i < size;)
