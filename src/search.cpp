@@ -849,7 +849,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
                 return nullValue;
         }
       else {
-        if (depth >= 1 && depth <= 2 && !Pvnode)
+        if (depth >= 1 && depth <= 2 && !PvNode)
         depth++;
         if (depth >=16)
         depth--;
