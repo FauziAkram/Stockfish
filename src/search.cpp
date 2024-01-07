@@ -849,9 +849,9 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
                 return nullValue;
         }
       else {
-        if (depth >= 1 && depth <= 2 && !Pvnode)
+        if (depth >= 1 && depth <= 2)
         depth++;
-        if (depth >=16 && Pvnode)
+        if (depth >=16 && !ttMove)
         depth--;
         }
     }
