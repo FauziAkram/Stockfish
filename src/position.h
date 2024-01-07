@@ -187,13 +187,13 @@ class Position {
     Key adjust_key50(Key k) const;
 
     // Data members
-    Piece      board[SQUARE_NB];
     Bitboard   byTypeBB[PIECE_TYPE_NB];
     Bitboard   byColorBB[COLOR_NB];
-    int        pieceCount[PIECE_NB];
     int        castlingRightsMask[SQUARE_NB];
     Square     castlingRookSquare[CASTLING_RIGHT_NB];
     Bitboard   castlingPath[CASTLING_RIGHT_NB];
+    Piece      board[SQUARE_NB];
+    int        pieceCount[PIECE_NB];
     Thread*    thisThread;
     StateInfo* st;
     int        gamePly;
