@@ -1173,7 +1173,7 @@ moves_loop:  // When in check, search starts here
             r--;
 
         // Decrease reduction if a quiet ttMove has been singularly extended (~1 Elo)
-        if (singularQuietLMR && pos.rule50_count() <= 30)
+        if (singularQuietLMR && pos.rule50_count() <= 40)
             r--;
 
         // Increase reduction on repetition (~1 Elo)
