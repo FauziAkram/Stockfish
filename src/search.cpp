@@ -790,7 +790,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // and if we were in check at move prior to it flag is set to true) and is
     // false otherwise. The improving flag is used in various pruning heuristics.
     improving = (ss - 2)->staticEval != VALUE_NONE
-                ? ss->staticEval > (ss - 2)->staticEval:
+                ? ss->staticEval > (ss - 2)->staticEval
               : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + 59;
     improving2 = (ss - 2)->staticEval != VALUE_NONE  ? ss->staticEval > (ss - 2)->staticEval + 93
               : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + 50;
