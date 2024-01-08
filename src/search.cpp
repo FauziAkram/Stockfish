@@ -790,7 +790,8 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // and if we were in check at move prior to it flag is set to true) and is
     // false otherwise. The improving flag is used in various pruning heuristics.
     improving = (ss - 2)->staticEval != VALUE_NONE
-                && ss->staticEval > (ss - 2)->staticEval;
+                ? ss->staticEval > (ss - 2)->staticEval:
+              : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + 59;
     improving2 = (ss - 2)->staticEval != VALUE_NONE  ? ss->staticEval > (ss - 2)->staticEval + 93
               : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval + 50;
 
@@ -1017,7 +1018,7 @@ moves_loop:  // When in check, search starts here
                 {
                     Piece capturedPiece = pos.piece_on(move.to_sq());
                     int   futilityEval =
-                      ss->staticEval + 238 + 305 * lmrDepth + PieceValue[capturedPiece]
+                      ss->staticEval + 240 + 306 * lmrDepth + PieceValue[capturedPiece]
                       + captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)] / 7;
                     if (futilityEval < alpha)
                         continue;
