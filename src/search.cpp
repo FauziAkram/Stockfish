@@ -818,7 +818,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
-    if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < (zz2 / 100)
+    if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < (zz2 * 100)
         && eval >= beta && eval >= ss->staticEval && ss->staticEval >= beta - 23 * depth + 304
         && !excludedMove && pos.non_pawn_material(us) && ss->ply >= thisThread->nmpMinPly
         && beta > VALUE_TB_LOSS_IN_MAX_PLY)
@@ -1382,7 +1382,7 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + ((ss - 1)->statScore < (zz3 / -100))
+        int bonus = (depth > 6) + (PvNode || cutNode) + ((ss - 1)->statScore < (zz3 * -100))
                   + ((ss - 1)->moveCount > 10);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
