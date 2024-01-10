@@ -1193,6 +1193,7 @@ moves_loop:  // When in check, search starts here
         else if (move == ttMove)
             r = 0;
 
+        if (pos.rule50_count() > 30)
         r += (pos.rule50_count() / 31);
 
         ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
