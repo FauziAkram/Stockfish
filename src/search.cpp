@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=33, xx2=5000;
+TUNE(SetRange(1, 99), xx1);
+TUNE(SetRange(1, 20000), xx2);
 
 namespace Search {
 
@@ -1192,6 +1195,9 @@ moves_loop:  // When in check, search starts here
         // Nullifies all previous reduction adjustments to ttMove and leaves only history to do them
         else if (move == ttMove)
             r = 0;
+
+        r += (pos.rule50_count() / xx1);
+        r -= std::clamp((history / xx2), -3 , 3);
 
         ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
                       + (*contHist[0])[movedPiece][move.to_sq()]
