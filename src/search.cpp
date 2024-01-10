@@ -46,9 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
-int xx1=200, xx2=100, xx3=100, xx4=100, xx5=15000;
+int xx1=200, xx2=100, xx3=100, xx4=100, xx5=15000, xx0=381700;
 TUNE(SetRange(0, 50), xx1,xx2,xx3,xx4);
-TUNE(xx5);
+TUNE(xx5,xx0);
 
 namespace Search {
 
@@ -1199,7 +1199,8 @@ moves_loop:  // When in check, search starts here
         ss->statScore = xx1 * thisThread->mainHistory[us][move.from_to()]
                       + xx2 * (*contHist[0])[movedPiece][move.to_sq()]
                       + xx3 * (*contHist[1])[movedPiece][move.to_sq()]
-                      + xx4 * (*contHist[3])[movedPiece][move.to_sq()];
+                      + xx4 * (*contHist[3])[movedPiece][move.to_sq()]
+                      - xx0;
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
         r -= (ss->statScore / xx5) / 100;
