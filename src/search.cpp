@@ -46,6 +46,10 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx1=1346, zz1=200, xx2=896, xx3=880, zz2=200;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(-500, 700), zz1,zz2);
+
 
 namespace Search {
 
@@ -85,8 +89,8 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, int delta, int rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + 1346 - int(delta) * 896 / int(rootDelta)) / 1024
-         + (!i && reductionScale > 880);
+    return (reductionScale + (xx1 - xx2 * i) - int(delta) * xx3 / int(rootDelta)) / 1024
+         + (reductionScale > (xx4 + xx5 * i));
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
