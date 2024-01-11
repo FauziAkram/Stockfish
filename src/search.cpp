@@ -1454,11 +1454,6 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
     Color    us = pos.side_to_move();
 
     // Step 1. Initialize node
-    if (PvNode)
-    {
-        (ss + 1)->pv = pv;
-        ss->pv[0]    = Move::none();
-    }
 
     Thread* thisThread = pos.this_thread();
     bestMove           = Move::none();
@@ -1643,6 +1638,12 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
         quietCheckEvasions += !capture && ss->inCheck;
 
         // Step 7. Make and search the move
+        if (PvNode)
+        {
+        (ss + 1)->pv = pv;
+        ss->pv[0]    = Move::none();
+        }
+      
         pos.do_move(move, st, givesCheck);
         value = -qsearch<nodeType>(pos, ss + 1, -beta, -alpha, depth - 1);
         pos.undo_move(move);
