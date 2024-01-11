@@ -1198,8 +1198,8 @@ moves_loop:  // When in check, search starts here
                       + (*contHist[1])[movedPiece][move.to_sq()]
                       + (*contHist[3])[movedPiece][move.to_sq()] - 3817;
 
-        // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-        r -= ss->statScore / 14767;
+        // Decrease/increase reduction for moves with a good/bad history (~?? Elo)
+        // r -= ss->statScore / 14767;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
