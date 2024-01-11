@@ -807,14 +807,14 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 9
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
-               - (ss - 1)->statScore / 33102
+               - (ss - 1)->statScore / 331
              >= beta
         && eval >= beta && eval < 29008  // smaller than TB wins
         && (!ttMove || ttCapture))
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
-    if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < 1651113
+    if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < 16511
         && eval >= beta && eval >= ss->staticEval && ss->staticEval >= beta - 23 * depth + 304
         && !excludedMove && pos.non_pawn_material(us) && ss->ply >= thisThread->nmpMinPly
         && beta > VALUE_TB_LOSS_IN_MAX_PLY)
@@ -1193,13 +1193,13 @@ moves_loop:  // When in check, search starts here
         else if (move == ttMove)
             r = 0;
 
-        ss->statScore = 204 * thisThread->mainHistory[us][move.from_to()]
-                      + 127 * (*contHist[0])[movedPiece][move.to_sq()]
-                      + 102 * (*contHist[1])[movedPiece][move.to_sq()]
-                      + 850 * (*contHist[3])[movedPiece][move.to_sq()] - 403929;
+        ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
+                      + (*contHist[0])[movedPiece][move.to_sq()]
+                      + (*contHist[1])[movedPiece][move.to_sq()]
+                      + (17 * (*contHist[3])[movedPiece][move.to_sq()] / 20) - 4039;
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-        r -= ss->statScore / 1657122;
+        r -= ss->statScore / 16571;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
@@ -1377,7 +1377,7 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 6) + (PvNode || cutNode) + ((ss - 1)->statScore < -1800518)
+        int bonus = (depth > 6) + (PvNode || cutNode) + ((ss - 1)->statScore < -18005)
                   + ((ss - 1)->moveCount > 10);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
