@@ -76,8 +76,8 @@ enum NodeType {
 };
 
 // Futility margin
-Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return ((116 - 44 * noTtCutNode) * (d - improving));
+Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool excludedMove) {
+    return ((xx1 - xx2 * noTtCutNode + xx3 * excludedMove) * (d - improving));
 }
 
 // Reductions lookup table initialized at startup
@@ -806,10 +806,10 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 9
-        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
-               - (ss - 1)->statScore / 337
+        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, excludedMove)
+               - (ss - 1)->statScore / xx4
              >= beta
-        && eval >= beta && eval < 29008  // smaller than TB wins
+        && eval >= beta && eval < xx5  // smaller than TB wins
         && (!ttMove || ttCapture))
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
 
@@ -866,7 +866,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
-    if (cutNode && depth >= 8 && !ttMove)
+    if (cutNode && depth >= 6 && !ttMove)
         depth -= 2;
 
     probCutBeta = beta + 163 - 67 * improving;
