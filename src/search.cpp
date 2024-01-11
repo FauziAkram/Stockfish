@@ -89,8 +89,8 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, int delta, int rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + (xx1 - xx2 * i) - int(delta) * xx3 / int(rootDelta)) / 1024
-         + (reductionScale > (xx4 + xx5 * i));
+    return (reductionScale + (xx1 - zz1 * i) - int(delta) * xx2 / int(rootDelta)) / 1024
+         + (reductionScale > (xx3 + zz2 * i));
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
