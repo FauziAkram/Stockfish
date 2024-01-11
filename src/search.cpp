@@ -79,7 +79,7 @@ enum NodeType {
 };
 
 // Futility margin
-Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool excludedMove) {
+Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool (excludedMove)) {
     return ((xx1 - xx2 * noTtCutNode + xx3 * excludedMove) * (d - improving));
 }
 
