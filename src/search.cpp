@@ -1596,7 +1596,7 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
                 if (moveCount > 2)
                     continue;
 
-                Piece pieceToBeCaptured = pos.piece_on(to_sq(move));
+                Piece pieceToBeCaptured = pos.piece_on(move.to_sq());
                 futilityValue = futilityBase + PieceValue[pieceToBeCaptured]
                              + xx0 * (type_of(pieceToBeCaptured) == PAWN)
                              + xx1 * (type_of(pieceToBeCaptured) == KNIGHT)
