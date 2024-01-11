@@ -46,6 +46,9 @@
 #include "uci.h"
 
 namespace Stockfish {
+int xx0=0, xx1=0, xx2=-0, xx3=0, xx4=0;
+int zz0=0, zz1=0, zz2=-0, zz3=0, zz4=0;
+TUNE(SetRange(-400, 400), xx0,xx1,xx2,xx3,xx4,zz0,zz1,zz2,zz3,zz4);
 
 namespace Search {
 
@@ -1016,6 +1019,11 @@ moves_loop:  // When in check, search starts here
                     Piece capturedPiece = pos.piece_on(move.to_sq());
                     int   futilityEval =
                       ss->staticEval + 238 + 305 * lmrDepth + PieceValue[capturedPiece]
+                             + zz0 * (type_of(capturedPiece) == PAWN)
+                             + zz1 * (type_of(capturedPiece) == KNIGHT)
+                             + zz2 * (type_of(capturedPiece) == BISHOP)
+                             + zz3 * (type_of(capturedPiece) == ROOK)
+                             + zz4 * (type_of(capturedPiece) == QUEEN)
                       + captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)] / 7;
                     if (futilityEval < alpha)
                         continue;
@@ -1588,7 +1596,13 @@ Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
                 if (moveCount > 2)
                     continue;
 
-                futilityValue = futilityBase + PieceValue[pos.piece_on(move.to_sq())];
+                Piece pieceToBeCaptured = pos.piece_on(to_sq(move));
+                futilityValue = futilityBase + PieceValue[pieceToBeCaptured]
+                             + xx0 * (type_of(pieceToBeCaptured) == PAWN)
+                             + xx1 * (type_of(pieceToBeCaptured) == KNIGHT)
+                             + xx2 * (type_of(pieceToBeCaptured) == BISHOP)
+                             + xx3 * (type_of(pieceToBeCaptured) == ROOK)
+                             + xx4 * (type_of(pieceToBeCaptured) == QUEEN);
 
                 // If static eval + value of piece we are going to capture is much lower
                 // than alpha we can prune this move.
