@@ -1018,7 +1018,6 @@ moves_loop:  // When in check, search starts here
                       ss->staticEval + 238 + 305 * lmrDepth + PieceValue[capturedPiece]
                       - 14 * (type_of(capturedPiece) == BISHOP)
                       + 16 * (type_of(capturedPiece) == ROOK)
-                      + 14 * (type_of(capturedPiece) == QUEEN)
                       + captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)] / 7;
                     if (futilityEval < alpha)
                         continue;
