@@ -85,7 +85,7 @@ int Reductions[MAX_MOVES];  // [depth or moveNumber]
 
 Depth reduction(bool i, Depth d, int mn, int delta, int rootDelta) {
     int reductionScale = Reductions[d] * Reductions[mn];
-    return (reductionScale + (1315 - 204 * i) - int(delta) * 958 / int(rootDelta)) / 1024
+    return (reductionScale + 1315 - int(delta) * 958 / int(rootDelta)) / 1024
          + (reductionScale > (874 + 174 * i));
 }
 
