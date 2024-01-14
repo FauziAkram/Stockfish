@@ -204,7 +204,6 @@ void MovePicker::score() {
                      ? bool(to & threatenedByRook) * 50000 + bool(to & threatenedByMinor) * 10000
                    : pt == ROOK
                      ? bool(to & threatenedByMinor) * 25000 + bool(to & threatenedByPawn) * 10000
-                   : pt != PAWN ? bool(to & threatenedByPawn) * 15000
                                 : 0)
                 : 0;
         }
