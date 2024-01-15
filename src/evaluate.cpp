@@ -60,6 +60,9 @@ const unsigned int         gEmbeddedNNUESmallSize    = 1;
 
 
 namespace Stockfish {
+int xx1=2000, xx2=4;
+TUNE(SetRange(1, 10001), xx1);
+TUNE(SetRange(1, 11), xx2);
 
 namespace Eval {
 
@@ -215,6 +218,9 @@ Value Eval::evaluate(const Position& pos, int optimism) {
 
         Value nnue = smallNet ? NNUE::evaluate<NNUE::Small>(pos, true, &nnueComplexity)
                               : NNUE::evaluate<NNUE::Big>(pos, true, &nnueComplexity);
+
+        if (abs(simpleEval) > xx1)
+          simpleEval = xx1 + ((simpleEval - xx1) / xx2);
 
         // Blend optimism and eval with nnue complexity and material imbalance
         optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 512;
