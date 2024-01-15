@@ -60,6 +60,7 @@ struct Stack {
     Move            excludedMove;
     Move            killers[2];
     Value           staticEval;
+    PieceType       movedPieceType;
     int             statScore;
     int             moveCount;
     bool            inCheck;
