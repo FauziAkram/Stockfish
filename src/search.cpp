@@ -45,6 +45,14 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=17, xx2=17, xx3=17, xx4=17, xx5=17;
+int zz1=11, zz2=11, zz3=11, zz4=12, zz5=12;
+int ee1=2, ee2=2, ee3=2, ee4=2, ee5=2;
+int dd1=1, dd2=1, dd3=1, dd4=1, dd5=0;
+TUNE(SetRange(-20, 40), xx1,xx2,xx3,xx4,xx5);
+TUNE(SetRange(0, 24), zz1,zz2,zz3,zz4,zz5);
+TUNE(SetRange(-4, 8), ee1,ee2,ee3,ee4,ee5);
+TUNE(SetRange(-4, 8), dd1,dd2,dd3,dd4,dd5);
 
 namespace Tablebases {
 
@@ -1088,11 +1096,22 @@ moves_loop:  // When in check, search starts here
                     singularQuietLMR = !ttCapture;
 
                     // Avoid search explosion by limiting the number of double extensions
-                    if (!PvNode && value < singularBeta - 17 && ss->doubleExtensions <= 11)
-                    {
-                        extension = 2;
-                        depth += depth < 15;
-                    }
+                    if (depth < 5){
+                    if (!PvNode && value < singularBeta - xx1 && ss->doubleExtensions <= zz1)
+                    {extension = ee1; depth += dd1;}}
+                    if (depth >= 5 && depth < 9){
+                    if (!PvNode && value < singularBeta - xx2 && ss->doubleExtensions <= zz2)
+                    {extension = ee2; depth += dd2;}}
+                    if (depth >= 9 && depth < 13){
+                    if (!PvNode && value < singularBeta - xx3 && ss->doubleExtensions <= zz3)
+                    {extension = ee3; depth += dd3;}}
+                    if (depth >= 13 && depth < 16){
+                    if (!PvNode && value < singularBeta - xx4 && ss->doubleExtensions <= zz4)
+                    {extension = ee4; depth += dd4;}}
+                    if (depth >= 16){
+                    if (!PvNode && value < singularBeta - xx5 && ss->doubleExtensions <= zz5)
+                    {extension = ee5; depth += dd5;}}
+
                 }
 
                 // Multi-cut pruning
