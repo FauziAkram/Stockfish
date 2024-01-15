@@ -1205,7 +1205,7 @@ moves_loop:  // When in check, search starts here
             && ss->movedPieceType == KING && pos.non_pawn_material() > xx1)
             r -= xx2;
 
-        if (&& (ss - 3)->movedPieceType == KING
+        if ((ss - 3)->movedPieceType == KING
             && (ss - 1)->movedPieceType && pos.non_pawn_material() > xx3)
             r -= xx4;
 
