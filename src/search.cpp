@@ -45,6 +45,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=3000, xx2=0, xx3=3000, xx4=0;
+TUNE(xx1,xx3);
+TUNE(SetRange(-5, 5), xx2,xx3);
 
 namespace Tablebases {
 
@@ -1191,6 +1194,14 @@ moves_loop:  // When in check, search starts here
         // Nullifies all previous reduction adjustments to ttMove and leaves only history to do them
         else if (move == ttMove)
             r = 0;
+
+        if ((ss - 4)->movedPieceType == KING && (ss - 2)->movedPieceType == KING
+            && ss->movedPieceType == KING && pos.non_pawn_material() > xx1)
+            r += xx2;
+
+        if ((ss - 5)->movedPieceType == KING && (ss - 3)->movedPieceType == KING
+            && (ss - 1)->movedPieceType && pos.non_pawn_material() > xx3)
+            r += xx4;
 
         ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
                       + (*contHist[0])[movedPiece][move.to_sq()]
