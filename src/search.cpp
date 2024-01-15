@@ -45,9 +45,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=3000, xx2=0, xx3=3000, xx4=0;
+int xx1=3000, xx2=0, xx3=3000, xx4=0, xx5=0;
 TUNE(xx1,xx3);
-TUNE(SetRange(-5, 5), xx2,xx3);
+TUNE(SetRange(-5, 5), xx2,xx4);
+TUNE(SetRange(-1000, 1000), xx5);
 
 namespace Tablebases {
 
@@ -1641,8 +1642,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
                 break;
 
             // Continuation history based pruning (~3 Elo)
-            if (!capture && (*contHist[0])[movedPiece][move.to_sq()] < 0
-                && (*contHist[1])[movedPiece][move.to_sq()] < 0)
+            if (!capture && (*contHist[0])[movedPiece][move.to_sq()]
+                + (*contHist[1])[movedPiece][move.to_sq()] < xx5)
                 continue;
 
             // Do not search moves with bad enough SEE values (~5 Elo)
