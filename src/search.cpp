@@ -823,6 +823,7 @@ Value Search::Worker::search(
         Depth R = std::min(int(eval - beta) / 144, 6) + depth / 3 + 4;
 
         ss->currentMove         = Move::null();
+        ss->movedPieceType      = NO_PIECE_TYPE;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
 
         pos.do_null_move(st, tt);
@@ -893,7 +894,9 @@ Value Search::Worker::search(
                 // Prefetch the TT entry for the resulting position
                 prefetch(tt.first_entry(pos.key_after(move)));
 
-                ss->currentMove = move;
+                ss->currentMove    = move;
+                movedPiece         = pos.moved_piece(move);
+                ss->movedPieceType = type_of(movedPiece);
                 ss->continuationHistory =
                   &this
                      ->continuationHistory[ss->inCheck][true][pos.moved_piece(move)][move.to_sq()];
@@ -1151,7 +1154,8 @@ moves_loop:  // When in check, search starts here
         prefetch(tt.first_entry(pos.key_after(move)));
 
         // Update the current move (this must be done after singular extension search)
-        ss->currentMove = move;
+        ss->currentMove    = move;
+        ss->movedPieceType = type_of(movedPiece);
         ss->continuationHistory =
           &thisThread->continuationHistory[ss->inCheck][capture][movedPiece][move.to_sq()];
 
@@ -1589,6 +1593,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
         givesCheck = pos.gives_check(move);
         capture    = pos.capture_stage(move);
+        Piece movedPiece = pos.moved_piece(move);
 
         moveCount++;
 
@@ -1636,8 +1641,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
                 break;
 
             // Continuation history based pruning (~3 Elo)
-            if (!capture && (*contHist[0])[pos.moved_piece(move)][move.to_sq()] < 0
-                && (*contHist[1])[pos.moved_piece(move)][move.to_sq()] < 0)
+            if (!capture && (*contHist[0])[movedPiece][move.to_sq()] < 0
+                && (*contHist[1])[movedPiece][move.to_sq()] < 0)
                 continue;
 
             // Do not search moves with bad enough SEE values (~5 Elo)
@@ -1649,10 +1654,11 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
         prefetch(tt.first_entry(pos.key_after(move)));
 
         // Update the current move
-        ss->currentMove = move;
+        ss->currentMove    = move;
+        ss->movedPieceType = type_of(movedPiece);
         ss->continuationHistory =
           &thisThread
-             ->continuationHistory[ss->inCheck][capture][pos.moved_piece(move)][move.to_sq()];
+             ->continuationHistory[ss->inCheck][capture][movedPiece][move.to_sq()];
 
         quietCheckEvasions += !capture && ss->inCheck;
 
