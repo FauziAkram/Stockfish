@@ -217,7 +217,7 @@ Value Eval::evaluate(const Position& pos, int optimism) {
                               : NNUE::evaluate<NNUE::Big>(pos, true, &nnueComplexity);
 
         if (abs(simpleEval) > 2134)
-          simpleEval = simpleEval / 4;
+          simpleEval -= simpleEval / 4;
 
         // Blend optimism and eval with nnue complexity and material imbalance
         optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 512;
