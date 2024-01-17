@@ -45,7 +45,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=52, xx2=2, xx3=49, xx4=6, xx5=118;
+TUNE(xx1);
+TUNE(SetRange(-4, 4), xx2);
+TUNE(xx3);
+TUNE(SetRange(1, 14), xx4);
+TUNE(xx5);
 namespace Tablebases {
 
 int   Cardinality;
@@ -1043,7 +1048,7 @@ moves_loop:  // When in check, search starts here
                 // Futility pruning: parent node (~13 Elo)
                 if (!ss->inCheck && lmrDepth < 14
                     && ss->staticEval + (bestValue < ss->staticEval - 57 ? 124 : 71)
-                           + 118 * lmrDepth
+                           + xx5 * lmrDepth
                          <= alpha)
                     continue;
 
@@ -1221,7 +1226,7 @@ moves_loop:  // When in check, search starts here
             {
                 // Adjust full-depth search based on LMR results - if the result
                 // was good enough search deeper, if it was bad enough search shallower.
-                const bool doDeeperSearch    = value > (bestValue + 53 + 2 * newDepth);  // (~1 Elo)
+                const bool doDeeperSearch    = value > (bestValue + xx1 + xx2 * newDepth + xx3 * (cutNode && depth < xx4));  // (~1 Elo)
                 const bool doShallowerSearch = value < bestValue + newDepth;             // (~2 Elo)
 
                 newDepth += doDeeperSearch - doShallowerSearch;
