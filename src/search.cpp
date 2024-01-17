@@ -1426,7 +1426,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
     // Check if we have an upcoming move that draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
-    if (alpha < VALUE_DRAW && pos.has_game_cycle(ss->ply))
+    if ((alpha < VALUE_DRAW || pos.has_repeated()) && pos.has_game_cycle(ss->ply))
     {
         alpha = value_draw(this->nodes);
         if (alpha >= beta)
