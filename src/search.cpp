@@ -44,7 +44,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=2, xx2=163, xx3=67, xx4=116, xx5=44, xx6=100, xx7=150;
+TUNE(SetRange(0, 10), xx1);
+TUNE(xx2,xx3,xx4,xx5,xx6,xx7)
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -55,7 +57,8 @@ namespace {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    return ((116 - 44 * noTtCutNode) * (d - improving));
+    Value futiltiyMult = xx4 - xx5 * noTtCutNode;
+    return (((futiltiyMult * xx6 * d) - (xx7  * futiltiyMult * improving)))/100;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -783,7 +786,8 @@ Value Search::Worker::search(
     // false otherwise. The improving flag is used in various pruning heuristics.
     improving = (ss - 2)->staticEval != VALUE_NONE
                 ? ss->staticEval > (ss - 2)->staticEval
-                : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval;
+                : (ss - 4)->staticEval != VALUE_NONE ? ss->staticEval > (ss - 4)->staticEval
+                : ss->ply >= xx1;
 
     // Step 7. Razoring (~1 Elo)
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
@@ -862,7 +866,7 @@ Value Search::Worker::search(
     if (cutNode && depth >= 8 && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + 163 - 67 * improving;
+    probCutBeta = beta + xx2 - xx3 * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
