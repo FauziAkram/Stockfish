@@ -1424,15 +1424,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
     assert(PvNode || (alpha == beta - 1));
     assert(depth <= 0);
 
-    // Check if we have an upcoming move that draws by repetition, or
-    // if the opponent had an alternative move earlier to this position.
-    if (alpha < VALUE_DRAW && pos.has_game_cycle(ss->ply))
-    {
-        alpha = value_draw(this->nodes);
-        if (alpha >= beta)
-            return alpha;
-    }
-
     Move      pv[MAX_PLY + 1];
     StateInfo st;
     ASSERT_ALIGNED(&st, Eval::NNUE::CacheLineSize);
