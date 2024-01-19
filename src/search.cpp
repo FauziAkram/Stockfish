@@ -645,8 +645,8 @@ Value Search::Worker::search(
                 if (ttCapture)
                 {
                     if (tte->depth() < xx1 &&
-                        thisThread->captureHistory[pos.moved_piece(ttMove)][to_sq(ttMove)][type_of(pos.piece_on(to_sq(ttMove)))] < -xx2)
-                        thisThread->captureHistory[pos.moved_piece(ttMove)][to_sq(ttMove)][type_of(pos.piece_on(to_sq(ttMove)))] << pow((xx3/100), stat_bonus(tte->depth()));
+                        thisThread->captureHistory[pos.moved_piece(ttMove)][move.to_sq(ttMove)][type_of(pos.piece_on(move.to_sq(ttMove)))] < -xx2)
+                        thisThread->captureHistory[pos.moved_piece(ttMove)][move.to_sq(ttMove)][type_of(pos.piece_on(move.to_sq(ttMove)))] << pow((xx3/100), stat_bonus(tte->depth()));
                 }
                 // Bonus for a quiet ttMove that fails high (~2 Elo)
                 else
