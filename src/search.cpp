@@ -1033,6 +1033,10 @@ moves_loop:  // When in check, search starts here
                 lmrDepth += history / 7838;
                 lmrDepth = std::max(lmrDepth, -1);
 
+                              // Prune moves with negative SEE (~4 Elo)
+                if (!pos.see_ge(move, -26 * lmrDepth * lmrDepth))
+                    continue;
+
                 // Futility pruning: parent node (~13 Elo)
                 if (!ss->inCheck && lmrDepth < 14
                     && ss->staticEval + (bestValue < ss->staticEval - 57 ? 124 : 71)
@@ -1041,10 +1045,6 @@ moves_loop:  // When in check, search starts here
                     continue;
 
                 lmrDepth = std::max(lmrDepth, 0);
-
-                // Prune moves with negative SEE (~4 Elo)
-                if (!pos.see_ge(move, -26 * lmrDepth * lmrDepth))
-                    continue;
             }
         }
 
