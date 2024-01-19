@@ -44,7 +44,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=7, xx2=400, xx3=200;
+TUNE(xx1,xx2,xx3);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -645,8 +646,8 @@ Value Search::Worker::search(
                 if (ttCapture)
                 {
                     if (tte->depth() < xx1 &&
-                        thisThread->captureHistory[pos.moved_piece(ttMove)][move.to_sq(ttMove)][type_of(pos.piece_on(move.to_sq(ttMove)))] < -xx2)
-                        thisThread->captureHistory[pos.moved_piece(ttMove)][move.to_sq(ttMove)][type_of(pos.piece_on(move.to_sq(ttMove)))] << pow((xx3/100), stat_bonus(tte->depth()));
+                        thisThread->captureHistory[pos.moved_piece(ttMove)][ttMove.to_sq()][type_of(pos.piece_on(ttMove.to_sq()))] < -xx2)
+                        thisThread->captureHistory[pos.moved_piece(ttMove)][ttMove.to_sq()][type_of(pos.piece_on(ttMove.to_sq()))] << pow((xx3/100), stat_bonus(tte->depth()));
                 }
                 // Bonus for a quiet ttMove that fails high (~2 Elo)
                 else
