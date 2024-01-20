@@ -543,7 +543,7 @@ Value Search::Worker::search(
 
     // Check if we have an upcoming move that draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
-    if (!rootNode && alpha < VALUE_DRAW && pos.has_game_cycle(ss->ply))
+    if (!rootNode && pos.has_game_cycle(ss->ply))
     {
         alpha = value_draw(this->nodes);
         if (alpha >= beta)
