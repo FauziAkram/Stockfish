@@ -44,7 +44,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=2, xx2=6, xx3=4195, xx4=69, xx5=6992;
+TUNE(SetRange(0, 10), xx1);
+TUNE(xx2,xx3,xx4,xx5);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -1025,12 +1027,12 @@ moves_loop:  // When in check, search starts here
                   + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
 
                 // Continuation history based pruning (~2 Elo)
-                if (lmrDepth < 6 && history < -3752 * depth)
+                if (moveCount > xx1 && lmrDepth < xx2 && history < -xx3 * depth)
                     continue;
 
-                history += 2 * thisThread->mainHistory[us][move.from_to()];
+                history += xx4 * thisThread->mainHistory[us][move.from_to()] / 32;
 
-                lmrDepth += history / 7838;
+                lmrDepth += history / xx5;
                 lmrDepth = std::max(lmrDepth, -1);
 
                 // Futility pruning: parent node (~13 Elo)
