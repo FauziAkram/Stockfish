@@ -1026,12 +1026,12 @@ moves_loop:  // When in check, search starts here
                   + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
 
                 // Continuation history based pruning (~2 Elo)
-                if (lmrDepth < 6 && history < -4195 * depth)
+                if (moveCount > 2 && lmrDepth < 6 && history < -4640 * depth)
                     continue;
 
-                history += 69 * thisThread->mainHistory[us][move.from_to()] / 32;
+                history += 2 * thisThread->mainHistory[us][move.from_to()];
 
-                lmrDepth += history / 6992;
+                lmrDepth += history / 7228;
                 lmrDepth = std::max(lmrDepth, -1);
 
                 // Futility pruning: parent node (~13 Elo)
