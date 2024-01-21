@@ -205,7 +205,7 @@ class Worker {
 
     Depth reduction(bool i, Depth d, int mn, int delta) {
         int reductionScale = reductions[d] * reductions[mn];
-        return (reductionScale + 1177 - int(delta) * 776 / int(rootDelta)) / 1024
+        return (reductionScale + 1198 - int(delta) * 776 / int(rootDelta)) / 1024
              + (!i && reductionScale > 842);
     }
 
