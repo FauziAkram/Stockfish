@@ -643,8 +643,15 @@ Value Search::Worker::search(
         {
             if (ttValue >= beta)
             {
+                if (ttCapture)
+                {
+                    if (tte->depth() < 7 &&
+                        thisThread->captureHistory[pos.moved_piece(ttMove)][ttMove.to_sq()][type_of(pos.piece_on(ttMove.to_sq()))] < -418)
+                        thisThread->captureHistory[pos.moved_piece(ttMove)][ttMove.to_sq()][type_of(pos.piece_on(ttMove.to_sq()))] << stat_bonus(tte->depth());
+                }
                 // Bonus for a quiet ttMove that fails high (~2 Elo)
                 if (!ttCapture)
+                else
                     update_quiet_stats(pos, ss, *this, ttMove, stat_bonus(depth));
 
                 // Extra penalty for early quiet moves of
