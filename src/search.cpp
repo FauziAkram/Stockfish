@@ -645,7 +645,7 @@ Value Search::Worker::search(
             {
                 if (ttCapture)
                 {
-                    if (tte->depth() < 7 &&
+                    if (tte->depth() < 6 &&
                         thisThread->captureHistory[pos.moved_piece(ttMove)][ttMove.to_sq()][type_of(pos.piece_on(ttMove.to_sq()))] < -418)
                         thisThread->captureHistory[pos.moved_piece(ttMove)][ttMove.to_sq()][type_of(pos.piece_on(ttMove.to_sq()))] << stat_bonus(tte->depth());
                 }
