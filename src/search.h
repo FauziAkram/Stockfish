@@ -174,7 +174,6 @@ class NullSearchManager: public ISearchManager {
 // of the search history, and storing data required for the search.
 class Worker {
    public:
-    inline int;
     Worker(SharedState&, std::unique_ptr<ISearchManager>, size_t);
 
     // Called at instantiation to initialize Reductions tables
