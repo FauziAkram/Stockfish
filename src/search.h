@@ -34,7 +34,7 @@
 #include "types.h"
 
 namespace Stockfish {
-int hh1=1198, hh2=776, hh3=842;
+inline int hh1=1198, hh2=776, hh3=842;
 TUNE(hh1,hh2,hh3);
 
 // Different node types, used as a template parameter
