@@ -44,6 +44,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=144, xx2=6, xx3=3, xx4=4, xx5=1;
+TUNE(xx1,xx2);
+TUNE(SetRange(1, 11), xx3, xx4);
+TUNE(SetRange(-4, 6), xx5);
 
 namespace TB = Tablebases;
 
@@ -816,7 +820,7 @@ Value Search::Worker::search(
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 144, 6) + depth / 3 + 4;
+        Depth R = std::min(int(eval - beta) / xx1, xx2) + depth / xx3 + xx4 + xx5 * cutNode;
 
         ss->currentMove         = Move::null();
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
