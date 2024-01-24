@@ -44,7 +44,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=13900, xx2=1000;
+int xx1=13900, xx2=300;
 int zz1=116, zz2=45, zz3=9, zz4=16, zz5=173, zz6=64;
 TUNE(xx1,xx2,zz1,zz2,zz3,zz4,zz5,zz6);
 namespace TB = Tablebases;
@@ -1195,7 +1195,7 @@ moves_loop:  // When in check, search starts here
                       + (*contHist[3])[movedPiece][move.to_sq()] - 4119;
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-        r -= ss->statScore / (xx1 + xx2 * depth);
+        r -= ss->statScore / (xx1 + xx2 * depth * depth);
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
