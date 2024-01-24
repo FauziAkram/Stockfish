@@ -34,7 +34,7 @@
 #include "types.h"
 
 namespace Stockfish {
-int hh1=1198, hh2=776, hh3=842;
+inline int hh1=1198, hh2=776, hh3=842;
 TUNE(hh1,hh2,hh3);
 
 // Different node types, used as a template parameter
@@ -174,6 +174,7 @@ class NullSearchManager: public ISearchManager {
 // of the search history, and storing data required for the search.
 class Worker {
    public:
+    inline int
     Worker(SharedState&, std::unique_ptr<ISearchManager>, size_t);
 
     // Called at instantiation to initialize Reductions tables
