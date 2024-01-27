@@ -1777,7 +1777,7 @@ void update_all_stats(const Position& pos,
 // by moves at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
-    if (ss->cutoff)
+    if ((ss + 1)->cutoffCnt > 3)
     bonus *= 1.5;
 
     for (int i : {1, 2, 3, 4, 6})
