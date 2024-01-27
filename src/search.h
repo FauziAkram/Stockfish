@@ -205,8 +205,8 @@ class Worker {
 
     Depth reduction(bool i, Depth d, int mn, int delta) {
         int reductionScale = reductions[d] * reductions[mn];
-        return (reductionScale + 1174 - int(delta) * 815 / int(rootDelta)) / 1024
-             + (!i && reductionScale > 900);
+        return (reductionScale + 1199 - int(delta) * 813 / int(rootDelta)) / 1024
+             + (!i && reductionScale > 879);
     }
 
     // Get a pointer to the search manager, only allowed to be called by the
