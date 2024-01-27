@@ -55,8 +55,8 @@ namespace {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    Value futilityMult = 114 - 47 * noTtCutNode;
-    return (futilityMult * d - 3 * futilityMult / 2 * improving);
+    Value futilityMult = 126 - 45 * noTtCutNode;
+    return ((futilityMult * d) - (8 / 5 * futilityMult * improving));
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -824,10 +824,10 @@ Value Search::Worker::search(
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
-    if (cutNode && depth >= 8 && !ttMove)
+    if (cutNode && depth >= 7 && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + 173 - 73 * improving;
+    probCutBeta = beta + 171 - 64 * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -1155,7 +1155,7 @@ moves_loop:  // When in check, search starts here
                       + (*contHist[3])[movedPiece][move.to_sq()] - 4119;
 
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
-        r -= ss->statScore / 15373;
+        r -= ss->statScore / (12000 + 950 * depth);
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         // We use various heuristics for the sons of a node after the first son has
