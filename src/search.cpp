@@ -1778,7 +1778,7 @@ void update_all_stats(const Position& pos,
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
     if ((ss + 1)->cutoffCnt > 3)
-    bonus *= 0.5;
+    bonus /= 2;
 
     for (int i : {1, 2, 3, 4, 6})
     {
