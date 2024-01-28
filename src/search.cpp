@@ -1550,14 +1550,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
                     bestValue = std::max(bestValue, futilityBase);
                     continue;
                 }
-
-                // If static exchange evaluation is much worse than what is needed to not
-                // fall below alpha we can prune this move.
-                if (futilityBase > alpha && !pos.see_ge(move, (alpha - futilityBase) * 4))
-                {
-                    bestValue = alpha;
-                    continue;
-                }
             }
 
             // We prune after the second quiet check evasion move, where being 'in check' is
