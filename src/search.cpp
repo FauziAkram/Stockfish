@@ -288,9 +288,10 @@ void Search::Worker::iterative_deepening() {
             if (pvIdx == pvLast)
             {
                 pvFirst = pvLast;
-                for (pvLast++; pvLast < rootMoves.size(); pvLast++)
-                    if (rootMoves[pvLast].tbRank != rootMoves[pvFirst].tbRank)
-                        break;
+                pvLast = pvFirst + 1; // Increment once
+                while (pvLast < rootMoves.size() && 
+                rootMoves[pvLast].tbRank == rootMoves[pvFirst].tbRank)
+                pvLast++;  
             }
 
             // Reset UCI info selDepth for each depth and each PV line
