@@ -1191,7 +1191,7 @@ moves_loop:  // When in check, search starts here
 
                 // Post LMR continuation history updates (~1 Elo)
                 int bonus = value <= alpha ? -stat_malus(newDepth)
-                          : value >= beta  ? stat_bonus(newDepth)
+                          : value >= beta  ? stat_bonus(newDepth, PvNode)
                                            : 0;
 
                 update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
@@ -1339,9 +1339,9 @@ moves_loop:  // When in check, search starts here
         int bonus = (depth > 5) + (PvNode || cutNode) + ((ss - 1)->statScore < -16797)
                   + ((ss - 1)->moveCount > 10);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                      stat_bonus(depth) * bonus);
+                                      stat_bonus(depth, PvNode) * bonus);
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()]
-          << stat_bonus(depth) * bonus / 2;
+          << stat_bonus(depth, PvNode) * bonus / 2;
     }
 
     if (PvNode)
@@ -1725,13 +1725,13 @@ void update_all_stats(const Position& pos,
     Piece                  moved_piece    = pos.moved_piece(bestMove);
     PieceType              captured;
 
-    int quietMoveBonus = stat_bonus(depth + 1);
+    int quietMoveBonus = stat_bonus(depth + 1, PvNode);
     int quietMoveMalus = stat_malus(depth);
 
     if (!pos.capture_stage(bestMove))
     {
         int bestMoveBonus = bestValue > beta + 177 ? quietMoveBonus      // larger bonus
-                                                   : stat_bonus(depth);  // smaller bonus
+                                                   : stat_bonus(depth, PvNode);  // smaller bonus
 
         // Increase stats for the best move in case it was a quiet move
         update_quiet_stats(pos, ss, workerThread, bestMove, bestMoveBonus);
