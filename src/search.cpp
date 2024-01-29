@@ -71,7 +71,7 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(265 * d - 349, 1112); }
+int stat_bonus(Depth d) { return std::min(264 * d - 349, 1110); }
 
 // History and stats update malus, based on depth
 int stat_malus(Depth d) { return std::min(482 * d - 326, 1172); }
@@ -824,10 +824,10 @@ Value Search::Worker::search(
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
-    if (cutNode && depth >= 7 && !ttMove)
+    if (cutNode && depth >= 8 && !ttMove)
         depth -= 2 + ss->ttPv;
 
-    probCutBeta = beta + 173 - 73 * improving;
+    probCutBeta = beta + 173 - 71 * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
