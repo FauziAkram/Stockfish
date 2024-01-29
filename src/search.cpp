@@ -44,7 +44,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=3, xx2=12, xx3=-80;
+TUNE(SetRange(0, 12), xx1);
+TUNE(xx2,xx3);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -711,7 +713,7 @@ Value Search::Worker::search(
         unadjustedStaticEval = ss->staticEval = eval = tte->eval();
         if (eval == VALUE_NONE)
             unadjustedStaticEval = ss->staticEval = eval = evaluate(pos, thisThread->optimism[us]);
-        else if (pos.state()->key % 10 == 0 && ss->staticEval == -(ss-1)->staticEval && depth > 3)
+        else if (pos.state()->key % 10 == 0 && ss->staticEval == -(ss-1)->staticEval && depth > xx1)
         {
            unadjustedStaticEval = ss->staticEval = eval = evaluate(pos, thisThread->optimism[us]);
            if (ss->staticEval == -(ss-1)->staticEval)
@@ -729,7 +731,7 @@ Value Search::Worker::search(
     else
     {
         unadjustedStaticEval = ss->staticEval = eval = evaluate(pos, thisThread->optimism[us]);
-        if ((ss-1)->moveCount > 12 && pos.state()->key % 10 == 0 && ((ss-1)->staticEval + (ss-2)->staticEval) < -80 )
+        if ((ss-1)->moveCount > xx2 && pos.state()->key % 10 == 0 && ((ss-1)->staticEval + (ss-2)->staticEval) < xx3 )
         {
            ss->staticEval = eval = -(ss-1)->staticEval;
         }
