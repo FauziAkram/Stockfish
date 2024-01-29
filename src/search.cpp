@@ -1718,7 +1718,8 @@ void update_all_stats(const Position& pos,
                       int             quietCount,
                       Move*           capturesSearched,
                       int             captureCount,
-                      Depth           depth) {
+                      Depth           depth,
+                      bool            PvNode) {
 
     Color                  us             = pos.side_to_move();
     CapturePieceToHistory& captureHistory = workerThread.captureHistory;
