@@ -711,6 +711,12 @@ Value Search::Worker::search(
         unadjustedStaticEval = ss->staticEval = eval = tte->eval();
         if (eval == VALUE_NONE)
             unadjustedStaticEval = ss->staticEval = eval = evaluate(pos, thisThread->optimism[us]);
+        else if (pos.state()->key % 10 == 0 && ss->staticEval == -(ss-1)->staticEval && depth > 3)
+        {
+           unadjustedStaticEval = ss->staticEval = eval = evaluate(pos, thisThread->optimism[us]);
+           if (ss->staticEval == -(ss-1)->staticEval)
+               ss->staticEval = ss->staticEval + 1;
+        }
         else if (PvNode)
             Eval::NNUE::hint_common_parent_position(pos);
 
@@ -723,7 +729,12 @@ Value Search::Worker::search(
     else
     {
         unadjustedStaticEval = ss->staticEval = eval = evaluate(pos, thisThread->optimism[us]);
-        ss->staticEval = eval = to_corrected_static_eval(unadjustedStaticEval, *thisThread, pos);
+        if ((ss-1)->moveCount > 12 && pos.state()->key % 10 == 0 && ((ss-1)->staticEval + (ss-2)->staticEval) < -80 )
+        {
+           ss->staticEval = eval = -(ss-1)->staticEval;
+        }
+        else
+           ss->staticEval = eval = to_corrected_static_eval(unadjustedStaticEval, *thisThread, pos);
 
         // Static evaluation is saved as it was before adjustment by correction history
         tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, Move::none(),
