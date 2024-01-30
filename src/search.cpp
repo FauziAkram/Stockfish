@@ -55,8 +55,8 @@ namespace {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    Value futilityMult = 114 - 47 * noTtCutNode;
-    return (futilityMult * d - 3 * futilityMult / 2 * improving);
+    Value futilityMult = 122 - 46 * noTtCutNode;
+    return (futilityMult * d - 8 * futilityMult / 5 * improving);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -830,7 +830,7 @@ Value Search::Worker::search(
     if (cutNode && depth >= 8 && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + 173 - 73 * improving;
+    probCutBeta = beta + 173 - 66 * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
