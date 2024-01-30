@@ -729,7 +729,7 @@ Value Search::Worker::search(
     else
     {
         unadjustedStaticEval = ss->staticEval = eval = evaluate(pos, thisThread->optimism[us]);
-        if ((ss-1)->moveCount > 13 && pos.state()->key % 10 == 0 && ((ss-1)->staticEval + (ss-2)->staticEval) < -78 )
+        if ((ss-1)->moveCount > 12 && pos.state()->key % 10 == 0 && ((ss-1)->staticEval + (ss-2)->staticEval) < -78 )
         {
            ss->staticEval = eval = -(ss-1)->staticEval;
         }
