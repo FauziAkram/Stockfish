@@ -72,8 +72,8 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 
 // History and stats update bonus, based on depth
 int stat_bonus(Depth d, bool PvNode) {
-return PvNode ? std::min(272 * d - 357, 1106)
-               :std::min(265 * d - 327, 1091); }
+return PvNode ? std::min(282 * d - 365, 1100)
+               :std::min(265 * d - 320, 1084); }
 
 // History and stats update malus, based on depth
 int stat_malus(Depth d) { return std::min(482 * d - 326, 1172); }
