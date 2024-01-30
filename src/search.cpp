@@ -44,7 +44,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=282, xx2=365, xx3=1100, xx4=265, xx5=320, xx6=1084;
+int zz1=482, zz2=326, zz3=1172, zz4=482, zz5=326, zz6=1172;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
+TUNE(zz1,zz2,zz3,zz4,zz5,zz6);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -72,11 +75,13 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 
 // History and stats update bonus, based on depth
 int stat_bonus(Depth d, bool PvNode) {
-return PvNode ? std::min(282 * d - 365, 1100)
-               :std::min(265 * d - 320, 1084); }
+return PvNode ? std::min(xx1 * d - xx2, xx3)
+               :std::min(xx4 * d - xx5, xx6); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(482 * d - 326, 1172); }
+int stat_malus(Depth d, bool PvNode) {
+return PvNode ? std::min(zz1 * d - zz2, zz3)
+               :std::min(zz4 * d - zz5, zz6); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
@@ -618,12 +623,12 @@ Value Search::Worker::search(
                 // the previous ply (~0 Elo on STC, ~2 Elo on LTC).
                 if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 2 && !priorCapture)
                     update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                                  -stat_malus(depth + 1));
+                                                  -stat_malus(depth + 1, PvNode));
             }
             // Penalty for a quiet ttMove that fails low (~1 Elo)
             else if (!ttCapture)
             {
-                int penalty = -stat_malus(depth);
+                int penalty = -stat_malus(depth, PvNode);
                 thisThread->mainHistory[us][ttMove.from_to()] << penalty;
                 update_continuation_histories(ss, pos.moved_piece(ttMove), ttMove.to_sq(), penalty);
             }
@@ -1190,7 +1195,7 @@ moves_loop:  // When in check, search starts here
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates (~1 Elo)
-                int bonus = value <= alpha ? -stat_malus(newDepth)
+                int bonus = value <= alpha ? -stat_malus(newDepth, PvNode)
                           : value >= beta  ? stat_bonus(newDepth, PvNode)
                                            : 0;
 
@@ -1727,7 +1732,7 @@ void update_all_stats(const Position& pos,
     PieceType              captured;
 
     int quietMoveBonus = stat_bonus(depth + 1, PvNode);
-    int quietMoveMalus = stat_malus(depth);
+    int quietMoveMalus = stat_malus(depth, PvNode);
 
     if (!pos.capture_stage(bestMove))
     {
