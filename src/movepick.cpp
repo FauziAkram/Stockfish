@@ -27,7 +27,9 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int xx1=28, xx2=4, xx3=8, xx4=8, xx5=8, xx6=4, xx7=4, xx8=4, xx9=4, xx10=16384, xx11=50000;
+int xx12=25000, xx13=15000, xx14=50000, xx15=10000, xx16=25000, xx17=15000, xx18=3300;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18);
 namespace {
 
 enum Stages {
@@ -167,9 +169,9 @@ void MovePicker::score() {
     for (auto& m : *this)
         if constexpr (Type == CAPTURES)
             m.value =
-              (7 * int(PieceValue[pos.piece_on(m.to_sq())])
-               + (*captureHistory)[pos.moved_piece(m)][m.to_sq()][type_of(pos.piece_on(m.to_sq()))])
-              / 16;
+              (xx1 * int(PieceValue[pos.piece_on(m.to_sq())])
+               + xx2 * (*captureHistory)[pos.moved_piece(m)][m.to_sq()][type_of(pos.piece_on(m.to_sq()))])
+              / 64;
 
         else if constexpr (Type == QUIETS)
         {
@@ -179,30 +181,30 @@ void MovePicker::score() {
             Square    to   = m.to_sq();
 
             // histories
-            m.value = 2 * (*mainHistory)[pos.side_to_move()][m.from_to()];
-            m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
-            m.value += 2 * (*continuationHistory[0])[pc][to];
-            m.value += (*continuationHistory[1])[pc][to];
-            m.value += (*continuationHistory[2])[pc][to] / 4;
-            m.value += (*continuationHistory[3])[pc][to];
-            m.value += (*continuationHistory[5])[pc][to];
+            m.value = xx3 * (*mainHistory)[pos.side_to_move()][m.from_to()]/4;
+            m.value += xx4 * (*pawnHistory)[pawn_structure_index(pos)][pc][to]/4;
+            m.value += xx5 * (*continuationHistory[0])[pc][to]/4;
+            m.value += xx6 * (*continuationHistory[1])[pc][to]/4;
+            m.value += xx7 * (*continuationHistory[2])[pc][to] / 16;
+            m.value += xx8 * (*continuationHistory[3])[pc][to]/4;
+            m.value += xx9 * (*continuationHistory[5])[pc][to]/4;
 
             // bonus for checks
-            m.value += bool(pos.check_squares(pt) & to) * 16384;
+            m.value += bool(pos.check_squares(pt) & to) * xx10;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 50000
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25000
-                                                  : !(to & threatenedByPawn)                ? 15000
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? xx11
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? xx12
+                                                  : !(to & threatenedByPawn)                ? xx13
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
             m.value -= !(threatenedPieces & from)
-                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 50000
-                                          + bool(to & threatenedByMinor) * 10000
-                          : pt == ROOK ? bool(to & threatenedByMinor) * 25000
-                          : pt != PAWN ? bool(to & threatenedByPawn) * 15000
+                       ? (pt == QUEEN ? bool(to & threatenedByRook) * xx14
+                                          + bool(to & threatenedByMinor) * xx15
+                          : pt == ROOK ? bool(to & threatenedByMinor) * xx16
+                          : pt != PAWN ? bool(to & threatenedByPawn) * xx17
                                        : 0)
                        : 0;
         }
@@ -242,7 +244,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3330 * d; };
+    auto quiet_threshold = [](Depth d) { return -xx18 * d; };
 
 top:
     switch (stage)
