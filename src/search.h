@@ -34,7 +34,8 @@
 #include "types.h"
 
 namespace Stockfish {
-
+inline int hh1=1199, hh2=813, hh3=879;
+TUNE(hh1,hh2,hh3);
 // Different node types, used as a template parameter
 enum NodeType {
     NonPV,
@@ -205,8 +206,8 @@ class Worker {
 
     Depth reduction(bool i, Depth d, int mn, int delta) {
         int reductionScale = reductions[d] * reductions[mn];
-        return (reductionScale + 1177 - int(delta) * 776 / int(rootDelta)) / 1024
-             + (!i && reductionScale > 842);
+        return (reductionScale + hh1 - int(delta) * hh2 / int(rootDelta)) / 1024
+             + (!i && reductionScale > hh3);
     }
 
     // Get a pointer to the search manager, only allowed to be called by the
