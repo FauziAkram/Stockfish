@@ -44,10 +44,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=282, xx2=365, xx3=1100, xx4=265, xx5=320, xx6=1084;
-int zz1=482, zz2=326, zz3=1172, zz4=482, zz5=326, zz6=1172;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
-TUNE(zz1,zz2,zz3,zz4,zz5,zz6);
+
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -75,13 +72,13 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 
 // History and stats update bonus, based on depth
 int stat_bonus(Depth d, bool PvNode) {
-return PvNode ? std::min(xx1 * d - xx2, xx3)
-               :std::min(xx4 * d - xx5, xx6); }
+return PvNode ? std::min(269 * d - 354, 1065)
+               :std::min(251 * d - 321, 1090); }
 
 // History and stats update malus, based on depth
 int stat_malus(Depth d, bool PvNode) {
-return PvNode ? std::min(zz1 * d - zz2, zz3)
-               :std::min(zz4 * d - zz5, zz6); }
+return PvNode ? std::min(497 * d - 330, 1167)
+               :std::min(505 * d - 336, 1203); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
@@ -1341,7 +1338,7 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + ((ss - 1)->statScore < -16797)
+        int bonus = (depth > 5) + (PvNode || cutNode) + ((ss - 1)->statScore < -16500)
                   + ((ss - 1)->moveCount > 10);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth, PvNode) * bonus);
