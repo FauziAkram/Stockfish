@@ -44,6 +44,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=11, xx2=28702, xx3=0;
+TUNE(xx1,xx2);
+TUNE(SetRange(-500, 500), xx3);
 
 namespace TB = Tablebases;
 
@@ -756,11 +759,11 @@ Value Search::Worker::search(
 
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
-    if (!ss->ttPv && depth < 11
+    if (!ss->ttPv && depth < xx1
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
                - (ss - 1)->statScore / 327
              >= beta
-        && eval >= beta && eval < 28702  // smaller than TB wins
+        && eval >= beta && eval < (xx2 + xx3 * depth)  // smaller than TB wins
         && (!ttMove || ttCapture))
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
 
