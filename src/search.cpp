@@ -44,7 +44,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=50, xx2=50, xx3=182, xx4=68, xx5=0;
+int xx0=4, xx1=50, xx2=50, xx3=182, xx4=68, xx5=0;
+TUNE(SetRange(1, 11), xx0);
 TUNE(SetRange(-400, 500), xx1,xx2);
 TUNE(xx3,xx4);
 TUNE(SetRange(-300, 300), xx5);
@@ -64,7 +65,7 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
 }
 
 constexpr int futility_move_count(bool improving, bool worsening, Depth depth) {
-    return improving ? (3 + depth * depth) : worsening ? (3 + depth * depth) / 4 : (3 + depth * depth) / 2;
+    return improving ? (3 + depth * depth) : worsening ? (3 + depth * depth) / xx0 : (3 + depth * depth) / 2;
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation does not hit the tablebase range
