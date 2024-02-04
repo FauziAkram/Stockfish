@@ -760,7 +760,7 @@ Value Search::Worker::search(
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
                - (ss - 1)->statScore / 327
              >= beta
-        && eval >= beta && eval < 28702  // smaller than TB wins
+        && eval >= beta && eval < (27716 + 13 * depth)  // smaller than TB wins
         && (!ttMove || ttCapture))
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
 
