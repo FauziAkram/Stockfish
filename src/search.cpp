@@ -44,11 +44,6 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx0=4, xx1=50, xx2=50, xx3=182, xx4=68, xx5=0;
-TUNE(SetRange(1, 11), xx0);
-TUNE(SetRange(-400, 500), xx1,xx2);
-TUNE(xx3,xx4);
-TUNE(SetRange(-300, 300), xx5);
 
 namespace TB = Tablebases;
 
@@ -65,7 +60,7 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
 }
 
 constexpr int futility_move_count(bool improving, bool worsening, Depth depth) {
-    return improving ? (3 + depth * depth) : worsening ? (3 + depth * depth) / xx0 : (3 + depth * depth) / 2;
+    return improving ? (3 + depth * depth) : worsening ? (3 + depth * depth) / 4 : (3 + depth * depth) / 2;
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation does not hit the tablebase range
@@ -749,8 +744,8 @@ Value Search::Worker::search(
                 ? ss->staticEval > (ss - 2)->staticEval
                 : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval;
     worsening = (ss - 2)->staticEval != VALUE_NONE
-                ? ss->staticEval + xx1 < (ss - 2)->staticEval
-                : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval + xx2 < (ss - 4)->staticEval;
+                ? ss->staticEval + 100 < (ss - 2)->staticEval
+                : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval + 80 < (ss - 4)->staticEval;
 
     // Step 7. Razoring (~1 Elo)
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
@@ -829,7 +824,7 @@ Value Search::Worker::search(
     if (cutNode && depth >= 8 && !ttMove)
         depth -= 2;
 
-    probCutBeta = beta + xx3 - xx4 * improving + xx5 * worsening;
+    probCutBeta = beta + 186 - 69 * improving;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
