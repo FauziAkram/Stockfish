@@ -965,7 +965,7 @@ moves_loop:  // When in check, search starts here
                     int   futilityEval =
                       ss->staticEval + 279 + 295 * lmrDepth + PieceValue[capturedPiece]
                       + thisThread->captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)]
-                          / 7;
+                          / (7 - improving);
                     if (futilityEval < alpha)
                         continue;
                 }
