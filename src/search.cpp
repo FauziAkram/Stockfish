@@ -44,7 +44,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=446, xx2=446;
+TUNE(xx1,xx2);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -880,7 +881,7 @@ Value Search::Worker::search(
 moves_loop:  // When in check, search starts here
 
     // Step 12. A small Probcut idea, when we are in check (~4 Elo)
-    probCutBeta = beta + 446;
+    probCutBeta = beta + (improving? xx1 : xx2);
     if (ss->inCheck && !PvNode && ttCapture && (tte->bound() & BOUND_LOWER)
         && tte->depth() >= depth - 4 && ttValue >= probCutBeta
         && std::abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY && std::abs(beta) < VALUE_TB_WIN_IN_MAX_PLY)
