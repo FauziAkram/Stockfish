@@ -44,6 +44,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=13, xx2=4, xx3=7, xx4=12580, xx5=130, xx6=95;
+TUNE(xx1);
+TUNE(SetRange(1, 11), xx2);
+TUNE(xx3);
+TUNE(SetRange(1, 28001), xx4);
+TUNE(xx5,xx6);
 
 namespace TB = Tablebases;
 
@@ -297,12 +303,12 @@ void Search::Worker::iterative_deepening() {
 
             // Reset aspiration window starting size
             Value avg = rootMoves[pvIdx].averageScore;
-            delta     = Value(9) + int(avg) * avg / 12580;
+            delta = Value(std::max(xx1 - (rootDepth / xx2), xx3)) + int(prev) * prev / xx4;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, int(VALUE_INFINITE));
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 130 * avg / (std::abs(avg) + 95);
+            optimism[us]  = xx5 * avg / (std::abs(avg) + xx6);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
