@@ -1093,7 +1093,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction if position is or has been on the PV (~5 Elo)
         if (ss->ttPv)
-            r -= 1 + (ttValue > alpha) + (ttValue > beta && tte->depth() >= depth);
+            r -= 2 + (ttValue > beta && tte->depth() >= depth);
 
         // Increase reduction for cut nodes (~4 Elo)
         if (cutNode)
