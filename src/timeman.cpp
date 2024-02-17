@@ -29,7 +29,6 @@
 namespace Stockfish {
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
-TimePoint TimeManagement::maximum() const { return maximumTime; }
 TimePoint TimeManagement::elapsed(size_t nodes) const {
     return useNodesTime ? TimePoint(nodes) : now() - startTime;
 }
@@ -116,8 +115,6 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     // Limit the maximum possible time for this move
     optimumTime = TimePoint(optScale * timeLeft);
-    maximumTime =
-      TimePoint(std::min(0.84 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
