@@ -45,7 +45,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=14, xx2=1723, xx3=1455, xx4=100, xx5=100, xx6=100, xx7=100, xx8=50;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8)
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -728,12 +729,12 @@ Value Search::Worker::search(
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-14 * int((ss - 1)->staticEval + ss->staticEval), -1723, 1455);
+        int bonus = std::clamp(-xx1 * int((ss - 1)->staticEval + ss->staticEval), -xx2, xx3);
         bonus     = bonus > 0 ? 2 * bonus : bonus / 2;
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus / 4;
+              << bonus / 2;
     }
 
     // Set up the improving flag, which is true if current static evaluation is
@@ -1314,8 +1315,8 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + ((ss - 1)->statScore < -15736)
-                  + ((ss - 1)->moveCount > 11);
+        int bonus = (xx4 * (depth > 5) + xx5 * (PvNode || cutNode) + xx6 * ((ss - 1)->statScore < -15736)
+                  + xx7 * ((ss - 1)->moveCount > 10) + xx8 * (bestValue < alpha - 656)) / 100;
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()]
