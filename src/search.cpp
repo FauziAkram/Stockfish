@@ -46,7 +46,7 @@
 
 namespace Stockfish {
 int xx1=14, xx2=1723, xx3=1455, xx4=100, xx5=100, xx6=100, xx7=100, xx8=50;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8)
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
