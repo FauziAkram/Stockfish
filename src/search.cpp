@@ -45,7 +45,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+xx1= 438, xx2= 330, xx3= 154, xx4= 6, xx5=177, xx6=1268;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -75,7 +76,7 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 int stat_bonus(Depth d) { return std::min(246 * d - 351, 1136); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(519 * d - 306, 1268); }
+int stat_malus(Depth d) { return std::min(519 * d - 306, xx6); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
@@ -749,7 +750,9 @@ Value Search::Worker::search(
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - 438 - (330 - 154 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
+    if (   !PvNode
+        &&  eval < alpha - xx1 - (xx2 - xx3 * ((ss + 1)->cutoffCnt > 3)) * depth
+        &&  depth <= xx4)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -825,7 +828,7 @@ Value Search::Worker::search(
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
     // much above beta, we can (almost) safely prune the previous move.
-    probCutBeta = beta + 177 - 68 * improving;
+    probCutBeta = beta + xx5 - 68 * improving;
     if (
       !PvNode && depth > 3
       && std::abs(beta) < VALUE_TB_WIN_IN_MAX_PLY
