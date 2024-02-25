@@ -45,7 +45,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-xx1= 438, xx2= 330, xx3= 154, xx4= 6, xx5=177, xx6=1268;
+int xx1= 438, xx2= 330, xx3= 154, xx4= 6, xx5=177, xx6=1268;
 TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
 namespace TB = Tablebases;
 
