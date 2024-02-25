@@ -27,7 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int yy1=51000, yy2=25000, yy3=14750, yy4=50000, yy5=10250, yy6=24500, yy7=14900, yy8=3332, yy9=18, yy10=8000;
+TUNE(yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9,yy10);
 namespace {
 
 enum Stages {
@@ -190,18 +191,18 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51000
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25000
-                                                  : !(to & threatenedByPawn)                ? 14750
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? yy1
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? yy2
+                                                  : !(to & threatenedByPawn)                ? yy3
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
             m.value -= !(threatenedPieces & from)
-                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 50000
-                                          + bool(to & threatenedByMinor) * 10250
-                          : pt == ROOK ? bool(to & threatenedByMinor) * 24500
-                          : pt != PAWN ? bool(to & threatenedByPawn) * 14900
+                       ? (pt == QUEEN ? bool(to & threatenedByRook) * yy4
+                                          + bool(to & threatenedByMinor) * yy5
+                          : pt == ROOK ? bool(to & threatenedByMinor) * yy6
+                          : pt != PAWN ? bool(to & threatenedByPawn) * yy7
                                        : 0)
                        : 0;
         }
@@ -241,7 +242,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3332 * d; };
+    auto quiet_threshold = [](Depth d) { return -yy8 * d; };
 
 top:
     switch (stage)
@@ -268,7 +269,7 @@ top:
     case GOOD_CAPTURE :
         if (select<Next>([&]() {
                 // Move losing capture to endBadCaptures to be tried later
-                return pos.see_ge(*cur, -cur->value / 18) ? true
+                return pos.see_ge(*cur, -cur->value / yy9) ? true
                                                           : (*endBadCaptures++ = *cur, false);
             }))
             return *(cur - 1);
@@ -310,7 +311,7 @@ top:
                 return *cur != refutations[0] && *cur != refutations[1] && *cur != refutations[2];
             }))
         {
-            if ((cur - 1)->value > -8000 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > -yy10 || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
