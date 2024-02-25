@@ -1106,6 +1106,9 @@ moves_loop:  // When in check, search starts here
         if (cutNode)
             r += 2 - (tte->depth() >= depth && ss->ttPv);
 
+        else if (!PvNode && (moveCount > 47 || pos.rule50_count() >= 10)
+            r--;
+
         // Increase reduction if ttMove is a capture (~3 Elo)
         if (ttCapture)
             r++;
