@@ -82,7 +82,7 @@ Value futility_margin(Depth d, bool noTtCutNode, Stack* ss) {
     else if (ss->staticEval > (ss - 2)->staticEval + 10)
      return (futilityMult * d - xx5 * futilityMult / yy5);
       
-    else if (std::abs (ss->staticEval - (ss - 2)->staticEval) < 10)
+    else if (std::abs (ss->staticEval - (ss - 2)->staticEval) <= 10)
      return (futilityMult * d - xx6 * futilityMult / yy6);
       
     else if (ss->staticEval + 10 < (ss - 2)->staticEval)
