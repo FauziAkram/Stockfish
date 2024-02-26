@@ -45,6 +45,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=300, xx2=300, xx3=300, xx4=300, xx5=300, xx6=300,
+    xx7=0, xx8=0, xx9=0, xx10=0, xx11=0;
+int yy1=200, yy2=200, yy3=200, yy4=200, yy5=200, yy6=200,
+    yy7=200, yy8=200, yy9=200, yy10=200, yy11=200;
+TUNE(SetRange(-800, 800), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11);
+TUNE(SetRange(100, 300), yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9,yy10,yy11);
 
 namespace TB = Tablebases;
 
@@ -57,7 +63,42 @@ namespace {
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
     Value futilityMult = 117 - 44 * noTtCutNode;
-    return (futilityMult * d - 3 * futilityMult / 2 * improving);
+  
+    if ((ss - 2)->staticEval == VALUE_NONE)
+     return (futilityMult * d);
+  
+    else if (ss->staticEval > (ss - 2)->staticEval + 200)
+     return (futilityMult * d - xx1 * futilityMult / yy1);
+      
+    else if (ss->staticEval > (ss - 2)->staticEval + 150)
+     return (futilityMult * d - xx2 * futilityMult / yy2);
+      
+    else if (ss->staticEval > (ss - 2)->staticEval + 100)
+     return (futilityMult * d - xx3 * futilityMult / yy3);
+      
+    else if (ss->staticEval > (ss - 2)->staticEval + 50)
+     return (futilityMult * d - xx4 * futilityMult / yy4);
+      
+    else if (ss->staticEval > (ss - 2)->staticEval + 10)
+     return (futilityMult * d - xx5 * futilityMult / yy5);
+      
+    else if (std::abs (ss->staticEval - (ss - 2)->staticEval) < 10)
+     return (futilityMult * d - xx6 * futilityMult / yy6);
+      
+    else if (ss->staticEval + 10 < (ss - 2)->staticEval)
+     return (futilityMult * d - xx7 * futilityMult / yy7);
+      
+    else if (ss->staticEval + 50 < (ss - 2)->staticEval)
+     return (futilityMult * d - xx8 * futilityMult / yy8);
+      
+    else if (ss->staticEval + 100 < (ss - 2)->staticEval)
+     return (futilityMult * d - xx9 * futilityMult / yy9);
+      
+    else if (ss->staticEval + 150 < (ss - 2)->staticEval)
+     return (futilityMult * d - xx10 * futilityMult / yy10);
+      
+    else if (ss->staticEval + 200 < (ss - 2)->staticEval)
+     return (futilityMult * d - xx11 * futilityMult / yy11);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
