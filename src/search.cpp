@@ -45,7 +45,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=1879, xx2=0, xx3=1118, xx4=790, xx5=865;
+TUNE(xx1);
+TUNE(SetRange(-10, 10), xx2);
+TUNE(xx3,xx4,xx5);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -493,8 +496,11 @@ void Search::Worker::clear() {
                 for (auto& h : to)
                     h->fill(-71);
 
-    for (size_t i = 1; i < reductions.size(); ++i)
-        reductions[i] = int((18.79 + std::log(size_t(options["Threads"])) / 2) * std::log(i));
+    for (size_t i = 1; i < MAX_MOVES; ++i)
+    { 
+        reductions[0][i] = int((xx1/100.0 + std::log(size_t(options["Threads"])) / 2) * std::log(i));
+        reductions[1][i] = reductions[0][i] + xx2;
+    }
 }
 
 
@@ -944,7 +950,7 @@ moves_loop:  // When in check, search starts here
 
         int delta = beta - alpha;
 
-        Depth r = reduction(improving, depth, moveCount, delta);
+        Depth r = reduction(improving, depth, moveCount, delta, PvNode);
 
         // Step 14. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
@@ -1618,9 +1624,9 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
     return bestValue;
 }
 
-Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) {
-    int reductionScale = reductions[d] * reductions[mn];
-    return (reductionScale + 1118 - delta * 790 / rootDelta) / 1024 + (!i && reductionScale > 865);
+Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta, bool PvNode) {
+    int reductionScale = reductions[PvNode][d] * reductions[PvNode][mn];
+    return (reductionScale + xx3 - delta * xx4 / rootDelta) / 1024 + (!i && reductionScale > xx5);
 }
 
 namespace {
