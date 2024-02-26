@@ -99,6 +99,9 @@ Value futility_margin(Depth d, bool noTtCutNode, Stack* ss) {
       
     else if (ss->staticEval + 200 < (ss - 2)->staticEval)
      return (futilityMult * d - xx11 * futilityMult / yy11);
+
+    else
+     return (futilityMult * d);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
