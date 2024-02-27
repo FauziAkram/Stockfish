@@ -191,17 +191,17 @@ void MovePicker::score() {
 
             // bonus for escaping from capture
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51000
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25000
-                                                  : !(to & threatenedByPawn)                ? 14400
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 24800
+                                                  : !(to & threatenedByPawn)                ? 14300
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
             m.value -= !(threatenedPieces & from)
-                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 48500
+                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 48600
                                           + bool(to & threatenedByMinor) * 10350
                           : pt == ROOK ? bool(to & threatenedByMinor) * 24500
-                          : pt != PAWN ? bool(to & threatenedByPawn) * 15100
+                          : pt != PAWN ? bool(to & threatenedByPawn) * 15000
                                        : 0)
                        : 0;
         }
@@ -241,7 +241,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3455 * d; };
+    auto quiet_threshold = [](Depth d) { return -3480 * d; };
 
 top:
     switch (stage)
@@ -310,7 +310,7 @@ top:
                 return *cur != refutations[0] && *cur != refutations[1] && *cur != refutations[2];
             }))
         {
-            if ((cur - 1)->value > -8220 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > -8000 || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
