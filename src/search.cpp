@@ -46,7 +46,7 @@
 
 namespace Stockfish {
 int xx0=357, xx1=379, xx2=312, xx3=275, xx4=315, xx5=336, xx6=332;
-yy0=117, yy1=45;
+int yy0=117, yy1=45;
 
 TUNE(SetRange(-800, 800), xx0,xx1,xx2,xx3,xx4,xx5,xx6);
 TUNE(yy0,yy1);
