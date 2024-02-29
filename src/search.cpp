@@ -510,7 +510,7 @@ Value Search::Worker::search(
     Color us                = pos.side_to_move();
 
     // Dive into quiescence search when the depth reaches zero
-    if (depth <= 0 + (pos.non_pawn_material(us) < xx1))
+    if (depth <= 0 + (pos.non_pawn_material() < xx1))
         return qsearch < PvNode ? PV : NonPV > (pos, ss, alpha, beta);
 
     // Check if we have an upcoming move that draws by repetition, or
