@@ -507,6 +507,7 @@ Value Search::Worker::search(
 
     constexpr bool PvNode   = nodeType != NonPV;
     constexpr bool rootNode = nodeType == Root;
+    Color us                = pos.side_to_move();
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0 + (pos.non_pawn_material(us) < xx1))
@@ -544,7 +545,6 @@ Value Search::Worker::search(
     Worker* thisThread = this;
     ss->inCheck        = pos.checkers();
     priorCapture       = pos.captured_piece();
-    Color us           = pos.side_to_move();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue                                             = -VALUE_INFINITE;
     maxValue                                              = VALUE_INFINITE;
