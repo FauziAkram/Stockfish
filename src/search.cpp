@@ -57,7 +57,7 @@ namespace {
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, Stack* ss) {
     Value futilityMult = 119 - 45 * noTtCutNode;
-    return (futilityMult * d - (7 + (ss->staticEval > (ss - 2)->staticEval + 200)) * futilityMult * ((ss - 2)->staticEval == VALUE_NONE || (ss->staticEval > (ss - 2)->staticEval - 10)) / 4);
+    return (futilityMult * d - (27 + 5 * (ss->staticEval > (ss - 2)->staticEval + 200)) * futilityMult * ((ss - 2)->staticEval == VALUE_NONE || (ss->staticEval > (ss - 2)->staticEval - 10)) / 16);
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
