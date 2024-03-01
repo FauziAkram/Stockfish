@@ -815,7 +815,7 @@ Value Search::Worker::search(
     if (PvNode && !ttMove)
         depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth);
 
-    if (depth <= 0 + (pos.non_pawn_material(us) < 1205))
+    if (depth <= 0 + (pos.non_pawn_material() < 1166))
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
