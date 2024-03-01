@@ -45,6 +45,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=120, xx2=45, xx3=27, xx4=40, xx5=10, xx6=314, xx7=30016;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(1, 86), xx4);
+TUNE(SetRange(-70, 70), xx5);
+TUNE(xx6,xx7);
 
 namespace TB = Tablebases;
 
@@ -56,8 +61,9 @@ namespace {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, Stack* ss) {
-    Value futilityMult = 119 - 45 * noTtCutNode;
-    return (futilityMult * d - (27 + 5 * (ss->staticEval > (ss - 2)->staticEval + 200)) * futilityMult * ((ss - 2)->staticEval == VALUE_NONE || (ss->staticEval > (ss - 2)->staticEval - 10)) / 16);
+    Value futilityMult = xx1 - xx2 * noTtCutNode;
+    return (futilityMult * d -
+    (xx3 + (((ss - 2)->staticEval - ss->staticEval)/xx4) * futilityMult * ((ss - 2)->staticEval == VALUE_NONE || (ss->staticEval > (ss - 2)->staticEval - xx5)) / 16));
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -760,9 +766,9 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 11
         && eval - futility_margin(depth, cutNode && !ss->ttHit, ss)
-               - (ss - 1)->statScore / 314
+               - (ss - 1)->statScore / xx6
              >= beta
-        && eval >= beta && eval < 30016  // smaller than TB wins
+        && eval >= beta && eval < xx7  // smaller than TB wins
         && (!ttMove || ttCapture))
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
 
