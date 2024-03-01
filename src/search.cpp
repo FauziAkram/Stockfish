@@ -508,7 +508,7 @@ Value Search::Worker::search(
     Color us                = pos.side_to_move();
 
     // Dive into quiescence search when the depth reaches zero
-    if (depth <= 0)
+    if (depth <= 0 + (pos.non_pawn_material(us) < 1205))
         return qsearch < PvNode ? PV : NonPV > (pos, ss, alpha, beta);
 
     // Check if we have an upcoming move that draws by repetition, or
@@ -815,7 +815,7 @@ Value Search::Worker::search(
     if (PvNode && !ttMove)
         depth -= 2 + 2 * (ss->ttHit && tte->depth() >= depth);
 
-    if (depth <= 0 + (pos.non_pawn_material(us) < 1205))
+    if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
