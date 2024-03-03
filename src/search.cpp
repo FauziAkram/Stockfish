@@ -758,9 +758,9 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 11
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
-               - (ss - 1)->statScore / 314
+               - (ss - 1)->statScore / 268
              >= beta
-        && eval >= beta && eval < 30016  // smaller than TB wins
+        && eval >= beta && eval < 34540  // smaller than TB wins
         && (!ttMove || ttCapture))
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
 
