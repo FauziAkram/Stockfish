@@ -60,6 +60,15 @@ const unsigned int         gEmbeddedNNUESmallSize    = 1;
 
 
 namespace Stockfish {
+int xx1=1090, xx2=2500, xx3=512, xx4=32768, xx5=64, xx6=936, xx7=9, xx8=154, xx9=1024, xx10=200, xx11=225;
+TUNE(xx1,xx2);
+TUNE(SetRange(1, 1001), xx3);
+TUNE(SetRange(1, 64001), xx4);
+TUNE(SetRange(1, 129), xx5);
+TUNE(xx6,xx7,xx8);
+TUNE(SetRange(1, 2048), xx9);
+TUNE(xx10);
+TUNE(SetRange(1, 451), xx11);
 
 namespace Eval {
 
@@ -193,8 +202,8 @@ Value Eval::evaluate(const Position& pos, int optimism) {
     assert(!pos.checkers());
 
     int  simpleEval = simple_eval(pos, pos.side_to_move());
-    bool smallNet   = std::abs(simpleEval) > 1050;
-    bool psqtOnly   = std::abs(simpleEval) > 2500;
+    bool smallNet   = std::abs(simpleEval) > xx1;
+    bool psqtOnly   = std::abs(simpleEval) > xx2;
 
     int nnueComplexity;
 
@@ -202,15 +211,15 @@ Value Eval::evaluate(const Position& pos, int optimism) {
                           : NNUE::evaluate<NNUE::Big>(pos, true, &nnueComplexity, false);
 
     // Blend optimism and eval with nnue complexity and material imbalance
-    optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 512;
-    nnue -= nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / 32768;
+    optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / xx3;
+    nnue -= nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / xx4;
 
-    int npm = pos.non_pawn_material() / 64;
-    int v   = (nnue * (936 + npm + 9 * pos.count<PAWN>()) + optimism * (154 + npm)) / 1024;
+    int npm = pos.non_pawn_material() / xx5;
+    int v   = (nnue * (xx6 + npm + xx7 * pos.count<PAWN>()) + optimism * (xx8 + npm)) / xx9;
 
     // Damp down the evaluation linearly when shuffling
     int shuffling = pos.rule50_count();
-    v             = v * (200 - shuffling) / 225;
+    v             = v * (xx10 - shuffling) / xx11;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
