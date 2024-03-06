@@ -45,7 +45,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int yy1=117, yy2=45, yy3=106;
+TUNE(yy1,yy2,yy3);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -56,8 +57,8 @@ namespace {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving) {
-    Value futilityMult = 117 - 45 * noTtCutNode;
-    return (futilityMult * d - 7 * futilityMult / 4 * improving);
+    Value futilityMult = yy1 - yy2 * noTtCutNode;
+    return (futilityMult * d - yy3 * futilityMult * improving / 64 );
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
