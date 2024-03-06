@@ -45,8 +45,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int yy1=117, yy2=45, yy3=106;
-TUNE(yy1,yy2,yy3);
+int yy1=117, yy2=45, yy3=106, yy4=1200, yy5=1902, yy6=14184, yy7=12200;
+TUNE(yy1,yy2,yy3,yy4,yy5);
+TUNE(SetRange(1, 29001), yy6);
+TUNE(SetRange(1, 24001), yy7);
+
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -68,7 +71,7 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 // Add correctionHistory value to raw staticEval and guarantee evaluation does not hit the tablebase range
 Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
     auto cv = w.correctionHistory[pos.side_to_move()][pawn_structure_index<Correction>(pos)];
-    v += cv * std::abs(cv) / 12475;
+    v += cv * std::abs(cv) / yy7;
     return std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 }
 
@@ -76,7 +79,7 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 int stat_bonus(Depth d) { return std::min(246 * d - 351, 1136); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(519 * d - 306, 1200); }
+int stat_malus(Depth d) { return std::min(519 * d - 306, yy4); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
@@ -495,7 +498,7 @@ void Search::Worker::clear() {
                     h->fill(-71);
 
     for (size_t i = 1; i < reductions.size(); ++i)
-        reductions[i] = int((18.79 + std::log(size_t(options["Threads"])) / 2) * std::log(i));
+        reductions[i] = int((yy5/100.00 + std::log(size_t(options["Threads"])) / 2) * std::log(i));
 }
 
 
@@ -1131,7 +1134,7 @@ moves_loop:  // When in check, search starts here
                       + (*contHist[3])[movedPiece][move.to_sq()] - 4392;
 
         // Decrease/increase reduction for moves with a good/bad history (~8 Elo)
-        r -= ss->statScore / 14184;
+        r -= ss->statScore / yy6;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1 + rootNode)
