@@ -45,7 +45,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=246, xx2=351, xx3=1136, xx4=0, xx5=519, xx6=306, xx7=1000, xx8=20, xx9-169;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(-80, 80), xx4);
+TUNE(xx5,xx6,xx7);
+TUNE(SetRange(-80, 80), xx8);
+TUNE(xx9);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -74,10 +79,10 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(246 * d - 351, 1136); }
+int stat_bonus(Depth d) { return std::min(xx1 * d - xx2, xx3 + d * xx4); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(519 * d - 306, 1200); }
+int stat_malus(Depth d) { return std::min(xx5 * d - xx6, xx7 + d * xx8); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
@@ -1717,7 +1722,7 @@ void update_all_stats(const Position& pos,
 
     if (!pos.capture_stage(bestMove))
     {
-        int bestMoveBonus = bestValue > beta + 169 ? quietMoveBonus      // larger bonus
+        int bestMoveBonus = bestValue > beta + xx9 ? quietMoveBonus      // larger bonus
                                                    : stat_bonus(depth);  // smaller bonus
 
         // Increase stats for the best move in case it was a quiet move
