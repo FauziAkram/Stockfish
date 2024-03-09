@@ -118,9 +118,6 @@ void TimeManagement::init(Search::LimitsType& limits,
     optimumTime = TimePoint(optScale * timeLeft);
     maximumTime =
       TimePoint(std::min(0.825 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
-
-    if (options["Ponder"])
-        optimumTime += optimumTime / 4;
 }
 
 }  // namespace Stockfish
