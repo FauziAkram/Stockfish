@@ -45,7 +45,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=217, xx2=733, xx3=1068, xx4=1014, xx5=18;
+TUNE(SetRange(1, 800), xx1);
+TUNE(SetRange(1, 1600), xx2);
+TUNE(SetRange(1, 2400), xx3);
+TUNE(xx4,xx5);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -77,7 +81,8 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 int stat_bonus(Depth d) { return std::min(249 * d - 327, 1192); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(516 * d - 299, 1432); }
+int stat_malus(Depth d) { return (d < 2 ? xx1: d < 3 ? xx2: d < 4 ? xx3
+:xx4 + d * xx5); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
