@@ -65,10 +65,6 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
     int npm = pos.non_pawn_material() / 64;
     int v   = (nnue * (927 + npm + 9 * pos.count<PAWN>()) + optimism * (159 + npm)) / 1000;
 
-    // Damp down the evaluation linearly when shuffling
-    int shuffling = pos.rule50_count();
-    v             = v * (195 - shuffling) / 228;
-
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 
