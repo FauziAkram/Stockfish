@@ -46,7 +46,7 @@
 
 namespace Stockfish {
 int xx1=0, xx2=249, xx3=327, xx4=1192, xx5=516, xx6=299, xx7=1432, xx8=167;
-TUNE(SetRange(-200, 200), xx0);
+TUNE(SetRange(-200, 200), xx1);
 TUNE(xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 
 namespace TB = Tablebases;
@@ -77,7 +77,7 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return (d < 2 ? xx1 : d < 7 ? xx2 * d - xx3 : xx4); }
+int stat_bonus(Depth d) { return (d == 1 ? xx1 : d < 7 ? xx2 * d - xx3 : xx4); }
 
 // History and stats update malus, based on depth
 int stat_malus(Depth d) { return (d < 4 ? xx5 * d - xx6 : xx7); }
