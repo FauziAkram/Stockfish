@@ -990,14 +990,14 @@ moves_loop:  // When in check, search starts here
 
                 lmrDepth += history / 5686;
 
-                int futilityValue = ss->staticEval + (bestValue < ss->staticEval - 57 ? 126 : 59);
+                int futilityValue = ss->staticEval + (bestValue < ss->staticEval - 51 ? 132 : 62);
 
                 // Futility pruning: parent node (~13 Elo)
                 if (!ss->inCheck && lmrDepth < 15
-                    && futilityValue + 109 * lmrDepth
+                    && futilityValue + 114 * lmrDepth
                          <= alpha)
                     {
-                      if (futilityValue <= alpha - 30 && depth > 5)
+                      if (futilityValue <= alpha - 42 && depth > 5)
                           bestValue = std::max(bestValue, Value(futilityValue));
                       continue;
                     }
