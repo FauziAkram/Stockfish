@@ -52,6 +52,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=46, xx2=138, xx3=64, xx4=119, xx5=52, xx6=0;
+TUNE(xx1,xx2,xx3,xx4,xx5);
+TUNE(SetRange(-100, 100), xx6);
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -751,7 +754,7 @@ Value Search::Worker::search(
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - 462 - (296 - 145 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
+    if (eval < alpha - 462 - (296 - 145 * ((ss + 1)->cutoffCnt > 3)) * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -990,12 +993,17 @@ moves_loop:  // When in check, search starts here
 
                 lmrDepth += history / 5686;
 
+                int futilityValue = ss->staticEval + (bestValue < ss->staticEval - xx1 ? xx2 : xx3);
+
                 // Futility pruning: parent node (~13 Elo)
                 if (!ss->inCheck && lmrDepth < 15
-                    && ss->staticEval + (bestValue < ss->staticEval - 55 ? 153 : 58)
-                           + 118 * lmrDepth
+                    && futilityValue + xx4 * lmrDepth
                          <= alpha)
-                    continue;
+                    {
+                      if (futilityValue <= alpha - xx5 && depth > 5)
+                          bestValue = std::max(bestValue, (Value(futilityValue) + xx6));
+                      continue;
+                    }
 
                 lmrDepth = std::max(lmrDepth, 0);
 
