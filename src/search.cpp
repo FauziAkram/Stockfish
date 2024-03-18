@@ -998,7 +998,7 @@ moves_loop:  // When in check, search starts here
                          <= alpha)
                     {
 +                      if (futilityValue <= alpha - 52 && depth > 5)
-+                          bestValue = std::max(bestValue, (Value(futilityValue)));
++                          bestValue = std::max(bestValue, Value(futilityValue));
 +                      continue;
 +                    }
 
