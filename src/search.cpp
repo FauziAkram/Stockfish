@@ -997,10 +997,10 @@ moves_loop:  // When in check, search starts here
                     && futilityValue + 119 * lmrDepth
                          <= alpha)
                     {
-+                      if (futilityValue <= alpha - 52 && depth > 5)
-+                          bestValue = std::max(bestValue, Value(futilityValue));
-+                      continue;
-+                    }
+                      if (futilityValue <= alpha - 52 && depth > 5)
+                          bestValue = std::max(bestValue, Value(futilityValue));
+                      continue;
+                    }
 
                 lmrDepth = std::max(lmrDepth, 0);
 
