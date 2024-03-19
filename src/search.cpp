@@ -1135,10 +1135,7 @@ moves_loop:  // When in check, search starts here
         else if (move == ttMove)
             r = 0;
 
-        if (moveCount > mcThreshold[1] && moveCount <= mcThreshold[0])
-          r--;
-
-        else if (moveCount > mcThreshold[0] && moveCount <= mcThreshold[1])
+        if (moveCount > mcThreshold[0] && moveCount <= mcThreshold[1])
           r++;
 
         ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
