@@ -45,11 +45,13 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-constexpr int MoveCountThreshold[3][2][2] = {
+int MoveCountThreshold[3][2][2] = {
       { { 56, 27 }, { 77, 41 } },
       { { 34, 42 }, { 31, 36 } },
       { { 35, 34 }, { 75, 58 } },
   };
+
+TUNE(MoveCountThreshold);
 
 namespace TB = Tablebases;
 
