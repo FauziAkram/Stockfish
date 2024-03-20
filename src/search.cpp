@@ -1487,7 +1487,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
                   contHist, &thisThread->pawnHistory);
 
     int quietCheckEvasions = 0;
-    lowPiececount = popcount(pos.pieces()) <= 5;
+    lowPiececount = popcount(pos.pieces()) <= 6;
 
     // Step 5. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
