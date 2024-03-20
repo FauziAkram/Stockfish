@@ -537,7 +537,7 @@ Value Search::Worker::search(
     Depth    extension, newDepth;
     Value    bestValue, value, ttValue, eval, maxValue, probCutBeta;
     bool     givesCheck, improving, priorCapture, opponentWorsening;
-    bool     capture, moveCountPruning, ttCapture, lowPiececount;
+    bool     capture, moveCountPruning, ttCapture;
     Piece    movedPiece;
     int      moveCount, captureCount, quietCount;
 
@@ -1385,7 +1385,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
     Move     ttMove, move, bestMove;
     Depth    ttDepth;
     Value    bestValue, value, ttValue, futilityValue, futilityBase;
-    bool     pvHit, givesCheck, capture;
+    bool     pvHit, givesCheck, capture, lowPiececount;
     int      moveCount;
     Color    us = pos.side_to_move();
 
