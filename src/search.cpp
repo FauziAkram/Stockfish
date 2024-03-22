@@ -907,7 +907,7 @@ moves_loop:  // When in check, search starts here
 
     value            = bestValue;
     moveCountPruning = false;
-    const auto& mcThreshold = MoveCountThreshold[2 * PvNode + cutNode]
+    const auto& mcThreshold = MoveCountThreshold[2 * PvNode + cutNode];
 
     // Step 13. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
