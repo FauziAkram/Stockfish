@@ -45,11 +45,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-constexpr int MoveCountThreshold[3][2][2] = {
-      { { 27, 56 }, { 40, 79 } },
-      { { 42, 35 }, { 37, 32 } },
-      { { 33, 35 }, { 56, 75 } },
+int MoveCountThreshold[3][2] = {
+      { 30, 32 },
+      { 30, 32 },
+      { 30, 32 }
   };
+TUNE(MoveCountThreshold);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -906,7 +907,7 @@ moves_loop:  // When in check, search starts here
 
     value            = bestValue;
     moveCountPruning = false;
-    const auto& mcThreshold = MoveCountThreshold[2 * PvNode + cutNode][priorCapture];
+    const auto& mcThreshold = MoveCountThreshold[2 * PvNode + cutNode]
 
     // Step 13. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
