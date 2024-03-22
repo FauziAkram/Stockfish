@@ -46,9 +46,9 @@
 
 namespace Stockfish {
 constexpr int MoveCountThreshold[3][2][2] = {
-      { { 56, 27 }, { 79, 40 } },
-      { { 35, 42 }, { 32, 37 } },
-      { { 35, 33 }, { 75, 56 } },
+      { { 27, 56 }, { 40, 79 } },
+      { { 42, 35 }, { 37, 32 } },
+      { { 33, 35 }, { 56, 75 } },
   };
 namespace TB = Tablebases;
 
@@ -1131,7 +1131,7 @@ moves_loop:  // When in check, search starts here
         else if (move == ttMove)
             r = 0;
 
-        if (moveCount > mcThreshold[1] && moveCount <= mcThreshold[0])
+        if ( moveCount > mcThreshold[0] && moveCount <= mcThreshold[1])
           r--;
 
         ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
