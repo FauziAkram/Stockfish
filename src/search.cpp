@@ -45,7 +45,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+constexpr int MoveCountThreshold[3][2][2] = {
+      { { 56, 27 }, { 79, 40 } },
+      { { 35, 42 }, { 32, 37 } },
+      { { 35, 33 }, { 75, 56 } },
+  };
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -902,6 +906,7 @@ moves_loop:  // When in check, search starts here
 
     value            = bestValue;
     moveCountPruning = false;
+    const auto& mcThreshold = MoveCountThreshold[2 * PvNode + cutNode][priorCapture];
 
     // Step 13. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1125,6 +1130,9 @@ moves_loop:  // When in check, search starts here
         // Nullifies all previous reduction adjustments to ttMove and leaves only history to do them
         else if (move == ttMove)
             r = 0;
+
+        if (moveCount > mcThreshold[1] && moveCount <= mcThreshold[0])
+          r--;
 
         ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
                       + (*contHist[0])[movedPiece][move.to_sq()]
