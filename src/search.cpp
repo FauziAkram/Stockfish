@@ -45,6 +45,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=40, xx2=1, yy1=1, yy2=1, yy3=1, yy4=2, yy5=1, yy6=1, yy7=1, yy8=1;
+int yy9=0, yy10=2, yy11=1, yy12=1, yy13=1, yy14=4723, yy15=13659, yy16=2;
+TUNE(xx1);
+TUNE(SetRange(-8, 8), xx2,yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9,yy10,yy11,yy12,yy13);
+TUNE(yy14,yy15);
+TUNE(SetRange(-8, 8), xx2);
 
 namespace TB = Tablebases;
 
@@ -1103,36 +1109,39 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction if position is or has been on the PV (~7 Elo)
         if (ss->ttPv)
-            r -= 1 + (ttValue > alpha) + (tte->depth() >= depth);
+            r -= yy1 + yy2 * (ttValue > alpha) + yy3 * (tte->depth() >= depth);
 
         // Increase reduction for cut nodes (~4 Elo)
         if (cutNode)
-            r += 2 - (tte->depth() >= depth && ss->ttPv);
+            r += yy4 - yy5 * (tte->depth() >= depth && ss->ttPv);
+
+        else if (!PvNode && priorCapture && moveCount >= xx1)
+            r -= xx2;
 
         // Increase reduction if ttMove is a capture (~3 Elo)
         if (ttCapture)
-            r++;
+            r += yy6;
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
-            r--;
+            r -= yy7;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
-            r++;
+            r += yy8;
 
         // Set reduction to 0 for first picked move (ttMove) (~2 Elo)
         // Nullifies all previous reduction adjustments to ttMove and leaves only history to do them
         else if (move == ttMove)
-            r = 0;
+            r = yy9;
 
-        ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
-                      + (*contHist[0])[movedPiece][move.to_sq()]
-                      + (*contHist[1])[movedPiece][move.to_sq()]
-                      + (*contHist[3])[movedPiece][move.to_sq()] - 4723;
+        ss->statScore = yy10 * thisThread->mainHistory[us][move.from_to()]
+                      + yy11 * (*contHist[0])[movedPiece][move.to_sq()]
+                      + yy12 * (*contHist[1])[movedPiece][move.to_sq()]
+                      + yy13 * (*contHist[3])[movedPiece][move.to_sq()] - 4723;
 
         // Decrease/increase reduction for moves with a good/bad history (~8 Elo)
-        r -= ss->statScore / 13659;
+        r -= ss->statScore / yy14;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1 + rootNode)
@@ -1173,7 +1182,7 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present (~6 Elo)
             if (!ttMove)
-                r += 2;
+                r += yy15;
 
             // Note that if expected reduction is high, we reduce search depth by 1 here (~9 Elo)
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth - (r > 3), !cutNode);
