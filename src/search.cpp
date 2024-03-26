@@ -1138,10 +1138,10 @@ moves_loop:  // When in check, search starts here
         ss->statScore = yy10 * thisThread->mainHistory[us][move.from_to()]
                       + yy11 * (*contHist[0])[movedPiece][move.to_sq()]
                       + yy12 * (*contHist[1])[movedPiece][move.to_sq()]
-                      + yy13 * (*contHist[3])[movedPiece][move.to_sq()] - 4723;
+                      + yy13 * (*contHist[3])[movedPiece][move.to_sq()] - yy14;
 
         // Decrease/increase reduction for moves with a good/bad history (~8 Elo)
-        r -= ss->statScore / yy14;
+        r -= ss->statScore / yy15;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1 + rootNode)
@@ -1182,7 +1182,7 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present (~6 Elo)
             if (!ttMove)
-                r += yy15;
+                r += yy16;
 
             // Note that if expected reduction is high, we reduce search depth by 1 here (~9 Elo)
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth - (r > 3), !cutNode);
