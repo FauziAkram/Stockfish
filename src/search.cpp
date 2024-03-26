@@ -50,7 +50,7 @@ int yy9=0, yy10=2, yy11=1, yy12=1, yy13=1, yy14=4723, yy15=13659, yy16=2;
 TUNE(xx1);
 TUNE(SetRange(-8, 8), xx2,yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9,yy10,yy11,yy12,yy13);
 TUNE(yy14,yy15);
-TUNE(SetRange(-8, 8), xx2);
+TUNE(SetRange(-8, 8), yy16);
 
 namespace TB = Tablebases;
 
