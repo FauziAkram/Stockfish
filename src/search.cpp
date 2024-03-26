@@ -45,7 +45,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=100, xx2=100, xx3=100, xx4=150, xx5=4040, xx6=200, xx7=5637, xx8=200;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -978,21 +979,21 @@ moves_loop:  // When in check, search starts here
             else
             {
                 int history =
-                  (*contHist[0])[movedPiece][move.to_sq()]
-                  + (*contHist[1])[movedPiece][move.to_sq()]
-                  + (*contHist[3])[movedPiece][move.to_sq()]
-                  + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
+                  (xx1 * (*contHist[0])[movedPiece][move.to_sq()]
+                  + xx2 * (*contHist[1])[movedPiece][move.to_sq()]
+                  + xx3 * (*contHist[3])[movedPiece][move.to_sq()]
+                  + xx4 * thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()]) / 100;
 
                 // Continuation history based pruning (~2 Elo)
-                if (lmrDepth < 6 && history < -4040 * depth)
+                if (lmrDepth < 6 && history < -xx5 * depth)
                     continue;
 
-                history += 2 * thisThread->mainHistory[us][move.from_to()];
+                history += xx6 * thisThread->mainHistory[us][move.from_to()] / 100;
 
-                lmrDepth += history / 5637;
+                lmrDepth += history / xx7;
 
                 // Futility pruning: parent node (~13 Elo)
-                if (!ss->inCheck && lmrDepth < 15
+                if (!ss->inCheck && lmrDepth < xx8
                     && ss->staticEval + (bestValue < ss->staticEval - 59 ? 141 : 58)
                            + 125 * lmrDepth
                          <= alpha)
