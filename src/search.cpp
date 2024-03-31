@@ -986,7 +986,7 @@ moves_loop:  // When in check, search starts here
                   // Don't prune the move if opponent King is under discovered attack after or during the exchanges
                   Bitboard leftEnemies = (pos.pieces(~us, KING, QUEEN, ROOK)) & occupied;
                   Bitboard attacks = 0;
-                  occupied |= to_sq(move);
+                  occupied |= move.to_sq();
                   while (leftEnemies && !attacks)
                   {
                      Square sq = pop_lsb(leftEnemies);
