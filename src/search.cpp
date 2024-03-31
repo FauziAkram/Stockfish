@@ -45,6 +45,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=4, xx2=4;
+TUNE(SetRange(1, 12), xx1,xx2);
 
 namespace TB = Tablebases;
 
@@ -985,7 +987,7 @@ moves_loop:  // When in check, search starts here
                 if (   !givesCheck
                  &&  to_sq(move) != prevSq
                  &&  type_of(move) != PROMOTION
-                 &&  moveCount > 3 + 2 * depth)
+                 &&  moveCount > xx1 + xx2 * depth)
                  continue;
               
                 int history =
