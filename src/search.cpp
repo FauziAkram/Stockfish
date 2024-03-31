@@ -1285,7 +1285,7 @@ moves_loop:  // When in check, search starts here
                     alpha = value;  // Update alpha! Always alpha < beta
                 }
             }
-            else if (   rootNode && !capture && move != ss->killers[0] && move != ss->killers[1])
+            else if (   rootNode && !capture && move != ss->killers[1])
               break;
         }
 
