@@ -985,7 +985,7 @@ moves_loop:  // When in check, search starts here
             {
 
                 if (   !givesCheck
-                 move.to_sq() != prevSq
+                 &&  move.to_sq() != prevSq
                  &&  move.type_of() != PROMOTION
                  &&  moveCount > xx1 + xx2 * depth)
                  continue;
