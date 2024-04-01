@@ -984,7 +984,7 @@ moves_loop:  // When in check, search starts here
                 if (   !givesCheck
                  &&  move.to_sq() != prevSq
                  &&  move.type_of() != PROMOTION
-                 &&  moveCount > 3 + 4 * depth)
+                 &&  moveCount > 3 + 5 * depth)
                  continue;
               
                 int history =
