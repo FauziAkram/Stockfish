@@ -981,6 +981,12 @@ moves_loop:  // When in check, search starts here
             }
             else
             {
+                if (   !givesCheck
+                 &&  move.to_sq() != prevSq
+                 &&  move.type_of() != PROMOTION
+                 &&  moveCount > 3 + 4 * depth)
+                 continue;
+              
                 int history =
                   (*contHist[0])[movedPiece][move.to_sq()]
                   + (*contHist[1])[movedPiece][move.to_sq()]
