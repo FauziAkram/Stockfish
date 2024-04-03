@@ -45,7 +45,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=24, xx2=8, xx3=24, xx4=8, xx5=24, xx6=8, xx7=2;
+TUNE(SetRange(1, 49), xx1,xx2,xx3,xx4,xx5,xx6);
+TUNE(SetRange(0, 10), xx7);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -632,7 +634,7 @@ Value Search::Worker::search(
         // For high rule50 counts don't produce transposition table cutoffs.
         if (pos.rule50_count() < 90)
             return ttValue >= beta && std::abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY
-                   ? (ttValue * 3 + beta) / 4
+                   ? (xx3 * ttValue + xx4 * beta) / (xx3 + xx4)
                    : ttValue;
     }
 
@@ -1003,7 +1005,7 @@ moves_loop:  // When in check, search starts here
                 {
                     if (bestValue <= futilityValue && std::abs(bestValue) < VALUE_TB_WIN_IN_MAX_PLY
                         && futilityValue < VALUE_TB_WIN_IN_MAX_PLY)
-                        bestValue = (bestValue + futilityValue * 3) / 4;
+                        bestValue = (xx5 * bestValue + xx6 * futilityValue) / (xx5 + xx6);
                     continue;
                 }
 
@@ -1308,7 +1310,7 @@ moves_loop:  // When in check, search starts here
     // Adjust best value for fail high cases at non-pv nodes
     if (!PvNode && bestValue >= beta && std::abs(bestValue) < VALUE_TB_WIN_IN_MAX_PLY
         && std::abs(beta) < VALUE_TB_WIN_IN_MAX_PLY && std::abs(alpha) < VALUE_TB_WIN_IN_MAX_PLY)
-        bestValue = (bestValue * (depth + 2) + beta) / (depth + 3);
+        bestValue = (bestValue * (depth + xx7) + beta) / (depth + (xx7+1));
 
     if (!moveCount)
         bestValue = excludedMove ? alpha : ss->inCheck ? mated_in(ss->ply) : VALUE_DRAW;
@@ -1614,7 +1616,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
     }
 
     if (std::abs(bestValue) < VALUE_TB_WIN_IN_MAX_PLY && bestValue >= beta)
-        bestValue = (3 * bestValue + beta) / 4;
+        bestValue = (xx1 * bestValue + xx2 * beta) / (xx1 + xx2);
 
     // Save gathered info in transposition table
     // Static evaluation is saved as it was before adjustment by correction history
