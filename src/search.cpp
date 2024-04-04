@@ -632,7 +632,7 @@ Value Search::Worker::search(
         // For high rule50 counts don't produce transposition table cutoffs.
         if (pos.rule50_count() < 90)
             return ttValue >= beta && std::abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY
-                   ? (ttValue * 3 + beta) / 4
+                   ? (11 * ttValue + 4 * beta) / 15
                    : ttValue;
     }
 
@@ -1614,7 +1614,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
     }
 
     if (std::abs(bestValue) < VALUE_TB_WIN_IN_MAX_PLY && bestValue >= beta)
-        bestValue = (3 * bestValue + beta) / 4;
+        bestValue = (11 * bestValue + 4 * beta) / 15;
 
     // Save gathered info in transposition table
     // Static evaluation is saved as it was before adjustment by correction history
