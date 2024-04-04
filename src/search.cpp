@@ -632,7 +632,7 @@ Value Search::Worker::search(
         // For high rule50 counts don't produce transposition table cutoffs.
         if (pos.rule50_count() < 90)
             return ttValue >= beta && std::abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY
-                   ? (11 * ttValue + 4 * beta) / 15
+                   ? (5 * ttValue + 2 * beta) / 7
                    : ttValue;
     }
 
