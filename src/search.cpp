@@ -45,7 +45,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=8, xx2=24;
+TUNE(SetRange(1, 49), xx1,xx2);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -1001,10 +1002,13 @@ moves_loop:  // When in check, search starts here
                 // Futility pruning: parent node (~13 Elo)
                 if (!ss->inCheck && lmrDepth < 15 && futilityValue <= alpha)
                 {
-                    if (bestValue <= futilityValue && std::abs(bestValue) < VALUE_TB_WIN_IN_MAX_PLY
-                        && futilityValue < VALUE_TB_WIN_IN_MAX_PLY)
+                    if (std::abs(bestValue) < VALUE_TB_WIN_IN_MAX_PLY
+                        && futilityValue < VALUE_TB_WIN_IN_MAX_PLY){
+                      if (bestValue <= futilityValue)
                         bestValue = (bestValue + futilityValue * 3) / 4;
-                    continue;
+                      else
+                        bestValue = (xx1 * bestValue + xx2 * futilityValue) / (xx1 + xx2);
+                    continue;}
                 }
 
                 lmrDepth = std::max(lmrDepth, 0);
