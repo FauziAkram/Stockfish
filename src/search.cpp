@@ -1083,6 +1083,10 @@ moves_loop:  // When in check, search starts here
                 else if (ttValue <= value)
                     extension = -1;
             }
+                else if (   givesCheck
+                   && pos.rule50_count() <= 78
+                   && depth > 9)
+                    extension = 1;
 
             // Recapture extensions (~0 Elo on STC, ~1 Elo on LTC)
             else if (PvNode && move == ttMove && move.to_sq() == prevSq
