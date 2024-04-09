@@ -45,7 +45,14 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=14, xx2=1644, xx3=1384, xx4=0, xx5=200, xx6=50, xx7=100, xx8=50;
+int yy1=14, yy2=1644, yy3=1384, yy4=0, yy5=200, yy6=50, yy7=100, yy8=50;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(-4, 6), xx4);
+TUNE(SetRange(-100, 500), xx5,xx6,xx7,xx8);
+TUNE(yy1,yy2,yy3);
+TUNE(SetRange(-4, 6), yy4);
+TUNE(SetRange(-100, 400), yy5,yy6,yy7,yy8);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -733,12 +740,21 @@ Value Search::Worker::search(
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-14 * int((ss - 1)->staticEval + ss->staticEval), -1644, 1384);
-        bonus     = bonus > 0 ? 2 * bonus : bonus / 2;
-        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
+      if (PvNode)
+        int bonus = std::clamp(-xx1 * int((ss - 1)->staticEval + ss->staticEval), -xx2, xx3);
+        bonus     = bonus > xx4 ? (xx5/100) * bonus : bonus * (xx6/100);
+        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << (xx7/100) * bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus / 2;
+              << bonus * (xx8/100);
+      else
+        int bonus = std::clamp(-yy1 * int((ss - 1)->staticEval + ss->staticEval), -yy2, yy3);
+        bonus     = bonus > yy4 ? (yy5/100) * bonus : bonus * (yy6/100);
+        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << (yy7/100) * bonus;
+        if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
+            thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
+              << bonus * (yy8/100);
+          
     }
 
     // Set up the improving flag, which is true if current static evaluation is
