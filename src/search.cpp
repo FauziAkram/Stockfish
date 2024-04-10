@@ -742,18 +742,18 @@ Value Search::Worker::search(
     {
       if (PvNode) {
         int bonus = std::clamp(-xx1 * int((ss - 1)->staticEval + ss->staticEval), -xx2, xx3);
-        bonus     = bonus > xx4 ? (xx5/100) * bonus : bonus * (xx6/100);
+        bonus     = bonus > xx4 ? bonus * xx5/100 : bonus * xx6/100;
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus * (xx7/100);}
+              << bonus * xx7/100;}
       else {
         int bonus = std::clamp(-yy1 * int((ss - 1)->staticEval + ss->staticEval), -yy2, yy3);
-        bonus     = bonus > yy4 ? (yy5/100) * bonus : bonus * (yy6/100);
+        bonus     = bonus > yy4 ? bonus * yy5/100 : bonus * yy6/100;
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus * (yy7/100);}
+              << bonus * yy7/100;}
           
     }
 
