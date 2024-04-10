@@ -45,7 +45,14 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=13, xx2=1578, xx3=1291, xx4=0, xx5=200, xx6=50, xx7=50;
+int yy1=13, yy2=1578, yy3=1291, yy4=0, yy5=200, yy6=50, yy7=50;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(-4, 6), xx4);
+TUNE(SetRange(-100, 500), xx5,xx6,xx7);
+TUNE(yy1,yy2,yy3);
+TUNE(SetRange(-4, 6), yy4);
+TUNE(SetRange(-100, 400), yy5,yy6,yy7);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -733,12 +740,20 @@ Value Search::Worker::search(
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-13 * int((ss - 1)->staticEval + ss->staticEval), -1578, 1291);
-        bonus     = bonus > 0 ? 2 * bonus : bonus / 2;
+        if (PvNode) {
+        int bonus = std::clamp(-xx1 * int((ss - 1)->staticEval + ss->staticEval), -xx2, xx3);
+        bonus     = bonus > xx4 ? (xx5/100) * bonus : bonus * (xx6/100);
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus / 2;
+              << bonus * (xx7/100);}
+      else {
+        int bonus = std::clamp(-yy1 * int((ss - 1)->staticEval + ss->staticEval), -yy2, yy3);
+        bonus     = bonus > yy4 ? (yy5/100) * bonus : bonus * (yy6/100);
+        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
+        if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
+            thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
+              << bonus * (yy7/100);}
     }
 
     // Set up the improving flag, which is true if current static evaluation is
