@@ -734,7 +734,7 @@ Value Search::Worker::search(
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
       int bonus = std::clamp(-13 * int((ss - 1)->staticEval + ss->staticEval), -1652, 1386);
-        bonus     = bonus > 0 ? 2 * bonus : PvNode? 3 * bonus / 5: 2 * bonus / 5;
+        bonus     = bonus > 0 ? 2 * bonus : bonus / 2;
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
