@@ -614,7 +614,7 @@ Value Search::Worker::search(
     {
         // Partial workaround for the graph history interaction problem
         // For high rule50 counts, don't produce transposition table cutoffs.
-        const bool cutoff = pos.rule50_count() < 81;
+        const bool cutoff = pos.rule50_count() < 86;
       
         // If ttMove is quiet, update move sorting heuristics on TT hit (~2 Elo)
         if (ttMove && ttValue >= beta)
