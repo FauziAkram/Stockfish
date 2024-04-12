@@ -44,7 +44,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx13=8, xx14=4, xx15=4;
+TUNE(SetRange(1, 15), xx13);
+TUNE(SetRange(1, 11), xx14,xx15);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -1351,8 +1353,8 @@ moves_loop:  // When in check, search starts here
         && !(bestValue >= beta && bestValue <= ss->staticEval)
         && !(!bestMove && bestValue >= ss->staticEval))
     {
-        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
-                                -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / xx13,
+                                -CORRECTION_HISTORY_LIMIT / xx14, CORRECTION_HISTORY_LIMIT / xx15);
         thisThread->correctionHistory[us][pawn_structure_index<Correction>(pos)] << bonus;
     }
 
