@@ -29,7 +29,9 @@
 namespace Stockfish {
 int mm1=70, mm2=10, mm3=8, mm4=8, mm5=8, mm6=4, mm7=4, mm8=4, mm9=4, mm10=16384, mm11=51000;
 int mm12=24950, mm13=14450, mm14=48150, mm15=10650, mm16=24500, mm17=14950, mm18=3550, mm19=8000, mm20=18;
-TUNE(mm1,mm2,mm3,mm4,mm5,mm6,mm7,mm8,mm9,mm10,mm11,mm12,mm13,mm14,mm15,mm16,mm17,mm18,mm19,mm20);
+TUNE(mm1,mm2,mm3,mm4,mm5,mm6,mm7,mm8,mm9,mm10,mm11,mm12,mm13,mm14,mm15,mm16,mm17,mm18,mm19);
+TUNE(SetRange(1, 35), mm20);
+
 namespace {
 
 enum Stages {
