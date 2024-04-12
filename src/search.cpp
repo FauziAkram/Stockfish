@@ -44,7 +44,21 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=0, xx2=10, xx3=90, xx4=6, xx5=4, xx6=3, xx7=8, xx8=2,
+    xx9=64, xx10=2, xx11=5, xx12=10, xx13=20, xx14=10, xx15=10, xx16=4;
+TUNE(SetRange(-200, 500), xx1);
+TUNE(SetRange(1, 25), xx2);
+TUNE(xx3);
+TUNE(SetRange(0, 8), xx4,xx5,xx6);
+TUNE(SetRange(1, 20), xx7);
+TUNE(SetRange(0, 8), xx8);
+TUNE(SetRange(38, 90), xx9);
+TUNE(SetRange(-2, 8), xx10);
+TUNE(SetRange(0, 14), xx11);
+TUNE(SetRange(1, 27), xx12);
+TUNE(SetRange(1, 51), xx13);
+TUNE(SetRange(1, 23), xx14,xx15);
+TUNE(SetRange(0, 12), xx16);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -76,7 +90,7 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::clamp(211 * d - 315, 0, 1291); }
+int stat_bonus(Depth d) { return std::clamp(211 * d - 315, xx1, 1291); }
 
 // History and stats update malus, based on depth
 int stat_malus(Depth d) { return (d < 4 ? 572 * d - 285 : 1372); }
@@ -362,7 +376,7 @@ void Search::Worker::iterative_deepening() {
                 else
                     break;
 
-                delta += delta / 3;
+                delta += xx2 * delta / 30;
 
                 assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
             }
@@ -628,7 +642,7 @@ Value Search::Worker::search(
 
         // Partial workaround for the graph history interaction problem
         // For high rule50 counts don't produce transposition table cutoffs.
-        if (pos.rule50_count() < 90)
+        if (pos.rule50_count() < xx3)
             return ttValue >= beta && std::abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY
                    ? (ttValue * 3 + beta) / 4
                    : ttValue;
@@ -779,7 +793,7 @@ Value Search::Worker::search(
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 152, 6) + depth / 3 + 4;
+        Depth R = std::min(int(eval - beta) / 152, xx4) + depth / 3 + xx5;
 
         ss->currentMove         = Move::null();
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -814,15 +828,15 @@ Value Search::Worker::search(
     // Step 10. Internal iterative reductions (~9 Elo)
     // For PV nodes without a ttMove, we decrease depth by 3.
     if (PvNode && !ttMove)
-        depth -= 3;
+        depth -= xx6;
 
     // Use qsearch if depth <= 0.
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
-    if (cutNode && depth >= 8 && !ttMove)
-        depth -= 2;
+    if (cutNode && depth >= xx7 && !ttMove)
+        depth -= xx8;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -1033,7 +1047,7 @@ moves_loop:  // When in check, search starts here
                 && std::abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY && (tte->bound() & BOUND_LOWER)
                 && tte->depth() >= depth - 3)
             {
-                Value singularBeta  = ttValue - (64 + 59 * (ss->ttPv && !PvNode)) * depth / 64;
+                Value singularBeta  = ttValue - (64 + 59 * (ss->ttPv && !PvNode)) * depth / xx9;
                 Depth singularDepth = newDepth / 2;
 
                 ss->excludedMove = move;
@@ -1159,7 +1173,7 @@ moves_loop:  // When in check, search starts here
             {
                 // Adjust full-depth search based on LMR results - if the result
                 // was good enough search deeper, if it was bad enough search shallower.
-                const bool doDeeperSearch    = value > (bestValue + 42 + 2 * newDepth);  // (~1 Elo)
+                const bool doDeeperSearch    = value > (bestValue + 42 + xx10 * newDepth);  // (~1 Elo)
                 const bool doShallowerSearch = value < bestValue + newDepth;             // (~2 Elo)
 
                 newDepth += doDeeperSearch - doShallowerSearch;
@@ -1320,13 +1334,13 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + ((ss - 1)->statScore < -14761)
+        int bonus = (depth > xx11) + (PvNode || cutNode) + ((ss - 1)->statScore < -14761)
                   + ((ss - 1)->moveCount > 11)
                   + (!ss->inCheck && bestValue <= ss->staticEval - 144);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()]
-          << stat_bonus(depth) * bonus / 2;
+          << stat_bonus(depth) * xx12 * bonus / 20;
     }
 
     if (PvNode)
@@ -1351,8 +1365,8 @@ moves_loop:  // When in check, search starts here
         && !(bestValue >= beta && bestValue <= ss->staticEval)
         && !(!bestMove && bestValue >= ss->staticEval))
     {
-        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
-                                -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+        auto bonus = std::clamp(int(bestValue - ss->staticEval) * xx13 * depth / 160,
+                                xx14 * -CORRECTION_HISTORY_LIMIT / 160, xx15 * CORRECTION_HISTORY_LIMIT / 160);
         thisThread->correctionHistory[us][pawn_structure_index<Correction>(pos)] << bonus;
     }
 
@@ -1541,7 +1555,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
                 // If static exchange evaluation is much worse than what is needed to not
                 // fall below alpha we can prune this move.
-                if (futilityBase > alpha && !pos.see_ge(move, (alpha - futilityBase) * 4))
+                if (futilityBase > alpha && !pos.see_ge(move, (alpha - futilityBase) * xx16))
                 {
                     bestValue = alpha;
                     continue;
