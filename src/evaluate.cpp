@@ -33,13 +33,13 @@
 #include "uci.h"
 
 namespace Stockfish {
-int ee1=500, ee2=513, ee3=517, ee4=499, ee5=64, ee6=64, ee7=64, ee8=32395, ee9=32857,
-    ee10=32793, ee11=919, ee12=908, ee13=903, ee14=11, ee15=7, ee16=9, ee17=145,
-    ee18=155, ee19=147, ee20=1036 ,ee21=1019 ,ee22=1067,
+int ee1=500, ee2=513, ee3=517, ee4=499, ee5=32395, ee6=32857, ee7=32793,
+    ee8=64, ee9=64, ee10=64, ee11=919, ee12=908, ee13=903, ee14=11, ee15=7,
+    ee16=9, ee17=145, ee18=155, ee19=147, ee20=1036 ,ee21=1019 ,ee22=1067,
     ee23=178, ee24=224, ee25=208, ee26=204, ee27=238, ee28=211;
 TUNE(SetRange(1, 1501), ee1,ee2,ee3,ee4);
-TUNE(SetRange(1, 149), ee5,ee6,ee7);
-TUNE(SetRange(1, 67001), ee8,ee9,ee10);
+TUNE(SetRange(1, 67001), ee5,ee6,ee7);
+TUNE(SetRange(1, 149), ee8,ee9,ee10);
 TUNE(SetRange(1, 2001), ee11,ee12,ee13);
 TUNE(SetRange(1, 25), ee14,ee15,ee16);
 TUNE(SetRange(1, 371), ee17,ee18,ee19);
