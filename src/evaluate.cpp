@@ -33,7 +33,17 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+int ee1=500, ee2=513, ee3=517, ee4=499, ee5=64, ee6=64, ee7=64, ee8=32395, ee9=32857,
+    ee10=32793, ee11=919, ee12=908, ee13=903, ee14=11, ee15=7, ee16=9, ee17=145,
+    ee18=155, ee19=147, ee20=178, ee21=224, ee22=208, ee23=204, ee24=238, ee25=211;
+TUNE(SetRange(1, 1501), ee1,ee2,ee3,ee4);
+TUNE(SetRange(1, 149), ee5,ee6,ee7);
+TUNE(SetRange(1, 67001), ee8,ee9,ee10);
+TUNE(SetRange(1, 2001), ee11,ee12,ee13);
+TUNE(SetRange(1, 25), ee14,ee15,ee16);
+TUNE(SetRange(1, 371), ee17,ee18,ee19);
+TUNE(SetRange(1, 491), ee20,ee21,ee22);
+TUNE(SetRange(1, 521), ee23,ee24,ee25);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -58,14 +68,14 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
     Value nnue = smallNet ? networks.small.evaluate(pos, true, &nnueComplexity, psqtOnly)
                           : networks.big.evaluate(pos, true, &nnueComplexity, false);
 
-    const auto adjustEval = [&](int optDiv, int nnueDiv, int pawnCountConstant, int pawnCountMul,
+    const auto adjustEval = [&](int optDiv, int nnueDiv, int npmDiv, int pawnCountConstant, int pawnCountMul,
                                 int npmConstant, int evalDiv, int shufflingConstant,
                                 int shufflingDiv) {
         // Blend optimism and eval with nnue complexity and material imbalance
         optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / optDiv;
-        nnue -= nnue * (nnueComplexity * 5 / 3) / nnueDiv;
+        nnue -= nnue * (nnueComplexity * ee1 / 300) / nnueDiv;
 
-        int npm = pos.non_pawn_material() / 64;
+        int npm = pos.non_pawn_material() / npmDiv;
         v       = (nnue * (npm + pawnCountConstant + pawnCountMul * pos.count<PAWN>())
              + optimism * (npmConstant + npm))
           / evalDiv;
@@ -76,11 +86,11 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
     };
 
     if (!smallNet)
-        adjustEval(513, 32395, 919, 11, 145, 1036, 178, 204);
+        adjustEval(ee2, ee5, ee8, ee11, ee14, ee17, ee20, ee23, ee26);
     else if (psqtOnly)
-        adjustEval(517, 32857, 908, 7, 155, 1019, 224, 238);
+        adjustEval(ee3, ee6, ee9, ee12, ee15, ee18, ee21, ee24, ee27);
     else
-        adjustEval(499, 32793, 903, 9, 147, 1067, 208, 211);
+        adjustEval(ee4, ee7, ee10, ee13, ee16, ee19, ee22, ee25, ee28);
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
