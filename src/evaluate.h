@@ -24,13 +24,13 @@
 #include "types.h"
 
 namespace Stockfish {
-int hh1=1274, hh2=2389;
-TUNE(hh1,hh2);
+inline int hh1 = 1274, hh2 = 2389;
+TUNE(hh1, hh2);
 class Position;
 
 namespace Eval {
 
-constexpr inline int SmallNetThreshold = hh1, PsqtOnlyThreshold = hh2;
+inline int SmallNetThreshold = hh1, PsqtOnlyThreshold = hh2;
 
 // The default net name MUST follow the format nn-[SHA256 first 12 digits].nnue
 // for the build process (profile-build and fishtest) to work. Do not change the
