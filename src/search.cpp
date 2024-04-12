@@ -44,7 +44,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx13=8, xx14=4, xx15=4,xx12=10;
+int xx2=10,xx13=8, xx14=4, xx15=4,xx12=10;
+TUNE(SetRange(1, 25), xx2);
 TUNE(SetRange(1, 27), xx12);
 TUNE(SetRange(1, 15), xx13);
 TUNE(SetRange(1, 11), xx14,xx15);
@@ -365,7 +366,7 @@ void Search::Worker::iterative_deepening() {
                 else
                     break;
 
-                delta += delta / 3;
+                delta += xx2 * delta / 30;
 
                 assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
             }
