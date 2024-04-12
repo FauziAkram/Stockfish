@@ -37,8 +37,6 @@
 #include "nnue_misc.h"
 
 namespace {
-int dd1=24;
-TUNE(SetRange(-40, 80), dd1);
 // Macro to embed the default efficiently updatable neural network (NNUE) file
 // data in the engine binary (using incbin.h, by Dale Weiler).
 // This macro invocation will declare the following three variables
@@ -196,7 +194,7 @@ Value Network<Arch, Transformer>::evaluate(const Position& pos,
     // overaligning stack variables with alignas() doesn't work correctly.
 
     constexpr uint64_t alignment = CacheLineSize;
-    constexpr int      delta     = dd1;
+    constexpr int      delta     = 24;
 
 #if defined(ALIGNAS_ON_STACK_VARIABLES_BROKEN)
     TransformedFeatureType transformedFeaturesUnaligned
