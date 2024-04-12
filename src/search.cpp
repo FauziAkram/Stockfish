@@ -45,7 +45,7 @@
 
 namespace Stockfish {
 int xx1=0, xx2=10, xx3=90, xx4=6, xx5=4, xx6=3, xx7=8, xx8=2,
-    xx9=64, xx10=2, xx11=5, xx12=10, xx16=4;
+    xx9=64, xx10=2, xx11=5, xx12=10, xx13=20, xx14=40, xx15=40, xx16=4;
 TUNE(SetRange(-200, 500), xx1);
 TUNE(SetRange(1, 25), xx2);
 TUNE(xx3);
@@ -56,6 +56,8 @@ TUNE(SetRange(38, 90), xx9);
 TUNE(SetRange(-2, 8), xx10);
 TUNE(SetRange(0, 14), xx11);
 TUNE(SetRange(1, 27), xx12);
+TUNE(SetRange(1, 51), xx13);
+TUNE(SetRange(1, 101), xx14,xx15);
 TUNE(SetRange(0, 12), xx16);
 namespace TB = Tablebases;
 
@@ -1363,8 +1365,8 @@ moves_loop:  // When in check, search starts here
         && !(bestValue >= beta && bestValue <= ss->staticEval)
         && !(!bestMove && bestValue >= ss->staticEval))
     {
-        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
-                                -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+        auto bonus = std::clamp(int(bestValue - ss->staticEval) * (xx13 * depth / 160),
+                                xx14 * -CORRECTION_HISTORY_LIMIT / 160, xx15 * CORRECTION_HISTORY_LIMIT / 160);
         thisThread->correctionHistory[us][pawn_structure_index<Correction>(pos)] << bonus;
     }
 
