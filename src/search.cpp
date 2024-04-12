@@ -44,6 +44,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=256, xx2=100, xx3=100;
+TUNE(xx1);
+TUNE(SetRange(-50, 200), xx2,xx3);
 
 namespace TB = Tablebases;
 
@@ -1161,11 +1164,14 @@ moves_loop:  // When in check, search starts here
                 // was good enough search deeper, if it was bad enough search shallower.
                 const bool doDeeperSearch    = value > (bestValue + 42 + 2 * newDepth);  // (~1 Elo)
                 const bool doShallowerSearch = value < bestValue + newDepth;             // (~2 Elo)
+                int range = std::max({bestValue, alpha, value, ss->staticEval}) - std::min({bestValue, alpha, value, ss->staticEval});
 
                 newDepth += doDeeperSearch - doShallowerSearch;
 
                 if (newDepth > d)
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
+                else if (range >= xx1)
+                  value = -search<NonPV>(pos, ss+1, -(alpha + 1), -alpha, (xx2 * d + xx3 * newDepth)/200, true);
 
                 // Post LMR continuation history updates (~1 Elo)
                 int bonus = value <= alpha ? -stat_malus(newDepth)
