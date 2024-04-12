@@ -35,15 +35,17 @@
 namespace Stockfish {
 int ee1=500, ee2=513, ee3=517, ee4=499, ee5=64, ee6=64, ee7=64, ee8=32395, ee9=32857,
     ee10=32793, ee11=919, ee12=908, ee13=903, ee14=11, ee15=7, ee16=9, ee17=145,
-    ee18=155, ee19=147, ee20=178, ee21=224, ee22=208, ee23=204, ee24=238, ee25=211;
+    ee18=155, ee19=147, ee20=1036 ,ee21=1019 ,ee22=1067,
+    ee23=178, ee24=224, ee25=208, ee26=204, ee27=238, ee28=211;
 TUNE(SetRange(1, 1501), ee1,ee2,ee3,ee4);
 TUNE(SetRange(1, 149), ee5,ee6,ee7);
 TUNE(SetRange(1, 67001), ee8,ee9,ee10);
 TUNE(SetRange(1, 2001), ee11,ee12,ee13);
 TUNE(SetRange(1, 25), ee14,ee15,ee16);
 TUNE(SetRange(1, 371), ee17,ee18,ee19);
-TUNE(SetRange(1, 491), ee20,ee21,ee22);
-TUNE(SetRange(1, 521), ee23,ee24,ee25);
+TUNE(SetRange(1, 2300), ee20,ee21,ee22);
+TUNE(SetRange(1, 491), ee23,ee24,ee25);
+TUNE(SetRange(1, 521), ee26,ee27,ee28);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
