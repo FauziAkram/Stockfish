@@ -44,7 +44,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx13=8, xx14=4, xx15=4;
+int xx13=8, xx14=4, xx15=4,xx12=10;
+TUNE(SetRange(1, 27), xx12);
 TUNE(SetRange(1, 15), xx13);
 TUNE(SetRange(1, 11), xx14,xx15);
 namespace TB = Tablebases;
@@ -1328,7 +1329,7 @@ moves_loop:  // When in check, search starts here
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()]
-          << stat_bonus(depth) * bonus / 2;
+          << stat_bonus(depth) * xx12 * bonus / 20;
     }
 
     if (PvNode)
