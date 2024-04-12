@@ -27,7 +27,9 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int mm1=70, mm2=10, mm3=8, mm4=8, mm5=8, mm6=4, mm7=4, mm8=4, mm9=4, mm10=16384, mm11=51000;
+int mm12=24950, mm13=14450, mm14=48150, mm15=10650, mm16=24500, mm17=14950, mm18=3550, mm19=8000, mm20=18;
+TUNE(mm1,mm2,mm3,mm4,mm5,mm6,mm7,mm8,mm9,mm10,mm11,mm12,mm13,mm14,mm15,mm16,mm17,mm18,mm19,mm20);
 namespace {
 
 enum Stages {
@@ -167,8 +169,8 @@ void MovePicker::score() {
     for (auto& m : *this)
         if constexpr (Type == CAPTURES)
             m.value =
-              7 * int(PieceValue[pos.piece_on(m.to_sq())])
-              + (*captureHistory)[pos.moved_piece(m)][m.to_sq()][type_of(pos.piece_on(m.to_sq()))];
+              (mm1 * int(PieceValue[pos.piece_on(m.to_sq())])
+              + mm2 * (*captureHistory)[pos.moved_piece(m)][m.to_sq()][type_of(pos.piece_on(m.to_sq()))]) / 10;
 
         else if constexpr (Type == QUIETS)
         {
@@ -178,30 +180,30 @@ void MovePicker::score() {
             Square    to   = m.to_sq();
 
             // histories
-            m.value = 2 * (*mainHistory)[pos.side_to_move()][m.from_to()];
-            m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
-            m.value += 2 * (*continuationHistory[0])[pc][to];
-            m.value += (*continuationHistory[1])[pc][to];
-            m.value += (*continuationHistory[2])[pc][to] / 4;
-            m.value += (*continuationHistory[3])[pc][to];
-            m.value += (*continuationHistory[5])[pc][to];
+            m.value = mm3 * (*mainHistory)[pos.side_to_move()][m.from_to()]/4;
+            m.value += mm4 * (*pawnHistory)[pawn_structure_index(pos)][pc][to]/4;
+            m.value += mm5 * (*continuationHistory[0])[pc][to]/4;
+            m.value += mm6 * (*continuationHistory[1])[pc][to]/4;
+            m.value += mm7 * (*continuationHistory[2])[pc][to] / 16;
+            m.value += mm8 * (*continuationHistory[3])[pc][to]/4;
+            m.value += mm9 * (*continuationHistory[5])[pc][to]/4;
 
             // bonus for checks
-            m.value += bool(pos.check_squares(pt) & to) * 16384;
+            m.value += bool(pos.check_squares(pt) & to) * mm10;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51000
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 24950
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? mm11
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? mm12
+                                                  : !(to & threatenedByPawn)                ? mm13
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
             m.value -= !(threatenedPieces & from)
-                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 48150
-                                          + bool(to & threatenedByMinor) * 10650
-                          : pt == ROOK ? bool(to & threatenedByMinor) * 24500
-                          : pt != PAWN ? bool(to & threatenedByPawn) * 14950
+                       ? (pt == QUEEN ? bool(to & threatenedByRook) * mm14
+                                          + bool(to & threatenedByMinor) * mm15
+                          : pt == ROOK ? bool(to & threatenedByMinor) * mm16
+                          : pt != PAWN ? bool(to & threatenedByPawn) * mm17
                                        : 0)
                        : 0;
         }
@@ -241,7 +243,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3550 * d; };
+    auto quiet_threshold = [](Depth d) { return -mm18 * d; };
 
 top:
     switch (stage)
@@ -268,7 +270,7 @@ top:
     case GOOD_CAPTURE :
         if (select<Next>([&]() {
                 // Move losing capture to endBadCaptures to be tried later
-                return pos.see_ge(*cur, -cur->value / 18) ? true
+                return pos.see_ge(*cur, -cur->value / mm20) ? true
                                                           : (*endBadCaptures++ = *cur, false);
             }))
             return *(cur - 1);
@@ -310,7 +312,7 @@ top:
                 return *cur != refutations[0] && *cur != refutations[1] && *cur != refutations[2];
             }))
         {
-            if ((cur - 1)->value > -8000 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > -mm19 || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
