@@ -1161,11 +1161,14 @@ moves_loop:  // When in check, search starts here
                 // was good enough search deeper, if it was bad enough search shallower.
                 const bool doDeeperSearch    = value > (bestValue + 42 + 2 * newDepth);  // (~1 Elo)
                 const bool doShallowerSearch = value < bestValue + newDepth;             // (~2 Elo)
+                int range = std::max({bestValue, alpha, value, ss->staticEval}) - std::min({bestValue, alpha, value, ss->staticEval});
 
                 newDepth += doDeeperSearch - doShallowerSearch;
 
                 if (newDepth > d)
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
+                else if (range >= 263)
+                  value = -search<NonPV>(pos, ss+1, -(alpha + 1), -alpha, (d + newDepth) / 2, true);
 
                 // Post LMR continuation history updates (~1 Elo)
                 int bonus = value <= alpha ? -stat_malus(newDepth)
