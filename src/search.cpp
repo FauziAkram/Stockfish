@@ -44,10 +44,15 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=0, xx2=10, xx3=90, xx10=2, xx11=5, xx12=10, xx13=8, xx14=4, xx15=4, xx16=4;
+int xx1=0, xx2=10, xx3=90, xx4=6, xx5=4, xx6=3, xx7=8, xx8=2,
+    xx9=64,xx10=2, xx11=5, xx12=10, xx13=8, xx14=4, xx15=4, xx16=4;
 TUNE(SetRange(-200, 500), xx1);
 TUNE(SetRange(1, 25), xx2);
 TUNE(xx3);
+TUNE(SetRange(0, 8), xx4,xx5,xx6);
+TUNE(SetRange(1, 20), xx7);
+TUNE(SetRange(0, 8), xx8);
+TUNE(SetRange(38, 90), xx9);
 TUNE(SetRange(-2, 8), xx10);
 TUNE(SetRange(0, 14), xx11);
 TUNE(SetRange(1, 27), xx12);
@@ -788,7 +793,7 @@ Value Search::Worker::search(
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 152, 6) + depth / 3 + 4;
+        Depth R = std::min(int(eval - beta) / 152, xx4) + depth / 3 + xx5;
 
         ss->currentMove         = Move::null();
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -823,15 +828,15 @@ Value Search::Worker::search(
     // Step 10. Internal iterative reductions (~9 Elo)
     // For PV nodes without a ttMove, we decrease depth by 3.
     if (PvNode && !ttMove)
-        depth -= 3;
+        depth -= xx6;
 
     // Use qsearch if depth <= 0.
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
-    if (cutNode && depth >= 8 && !ttMove)
-        depth -= 2;
+    if (cutNode && depth >= xx7 && !ttMove)
+        depth -= xx8;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -1042,7 +1047,7 @@ moves_loop:  // When in check, search starts here
                 && std::abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY && (tte->bound() & BOUND_LOWER)
                 && tte->depth() >= depth - 3)
             {
-                Value singularBeta  = ttValue - (64 + 59 * (ss->ttPv && !PvNode)) * depth / 64;
+                Value singularBeta  = ttValue - (64 + 59 * (ss->ttPv && !PvNode)) * depth / xx9;
                 Depth singularDepth = newDepth / 2;
 
                 ss->excludedMove = move;
