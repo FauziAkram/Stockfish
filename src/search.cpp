@@ -44,8 +44,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx2=10, xx11=5, xx12=10, xx13=8, xx14=4, xx15=4, xx16=4;
+int xx2=10, xx10=2, xx11=5, xx12=10, xx13=8, xx14=4, xx15=4, xx16=4;
 TUNE(SetRange(1, 25), xx2);
+TUNE(SetRange(-2, 8), xx10);
 TUNE(SetRange(0, 14), xx11);
 TUNE(SetRange(1, 27), xx12);
 TUNE(SetRange(1, 15), xx13);
@@ -1165,7 +1166,7 @@ moves_loop:  // When in check, search starts here
             {
                 // Adjust full-depth search based on LMR results - if the result
                 // was good enough search deeper, if it was bad enough search shallower.
-                const bool doDeeperSearch    = value > (bestValue + 42 + 2 * newDepth);  // (~1 Elo)
+                const bool doDeeperSearch    = value > (bestValue + 42 + xx10 * newDepth);  // (~1 Elo)
                 const bool doShallowerSearch = value < bestValue + newDepth;             // (~2 Elo)
 
                 newDepth += doDeeperSearch - doShallowerSearch;
