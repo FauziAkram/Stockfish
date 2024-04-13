@@ -44,8 +44,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx2=10, xx12=10, xx13=8, xx14=4, xx15=4, xx16=4;
+int xx2=10, xx11=5, xx12=10, xx13=8, xx14=4, xx15=4, xx16=4;
 TUNE(SetRange(1, 25), xx2);
+TUNE(SetRange(0, 14), xx11);
 TUNE(SetRange(1, 27), xx12);
 TUNE(SetRange(1, 15), xx13);
 TUNE(SetRange(1, 11), xx14,xx15);
@@ -1325,7 +1326,7 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + ((ss - 1)->statScore < -14761)
+        int bonus = (depth > xx11) + (PvNode || cutNode) + ((ss - 1)->statScore < -14761)
                   + ((ss - 1)->moveCount > 11)
                   + (!ss->inCheck && bestValue <= ss->staticEval - 144);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
