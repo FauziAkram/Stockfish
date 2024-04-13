@@ -53,7 +53,7 @@ int a1=118, a2=44, a3=52, a4=310, a5=48, a6=9260, a7=211, a8=315, a9=1291, a10=5
     g1=42, g2=12, g3=13132, g4=13295, g5=14761, g6=11, g7=144,
     h1=246, h2=79, h3=1123, h4=832, h5=1025, h6=185, fTripleExt=11;
     int xx1=0, xx2=10, xx3=90, xx4=6, xx5=4, xx6=3, xx7=8, xx8=2,
-    xx9=64,xx10=2, xx11=5, xx12=10, xx13=8, xx14=4, xx15=4, xx16=4;
+    xx9=64,xx10=2, xx11=5, xx12=10, xx13=20, xx14=40, xx15=40, xx16=4;
 
 TUNE(a1, a2, a3, a4, a5, a7, a8, a9, a10, a11, a12,
      b1, b3, b4, b5, b6,
@@ -81,8 +81,8 @@ TUNE(SetRange(38, 90), xx9);
 TUNE(SetRange(-2, 8), xx10);
 TUNE(SetRange(0, 14), xx11);
 TUNE(SetRange(1, 27), xx12);
-TUNE(SetRange(1, 15), xx13);
-TUNE(SetRange(1, 11), xx14,xx15);
+TUNE(SetRange(1, 41), xx13);
+TUNE(SetRange(1, 81), xx14,xx15);
 TUNE(SetRange(0, 12), xx16);
 namespace TB = Tablebases;
 
@@ -1390,8 +1390,8 @@ moves_loop:  // When in check, search starts here
         && !(bestValue >= beta && bestValue <= ss->staticEval)
         && !(!bestMove && bestValue >= ss->staticEval))
     {
-        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / xx13,
-                                -CORRECTION_HISTORY_LIMIT / xx14, CORRECTION_HISTORY_LIMIT / xx15);
+        auto bonus = std::clamp(int(bestValue - ss->staticEval) * xx13 * depth / 160,
+                                -CORRECTION_HISTORY_LIMIT * xx14 / 160, CORRECTION_HISTORY_LIMIT * xx15 / 160);
         thisThread->correctionHistory[us][pawn_structure_index<Correction>(pos)] << bonus;
     }
 
