@@ -44,11 +44,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx2=10,xx13=8, xx14=4, xx15=4,xx12=10;
+int xx2=10, xx12=10, xx13=8, xx14=4, xx15=4, xx16=4;
 TUNE(SetRange(1, 25), xx2);
 TUNE(SetRange(1, 27), xx12);
 TUNE(SetRange(1, 15), xx13);
 TUNE(SetRange(1, 11), xx14,xx15);
+TUNE(SetRange(0, 12), xx16);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -1545,7 +1546,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
                 // If static exchange evaluation is much worse than what is needed to not
                 // fall below alpha we can prune this move.
-                if (futilityBase > alpha && !pos.see_ge(move, (alpha - futilityBase) * 4))
+                if (futilityBase > alpha && !pos.see_ge(move, (alpha - futilityBase) * xx16))
                 {
                     bestValue = alpha;
                     continue;
