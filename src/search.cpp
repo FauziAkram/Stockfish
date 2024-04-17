@@ -990,8 +990,6 @@ moves_loop:  // When in check, search starts here
                 if (lmrDepth < 6 && history < -4173 * depth)
                     continue;
 
-                history += 2 * thisThread->mainHistory[us][move.from_to()];
-
                 lmrDepth += history / 5285;
 
                 Value futilityValue =
