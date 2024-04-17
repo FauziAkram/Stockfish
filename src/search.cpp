@@ -44,7 +44,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=185, xx2=200;
+TUNE(xx1,xx2);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -1714,19 +1715,35 @@ void update_all_stats(const Position& pos,
 
     int quietMoveBonus = stat_bonus(depth + 1);
     int quietMoveMalus = stat_malus(depth);
+    int bestMoveBonus = bestValue > beta + xx1 ? quietMoveBonus      // larger bonus
+                                                   : stat_bonus(depth);  // smaller bonus
 
     if (!pos.capture_stage(bestMove))
     {
-        int bestMoveBonus = bestValue > beta + 185 ? quietMoveBonus      // larger bonus
-                                                   : stat_bonus(depth);  // smaller bonus
-
         // Increase stats for the best move in case it was a quiet move
         update_quiet_stats(pos, ss, workerThread, bestMove, bestMoveBonus);
 
         int pIndex = pawn_structure_index(pos);
         workerThread.pawnHistory[pIndex][moved_piece][bestMove.to_sq()] << quietMoveBonus;
 
-        // Decrease stats for all non-best quiet moves
+    }
+    else
+    {
+        // Increase stats for the best move in case it was a capture move
+        captured = type_of(pos.piece_on(bestMove.to_sq()));
+        captureHistory[moved_piece][bestMove.to_sq()][captured] << quietMoveBonus;
+        bestMoveBonus = bestMoveBonus * 100 / xx2;
+    }
+
+    // Extra penalty for a quiet early move that was not a TT move or
+    // main killer move in previous ply when it gets refuted.
+    if (prevSq != SQ_NONE
+        && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit
+            || ((ss - 1)->currentMove == (ss - 1)->killers[0]))
+        && !pos.captured_piece())
+        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -quietMoveMalus);
+
+    // Decrease stats for all non-best quiet moves
         for (int i = 0; i < quietCount; ++i)
         {
             workerThread
@@ -1737,21 +1754,6 @@ void update_all_stats(const Position& pos,
             update_continuation_histories(ss, pos.moved_piece(quietsSearched[i]),
                                           quietsSearched[i].to_sq(), -quietMoveMalus);
         }
-    }
-    else
-    {
-        // Increase stats for the best move in case it was a capture move
-        captured = type_of(pos.piece_on(bestMove.to_sq()));
-        captureHistory[moved_piece][bestMove.to_sq()][captured] << quietMoveBonus;
-    }
-
-    // Extra penalty for a quiet early move that was not a TT move or
-    // main killer move in previous ply when it gets refuted.
-    if (prevSq != SQ_NONE
-        && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit
-            || ((ss - 1)->currentMove == (ss - 1)->killers[0]))
-        && !pos.captured_piece())
-        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -quietMoveMalus);
 
     // Decrease stats for all non-best capture moves
     for (int i = 0; i < captureCount; ++i)
