@@ -1724,9 +1724,6 @@ void update_all_stats(const Position& pos,
         // Increase stats for the best move in case it was a quiet move
         update_quiet_stats(pos, ss, workerThread, bestMove, bestMoveBonus);
 
-        int pIndex = pawn_structure_index(pos);
-        workerThread.pawnHistory[pIndex][moved_piece][bestMove.to_sq()] << quietMoveBonus;
-
     }
     else
     {
@@ -1743,6 +1740,9 @@ void update_all_stats(const Position& pos,
             || ((ss - 1)->currentMove == (ss - 1)->killers[0]))
         && !pos.captured_piece())
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -quietMoveMalus);
+
+    int pIndex = pawn_structure_index(pos);
+    workerThread.pawnHistory[pIndex][moved_piece][bestMove.to_sq()] << quietMoveBonus;
 
     // Decrease stats for all non-best quiet moves
         for (int i = 0; i < quietCount; ++i)
