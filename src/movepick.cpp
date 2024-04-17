@@ -27,6 +27,9 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=6000, xx2=66;
+TUNE(SetRange(0, 18000), xx1);
+TUNE(SetRange(0, 170), xx2);
 
 namespace {
 
@@ -310,7 +313,7 @@ top:
                 return *cur != refutations[0] && *cur != refutations[1] && *cur != refutations[2];
             }))
         {
-            if ((cur - 1)->value > -8000 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > (-xx1 - depth * xx2) || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
