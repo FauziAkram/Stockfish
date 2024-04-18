@@ -44,6 +44,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=6964, xx2=72;
+TUNE(SetRange(1, 14001), xx1);
+TUNE(SetRange(1, 221), xx2);
 
 namespace TB = Tablebases;
 
@@ -992,7 +995,7 @@ moves_loop:  // When in check, search starts here
 
                 history += 2 * thisThread->mainHistory[us][move.from_to()];
 
-                lmrDepth += history / 5285;
+                lmrDepth += history / std::max(xx1-(xx2*depth),1);
 
                 Value futilityValue =
                   ss->staticEval + (bestValue < ss->staticEval - 54 ? 128 : 58) + 131 * lmrDepth;
