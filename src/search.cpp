@@ -44,6 +44,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=116, xx2=43, xx3=68, xx4=333, xx5=49, xx6=1024;
+TUNE(xx1,xx2);
+TUNE(SetRange(0, 170), xx3);
+TUNE(xx4,xx5);
+TUNE(SetRange(1, 2021), xx6);
 
 namespace TB = Tablebases;
 
@@ -57,9 +62,9 @@ static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
-    Value futilityMult       = 118 - 44 * noTtCutNode;
-    Value improvingDeduction = 52 * improving * futilityMult / 32;
-    Value worseningDeduction = (310 + 48 * improving) * oppWorsening * futilityMult / 1024;
+    Value futilityMult       = xx1 - xx2 * noTtCutNode;
+    Value improvingDeduction = (xx3 - d) * improving * futilityMult / 32;
+    Value worseningDeduction = (xx4 + xx5 * improving) * oppWorsening * futilityMult / xx6;
 
     return futilityMult * d - improvingDeduction - worseningDeduction;
 }
