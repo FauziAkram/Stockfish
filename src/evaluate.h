@@ -29,7 +29,9 @@ class Position;
 
 namespace Eval {
 
-constexpr inline int PsqtOnlyThreshold = 2389;
+constexpr int psqt_only_threshold(Depth depth) {
+    return 2637 - 7 * depth;
+}
 constexpr int small_net_threshold(Depth depth) {
     return 1780 - 20 * depth;
 }
