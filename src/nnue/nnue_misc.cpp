@@ -42,7 +42,7 @@ namespace Stockfish::Eval::NNUE {
 constexpr std::string_view PieceToChar(" PNBRQK  pnbrqk");
 
 
-void hint_common_parent_position(const Position& pos, const Networks& networks) {
+void hint_common_parent_position(const Position& pos, const Networks& networks, Depth depth) {
 
     int simpleEvalAbs = std::abs(simple_eval(pos, pos.side_to_move()));
     if (simpleEvalAbs > Eval::small_net_threshold(depth))
