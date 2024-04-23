@@ -45,7 +45,7 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
-Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, int optimism, Depth depth)) {
+Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, int optimism, Depth depth) {
 
     assert(!pos.checkers());
 
