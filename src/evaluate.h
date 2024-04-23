@@ -29,7 +29,7 @@ class Position;
 
 namespace Eval {
 
-constexpr inline int SmallNetThreshold = 1274, PsqtOnlyThreshold = 2389;
+constexpr inline int SmallNetThreshold = 1780 - 20 * depth, PsqtOnlyThreshold = 2389;
 
 // The default net name MUST follow the format nn-[SHA256 first 12 digits].nnue
 // for the build process (profile-build and fishtest) to work. Do not change the
@@ -45,7 +45,7 @@ struct Networks;
 std::string trace(Position& pos, const Eval::NNUE::Networks& networks);
 
 int   simple_eval(const Position& pos, Color c);
-Value evaluate(const NNUE::Networks& networks, const Position& pos, int optimism);
+Value evaluate(const NNUE::Networks& networks, const Position& pos, int optimism, Depth depth));
 
 
 }  // namespace Eval
