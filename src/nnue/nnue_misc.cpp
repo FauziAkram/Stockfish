@@ -46,7 +46,7 @@ void hint_common_parent_position(const Position& pos, const Networks& networks, 
 
     int simpleEvalAbs = std::abs(simple_eval(pos, pos.side_to_move()));
     if (simpleEvalAbs > Eval::small_net_threshold(depth))
-        networks.small.hint_common_access(pos, simpleEvalAbs > Eval::PsqtOnlyThreshold);
+        networks.small.hint_common_access(pos, simpleEvalAbs > Eval::psqt_only_threshold(depth));
     else
         networks.big.hint_common_access(pos, false);
 }
