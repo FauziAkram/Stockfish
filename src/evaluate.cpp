@@ -44,7 +44,7 @@ int Eval::simple_eval(const Position& pos, Color c) {
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
-int xx1=2637, xx2=7, xx3=1780, xx4=20;
+int xx1=2389, xx2=0, xx3=1274, xx4=0;
 
 int Eval::psqt_only_threshold(Depth depth) {
     return xx1 - xx2 * depth;
