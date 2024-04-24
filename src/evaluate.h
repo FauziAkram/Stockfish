@@ -33,10 +33,10 @@ class Position;
 
 namespace Eval {
 
-constexpr int psqt_only_threshold(Depth depth) {
+int psqt_only_threshold(Depth depth) {
     return xx1 - xx2 * depth;
 }
-constexpr int small_net_threshold(Depth depth) {
+int small_net_threshold(Depth depth) {
     return xx3 - xx4 * depth;
 }
 
