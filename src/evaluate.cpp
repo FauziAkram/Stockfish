@@ -44,6 +44,19 @@ int Eval::simple_eval(const Position& pos, Color c) {
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
+int xx1=2637, xx2=7, xx3=1780, xx4=20;
+
+int Eval::psqt_only_threshold(Depth depth) {
+    return xx1 - xx2 * depth;
+}
+
+int Eval::small_net_threshold(Depth depth) {
+    return xx3 - xx4 * depth;
+}
+
+TUNE(xx1,xx3);
+TUNE(SetRange(-40, 40), xx2);
+TUNE(SetRange(-30, 50), xx4);
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
