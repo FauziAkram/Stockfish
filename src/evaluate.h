@@ -33,7 +33,7 @@ constexpr int psqt_only_threshold(Depth depth) {
     return 2542 - 6 * depth;
 }
 constexpr int small_net_threshold(Depth depth) {
-    return 1669 - 22 * depth;
+    return 1282;
 }
 
 // The default net name MUST follow the format nn-[SHA256 first 12 digits].nnue
