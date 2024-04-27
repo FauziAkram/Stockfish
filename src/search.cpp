@@ -78,10 +78,10 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::clamp(234 * d - 305, 16, 1304); }
+int stat_bonus(Depth d) { return std::clamp(233 * d - 304, 16, 1302); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return (d < 4 ? 534 * d - 283 : 1354); }
+int stat_malus(Depth d) { return (d < 4 ? 535 * d - 283 : 1352); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
@@ -504,7 +504,7 @@ void Search::Worker::clear() {
                     h->fill(-64);
 
     for (size_t i = 1; i < reductions.size(); ++i)
-        reductions[i] = int((20.04 + std::log(size_t(options["Threads"])) / 2) * std::log(i));
+        reductions[i] = int((20.02 + std::log(size_t(options["Threads"])) / 2) * std::log(i));
 }
 
 
@@ -759,7 +759,7 @@ Value Search::Worker::search(
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - 475 - (264 - 134 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
+    if (eval < alpha - 474 - (262 - 134 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -776,8 +776,8 @@ Value Search::Worker::search(
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
 
     // Step 9. Null move search with verification search (~35 Elo)
-    if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < 16783
-        && eval >= beta && ss->staticEval >= beta - 20 * depth + 294 && !excludedMove
+    if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < 16950
+        && eval >= beta && ss->staticEval >= beta - 21 * depth + 293 && !excludedMove
         && pos.non_pawn_material(us) && ss->ply >= thisThread->nmpMinPly
         && beta > VALUE_TB_LOSS_IN_MAX_PLY)
     {
@@ -991,7 +991,7 @@ moves_loop:  // When in check, search starts here
                   + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
 
                 // Continuation history based pruning (~2 Elo)
-                if (lmrDepth < 6 && history < -4354 * depth)
+                if (lmrDepth < 6 && history < -4350 * depth)
                     continue;
 
                 history += 2 * thisThread->mainHistory[us][move.from_to()];
@@ -999,7 +999,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth += history / 5285;
 
                 Value futilityValue =
-                  ss->staticEval + (bestValue < ss->staticEval - 54 ? 128 : 57) + 130 * lmrDepth;
+                  ss->staticEval + (bestValue < ss->staticEval - 54 ? 129 : 57) + 128 * lmrDepth;
 
                 // Futility pruning: parent node (~13 Elo)
                 if (!ss->inCheck && lmrDepth < 14 && futilityValue <= alpha)
@@ -1091,7 +1091,7 @@ moves_loop:  // When in check, search starts here
             else if (PvNode && move == ttMove && move.to_sq() == prevSq
                      && thisThread->captureHistory[movedPiece][move.to_sq()]
                                                   [type_of(pos.piece_on(move.to_sq()))]
-                          > 3807)
+                          > 3812)
                 extension = 1;
         }
 
@@ -1281,7 +1281,7 @@ moves_loop:  // When in check, search starts here
                 else
                 {
                     // Reduce other moves if we have found at least one score improvement (~2 Elo)
-                    if (depth > 2 && depth < 12 && beta < 13538 && value > -13478)
+                    if (depth > 2 && depth < 12 && beta < 13538 && value > -13492)
                         depth -= 2;
 
                     assert(depth > 0);
@@ -1633,7 +1633,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) {
     int reductionScale = reductions[d] * reductions[mn];
-    return (reductionScale + 1282 - delta * 832 / rootDelta) / 1024 + (!i && reductionScale > 1025);
+    return (reductionScale + 1282 - delta * 832 / rootDelta) / 1024 + (!i && reductionScale > 1024);
 }
 
 TimePoint Search::Worker::elapsed() const {
