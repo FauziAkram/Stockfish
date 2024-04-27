@@ -27,6 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=100;
+TUNE(SetRange(1, 321), xx1);
 
 namespace {
 
@@ -179,7 +181,7 @@ void MovePicker::score() {
 
             // histories
             m.value = 2 * (*mainHistory)[pos.side_to_move()][m.from_to()];
-            m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
+            m.value += (MAX_PLY - depth) * (*pawnHistory)[pawn_structure_index(pos)][pc][to] / xx1;
             m.value += 2 * (*continuationHistory[0])[pc][to];
             m.value += (*continuationHistory[1])[pc][to];
             m.value += (*continuationHistory[2])[pc][to] / 4;
