@@ -1613,7 +1613,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
                     alpha = value;
                 else
                 {
-                  ss->cutoffCnt += 2;
+                  ss->cutoffCnt += 3;
                   assert(value >= beta); // Fail high
                   break; // Fail high
                 }
