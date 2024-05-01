@@ -187,21 +187,21 @@ void MovePicker::score() {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += bool(pos.check_squares(pt) & to) * 16384;
+            m.value += bool(pos.check_squares(pt) & to) * 17000;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 52964
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 26592
+                                                  : !(to & threatenedByPawn)                ? 13770
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
             m.value -= !(threatenedPieces & from)
-                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 48150
-                                          + bool(to & threatenedByMinor) * 10650
-                          : pt == ROOK ? bool(to & threatenedByMinor) * 24335
-                          : pt != PAWN ? bool(to & threatenedByPawn) * 14950
+                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 47896
+                                          + bool(to & threatenedByMinor) * 11073
+                          : pt == ROOK ? bool(to & threatenedByMinor) * 26100
+                          : pt != PAWN ? bool(to & threatenedByPawn) * 14918
                                        : 0)
                        : 0;
         }
@@ -241,7 +241,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3560 * d; };
+    auto quiet_threshold = [](Depth d) { return -3622 * d; };
 
 top:
     switch (stage)
@@ -310,7 +310,7 @@ top:
                 return *cur != refutations[0] && *cur != refutations[1] && *cur != refutations[2];
             }))
         {
-            if ((cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > -7490 || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
