@@ -82,11 +82,11 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     };
 
     if (!smallNet)
-        adjustEval(524, 32395, 942, 11, 139, 1058, 178, 204);
+        adjustEval(582, 32762, 987, 11, 137, 1068, 178, 200);
     else if (psqtOnly)
-        adjustEval(517, 32857, 908, 7, 155, 1006, 224, 238);
+        adjustEval(520, 32665, 883, 7, 174, 980, 222, 238);
     else
-        adjustEval(515, 32793, 944, 9, 140, 1067, 206, 206);
+        adjustEval(546, 34598, 961, 9, 147, 999, 200, 209);
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
