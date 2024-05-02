@@ -46,6 +46,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=500000, xx2=100;
+TUNE(SetRange(0, 5000000), xx1);
+TUNE(SetRange(0, 400), xx2);
 
 namespace TB = Tablebases;
 
@@ -595,7 +598,7 @@ Value Search::Worker::search(
     (ss + 2)->cutoffCnt                         = 0;
     ss->multipleExtensions                      = (ss - 1)->multipleExtensions;
     Square prevSq = ((ss - 1)->currentMove).is_ok() ? ((ss - 1)->currentMove).to_sq() : SQ_NONE;
-    ss->statScore = 0;
+    ss->statScore = (-xx1 - xx2 * (ss-1)->statScore) / 100;
 
     // Step 4. Transposition table lookup.
     excludedMove = ss->excludedMove;
