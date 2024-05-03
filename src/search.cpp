@@ -46,6 +46,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=20, xx2=3, xx3=3, xx4=20, xx5=2, xx6=1, xx7=20, xx8=1, xx9=1;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(-2, 4), xx2,xx3,xx5,xx6,xx8,xx9);
 
 namespace TB = Tablebases;
 
@@ -1083,15 +1086,15 @@ moves_loop:  // When in check, search starts here
 
                 // If the ttMove is assumed to fail high over current beta (~7 Elo)
                 else if (ttValue >= beta)
-                    extension = -3;
+                    extension = depth < xx1 ? -xx2 : -xx3;
 
                 // If we are on a cutNode but the ttMove is not assumed to fail high over current beta (~1 Elo)
                 else if (cutNode)
-                    extension = -2;
+                    extension = depth < xx4 ? -xx5 : -xx6;
 
                 // If the ttMove is assumed to fail low over the value of the reduced search (~1 Elo)
                 else if (ttValue <= value)
-                    extension = -1;
+                    extension = depth < xx7 ? -xx8 : -xx9;
             }
 
             // Extension for capturing the previous moved piece (~0 Elo on STC, ~1 Elo on LTC)
