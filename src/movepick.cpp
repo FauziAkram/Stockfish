@@ -150,7 +150,6 @@ void MovePicker::score() {
     const auto dist = std::distance(cur, endMoves);
 
     if (dist <= 1) {
-        if (dist == 1)
             cur->value = 0;
         return;
     }
