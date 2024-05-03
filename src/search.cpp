@@ -47,7 +47,7 @@
 
 namespace Stockfish {
 int xx1=20, xx2=3, xx3=3, xx4=20, xx5=2, xx6=1, xx7=20, xx8=1, xx9=1;
-TUNE(xx1,xx2,xx3);
+TUNE(xx1,xx4,xx7);
 TUNE(SetRange(-2, 4), xx2,xx3,xx5,xx6,xx8,xx9);
 
 namespace TB = Tablebases;
