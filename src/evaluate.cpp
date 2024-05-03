@@ -64,7 +64,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
                  ? networks.small.evaluate(pos, &caches.small, true, &nnueComplexity, psqtOnly)
                  : networks.big.evaluate(pos, &caches.big, true, &nnueComplexity, false);
 
-    const auto adjustEval = [&](, int nnueDiv, int pawnCountConstant, int pawnCountMul,
+    const auto adjustEval = [&](int nnueDiv, int pawnCountConstant, int pawnCountMul,
                                 int npmConstant, int evalDiv, int shufflingConstant,
                                 int shufflingDiv) {
         // Blend optimism and eval with nnue complexity and material imbalance
