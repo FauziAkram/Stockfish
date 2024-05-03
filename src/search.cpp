@@ -595,7 +595,7 @@ Value Search::Worker::search(
     (ss + 2)->cutoffCnt                         = 0;
     ss->multipleExtensions                      = (ss - 1)->multipleExtensions;
     Square prevSq = ((ss - 1)->currentMove).is_ok() ? ((ss - 1)->currentMove).to_sq() : SQ_NONE;
-    ss->statScore = -2750 - (ss-1)->statScore;
+    ss->statScore = -4750 - (ss-1)->statScore;
 
     // Step 4. Transposition table lookup.
     excludedMove = ss->excludedMove;
