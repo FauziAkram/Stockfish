@@ -822,7 +822,7 @@ Value Search::Worker::search(
         depth -= 3;
 
     // Use qsearch if depth <= 0.
-    if (depth <= 0)
+    if (depth <= (PvNode || cutNode))
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
