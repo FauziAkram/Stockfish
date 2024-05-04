@@ -606,6 +606,7 @@ Value Search::Worker::search(
               : ss->ttHit ? tte->move()
                           : Move::none();
     ttCapture = ttMove && pos.capture_stage(ttMove);
+    ss->ttm = ttMove;
 
     // At this point, if excluded, skip straight to step 6, static eval. However,
     // to save indentation, we list the condition in all code between here and there.
@@ -1284,7 +1285,7 @@ moves_loop:  // When in check, search starts here
 
                 if (value >= beta)
                 {
-                    ss->cutoffCnt += 1 + !ttMove;
+                    ss->cutoffCnt += !ttMove ? !(ss-1)->ttm ? 3 : 2 : 1;
                     assert(value >= beta);  // Fail high
                     break;
                 }
