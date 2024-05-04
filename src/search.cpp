@@ -46,7 +46,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=14, xx2=1644, xx3=1384, xx4=20, xx5=20, xx6=20;
+int yy1=14, yy2=1644, yy3=1384, yy4=20, yy5=20, yy6=20;
+TUNE(xx1,yy1,xx2,yy2,xx3,yy3,xx4,yy4,xx5,yy5,xx6,yy6);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -736,12 +738,21 @@ Value Search::Worker::search(
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-14 * int((ss - 1)->staticEval + ss->staticEval), -1644, 1384);
-        bonus     = bonus > 0 ? 2 * bonus : bonus / 2;
+      if (excludedMove){
+        int bonus = std::clamp(-xx1 * int((ss - 1)->staticEval + ss->staticEval), -xx2, xx3);
+        bonus     = bonus > 0 ? xx4 * bonus / 10 : 10 * bonus / xx5;
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus / 2;
+              << 10 * bonus / xx6;}
+      else {
+        int bonus = std::clamp(-yy1 * int((ss - 1)->staticEval + ss->staticEval), -yy2, yy3);
+        bonus     = bonus > 0 ? yy4 * bonus / 10 : 10 * bonus / yy5;
+        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
+        if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
+            thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
+              << 10 * bonus / yy6;}
+        
     }
 
     // Set up the improving flag, which is true if current static evaluation is
