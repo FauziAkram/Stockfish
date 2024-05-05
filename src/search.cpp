@@ -46,6 +46,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=169, xx2=64, xx3=24;
+TUNE(xx1,xx2);
+TUNE(SetRange(-20, 80), xx3);
 
 namespace TB = Tablebases;
 
@@ -832,7 +835,7 @@ Value Search::Worker::search(
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
     // much above beta, we can (almost) safely prune the previous move.
-    probCutBeta = beta + 169 - 63 * improving;
+    probCutBeta = beta + xx1 - xx2 * improving - xx3 * (cutNode && !ss->ttHit);
     if (
       !PvNode && depth > 3
       && std::abs(beta) < VALUE_TB_WIN_IN_MAX_PLY
