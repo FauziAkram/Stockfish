@@ -35,6 +35,9 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int xx1=32395, xx2=942, xx3=11, xx4=139, xx5=1058, xx6=178;
+int xx7=32793, xx8=944, xx9=9, xx10=140, xx11=1067, xx12=206;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12);
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
