@@ -520,7 +520,7 @@ Value Search::Worker::search(
     constexpr bool rootNode = nodeType == Root;
 
     // Dive into quiescence search when the depth reaches zero
-    if (depth <= 0)
+    if (depth <= (!PvNode && !cutNode && (ss-1)->PVdistance >= 4))
         return qsearch < PvNode ? PV : NonPV > (pos, ss, alpha, beta);
 
     // Check if we have an upcoming move that draws by repetition, or
@@ -557,8 +557,9 @@ Value Search::Worker::search(
     priorCapture       = pos.captured_piece();
     Color us           = pos.side_to_move();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
-    bestValue                                             = -VALUE_INFINITE;
-    maxValue                                              = VALUE_INFINITE;
+    bestValue                        = -VALUE_INFINITE;
+    maxValue                         = VALUE_INFINITE;
+    ss->PVdistance                   = PvNode ? 0 : (ss-1)->PVdistance + 1;
 
     // Check for the available remaining time
     if (is_mainthread())
