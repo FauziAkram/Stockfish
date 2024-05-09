@@ -178,7 +178,7 @@ void MovePicker::score() {
             Square    to   = m.to_sq();
 
             // histories
-            m.value = 2 * (*mainHistory)[pos.side_to_move()][m.from_to()];
+            m.value = 3 * (*mainHistory)[pos.side_to_move()][m.from_to()];
             m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
             m.value += 2 * (*continuationHistory[0])[pc][to];
             m.value += (*continuationHistory[1])[pc][to];
@@ -241,7 +241,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3560 * d; };
+    auto quiet_threshold = [](Depth d) { return -3485 * (d + 2); };
 
 top:
     switch (stage)
