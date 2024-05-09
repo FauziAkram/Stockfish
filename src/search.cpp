@@ -46,6 +46,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=100, xx2=100, xx3=100, xx4=100, xx5=100, xx6=100;
+TUNE(SetRange(-100, 300), xx1,xx2,xx3,xx4,xx5,xx6);
 
 namespace TB = Tablebases;
 
@@ -1334,9 +1336,9 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 5) + (PvNode || cutNode) + ((ss - 1)->statScore < -14455)
-                  + ((ss - 1)->moveCount > 10) + (!ss->inCheck && bestValue <= ss->staticEval - 130)
-                  + (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 77);
+        int bonus = (xx1 * (depth > 5) + xx2 * (PvNode || cutNode) + xx3 * ((ss - 1)->statScore < -14455)
+                  + xx4 * ((ss - 1)->moveCount > 10) + xx5 * (!ss->inCheck && bestValue <= ss->staticEval - 130)
+                  + xx6 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 77)) / 100;
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()]
