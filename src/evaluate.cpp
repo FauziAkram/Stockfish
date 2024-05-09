@@ -79,9 +79,9 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     };
 
     if (!smallNet)
-        adjustEval(32395, 942, 11, 139, 1058, 178);
+        adjustEval(32395, 992, 11, 136, 1058, 178);
     else
-        adjustEval(32793, 944, 9, 140, 1067, 206);
+        adjustEval(32564, 944, 8, 140, 1067, 223);
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
