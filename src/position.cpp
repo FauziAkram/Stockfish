@@ -1040,14 +1040,14 @@ bool Position::see_ge(Move m, int threshold) const {
   if (m.type_of() != PROMOTION)
       swap = PieceValue[piece_on(to)] - threshold;
   else
-      swap = PieceValue[promotion_type(m)] - PieceValue[PAWN] - threshold;
+      swap = PieceValue[m.promotion_type()] - PieceValue[PAWN] - threshold;
     if (swap < 0)
         return false;
 
     if (m.type_of() != PROMOTION)
       swap = PieceValue[piece_on(from)] - swap;
   else
-      swap = PieceValue[promotion_type(m)] - swap;
+      swap = PieceValue[m.promotion_type()] - swap;
   
     if (swap <= 0)
         return true;
