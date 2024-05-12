@@ -1146,8 +1146,11 @@ moves_loop:  // When in check, search starts here
                       + (*contHist[0])[movedPiece][move.to_sq()]
                       + (*contHist[1])[movedPiece][move.to_sq()] - 5313;
 
+        if (std::abs(ttValue) < VALUE_TB_WIN_IN_MAX_PLY && ss->staticEval != VALUE_NONE)
+          ss->statScore += std::abs(ttValue - ss->staticEval) * 2;
+
         // Decrease/increase reduction for moves with a good/bad history (~8 Elo)
-        r -= ss->statScore / (16145 - std::min(depth, 15) * 102);
+        r -= ss->statScore / (15304 - std::min(depth, 17) * 110);
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1 + rootNode)
