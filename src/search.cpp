@@ -1150,7 +1150,7 @@ moves_loop:  // When in check, search starts here
           ss->statScore += std::abs(ttValue - ss->staticEval) * 2;
 
         // Decrease/increase reduction for moves with a good/bad history (~8 Elo)
-        r -= ss->statScore / (15304 - std::min(depth, 17) * 110);
+        r -= ss->statScore / (16570 - std::min(depth, 17) * 97);
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1 + rootNode)
