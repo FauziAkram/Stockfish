@@ -46,6 +46,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=177, xx2=65;
+TUNE(SetRange(-50, 500), xx1);
+TUNE(SetRange(-50, 220), xx2);
 
 namespace TB = Tablebases;
 
@@ -879,7 +882,7 @@ Value Search::Worker::search(
                     // Save ProbCut data into transposition table
                     tte->save(posKey, value_to_tt(value, ss->ply), ss->ttPv, BOUND_LOWER, depth - 3,
                               move, unadjustedStaticEval, tt.generation());
-                    return std::abs(value) < VALUE_TB_WIN_IN_MAX_PLY ? value - (177 - 65 * improving)
+                    return std::abs(value) < VALUE_TB_WIN_IN_MAX_PLY ? value - (xx1 - xx2 * improving)
                                                                      : value;
                 }
             }
