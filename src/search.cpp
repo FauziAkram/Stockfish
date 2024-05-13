@@ -757,7 +757,7 @@ Value Search::Worker::search(
 
     opponentWorsening = ss->staticEval + (ss - 1)->staticEval > 2;
 
-    dbg_hit_on(improving && oppWorsening, 0); dbg_hit_on(improving && !oppWorsening, 1); dbg_hit_on(!improving && oppWorsening, 2); dbg_hit_on(!improving && !oppWorsening, 3); 
+    dbg_hit_on(improving && opponentWorsening, 0); dbg_hit_on(improving && !opponentWorsening, 1); dbg_hit_on(!improving && opponentWorsening, 2); dbg_hit_on(!improving && !opponentWorsening, 3); 
 
     // Step 7. Razoring (~1 Elo)
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
