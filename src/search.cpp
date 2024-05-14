@@ -46,7 +46,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=32, xx2=185, xx3=182, xx4=14, xx5=176;
+TUNE(xx1,xx2,xx3,xx4,xx5);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -981,8 +982,8 @@ moves_loop:  // When in check, search starts here
                 }
 
                 // SEE based pruning for captures and checks (~11 Elo)
-                int seeHist = std::clamp(captHist / 32, -185 * depth, 182 * depth);
-                if (!pos.see_ge(move, -176 * depth - seeHist))
+                int seeHist = std::clamp(captHist / xx1, -xx2 * depth, xx3 * depth);
+                if (depth < xx4 && !pos.see_ge(move, -xx5 * depth - seeHist))
                     continue;
             }
             else
