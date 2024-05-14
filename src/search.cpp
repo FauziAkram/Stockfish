@@ -624,7 +624,11 @@ Value Search::Worker::search(
         {
             // Bonus for a quiet ttMove that fails high (~2 Elo)
             if (!ttCapture)
+            {
                 update_quiet_stats(pos, ss, *this, ttMove, stat_bonus(depth));
+                thisThread->pawnHistory[pawn_structure(pos)][pos.moved_piece(ttMove)]
+                                   [to_sq(ttMove)] << stat_bonus(depth);
+            }
 
             // Extra penalty for early quiet moves of
             // the previous ply (~1 Elo on STC, ~2 Elo on LTC)
