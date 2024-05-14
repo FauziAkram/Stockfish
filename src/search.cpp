@@ -309,13 +309,14 @@ void Search::Worker::iterative_deepening() {
             selDepth = 0;
 
             // Reset aspiration window starting size
-            Value avg = rootMoves[pvIdx].averageScore;
+            Value avg  = rootMoves[pvIdx].averageScore;
+            Value prev = rootMoves[pvIdx].previousScore;
             delta     = 10 + avg * avg / 9474;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 117 * avg / (std::abs(avg) + 88);
+            optimism[us]  = 117 * prev / (std::abs(prev) + 88);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
