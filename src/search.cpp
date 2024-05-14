@@ -46,7 +46,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=12, xx2=1749, xx3=1584, xx4=4, xx5=5, xx6=14323, xx7=10, xx8=120, xx9=656, xx10=76;
+int yy1=100, yy2=100, yy3=100, yy4=100, yy5=100, yy6=100, yy7=100, yy8=100;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10;
+TUNE(SetRange(-100, 330), yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -738,7 +741,7 @@ Value Search::Worker::search(
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-12 * int((ss - 1)->staticEval + ss->staticEval), -1749, 1584);
+        int bonus = std::clamp(-xx1 * int((ss - 1)->staticEval + ss->staticEval), -xx2, xx3);
         bonus     = bonus > 0 ? 2 * bonus : bonus / 2;
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
@@ -1327,9 +1330,10 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (depth > 4) + (depth > 5) + (PvNode || cutNode) + ((ss - 1)->statScore < -14323)
-                  + ((ss - 1)->moveCount > 10) + (!ss->inCheck && bestValue <= ss->staticEval - 120)
-                  + (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 76);
+        int bonus = (yy1 * (depth > xx4) + yy2 * (depth > xx5) + yy3 * (PvNode || cutNode) + yy4 * ((ss - 1)->statScore < -xx6)
+                  + yy5 * ((ss - 1)->moveCount > xx7) + yy6 * (!ss->inCheck && bestValue <= ss->staticEval - xx8)
+                  + yy7 * (bestValue < alpha - xx9)
+                  + yy8 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - xx10)) / 100;
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()]
