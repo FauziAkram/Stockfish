@@ -63,7 +63,7 @@ static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
     Value adjustments[2][2] = {(xx1,xx2),(xx3,xx4)};
     Value futilityMult       = 131 - 48 * noTtCutNode;
-    return futilityMult * d - deductions[oppWorsening][improving] * futilityMult / 1024;
+    return futilityMult * d - adjustments[oppWorsening][improving] * futilityMult / 1024;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
