@@ -1333,7 +1333,6 @@ moves_loop:  // When in check, search starts here
     {
         int bonus = (depth > 4) + (depth > 4) + (PvNode || cutNode) + ((ss - 1)->statScore < -14300)
                   + ((ss - 1)->moveCount > 9) + (!ss->inCheck && bestValue <= ss->staticEval - 106)
-                  + (bestValue < alpha - 674)
                   + (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 76);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
