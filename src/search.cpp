@@ -46,6 +46,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+Value adjustments[2][2];
 int xx1=0, xx2=0, xx3=0, xx4=0;
 TUNE(SetRange(-2048, 10240), adjustments);
 
