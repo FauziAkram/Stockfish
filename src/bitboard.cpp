@@ -121,7 +121,6 @@ Bitboard sliding_attack(PieceType pt, Square sq, Bitboard occupied) {
     Direction RookDirections[4]   = {NORTH, SOUTH, EAST, WEST};
     Direction BishopDirections[4] = {NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST};
 
-
     for (Direction d : (pt == ROOK ? RookDirections : BishopDirections))
     {
         Square s = sq;
