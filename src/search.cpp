@@ -1163,6 +1163,16 @@ moves_loop:  // When in check, search starts here
             // std::clamp has been replaced by a more robust implementation.
             Depth d = std::max(1, std::min(newDepth - r, newDepth + 1));
 
+            if (tte->depth() >= d) 
+            { 
+            if (tte->bound() & BOUND_LOWER)
+            value = tte->value();
+            else if (tte->bound() & BOUND_UPPER)
+            value = alpha;
+            else
+            value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, d, true); 
+            }
+            else
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, d, true);
 
             // Do a full-depth search when reduced LMR search fails high
