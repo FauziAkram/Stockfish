@@ -1456,6 +1456,17 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
         bestValue = futilityBase = -VALUE_INFINITE;
     else
     {
+        // Use dynamic evaluation caching for qsearch.
+    if ((ss - 1)->staticEval != VALUE_NONE && !pos.captured_piece()
+        && pos.pieceCount[pos.side_to_move()] == (ss - 1)->pieceCount[pos.side_to_move()]
+        && pos.pieceCount[~pos.side_to_move()] == (ss - 1)->pieceCount[~pos.side_to_move()])
+    {
+        // If no piece was captured and the piece count is the same, we can reuse the
+        // previous evaluation. This saves a significant amount of NNUE evaluation time.
+        ss->staticEval = bestValue = (ss - 1)->staticEval;
+    }
+    else
+    {
         if (ss->ttHit)
         {
             // Never assume anything about values stored in TT
@@ -1480,6 +1491,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
             ss->staticEval       = bestValue =
               to_corrected_static_eval(unadjustedStaticEval, *thisThread, pos);
         }
+    }
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)
