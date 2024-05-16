@@ -728,6 +728,8 @@ Value Search::Worker::search(
     }
     else
     {
+         tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, Move::none(),
+                  unadjustedStaticEval, tt.generation());
         unadjustedStaticEval = evaluate(networks, pos, refreshTable, thisThread->optimism[us]);
         ss->staticEval = eval = to_corrected_static_eval(unadjustedStaticEval, *thisThread, pos);
 
