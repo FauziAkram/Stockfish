@@ -1125,6 +1125,8 @@ bool Position::see_ge(Move m, int threshold) const {
             else 
                 return res;
     }
+
+    return bool(res);
 }
 
 // Tests whether the position is drawn by 50-move rule
