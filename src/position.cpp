@@ -1120,7 +1120,7 @@ bool Position::see_ge(Move m, int threshold) const {
         else  // KING
               // If we "capture" with the king but the opponent still has attackers,
               // reverse the result.
-            if ((attackers & ~pieces(stm))) { 
+            if (attackers & ~pieces(stm))
                 return res ^ 1;
             else 
                 return res;
