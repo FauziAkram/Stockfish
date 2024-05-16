@@ -46,7 +46,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=4057, xx2=4057;
+TUNE(SetRange(-100, 10000), xx1,xx2);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -1568,7 +1569,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
                        + (*contHist[1])[pos.moved_piece(move)][move.to_sq()]
                        + thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
                                                 [move.to_sq()]
-                     <= 4057)
+                     <= moveCount > 3 ? xx1: xx2)
                 continue;
 
             // Do not search moves with bad enough SEE values (~5 Elo)
