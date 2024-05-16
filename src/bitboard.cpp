@@ -129,6 +129,8 @@ Bitboard sliding_attack(PieceType pt, Square sq, Bitboard occupied) {
             if (occupied & s) {
                 break;
     }
+    }
+    }
 
     return attacks;
 }
