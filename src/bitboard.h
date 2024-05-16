@@ -222,22 +222,7 @@ inline Bitboard attacks_bb(Square s) {
 // assuming the board is occupied according to the passed Bitboard.
 // Sliding piece attacks do not continue passed an occupied square.
 template<PieceType Pt>
-inline Bitboard attacks_bb(Square s, Bitboard occupied) {
-
-    assert((Pt != PAWN) && (is_ok(s)));
-
-    switch (Pt)
-    {
-    case BISHOP :
-        return BishopMagics[s].attacks[BishopMagics[s].index(occupied)];
-    case ROOK :
-        return RookMagics[s].attacks[RookMagics[s].index(occupied)];
-    case QUEEN :
-        return attacks_bb<BISHOP>(s, occupied) | attacks_bb<ROOK>(s, occupied);
-    default :
-        return PseudoAttacks[Pt][s];
-    }
-}
+inline Bitboard attacks_bb<PieceType>(Square, Bitboard)
 
 // Returns the attacks by the given piece
 // assuming the board is occupied according to the passed Bitboard.
