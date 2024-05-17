@@ -817,7 +817,7 @@ Value Search::Worker::search(
             if (v >= beta)
                 return nullValue;
             else
-                return (3 * v + beta) / 4;
+                return (v + 3 * beta) / 4;
         }
     }
 
