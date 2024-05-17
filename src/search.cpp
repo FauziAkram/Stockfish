@@ -728,12 +728,12 @@ Value Search::Worker::search(
     }
     else
     {
-        unadjustedStaticEval = evaluate(networks, pos, refreshTable, thisThread->optimism[us]);
-        ss->staticEval = eval = to_corrected_static_eval(unadjustedStaticEval, *thisThread, pos);
-
         // Static evaluation is saved as it was before adjustment by correction history
         tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, Move::none(),
                   unadjustedStaticEval, tt.generation());
+      
+        unadjustedStaticEval = evaluate(networks, pos, refreshTable, thisThread->optimism[us]);
+        ss->staticEval = eval = to_corrected_static_eval(unadjustedStaticEval, *thisThread, pos);
     }
 
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
