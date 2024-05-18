@@ -208,9 +208,12 @@ ExtMove* generate_all(const Position& pos, ExtMove* moveList) {
 
     if (!Checks || pos.blockers_for_king(~Us) & ksq)
     {
-        Bitboard b = attacks_bb<KING>(ksq) & (Type == EVASIONS ? ~pos.pieces(Us) : target);
-        if (Checks)
-            b &= ~attacks_bb<QUEEN>(pos.square<KING>(~Us));
+        // Precompute non-checking squares for king moves
+    Bitboard nonCheckingSquares = (Type == EVASIONS ? ~pos.pieces(Us) : target);
+    if (Checks)
+        nonCheckingSquares &= ~attacks_bb<QUEEN>(pos.square<KING>(~Us));
+
+    Bitboard b = attacks_bb<KING>(ksq) & nonCheckingSquares;
 
         while (b)
             *moveList++ = Move(ksq, pop_lsb(b));
