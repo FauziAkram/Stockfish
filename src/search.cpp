@@ -1095,7 +1095,7 @@ moves_loop:  // When in check, search starts here
                           > 3748)
                 extension = 1;
           
-            if (   type_of(movedPiece) == PAWN
+            else if (   type_of(movedPiece) == PAWN
                      && move == ttMove
                      && pos.rule50_count() > 80
                      && thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()] >= 0)
