@@ -215,7 +215,7 @@ void MovePicker::score() {
                 m.value = (*mainHistory)[pos.side_to_move()][m.from_to()]
                         + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
                         + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
-                        + pos.gives_check(m) ? (1 << 24) : 0;
+                        + pos.gives_check(m) ? 300 : 0;
         }
 }
 
