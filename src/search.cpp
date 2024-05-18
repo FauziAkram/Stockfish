@@ -1737,20 +1737,16 @@ void update_all_stats(const Position& pos,
     int quietMoveBonus = stat_bonus(depth + 1);
     int quietMoveMalus = stat_malus(depth);
 
+    // Update stats for the best move
     if (!pos.capture_stage(bestMove))
     {
         int bestMoveBonus = bestValue > beta + 165 ? quietMoveBonus      // larger bonus
                                                    : stat_bonus(depth);  // smaller bonus
 
         update_quiet_stats(pos, ss, workerThread, bestMove, bestMoveBonus);
-
-        // Decrease stats for all non-best quiet moves
-        for (int i = 0; i < quietCount; ++i)
-            update_quiet_histories(pos, ss, workerThread, quietsSearched[i], -quietMoveMalus);
     }
     else
     {
-        // Increase stats for the best move in case it was a capture move
         captured = type_of(pos.piece_on(bestMove.to_sq()));
         captureHistory[moved_piece][bestMove.to_sq()][captured] << quietMoveBonus;
     }
@@ -1763,12 +1759,16 @@ void update_all_stats(const Position& pos,
         && !pos.captured_piece())
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -quietMoveMalus);
 
-    // Decrease stats for all non-best capture moves
+    // Decrease stats for all non-best moves
+    for (int i = 0; i < quietCount; ++i)
+        update_quiet_histories(pos, ss, workerThread, quietsSearched[i], -quietMoveMalus);
+
     for (int i = 0; i < captureCount; ++i)
     {
         moved_piece = pos.moved_piece(capturesSearched[i]);
         captured    = type_of(pos.piece_on(capturesSearched[i].to_sq()));
-        captureHistory[moved_piece][capturesSearched[i].to_sq()][captured] << -quietMoveMalus;
+        captureHistory[moved_piece][capturesSearched[i].to_sq()][captured]
+          << -quietMoveMalus;
     }
 }
 
