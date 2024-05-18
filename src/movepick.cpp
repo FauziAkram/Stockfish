@@ -27,6 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1= 8, xx2=128;
+TUNE(SetRange(-2048, 2048), xx1,xx2);
 
 namespace {
 
@@ -188,6 +190,9 @@ void MovePicker::score() {
 
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
+            m.value += bool(pos.check_squares(pt) & to) * (16384 +
+              (xx1 * pos.non_pawn_material(pos.side_to_move())
+              + xx2 * pos.count<PAWN>(pos.side_to_move())));
 
             // bonus for escaping from capture
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
