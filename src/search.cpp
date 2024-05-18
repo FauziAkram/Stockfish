@@ -919,11 +919,8 @@ moves_loop:  // When in check, search starts here
     {
         assert(move.is_ok());
 
-        if (move == excludedMove)
-            continue;
-
-        // Check for legality
-        if (!pos.legal(move))
+        // Check for legality and excluded move
+        if (move == excludedMove || !pos.legal(move))
             continue;
 
         // At root obey the "searchmoves" option and skip moves not listed in Root
