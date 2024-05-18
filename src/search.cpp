@@ -1675,35 +1675,18 @@ Value value_from_tt(Value v, int ply, int r50c) {
     if (v == VALUE_NONE)
         return VALUE_NONE;
 
-    // handle TB win or better
-    if (v >= VALUE_TB_WIN_IN_MAX_PLY)
-    {
-        // Downgrade a potentially false mate score
-        if (v >= VALUE_MATE_IN_MAX_PLY && VALUE_MATE - v > 100 - r50c)
-            return VALUE_TB_WIN_IN_MAX_PLY - 1;
+    // Handle TB scores and prevent false mate/TB scores
+    if (v >= VALUE_TB_WIN_IN_MAX_PLY && v < VALUE_MATE_IN_MAX_PLY && VALUE_TB - v > 100 - r50c)
+        return VALUE_TB_WIN_IN_MAX_PLY - 1;
+      
+    else if (v <= VALUE_TB_LOSS_IN_MAX_PLY && v > VALUE_MATED_IN_MAX_PLY
+             && VALUE_TB + v > 100 - r50c)
+        return VALUE_TB_LOSS_IN_MAX_PLY + 1;
 
-        // Downgrade a potentially false TB score.
-        if (VALUE_TB - v > 100 - r50c)
-            return VALUE_TB_WIN_IN_MAX_PLY - 1;
-
-        return v - ply;
-    }
-
-    // handle TB loss or worse
-    if (v <= VALUE_TB_LOSS_IN_MAX_PLY)
-    {
-        // Downgrade a potentially false mate score.
-        if (v <= VALUE_MATED_IN_MAX_PLY && VALUE_MATE + v > 100 - r50c)
-            return VALUE_TB_LOSS_IN_MAX_PLY + 1;
-
-        // Downgrade a potentially false TB score.
-        if (VALUE_TB + v > 100 - r50c)
-            return VALUE_TB_LOSS_IN_MAX_PLY + 1;
-
-        return v + ply;
-    }
-
-    return v;
+    // Adjust mate and TB scores to refer to the root
+    return v >= VALUE_TB_WIN_IN_MAX_PLY ? v - ply
+           : v <= VALUE_TB_LOSS_IN_MAX_PLY ? v + ply
+                                           : v;
 }
 
 
