@@ -65,7 +65,7 @@ ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard ta
 
     // Single and double pawn pushes, no promotions
     if constexpr (Type != CAPTURES)
-{
+    {
     // Precompute a mask of empty squares on ranks 2, 3, and 4 (or 5, 6, and 7 for black)
     Bitboard emptyRanksMask = (Us == WHITE ? Rank2BB | Rank3BB | Rank4BB 
                                           : Rank5BB | Rank6BB | Rank7BB) & emptySquares;
