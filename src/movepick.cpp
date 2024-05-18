@@ -189,6 +189,17 @@ void MovePicker::score() {
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
+            // King safety bonus
+            if (pt != KING) {
+            int kingSafetyBonus = 0;
+            if (attacks_bb<KING>(pos.square<KING>(pos.side_to_move())) & to) { // Move defends king
+            kingSafetyBonus = 8192;
+            } else if (attacks_bb<KING>(pos.square<KING>(~pos.side_to_move())) & from) { // Move exposes king
+            kingSafetyBonus = -4096;
+            }
+            m.value += kingSafetyBonus;
+           }
+
             // bonus for escaping from capture
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
                                                   : pt == ROOK && !(to & threatenedByMinor) ? 25600
