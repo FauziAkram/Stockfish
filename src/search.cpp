@@ -1801,7 +1801,8 @@ void update_refutations(const Position& pos, Stack* ss, Search::Worker& workerTh
     if (((ss - 1)->currentMove).is_ok())
     {
         Square prevSq                                           = ((ss - 1)->currentMove).to_sq();
-        workerThread.counterMoves[pos.piece_on(prevSq)][prevSq] = move;
+        int pawnIndex = pawn_structure_index(pos);
+        workerThread.counterMoves[pawnIndex][pos.piece_on(prevSq)][prevSq] = move;
     }
 }
 
