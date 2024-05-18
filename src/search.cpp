@@ -919,7 +919,7 @@ moves_loop:  // When in check, search starts here
     {
         assert(move.is_ok());
 
-        // Check for legality and excluded move
+        // Check for excluded move and legality
         if (move == excludedMove || !pos.legal(move))
             continue;
 
