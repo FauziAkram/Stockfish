@@ -153,10 +153,13 @@ void MovePicker::score() {
     {
         Color us = pos.side_to_move();
 
-        threatenedByPawn = pos.attacks_by<PAWN>(~us);
-        threatenedByMinor =
-          pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatenedByPawn;
-        threatenedByRook = pos.attacks_by<ROOK>(~us) | threatenedByMinor;
+        // Calculate attack bitboards only when needed
+        if (threatenedPieces & from) {
+            threatenedByPawn = pos.attacks_by<PAWN>(~us);
+            threatenedByMinor =
+              pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatenedByPawn;
+            threatenedByRook = pos.attacks_by<ROOK>(~us) | threatenedByMinor;
+        }
 
         // Pieces threatened by pieces of lesser material value
         threatenedPieces = (pos.pieces(us, QUEEN) & threatenedByRook)
