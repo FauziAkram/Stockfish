@@ -1800,7 +1800,7 @@ void update_refutations(const Position& pos, Stack* ss, Search::Worker& workerTh
     }
 
     // Update countermove history
-    if (((ss - 1)->currentMove).is_ok())
+    if (((ss - 1)->currentMove).is_ok() && pos.capture(((ss - 1)->currentMove)))
     {
         Square prevSq                                           = ((ss - 1)->currentMove).to_sq();
         workerThread.counterMoves[pos.piece_on(prevSq)][prevSq] = move;
