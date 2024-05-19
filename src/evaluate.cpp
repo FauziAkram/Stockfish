@@ -35,6 +35,8 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int xx1=29462, xx2=380, xx3=389, xx4=425, xx5=681, xx6=1189, xx7=4871, xx8=150, xx9=385, xx10=402, xx11=640, xx12=1341;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx1,xx12;
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
@@ -76,8 +78,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 584;
     nnue -= nnue * (nnueComplexity * 5 / 3) / 32395;
 
-    int npm = pos.non_pawn_material() / 64;
-    v       = (nnue * (npm + 943 + 11 * pos.count<PAWN>()) + optimism * (npm + 140)) / 1058;
+    v = (  nnue     * (xx1 + xx2 * pos.count<PAWN>() + xx3 * pos.count<KNIGHT>() + xx4 * pos.count<BISHOP>() + xx5 * pos.count<ROOK>() + xx6 * pos.count<QUEEN>())
+           + optimism * (xx7  + xx8 * pos.count<PAWN>() + xx9 * pos.count<KNIGHT>() + xx10 * pos.count<BISHOP>() + xx11 * pos.count<ROOK>() + xx12 * pos.count<QUEEN>())) / 32768;
 
     // Damp down the evaluation linearly when shuffling
     v = v * ((smallNet ? 206 : 178) - pos.rule50_count()) / 207;
