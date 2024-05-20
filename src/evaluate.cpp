@@ -76,8 +76,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 584;
     nnue -= nnue * (nnueComplexity * 5 / 3) / 32395;
 
-    v = (  nnue     * (33421 + 390 * pos.count<PAWN>() + 364 * pos.count<KNIGHT>() + 415 * pos.count<BISHOP>() + 720 * pos.count<ROOK>() + 1190 * pos.count<QUEEN>())
-      + optimism * (5136 + 150 * pos.count<PAWN>() + 376 * pos.count<KNIGHT>() + 396 * pos.count<BISHOP>() + 666 * pos.count<ROOK>() + 1056 * pos.count<QUEEN>())) / 32768;
+    v = (  nnue     * (32500 + 371 * pos.count<PAWN>() + 334 * pos.count<KNIGHT>() + 369 * pos.count<BISHOP>() + 669 * pos.count<ROOK>() + 1232 * pos.count<QUEEN>())
+      + optimism * (4533 + 123 * pos.count<PAWN>() + 373 * pos.count<KNIGHT>() + 411 * pos.count<BISHOP>() + 591 * pos.count<ROOK>() + 1193 * pos.count<QUEEN>())) / 32768;
 
     // Damp down the evaluation linearly when shuffling
     v = v * ((smallNet ? 206 : 178) - pos.rule50_count()) / 207;
