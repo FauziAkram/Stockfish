@@ -81,7 +81,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
               + 392 * pos.count<BISHOP>() + 649 * pos.count<ROOK>())
          + optimism
              * (4835 + 136 * pos.count<PAWN>() + 375 * pos.count<KNIGHT>()
-                + 403 * pos.count<BISHOP>() + 628 * pos.count<ROOK>())
+                + 403 * pos.count<BISHOP>() + 628 * pos.count<ROOK>()))
       / 31235;
 
     // Damp down the evaluation linearly when shuffling
