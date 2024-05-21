@@ -78,11 +78,11 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     v = (nnue
            * (32961 + 381 * pos.count<PAWN>() + 349 * pos.count<KNIGHT>()
-              + 392 * pos.count<BISHOP>() + 649 * pos.count<ROOK>() + 1211 * pos.count<QUEEN>())
+              + 392 * pos.count<BISHOP>() + 1211 * pos.count<QUEEN>())
          + optimism
              * (4835 + 136 * pos.count<PAWN>() + 375 * pos.count<KNIGHT>()
-                + 403 * pos.count<BISHOP>() + 628 * pos.count<ROOK>() + 1124 * pos.count<QUEEN>()))
-      / 32768;
+                + 403 * pos.count<BISHOP>() + 1124 * pos.count<QUEEN>()))
+      / 31032;
 
     // Damp down the evaluation linearly when shuffling
     v = v * (204 - pos.rule50_count()) / 208;
