@@ -35,7 +35,8 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
-
+int xx1=620, xx2=32082, xx3=32961, xx4=381, xx5=649, xx6=1211, xx7=4835, xx8=136, xx9=628, xx10=1124, xx11=34860, xx12=204, xx13=208;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -73,19 +74,17 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Blend optimism and eval with nnue complexity and material imbalance
-    optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 620;
-    nnue -= nnue * (nnueComplexity * 5 / 3) / 32082;
+    optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / xx1;
+    nnue -= nnue * (nnueComplexity * 5 / 3) / xx2;
 
     v = (nnue
-           * (32961 + 381 * pos.count<PAWN>() + 349 * pos.count<KNIGHT>()
-              + 392 * pos.count<BISHOP>() + 649 * pos.count<ROOK>() + 1211 * pos.count<QUEEN>())
+           * (xx3 + xx4 * pos.count<PAWN>() + xx5 * pos.count<ROOK>() + xx6 * pos.count<QUEEN>())
          + optimism
-             * (4835 + 136 * pos.count<PAWN>() + 375 * pos.count<KNIGHT>()
-                + 403 * pos.count<BISHOP>() + 628 * pos.count<ROOK>() + 1124 * pos.count<QUEEN>()))
-      / 36860;
+             * (xx7 + xx8 * pos.count<PAWN>() + xx9 * pos.count<ROOK>() + xx10 * pos.count<QUEEN>()))
+      / xx11;
 
     // Damp down the evaluation linearly when shuffling
-    v = v * (204 - pos.rule50_count()) / 208;
+    v = v * (xx12 - pos.rule50_count()) / xx13;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
