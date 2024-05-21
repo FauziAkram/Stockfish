@@ -46,12 +46,13 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int yy1=0, xx1=1, xx2=1, xx3=1, xx4=1, xx5=1, xx6=1, xx7=1, xx8=-1, xx9 =0,	xx10 =0,	xx11 =0,	xx12 =0,	xx13 =0,	xx14 =0,	xx15 =0,	xx16 =0,
+int yy1=0, yy2=0, xx1=1, xx2=1, xx3=1, xx4=1, xx5=1, xx6=1, xx7=1, xx8=-1, xx9 =0,	xx10 =0,	xx11 =0,	xx12 =0,	xx13 =0,	xx14 =0,	xx15 =0,	xx16 =0,
 xx17 =0,	xx18 =0,	xx19 =0,	xx20 =0,	xx21 =0,	xx22 =0,	xx23 =0,	xx24 =0,	xx25 =0,	xx26 =0,	xx27 =0,	xx28 =0,	xx29 =0,	xx30 =0,	xx31 =0,
 xx32 =0,	xx33 =0,	xx34 =0,	xx35 =0,	xx36 =0,	xx37 =0,	xx38 =0,	xx39 =0,	xx40 =0,	xx41 =0,	xx42 =0,	xx43 =0,	xx44 =0,	xx45 =0,	xx46 =0,
 xx47 =0,	xx48 =0;
 
-TUNE(SetRange(-3, 3), yy1, xx1,	xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14,	xx15,	xx16,	xx17,	xx18,	xx19,	xx20,
+TUNE(SetRange(-5, 5), yy1, yy2;
+TUNE(SetRange(-3, 3), xx1,	xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14,	xx15,	xx16,	xx17,	xx18,	xx19,	xx20,
 xx21,	xx22,	xx23,	xx24,	xx25,	xx26,	xx27,	xx28,	xx29,	xx30,	xx31,	xx32,	xx33,	xx34,	xx35,	xx36,	xx37,	xx38,	xx39,	xx40,	xx41,	xx42,	xx43,	xx44,
 xx45,	xx46,	xx47,	xx48);
 
@@ -1379,7 +1380,8 @@ moves_loop:  // When in check, search starts here
 + xx45 * (depth < 5)
 + xx46 * (depth < 8)
 + xx47 * (depth < 12)
-+ xx48 * (depth < 15);
++ xx48 * (depth < 15)
++ yy2;
       bonus = std::max(bonus, yy1);
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus);
