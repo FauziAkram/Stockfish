@@ -54,9 +54,6 @@ xx47 =0,	xx48 =0,	xx49 =0,	xx50 =0,	xx51 =0,	xx52 =0,	xx53 =0,	xx54 =0,	xx55 =0,
 TUNE(SetRange(-3, 3), yy1, xx1,	xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14,	xx15,	xx16,	xx17,	xx18,	xx19,	xx20,
 xx21,	xx22,	xx23,	xx24,	xx25,	xx26,	xx27,	xx28,	xx29,	xx30,	xx31,	xx32,	xx33,	xx34,	xx35,	xx36,	xx37,	xx38,	xx39,	xx40,	xx41,	xx42,	xx43,	xx44,
 xx45,	xx46,	xx47,	xx48,	xx49,	xx50,	xx51,	xx52,	xx53,	xx54,	xx55,	xx56);
-);
-
-
 
 namespace TB = Tablebases;
 
