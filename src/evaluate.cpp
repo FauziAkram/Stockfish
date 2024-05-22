@@ -73,19 +73,17 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Blend optimism and eval with nnue complexity and material imbalance
-    optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 620;
-    nnue -= nnue * (nnueComplexity * 5 / 3) / 32082;
+    optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 537;
+    nnue -= nnue * (nnueComplexity * 5 / 3) / 31070;
 
     v = (nnue
-           * (32961 + 381 * pos.count<PAWN>() + 349 * pos.count<KNIGHT>()
-              + 392 * pos.count<BISHOP>() + 649 * pos.count<ROOK>() + 1211 * pos.count<QUEEN>())
+           * (34355 + 380 * pos.count<PAWN>() + 652 * pos.count<ROOK>() + 1311 * pos.count<QUEEN>())
          + optimism
-             * (4835 + 136 * pos.count<PAWN>() + 375 * pos.count<KNIGHT>()
-                + 403 * pos.count<BISHOP>() + 628 * pos.count<ROOK>() + 1124 * pos.count<QUEEN>()))
-      / 36860;
+           * (4694 + 139 * pos.count<PAWN>() + 618 * pos.count<ROOK>() + 1129 * pos.count<QUEEN>()))
+      / 34493;
 
     // Damp down the evaluation linearly when shuffling
-    v = v * (204 - pos.rule50_count()) / 208;
+    v = v * (197 - pos.rule50_count()) / 230;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
