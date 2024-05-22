@@ -47,7 +47,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=51, xx2=151, xx3=1729, xx4=1517;
+TUNE(SetRange(1, 251), xx1);
+TUNE(SetRange(1, 451), xx2);
+TUNE(xx3,xx4);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -740,7 +743,8 @@ Value Search::Worker::search(
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-11 * int((ss - 1)->staticEval + ss->staticEval), -1729, 1517);
+        int bonus = std::clamp(-xx1 * int((ss - 1)->staticEval + ss->staticEval)
+                                 * abs((ss - 1)->staticEval + ss->staticEval) / xx2, -xx3, xx4);
         bonus     = bonus > 0 ? 2 * bonus : bonus / 2;
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
