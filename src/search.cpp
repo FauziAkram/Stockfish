@@ -55,6 +55,8 @@ using namespace Search;
 
 namespace {
 
+opponentWorsening = false;
+
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
