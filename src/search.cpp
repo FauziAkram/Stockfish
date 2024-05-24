@@ -765,11 +765,11 @@ Value Search::Worker::search(
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
     if (eval < alpha - 501 - 305 * depth * depth)
-    {
+        {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
             return value;
-    }
+        }
 
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
@@ -779,6 +779,7 @@ Value Search::Worker::search(
              >= beta
         && eval >= beta && eval < VALUE_TB_WIN_IN_MAX_PLY)
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
+    }
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < 13999
