@@ -796,8 +796,8 @@ Value Search::Worker::search(
         // Perform a preliminary qsearch to verify that the null move observation holds
         Value nullValue = -qsearch<NonPV>(pos, ss + 1, -beta, -beta + 1);
 
-        if (nullValue >= beta && depth > R && cutNode)
-            nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, 0);
+        if (nullValue >= beta && depth > R && !cutNode)
+            nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, 1);
 
         pos.undo_null_move();
 
