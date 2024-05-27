@@ -35,7 +35,8 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
-
+int ee1=204, ee2=208;
+TUNE(ee1,ee2);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -85,7 +86,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
       / 35967;
 
     // Damp down the evaluation linearly when shuffling
-    v = v * (204 - pos.rule50_count()) / 208;
+    v = v * (ee1 - pos.rule50_count()) / ee2;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
