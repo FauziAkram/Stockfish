@@ -27,6 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=51873, xx2=27386, xx3=14058, xx4=50221, xx5=9907, xx6=25266, xx7=15905, xx8=6410, xx9=4152, xx10=7984;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10);
 
 namespace {
 
@@ -190,20 +192,18 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? xx1
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? xx2
+                                                  : !(to & threatenedByPawn)                ? xx3
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
-            m.value -= !(threatenedPieces & from)
-                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 48150
-                                          + bool(to & threatenedByMinor) * 10650
-                          : pt == ROOK ? bool(to & threatenedByMinor) * 24335
-                          : pt != PAWN ? bool(to & threatenedByPawn) * 14950
-                                       : 0)
-                       : 0;
+            m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * xx4
+                                        + bool(to & threatenedByMinor) * xx5
+                        : pt == ROOK ? bool(to & threatenedByMinor) * xx6
+                        : pt != PAWN ? bool(to & threatenedByPawn) * xx7
+                                     : 0);
         }
 
         else  // Type == EVASIONS
@@ -241,7 +241,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3560 * d; };
+    auto quiet_threshold = [](Depth d) { return -xx8 -xx9 * d; };
 
 top:
     switch (stage)
@@ -310,7 +310,7 @@ top:
                 return *cur != refutations[0] && *cur != refutations[1] && *cur != refutations[2];
             }))
         {
-            if ((cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > -xx10 || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
