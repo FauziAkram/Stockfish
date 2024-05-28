@@ -88,12 +88,12 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-const int stat_bonus_Table(9) {xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9};
-int stat_bonus(Depth d) { return d > 9 ? xx10 : stat_bonus_Table(d) ; }
+const int stat_bonus_Table[9] {xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9};
+int stat_bonus(Depth d) { return (d > 9 ? xx10 : stat_bonus_Table[d]) ; }
 
 // History and stats update malus, based on depth
-const int stat_malus_Table(9) {yy1, yy2, yy3, yy4, yy5, yy6, yy7, yy8, yy9};
-int stat_malus(Depth d) { return (d > 9 ? yy10 : stat_malus_Table(d)) ; }
+const int stat_malus_Table[9] {yy1, yy2, yy3, yy4, yy5, yy6, yy7, yy8, yy9};
+int stat_malus(Depth d) { return (d > 9 ? yy10 : stat_malus_Table[d]) ; }
 
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
