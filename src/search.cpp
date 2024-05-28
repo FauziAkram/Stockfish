@@ -54,6 +54,15 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int xx1=18, xx2=127, xx3=332, xx4=537, xx5=742, xx6=947, xx7=1152, xx8=1357, xx9=1544, xx10=1544;
+int yy1=492, yy2=1259, yy3=2026, yy4=2793, yy5=1911, yy6=1911, yy7=1911, yy8=1911, yy9=1911, yy10=1911;
+TUNE(SetRange(-100, 100), xx1);
+TUNE(SetRange(0, 400), xx2);
+TUNE(SetRange(0, 800), xx3);
+TUNE(xx4,xx5,xx6,xx7,xx8,xx9,xx10);
+TUNE(SetRange(0, 1400), yy1);
+TUNE(SetRange(0, 3800), yy2);
+TUNE(yy3,yy4,yy5,yy6,yy7,yy8,yy9,yy10);
 
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
@@ -79,10 +88,13 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::clamp(205 * d - 283, 18, 1544); }
+const int stat_bonus_Table(5) {xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9}
+int stat_bonus(Depth d) { return d > 9 ? xx10 : stat_bonus_Table(d) ; }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return (d < 4 ? 767 * d - 275 : 1911); }
+const int stat_malus_Table(5) {yy1, yy2, yy3, yy4, yy5, yy6, yy7, yy8, yy9}
+int stat_malus(Depth d) { return (d > 9 ? yy10 : stat_malus_Table(d)) ; }
+
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
