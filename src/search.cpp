@@ -79,8 +79,7 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-const int stat_bonus_Table[10] {0, 25, 158, 400, 543, 723, 1274, 1129, 1225, 1555};
-int stat_bonus(Depth d) { return (d > 9 ? 1635 : stat_bonus_Table[d]) ; }
+int stat_bonus(Depth d) { return std::clamp(205 * d - 283, 18, 1544); }
 
 // History and stats update malus, based on depth
 const int stat_malus_Table[10] {0, 470, 1359, 1860, 2615, 1953, 1755, 1501, 2082, 1916};
