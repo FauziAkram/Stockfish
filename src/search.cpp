@@ -47,6 +47,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=3, xx2=3, xx3=128, xx4=2, xx5=2, xx6=0;
+TUNE(SetRange(-2, 8), xx1,xx2);
+TUNE(SetRange(1, 601), xx3);
+TUNE(SetRange(-2, 8), xx4,xx5);
+TUNE(SetRange(-200, 200), xx6);
 
 namespace TB = Tablebases;
 
@@ -67,8 +72,8 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorseni
     return futilityMult * d - improvingDeduction - worseningDeduction;
 }
 
-constexpr int futility_move_count(bool improving, Depth depth) {
-    return improving ? (3 + depth * depth) : (3 + depth * depth) / 2;
+constexpr int futility_move_count(bool improving, Depth depth, int staticEval) {
+    return improving ? (xx1 + depth * depth) : (xx2 + depth * depth) / 2 + std::clamp(staticEval / xx3, -xx4, xx5);
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation does not hit the tablebase range
@@ -972,7 +977,7 @@ moves_loop:  // When in check, search starts here
         if (!rootNode && pos.non_pawn_material(us) && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
         {
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
-            moveCountPruning = moveCount >= futility_move_count(improving, depth);
+            moveCountPruning = moveCount >= futility_move_count(improving, depth, !ss->inCheck ? ss->staticEval : xx6);
 
             // Reduced depth of the next LMR search
             int lmrDepth = newDepth - r;
