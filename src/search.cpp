@@ -83,7 +83,7 @@ const int stat_bonus_Table[10] {0, 21, 135, 350, 570, 799, 1086, 1096, 1270, 151
 int stat_bonus(Depth d) { return (d > 9 ? 1599 : stat_bonus_Table[d]) ; }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return (d < 4 ? 767 * d - 275 : 1911); }
+int stat_malus(Depth d) { return (d < 4 ? 767 * d - 275 : 1875); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
