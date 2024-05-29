@@ -201,8 +201,7 @@ void MovePicker::score() {
                                           + bool(to & threatenedByMinor) * 10650
                           : pt == ROOK ? bool(to & threatenedByMinor) * 24335
                           : pt != PAWN ? bool(to & threatenedByPawn) * 14950
-                                       : 0)
-                       : 0;
+                                       : 0);
         }
 
         else  // Type == EVASIONS
