@@ -72,7 +72,7 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorseni
     return futilityMult * d - improvingDeduction - worseningDeduction;
 }
 
-constexpr int futility_move_count(bool improving, Depth depth, int staticEval) {
+int futility_move_count(bool improving, Depth depth, int staticEval) {
     return improving ? (xx1 + depth * depth) : (xx2 + depth * depth) / 2 + std::clamp(staticEval / xx3, -xx4, xx5);
 }
 
