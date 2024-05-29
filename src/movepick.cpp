@@ -190,18 +190,18 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 58205
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 24866
+                                                  : !(to & threatenedByPawn)                ? 13212
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
             m.value -= !(threatenedPieces & from)
-                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 48150
-                                          + bool(to & threatenedByMinor) * 10650
-                          : pt == ROOK ? bool(to & threatenedByMinor) * 24335
-                          : pt != PAWN ? bool(to & threatenedByPawn) * 14950
+                       ? (pt == QUEEN ? bool(to & threatenedByRook) * 47079
+                                          + bool(to & threatenedByMinor) * 9945
+                          : pt == ROOK ? bool(to & threatenedByMinor) * 29879
+                          : pt != PAWN ? bool(to & threatenedByPawn) * 14927
                                        : 0)
                        : 0;
         }
@@ -241,7 +241,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3560 * d; };
+    auto quiet_threshold = [](Depth d) { return -7161 -4126 * d; };
 
 top:
     switch (stage)
@@ -310,7 +310,7 @@ top:
                 return *cur != refutations[0] && *cur != refutations[1] && *cur != refutations[2];
             }))
         {
-            if ((cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > -7168 || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
