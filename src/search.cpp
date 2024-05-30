@@ -67,8 +67,8 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorseni
     return futilityMult * d - improvingDeduction - worseningDeduction;
 }
 
-constexpr int futility_move_count(bool improving, Depth depth) {
-    return improving ? (3 + depth * depth) : (3 + depth * depth) / 2;
+constexpr int futility_move_count(bool improving, Depth depth, int staticEval) {
+    return improving ? (3 + depth * depth) : (3 + depth * depth) / 2 + std::clamp(staticEval / 150, -2, 2);
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation does not hit the tablebase range
@@ -972,7 +972,7 @@ moves_loop:  // When in check, search starts here
         if (!rootNode && pos.non_pawn_material(us) && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
         {
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
-            moveCountPruning = moveCount >= futility_move_count(improving, depth);
+            moveCountPruning = moveCount >= futility_move_count(improving, depth, !ss->inCheck ? ss->staticEval : -16);
 
             // Reduced depth of the next LMR search
             int lmrDepth = newDepth - r;
