@@ -47,7 +47,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=4, xx2=4, xx3=4, xx4=4, xx5=4, xx6=4;
+TUNE(SetRange(-2, 10), xx1,xx2,xx3,xx4,xx5,xx6);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -881,7 +882,8 @@ Value Search::Worker::search(
 
                 // If the qsearch held, perform the regular search
                 if (value >= probCutBeta)
-                    value = -search<NonPV>(pos, ss + 1, -probCutBeta, -probCutBeta + 1, depth - 4,
+                    value = -search<NonPV>(pos, ss + 1, -probCutBeta, -probCutBeta + 1, depth < 6 ? depth - xx1: depth < 9 ? depth - xx2:
+                            depth < 12 ? depth - xx3: depth < 15 ? depth - xx4: depth < 18 ? depth - xx5: depth - xx6,
                                            !cutNode);
 
                 pos.undo_move(move);
