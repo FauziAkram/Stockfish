@@ -1127,8 +1127,8 @@ moves_loop:  // When in check, search starts here
         // requires tests at these types of time controls.
 
         // Decrease reduction if position is or has been on the PV (~7 Elo)
-        if (ss->ttPv)
-            r -= 1 + (ttValue > alpha) + (tte->depth() >= depth);
+        if !(ss->ttPv)
+            r += 1 + (ttValue <= alpha) + (tte->depth() < depth);
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
