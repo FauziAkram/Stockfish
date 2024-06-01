@@ -1814,7 +1814,6 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 // Updates move sorting heuristics
 void update_refutations(const Position& pos, Stack* ss, Search::Worker& workerThread, Move move) {
 
-    Color us = pos.side_to_move();
     // Update killers if bestmove isn't just determined by previous move
     if (ss->killers[0] != move &&
         !(workerThread.mainHistory[pos.side_to_move()][move.from_to()] < -xx1
