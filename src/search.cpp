@@ -47,6 +47,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=800, xx2=0, xx3=800;
+TUNE(SetRange(-800, 1800), xx1,xx2,xx3);
 
 namespace TB = Tablebases;
 
@@ -1812,8 +1814,12 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 // Updates move sorting heuristics
 void update_refutations(const Position& pos, Stack* ss, Search::Worker& workerThread, Move move) {
 
-    // Update killers
-    if (ss->killers[0] != move)
+    Color us = pos.side_to_move();
+    // Update killers if bestmove isn't just determined by previous move
+    if (ss->killers[0] != move &&
+        !(workerThread.mainHistory[pos.side_to_move()][move.from_to()] < -xx1
+          && (*(ss - 2)->continuationHistory)[pos.moved_piece(move)][move.to_sq()] < xx2
+          && (*(ss - 1)->continuationHistory)[pos.moved_piece(move)][move.to_sq()] > xx3))
     {
         ss->killers[1] = ss->killers[0];
         ss->killers[0] = move;
@@ -1830,7 +1836,6 @@ void update_refutations(const Position& pos, Stack* ss, Search::Worker& workerTh
 void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
 
-    Color us = pos.side_to_move();
     workerThread.mainHistory[us][move.from_to()] << bonus;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus);
