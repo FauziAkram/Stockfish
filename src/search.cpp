@@ -1836,6 +1836,7 @@ void update_refutations(const Position& pos, Stack* ss, Search::Worker& workerTh
 void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
 
+    Color us = pos.side_to_move();
     workerThread.mainHistory[us][move.from_to()] << bonus;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus);
