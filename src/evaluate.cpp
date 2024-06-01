@@ -46,7 +46,8 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
-    return std::abs(simpleEval) > 992 + 6 * pos.count<PAWN>();
+    int pawnCount  = pos.count<PAWN>();
+    return std::abs(simpleEval) > 992 + 6 * pawnCount * pawnCount / 16;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
@@ -67,7 +68,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
                           : networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && nnue * simpleEval < 0)
+    if (smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 250))
     {
         nnue     = networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);
         smallNet = false;
@@ -80,10 +81,10 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int material = 300 * pos.count<PAWN>() + 350 * pos.count<KNIGHT>() + 400 * pos.count<BISHOP>()
                  + 640 * pos.count<ROOK>() + 1200 * pos.count<QUEEN>();
 
-    v = (nnue * (34300 + material) + optimism * (4400 + material)) / 35967;
+    v = (nnue * (34300 + material) + optimism * (4400 + material)) / 36672;
 
     // Damp down the evaluation linearly when shuffling
-    v = v * (204 - pos.rule50_count()) / 208;
+    v -= v * pos.rule50_count() / 212;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
