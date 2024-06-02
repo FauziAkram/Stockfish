@@ -47,6 +47,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=304, xx2=203, xx3=117, xx4=259, xx5=296, xx6=97, yy1=0, yy2=0;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
+TUNE(SetRange(-400, 400), xx1);
 
 namespace TB = Tablebases;
 
@@ -552,7 +555,7 @@ Value Search::Worker::search(
     Depth    extension, newDepth;
     Value    bestValue, value, ttValue, eval, maxValue, probCutBeta, singularValue;
     bool     givesCheck, improving, priorCapture, opponentWorsening;
-    bool     capture, moveCountPruning, ttCapture;
+    bool     capture, moveCountPruning, ttCapture, ttInCheck;
     Piece    movedPiece;
     int      moveCount, captureCount, quietCount;
     Bound    singularBound;
@@ -612,6 +615,7 @@ Value Search::Worker::search(
               : ss->ttHit ? tte->move()
                           : Move::none();
     ttCapture = ttMove && pos.capture_stage(ttMove);
+    ttInCheck = ttMove && ss->inCheck;
 
     // At this point, if excluded, skip straight to step 6, static eval. However,
     // to save indentation, we list the condition in all code between here and there.
@@ -1070,8 +1074,8 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int doubleMargin = 304 * PvNode - 203 * !ttCapture;
-                    int tripleMargin = 117 + 259 * PvNode - 296 * !ttCapture + 97 * ss->ttPv;
+                    int doubleMargin = xx1 * PvNode - xx2 * !ttCapture + yy1 * ttInCheck;
+                    int tripleMargin = xx3 + xx4 * PvNode - xx5 * !ttCapture + xx6 * ss->ttPv + yy2 * ttInCheck;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
