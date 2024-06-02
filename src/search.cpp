@@ -1125,6 +1125,12 @@ moves_loop:  // When in check, search starts here
         // changing them or adding conditions that are similar
         // requires tests at these types of time controls.
 
+        if (PvNode && move == ttMove && move.to_sq() == prevSq
+                     && thisThread->captureHistory[movedPiece][move.to_sq()]
+                                                  [type_of(pos.piece_on(move.to_sq()))]
+                          > 3988)
+        r -= 2;
+
         // Decrease reduction if position is or has been on the PV (~7 Elo)
         if (ss->ttPv)
             r -= 1 + (ttValue > alpha) + (tte->depth() >= depth);
@@ -1159,12 +1165,6 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history (~8 Elo)
         r -= ss->statScore / 11049;
-
-        if (PvNode && move == ttMove && move.to_sq() == prevSq
-                     && thisThread->captureHistory[movedPiece][move.to_sq()]
-                                                  [type_of(pos.piece_on(move.to_sq()))]
-                          > 3988)
-        r -= 2;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1 + rootNode)
