@@ -49,7 +49,7 @@
 namespace Stockfish {
 int xx1=304, xx2=203, xx3=117, xx4=259, xx5=296, xx6=97, yy1=0, yy2=0;
 TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
-TUNE(SetRange(-400, 400), xx1);
+TUNE(SetRange(-400, 400), yy1,yy2);
 
 namespace TB = Tablebases;
 
