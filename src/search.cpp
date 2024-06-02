@@ -552,7 +552,7 @@ Value Search::Worker::search(
     Depth    extension, newDepth;
     Value    bestValue, value, ttValue, eval, maxValue, probCutBeta, singularValue;
     bool     givesCheck, improving, priorCapture, opponentWorsening;
-    bool     capture, moveCountPruning, ttCapture;
+    bool     capture, moveCountPruning, ttCapture, ttInCheck;
     Piece    movedPiece;
     int      moveCount, captureCount, quietCount;
     Bound    singularBound;
@@ -612,6 +612,7 @@ Value Search::Worker::search(
               : ss->ttHit ? tte->move()
                           : Move::none();
     ttCapture = ttMove && pos.capture_stage(ttMove);
+    ttInCheck = ttMove && ss->inCheck;
 
     // At this point, if excluded, skip straight to step 6, static eval. However,
     // to save indentation, we list the condition in all code between here and there.
@@ -1070,8 +1071,8 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int doubleMargin = 304 * PvNode - 203 * !ttCapture;
-                    int tripleMargin = 117 + 259 * PvNode - 296 * !ttCapture + 97 * ss->ttPv;
+                    int doubleMargin = 302 * PvNode - 197 * !ttCapture + 2 * ttInCheck;
+                    int tripleMargin = 109 + 249 * PvNode - 335 * !ttCapture + 103 * ss->ttPv - 10 * ttInCheck;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
