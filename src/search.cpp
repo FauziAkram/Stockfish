@@ -1153,8 +1153,7 @@ moves_loop:  // When in check, search starts here
 
         if (   ss->ttPv
             && !capture
-            && !ss->inCheck
-            && move == ttMove)
+            && !ss->inCheck)
             r++;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
