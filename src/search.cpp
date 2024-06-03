@@ -1151,7 +1151,7 @@ moves_loop:  // When in check, search starts here
         if (ttCapture)
             r++;
 
-        if (ss->cutoffCnt > 70)
+        if (ss->cutoffCnt > 130)
           r--;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
