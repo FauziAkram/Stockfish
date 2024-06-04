@@ -1151,6 +1151,10 @@ moves_loop:  // When in check, search starts here
         if (ttCapture)
             r++;
 
+        if (   move == (ss-4)->currentMove
+          && pos.has_repeated())
+          r += 2;
+
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
             r++;
