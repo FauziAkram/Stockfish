@@ -32,6 +32,7 @@
 #include <thread>
 #include <utility>
 #include <vector>
+#include <cstring>
 
 // We support linux very well, but we explicitly do NOT support Android, because there's
 // no affected systems, not worth maintaining.
@@ -773,8 +774,8 @@ class NumaConfig {
                 return std::nullopt;
 
             // We are expecting a single group.
-            USHORT GroupCount = 1;
-            USHORT GroupArray[1];
+            USHORT            GroupCount = 1;
+            alignas(4) USHORT GroupArray[1];
             status = GetProcessGroupAffinity_f(GetCurrentProcess(), &GroupCount, GroupArray);
             if (status == 0 || GroupCount != 1)
                 return std::nullopt;
