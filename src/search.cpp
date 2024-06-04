@@ -843,8 +843,8 @@ Value Search::Worker::search(
         depth -= 3;
 
     if (PvNode && ttMove && (tte->bound() & BOUND_UPPER) && ttValue <= alpha
-        && !pos.capture(ttMove) && (*contHist[0])[pos.moved_piece(ttMove)][to_sq(ttMove)] < -8000)
-        depth -= 2;
+        && !pos.capture(ttMove) && (*contHist[0])[pos.moved_piece(ttMove)][to_sq(ttMove)] < -10000)
+        depth --;
 
     // Use qsearch if depth <= 0.
     if (depth <= 0)
