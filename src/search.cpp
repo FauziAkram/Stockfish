@@ -1152,7 +1152,7 @@ moves_loop:  // When in check, search starts here
             r++;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
-        if ((ss + 1)->cutoffCnt > 3 && (ss - 1)->currentMove != MOVE_NULL)
+        if ((ss + 1)->cutoffCnt > 3 && (ss - 1)->currentMove != Move::null())
             r++;
 
         // For first picked move (ttMove) reduce reduction
