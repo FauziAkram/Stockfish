@@ -1138,7 +1138,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
-            r -= 1 + (moveCount > 40);
+            r -= 1 + (moveCount > 42);
 
         // These reduction adjustments have no proven non-linear scaling.
 
