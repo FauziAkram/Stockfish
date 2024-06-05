@@ -1152,9 +1152,6 @@ moves_loop:  // When in check, search starts here
         if (ttCapture)
             r++;
 
-        if (nullValue != VALUE_NONE)
-            r += 2;
-
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
             r++;
@@ -1163,6 +1160,9 @@ moves_loop:  // When in check, search starts here
         // but never allow it to go below 0 (~3 Elo)
         else if (move == ttMove)
             r = std::max(0, r - 2);
+
+        if (nullValue != VALUE_NONE)
+            r += 2;
 
         ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
                       + (*contHist[0])[movedPiece][move.to_sq()]
