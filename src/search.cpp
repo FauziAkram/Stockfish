@@ -1147,7 +1147,7 @@ moves_loop:  // When in check, search starts here
             r += 2 - (tte->depth() >= depth && ss->ttPv)
                + (!ss->ttPv && move != ttMove && move != ss->killers[0]);
 
-        else if (!PvNode && moveCount > 53 && moveCount < 61)
+        else if (moveCount > 53 && moveCount < 61)
             r--;
 
         // Increase reduction if ttMove is a capture (~3 Elo)
