@@ -82,7 +82,7 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(const Position& pos, Depth d) { return std::clamp(xx1 * d - xx2 - yy1 * pos.this_thread()->rootDepth, 20, xx3); }
+int stat_bonus(const Position& pos, Depth d) { return std::clamp(xx1 * d - xx2 - yy1 * this->nodes->rootDepth, 20, xx3); }
 
 // History and stats update malus, based on depth
 int stat_malus(const Position& pos, Depth d) { return (d < 4 ? xx4 * d - xx5 - yy2 * pos.this_thread()->rootDepth: xx6); }
