@@ -924,6 +924,7 @@ moves_loop:  // When in check, search starts here
 
     value            = bestValue;
     moveCountPruning = false;
+    bool captureBestMove = false;
     singularValue    = VALUE_INFINITE;
     singularBound    = BOUND_NONE;
 
@@ -1138,7 +1139,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
-            r--;
+            r -= 1 + (!capture && captureBestMove);
 
         // These reduction adjustments have no proven non-linear scaling.
 
@@ -1289,6 +1290,7 @@ moves_loop:  // When in check, search starts here
             if (value > alpha)
             {
                 bestMove = move;
+                captureBestMove = capture;
 
                 if (PvNode && !rootNode)  // Update pv even in fail-high case
                     update_pv(ss->pv, move, (ss + 1)->pv);
