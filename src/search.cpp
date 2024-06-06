@@ -1138,8 +1138,8 @@ moves_loop:  // When in check, search starts here
             r -= 1 + (ttValue > alpha) + (tte->depth() >= depth);
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
-        if (PvNode)
-            r -= 1 + (!capture && captureBestMove);
+        if (PvNode && !capture && captureBestMove)
+            r--;
 
         // These reduction adjustments have no proven non-linear scaling.
 
