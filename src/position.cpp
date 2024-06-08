@@ -1183,7 +1183,6 @@ bool Position::has_game_cycle(int ply) const {
 
             if (!((between_bb(s1, s2) ^ s2) & pieces()))
             {
-                if (ply > i)
                     return true;
 
                 // For nodes before or at the root, check that the move is a
