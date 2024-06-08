@@ -619,7 +619,8 @@ bool Position::gives_check(Move m) const {
     Square to   = m.to_sq();
 
     // Is there a direct check?
-    if (check_squares(type_of(piece_on(from))) & to)
+    PieceType pt = type_of(piece_on(from));
+    if (st->checkSquares[pt] & to)
         return true;
 
     // Is there a discovered check?
