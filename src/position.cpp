@@ -311,6 +311,7 @@ void Position::set_castling_right(Color c, Square rfrom) {
     castlingPath[cr] = (between_bb(rfrom, rto) | between_bb(kfrom, kto)) & ~(kfrom | rfrom);
 }
 
+extern Bitboard KingAttackData[COLOR_NB][SQUARE_NB];
 
 // Sets king attacks to detect if a move gives check
 void Position::set_check_info() const {
@@ -318,14 +319,12 @@ void Position::set_check_info() const {
     update_slider_blockers(WHITE);
     update_slider_blockers(BLACK);
 
-    Square ksq = square<KING>(~sideToMove);
-
-    st->checkSquares[PAWN]   = pawn_attacks_bb(~sideToMove, ksq);
-    st->checkSquares[KNIGHT] = attacks_bb<KNIGHT>(ksq);
-    st->checkSquares[BISHOP] = attacks_bb<BISHOP>(ksq, pieces());
-    st->checkSquares[ROOK]   = attacks_bb<ROOK>(ksq, pieces());
+    st->checkSquares[PAWN] = KingAttackData[~sideToMove][square<KING>(~sideToMove)];
+    st->checkSquares[KNIGHT] = KingAttackData[~sideToMove][square<KING>(~sideToMove)];
+    st->checkSquares[BISHOP] = attacks_bb<BISHOP>(square<KING>(~sideToMove), pieces());
+    st->checkSquares[ROOK] = attacks_bb<ROOK>(square<KING>(~sideToMove), pieces());
     st->checkSquares[QUEEN]  = st->checkSquares[BISHOP] | st->checkSquares[ROOK];
-    st->checkSquares[KING]   = 0;
+    st->checkSquares[KING] = 0;
 }
 
 
