@@ -986,7 +986,7 @@ class NumaReplicated: public NumaReplicatedBase {
             for (NumaIndex n = 0; n < cfg.num_numa_nodes(); ++n)
             {
                 cfg.execute_on_numa_node(
-                  n, [this, &source]() { instances.emplace_back(std::make_unique<T>(source)); });
+                  n, [this, &source]() { instances.emplace_back(std::make_unique<T>(std::move(source))); });
             }
         }
         else
