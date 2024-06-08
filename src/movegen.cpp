@@ -174,8 +174,10 @@ ExtMove* generate_moves(const Position& pos, ExtMove* moveList, Bitboard target)
         if (Checks && (Pt == QUEEN || !(pos.blockers_for_king(~Us) & from)))
             b &= pos.check_squares(Pt);
 
-        while (b)
-            *moveList++ = Move(from, pop_lsb(b));
+        while (b) {
+        *moveList++ = Move(from, pop_lsb(b));
+        if (b) *moveList++ = Move(from, pop_lsb(b));
+        }
     }
 
     return moveList;
