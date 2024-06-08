@@ -341,17 +341,18 @@ void Position::set_state() const {
 
     set_check_info();
 
-    for (Bitboard b = pieces(); b;)
+    for (Square s = SQ_A1; s <= SQ_H8; ++s)
     {
-        Square s  = pop_lsb(b);
-        Piece  pc = piece_on(s);
-        st->key ^= Zobrist::psq[pc][s];
+        Piece pc = piece_on(s);
+        if (pc != NO_PIECE) {
+            st->key ^= Zobrist::psq[pc][s];
 
-        if (type_of(pc) == PAWN)
-            st->pawnKey ^= Zobrist::psq[pc][s];
+            if (type_of(pc) == PAWN)
+                st->pawnKey ^= Zobrist::psq[pc][s];
 
-        else if (type_of(pc) != KING)
-            st->nonPawnMaterial[color_of(pc)] += PieceValue[pc];
+            else if (type_of(pc) != KING)
+                st->nonPawnMaterial[color_of(pc)] += PieceValue[pc];
+        }
     }
 
     if (st->epSquare != SQ_NONE)
