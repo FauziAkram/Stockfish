@@ -345,13 +345,13 @@ void Position::set_state() const {
     {
         Piece pc = piece_on(s);
         if (pc != NO_PIECE) {
-            st->key ^= Zobrist::psq[pc][s];
+        st->key ^= Zobrist::psq[pc][s];
 
-            if (type_of(pc) == PAWN)
-                st->pawnKey ^= Zobrist::psq[pc][s];
+        if (type_of(pc) == PAWN)
+            st->pawnKey ^= Zobrist::psq[pc][s];
 
-            else if (type_of(pc) != KING)
-                st->nonPawnMaterial[color_of(pc)] += PieceValue[pc];
+        else if (type_of(pc) != KING)
+            st->nonPawnMaterial[color_of(pc)] += PieceValue[pc];
         }
     }
 
