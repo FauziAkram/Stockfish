@@ -1040,7 +1040,7 @@ bool Position::see_ge(Move m, int threshold) const {
         return false;
 
     swap = PieceValue[piece_on(from)] - swap;
-    if (swap <= 0)
+    if (PieceValue[piece_on(from)] <= swap)
         return true;
 
     assert(color_of(piece_on(from)) == sideToMove);
