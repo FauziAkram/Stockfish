@@ -182,7 +182,12 @@ inline Bitboard between_bb(Square s1, Square s2) {
 
 // Returns true if the squares s1, s2 and s3 are aligned either on a
 // straight or on a diagonal line.
-inline bool aligned(Square s1, Square s2, Square s3) { return line_bb(s1, s2) & s3; }
+inline bool aligned(Square s1, Square s2, Square s3) {
+  if (s1 == s2) {
+        return true;
+    }
+    return line_bb(s1, s2) & s3; 
+}
 
 
 // distance() functions return the distance between x and y, defined as the
