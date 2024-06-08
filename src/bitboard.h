@@ -226,15 +226,13 @@ inline Bitboard attacks_bb(Square s, Bitboard occupied) {
 
     assert((Pt != PAWN) && (is_ok(s)));
 
-    switch (Pt)
-    {
-    case BISHOP :
+    if (Pt == BISHOP) {
         return BishopMagics[s].attacks[BishopMagics[s].index(occupied)];
-    case ROOK :
+    } else if (Pt == ROOK) {
         return RookMagics[s].attacks[RookMagics[s].index(occupied)];
-    case QUEEN :
+    } else if (Pt == QUEEN) {
         return attacks_bb<BISHOP>(s, occupied) | attacks_bb<ROOK>(s, occupied);
-    default :
+    } else {
         return PseudoAttacks[Pt][s];
     }
 }
