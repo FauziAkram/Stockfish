@@ -75,6 +75,13 @@ std::string Bitboards::pretty(Bitboard b) {
 // startup and relies on global objects to be already zero-initialized.
 void Bitboards::init() {
 
+    for (Color c : {WHITE, BLACK}) {
+        for (Square s = SQ_A1; s <= SQ_H8; ++s) {
+            KingAttackData[c][s] = 
+                pawn_attacks_bb(c, s) | attacks_bb<KNIGHT>(s);
+        }
+    }
+
     for (unsigned i = 0; i < (1 << 16); ++i)
         PopCnt16[i] = uint8_t(std::bitset<16>(i).count());
 
