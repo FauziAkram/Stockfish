@@ -526,7 +526,7 @@ Value Search::Worker::search(
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
-        return qsearch < PvNode ? PV : NonPV > (pos, ss, alpha, beta, depth);
+        return qsearch < PvNode ? PV : NonPV > (pos, ss, alpha, beta, depth - 2);
 
     // Check if we have an upcoming move that draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
