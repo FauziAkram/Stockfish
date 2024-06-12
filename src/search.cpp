@@ -972,7 +972,7 @@ moves_loop:  // When in check, search starts here
                 && ss->inCheck
                 && !capture
                 && !givesCheck)
-                continue
+                continue;
                   
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
             moveCountPruning =
