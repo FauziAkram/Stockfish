@@ -63,8 +63,9 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorseni
     Value futilityMult       = 109 - 40 * noTtCutNode;
     Value improvingDeduction = 59 * improving * futilityMult / 32;
     Value worseningDeduction = 328 * oppWorsening * futilityMult / 1024;
+    Value moveCountScale     = 1024 - moveCount * 128;
 
-    return futilityMult * d - improvingDeduction - worseningDeduction;
+    return (futilityMult * d - improvingDeduction - worseningDeduction) * moveCountScale / 1024;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
