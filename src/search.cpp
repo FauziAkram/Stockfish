@@ -790,8 +790,9 @@ Value Search::Worker::search(
     {
         assert(eval - beta >= 0);
 
-        // Null move dynamic reduction based on depth and eval
+        // Null move dynamic reduction based on depth, eval, and material imbalance
         Depth R = std::min(int(eval - beta) / 197, 6) + depth / 3 + 5;
+        R += std::abs(pos.non_pawn_material(us) - pos.non_pawn_material(~us)) / 256;
 
         ss->currentMove         = Move::null();
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
