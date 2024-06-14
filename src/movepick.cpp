@@ -179,17 +179,21 @@ void MovePicker::score() {
 
             // histories
             m.value = (*mainHistory)[pos.side_to_move()][m.from_to()];
-            m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to]
-             + 16 * (relative_rank(pos.side_to_move(), to) == RANK_6);
+            m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
             m.value += 2 * (*continuationHistory[0])[pc][to];
             m.value += (*continuationHistory[1])[pc][to];
             m.value += (*continuationHistory[2])[pc][to] / 3;
             m.value += (*continuationHistory[3])[pc][to];
             m.value += (*continuationHistory[5])[pc][to];
 
+          if (type_of(pos.moved_piece(m)) == PAWN){
+            m.value += 1024 * (relative_rank(pos.side_to_move(), to) == RANK_5);
+            m.value += 2048 * (relative_rank(pos.side_to_move(), to) == RANK_6);
+            m.value += 4096 * (relative_rank(pos.side_to_move(), to) == RANK_6);
+          }
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
-
+          
             // bonus for escaping from capture
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
                                                   : pt == ROOK && !(to & threatenedByMinor) ? 25600
