@@ -1832,7 +1832,7 @@ void update_quiet_histories(
 
     Color us = pos.side_to_move();
     // Added: Scale history update based on depth
-    int depthScale = 1 + ss->ply / 8;
+    int depthScale = 1 + ss->ply / 4;
     workerThread.mainHistory[us][move.from_to()] << bonus * depthScale;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * depthScale);
