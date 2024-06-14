@@ -117,7 +117,7 @@ void TimeManagement::init(Search::LimitsType& limits,
         optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
                             0.213 * limits.time[us] / timeLeft)
                  * originalTimeAdjust
-             * (1 - std::min(1.0, std::abs(worker.rootMoves[0].score) / 1000.0));
+             * (1 - std::min(1.0, std::abs(worker.rootMoves[0].score) / 3000.0));
 
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
     }
