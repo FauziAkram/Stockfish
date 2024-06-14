@@ -1831,12 +1831,14 @@ void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
 
     Color us = pos.side_to_move();
-    workerThread.mainHistory[us][move.from_to()] << bonus;
+    // Added: Scale history update based on depth
+    int depthScale = 1 + ss->ply / 8;
+    workerThread.mainHistory[us][move.from_to()] << bonus * depthScale;
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus);
+    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * depthScale);
 
     int pIndex = pawn_structure_index(pos);
-    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus / 2;
+    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * depthScale / 2;
 }
 
 // Updates move sorting heuristics
