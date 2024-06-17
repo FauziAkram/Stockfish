@@ -27,6 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=1024, xx2=2048, xx3=4096;
+TUNE(SetRange(-4096, 11000), xx1,xx2,xx3);
 
 namespace {
 
@@ -187,9 +189,9 @@ void MovePicker::score() {
             m.value += (*continuationHistory[5])[pc][to];
 
           if (type_of(pos.moved_piece(m)) == PAWN){
-            m.value += 1024 * (relative_rank(pos.side_to_move(), to) == RANK_5);
-            m.value += 2048 * (relative_rank(pos.side_to_move(), to) == RANK_6);
-            m.value += 4096 * (relative_rank(pos.side_to_move(), to) == RANK_7);
+            m.value += xx1 * (relative_rank(pos.side_to_move(), to) == RANK_5);
+            m.value += xx2 * (relative_rank(pos.side_to_move(), to) == RANK_6);
+            m.value += xx3 * (relative_rank(pos.side_to_move(), to) == RANK_7);
           }
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
