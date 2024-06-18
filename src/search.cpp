@@ -47,7 +47,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=8, xx2=100, xx3=200, xx4=8, xx5=100, xx6=200;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -751,7 +752,7 @@ Value Search::Worker::search(
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
         int bonus = std::clamp(-10 * int((ss - 1)->staticEval + ss->staticEval), -1590, 1371);
-        bonus     = bonus > 0 ? 2 * bonus : bonus / 2;
+        bonus     = bonus > 0 ? ((std::clamp(depth/xx1 , xx2, xx3)) / 100) * bonus : bonus / ((std::clamp(depth/xx4 , xx5, xx6)) / 100);
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
