@@ -186,8 +186,11 @@ void MovePicker::score() {
             m.value += (*continuationHistory[3])[pc][to];
             m.value += (*continuationHistory[5])[pc][to];
 
-            if (type_of(pos.moved_piece(m)) == PAWN)
-            m.value += 4250 * (relative_rank(pos.side_to_move(), to) == RANK_7);
+            if (type_of(pos.moved_piece(m)) == PAWN){
+            m.value += 960 * (relative_rank(pos.side_to_move(), to) == RANK_5);
+            m.value += 1454 * (relative_rank(pos.side_to_move(), to) == RANK_6);
+            m.value += 4200 * (relative_rank(pos.side_to_move(), to) == RANK_7);
+            }
 
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
