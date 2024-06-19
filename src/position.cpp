@@ -1117,10 +1117,11 @@ bool Position::see_ge(Move m, int threshold) const {
                        | (attacks_bb<ROOK>(to, occupied) & pieces(ROOK, QUEEN));
         }
 
-        else  // KING
-              // If we "capture" with the king but the opponent still has attackers,
-              // reverse the result.
+        else {
+            if (res == 1) 
+            return true;
             return (attackers & ~pieces(stm)) ? res ^ 1 : res;
+        }
     }
 
     return bool(res);
