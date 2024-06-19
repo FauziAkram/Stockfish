@@ -85,7 +85,7 @@ int stat_bonus(Depth d) { return std::clamp(186 * d - 285, 20, 1524); }
 int stat_malus(Depth d) { return (d < 4 ? 707 * d - 260 : 2073); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
-Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
+Value value_draw(size_t nodes) { return VALUE_DRAW + (nodes & 1); }
 
 // Skill structure is used to implement strength limit. If we have a UCI_Elo,
 // we convert it to an appropriate skill level, anchored to the Stash engine.
