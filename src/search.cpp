@@ -47,6 +47,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=32, xx2=180, xx3=163, xx4=160, xx5=24, xx6=30, xx7=74;
+TUNE(SetRange(-1, 91), xx1);
+TUNE(xx2,xx3,xx4);
+TUNE(SetRange(0, 92), xx5,xx6);
+TUNE(xx7);
 
 namespace TB = Tablebases;
 
@@ -998,8 +1003,8 @@ moves_loop:  // When in check, search starts here
                 }
 
                 // SEE based pruning for captures and checks (~11 Elo)
-                int seeHist = std::clamp(captHist / 32, -180 * depth, 163 * depth);
-                if (!pos.see_ge(move, -160 * depth - seeHist))
+                int seeHist = std::clamp(captHist / xx1, -xx2 * depth, xx3 * depth);
+                if (!pos.see_ge(move, -xx4 * depth - seeHist))
                     continue;
             }
             else
@@ -1032,7 +1037,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE (~4 Elo)
-                if (!pos.see_ge(move, -24 * lmrDepth * lmrDepth))
+                if (!pos.see_ge(move, -xx5 * lmrDepth * lmrDepth))
                     continue;
             }
         }
@@ -1580,7 +1585,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
                 // If static exchange evaluation is much worse than what is needed to not
                 // fall below alpha we can prune this move.
-                if (futilityBase > alpha && !pos.see_ge(move, (alpha - futilityBase) * 2 - 30))
+                if (futilityBase > alpha && !pos.see_ge(move, (alpha - futilityBase) * 2 - xx6))
                 {
                     bestValue = alpha;
                     continue;
@@ -1597,7 +1602,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
                 continue;
 
             // Do not search moves with bad enough SEE values (~5 Elo)
-            if (!pos.see_ge(move, -74))
+            if (!pos.see_ge(move, -xx7))
                 continue;
         }
 
