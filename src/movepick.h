@@ -36,7 +36,12 @@ namespace Stockfish {
 
 constexpr int PAWN_HISTORY_SIZE        = 512;    // has to be a power of 2
 constexpr int CORRECTION_HISTORY_SIZE  = 16384;  // has to be a power of 2
-constexpr int CORRECTION_HISTORY_LIMIT = 1024;
+constexpr int CORRECTION_HISTORY_LIMIT = 32767;
+
+constexpr int CORRECTION_HISTORY_QUANTIZER = 64;
+constexpr int CORRECTION_HISTORY_UPDATE_LIMIT =
+  CORRECTION_HISTORY_LIMIT / CORRECTION_HISTORY_QUANTIZER;
+constexpr int CORRECTION_HISTORY_WEIGHT_LIMIT = 256;
 
 static_assert((PAWN_HISTORY_SIZE & (PAWN_HISTORY_SIZE - 1)) == 0,
               "PAWN_HISTORY_SIZE has to be a power of 2");
@@ -140,6 +145,9 @@ using PawnHistory = Stats<int16_t, 8192, PAWN_HISTORY_SIZE, PIECE_NB, SQUARE_NB>
 // CorrectionHistory is addressed by color and pawn structure
 using CorrectionHistory =
   Stats<int16_t, CORRECTION_HISTORY_LIMIT, COLOR_NB, CORRECTION_HISTORY_SIZE>;
+
+using CorrectionHistoryWeight =
+  Stats<int16_t, CORRECTION_HISTORY_WEIGHT_LIMIT, COLOR_NB, CORRECTION_HISTORY_SIZE>;
 
 // MovePicker class is used to pick one pseudo-legal move at a time from the
 // current position. The most important method is next_move(), which returns a
