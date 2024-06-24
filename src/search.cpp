@@ -1776,8 +1776,8 @@ void update_all_stats(const Position& pos,
 
     if (!pos.capture_stage(bestMove))
     {
-        int bestMoveBonus = bestValue > beta + 153 ? quietMoveBonus * (200 + 114 * allNode) / 200 // larger bonus
-                                                   : stat_bonus(depth);                             // smaller bonus
+        int bestMoveBonus = bestValue > beta + 153 ? quietMoveBonus + quietMoveBonus * allNode // larger bonus
+                                                   : stat_bonus(depth);                        // smaller bonus
 
         update_quiet_stats(pos, ss, workerThread, bestMove, bestMoveBonus);
 
