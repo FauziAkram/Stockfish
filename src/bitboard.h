@@ -217,8 +217,10 @@ inline Bitboard attacks_bb(Square s) {
     return PseudoAttacks[Pt][s];
 }
 
-
-inline Bitboard attacks_bb(PieceType pt, Square s, Bitboard occupied) {
+// Returns the attacks by the given piece
+// assuming the board is occupied according to the passed Bitboard.
+// Sliding piece attacks do not continue passed an occupied square.
+inline Bitboard attacks_bb(PieceType pt, Square s, Bitboard occupied = 0) {
 
     assert((pt != PAWN) && (is_ok(s)));
 
@@ -234,7 +236,6 @@ inline Bitboard attacks_bb(PieceType pt, Square s, Bitboard occupied) {
         return PseudoAttacks[pt][s];
     }
 }
-
 
 // Counts the number of non-zero bits in a bitboard.
 inline int popcount(Bitboard b) {
