@@ -89,7 +89,7 @@ struct Magic {
 extern Magic RookMagics[SQUARE_NB];
 extern Magic BishopMagics[SQUARE_NB];
 
-constexpr Bitboard square_bb(Square s) {
+constexpr inline Bitboard square_bb(Square s) {
     assert(is_ok(s));
     return (1ULL << s);
 }
@@ -110,19 +110,19 @@ inline Bitboard operator^(Square s, Bitboard b) { return b ^ s; }
 
 inline Bitboard operator|(Square s1, Square s2) { return square_bb(s1) | s2; }
 
-constexpr bool more_than_one(Bitboard b) { return b & (b - 1); }
+constexpr inline bool more_than_one(Bitboard b) { return b & (b - 1); }
 
 
 // rank_bb() and file_bb() return a bitboard representing all the squares on
 // the given file or rank.
 
-constexpr Bitboard rank_bb(Rank r) { return Rank1BB << (8 * r); }
+constexpr inline Bitboard rank_bb(Rank r) { return Rank1BB << (8 * r); }
 
-constexpr Bitboard rank_bb(Square s) { return rank_bb(rank_of(s)); }
+constexpr inline Bitboard rank_bb(Square s) { return Rank1BB << (8 * rank_of(s)); }
 
-constexpr Bitboard file_bb(File f) { return FileABB << f; }
+constexpr inline Bitboard file_bb(File f) { return FileABB << f; }
 
-constexpr Bitboard file_bb(Square s) { return file_bb(file_of(s)); }
+constexpr inline Bitboard file_bb(Square s) { return FileABB << file_of(s); }
 
 
 // Moves a bitboard one or two steps as specified by the direction D
