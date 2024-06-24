@@ -1000,8 +1000,8 @@ moves_loop:  // When in check, search starts here
                 }
 
                 // SEE based pruning for captures and checks (~11 Elo)
-                int seeHist = std::clamp(captHist / 32, -180 * depth, 163 * depth);
-                if (!pos.see_ge(move, -160 * depth - seeHist))
+                int seeHist = std::clamp(captHist / 29, -182 * depth, 160 * depth);
+                if (!pos.see_ge(move, -162 * depth - seeHist))
                     continue;
             }
             else
@@ -1034,7 +1034,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE (~4 Elo)
-                if (!pos.see_ge(move, -24 * lmrDepth * lmrDepth))
+                if (!pos.see_ge(move, -26 * lmrDepth * lmrDepth))
                     continue;
             }
         }
