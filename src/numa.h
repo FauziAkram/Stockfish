@@ -931,7 +931,7 @@ class NumaConfig {
 
     void remove_empty_numa_nodes() {
         std::vector<std::set<CpuIndex>> newNodes;
-        for (auto&& cpus : nodes)
+        for (const auto& cpus : nodes)
             if (!cpus.empty())
                 newNodes.emplace_back(std::move(cpus));
         nodes = std::move(newNodes);
