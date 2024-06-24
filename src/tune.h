@@ -78,7 +78,7 @@ struct SetRange {
 
 class Tune {
 
-    using PostUpdate = void();  // Post-update function
+    using PostUpdate = void(); // Post-update function
 
     Tune() { read_results(); }
     Tune(const Tune&)           = delete;
