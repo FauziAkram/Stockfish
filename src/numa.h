@@ -1184,7 +1184,7 @@ inline NumaReplicatedBase::NumaReplicatedBase(NumaReplicatedBase&& other) noexce
 inline NumaReplicatedBase& NumaReplicatedBase::operator=(NumaReplicatedBase&& other) noexcept {
     context = std::exchange(other.context, nullptr);
 
-    context->move_attached(&other, this);
+    if (context != nullptr) context->move_attached(&other, this);
 
     return *this;
 }
