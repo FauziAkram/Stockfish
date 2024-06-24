@@ -29,14 +29,11 @@ namespace Stockfish {
 namespace {
 
 template<GenType Type, Direction D, bool Enemy>
-ExtMove* make_promotions(ExtMove* moveList, [[maybe_unused]] Square to) {
+ExtMove* make_promotions(ExtMove* moveList, Square to) {
 
-    constexpr bool all = Type == EVASIONS || Type == NON_EVASIONS;
+    *moveList++ = Move::make<PROMOTION>(to - D, to, QUEEN);
 
-    if constexpr (Type == CAPTURES || all)
-        *moveList++ = Move::make<PROMOTION>(to - D, to, QUEEN);
-
-    if constexpr ((Type == CAPTURES && Enemy) || (Type == QUIETS && !Enemy) || all)
+    if constexpr ((Type == CAPTURES && Enemy) || (Type == QUIETS && !Enemy) || Type == EVASIONS || Type == NON_EVASIONS)
     {
         *moveList++ = Move::make<PROMOTION>(to - D, to, ROOK);
         *moveList++ = Move::make<PROMOTION>(to - D, to, BISHOP);
