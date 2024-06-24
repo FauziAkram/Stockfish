@@ -270,6 +270,8 @@ inline Bitboard Position::attacks_by(Color c) const {
                           : pawn_attacks_bb<BLACK>(pieces(BLACK, PAWN));
     else
     {
+        Bitboard threats   = 0;
+        Bitboard attackers = pieces(c, Pt);
         while (attackers) {
             Square s = pop_lsb(attackers);
             threats |= attacks_bb<Pt>(s, pieces());
