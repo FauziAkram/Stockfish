@@ -47,6 +47,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=164, xx2=100, xx3=100;
+TUNE(xx1);
+TUNE(SetRange(-200, 400), xx2,xx3);
+
 
 namespace TB = Tablebases;
 
@@ -131,7 +135,8 @@ void update_all_stats(const Position& pos,
                       int             quietCount,
                       Move*           capturesSearched,
                       int             captureCount,
-                      Depth           depth);
+                      Depth           depth
+                      bool            allNode);
 
 }  // namespace
 
@@ -1349,7 +1354,7 @@ moves_loop:  // When in check, search starts here
     // If there is a move that produces search value greater than alpha we update the stats of searched moves
     else if (bestMove)
         update_all_stats(pos, ss, *this, bestMove, bestValue, beta, prevSq, quietsSearched,
-                         quietCount, capturesSearched, captureCount, depth);
+                         quietCount, capturesSearched, captureCount, depth, !PvNode && !cutNode);
 
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
@@ -1774,8 +1779,9 @@ void update_all_stats(const Position& pos,
 
     if (!pos.capture_stage(bestMove))
     {
-        int bestMoveBonus = bestValue > beta + 164 ? quietMoveBonus      // larger bonus
-                                                   : stat_bonus(depth);  // smaller bonus
+        int bestMoveBonus = bestValue > beta + xx1 ? quietMoveBonus * ((200 + xx2 * allNode) / 200)      // larger bonus
+                                                   : stat_bonus(depth)  // smaller bonus
+      * ((200 + xx3 * allNode) / 200);
 
         update_quiet_stats(pos, ss, workerThread, bestMove, bestMoveBonus);
 
@@ -1843,7 +1849,7 @@ void update_refutations(const Position& pos, Stack* ss, Search::Worker& workerTh
 }
 
 void update_quiet_histories(
-  const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
+  const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus, bool allNode) {
 
     Color us = pos.side_to_move();
     workerThread.mainHistory[us][move.from_to()] << bonus;
