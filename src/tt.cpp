@@ -239,9 +239,6 @@ std::tuple<bool, TTData, TTWriter> TranspositionTable::probe(const Key key) cons
         if (replaceValue > currentValue)
             replace = &tte[i];
 }
-
-return {false, replace->read(), TTWriter(replace)};
-
     return {false, replace->read(), TTWriter(replace)};
 }
 
