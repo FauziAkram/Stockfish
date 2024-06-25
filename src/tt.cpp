@@ -233,13 +233,15 @@ std::tuple<bool, TTData, TTWriter> TranspositionTable::probe(const Key key) cons
 
     // Find an entry to be replaced according to the replacement strategy
     TTEntry* replace = tte;
-    for (int i = 1; i < ClusterSize; ++i)
-        int replaceValue = replace->depth8 - replace->relative_age(generation8) * 2;
-    int entryValue = tte[i].depth8 - tte[i].relative_age(generation8) * 2 
-                 + (tte[i].genBound8 & 0x4 ? 2 : 0);
+    for (int i = 1; i < ClusterSize; ++i) {
 
-    if (replaceValue > entryValue)
-        replace = &tte[i];
+        int replaceValue = replace->depth8 - replace->relative_age(generation8) * 2;
+        int entryValue = tte[i].depth8 - tte[i].relative_age(generation8) * 2 
+                     + (tte[i].genBound8 & 0x4 ? 2 : 0);
+
+        if (replaceValue > entryValue)
+            replace = &tte[i];
+}
 
     return {false, replace->read(), TTWriter(replace)};
 }
