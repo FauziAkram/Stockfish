@@ -922,7 +922,7 @@ moves_loop:  // When in check, search starts here
       prevSq != SQ_NONE ? thisThread->counterMoves[pos.piece_on(prevSq)][prevSq] : Move::none();
 
     MovePicker mp(pos, ttData.move, depth, &thisThread->mainHistory, &thisThread->captureHistory,
-                  contHist, &thisThread->pawnHistory, countermove, ss->killers);
+                  contHist, &thisThread->pawnHistory, countermove);
 
     value            = bestValue;
     moveCountPruning = false;
