@@ -1073,10 +1073,11 @@ bool Position::see_ge(Move m, int threshold) const {
 
         // Locate and remove the next least valuable attacker, and add to
         // the bitboard 'attackers' any X-ray attackers behind it.
+        if ((swap = PawnValue - swap) < res)
+        break;
+      
         if ((bb = stmAttackers & pieces(PAWN)))
         {
-            if ((swap = PawnValue - swap) < res)
-                break;
             occupied ^= least_significant_square_bb(bb);
 
             attackers |= attacks_bb<BISHOP>(to, occupied) & pieces(BISHOP, QUEEN);
