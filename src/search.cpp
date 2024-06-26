@@ -834,7 +834,7 @@ Value Search::Worker::search(
     // and the stored depth in the TT is greater than or equal to
     // current search depth, we decrease search depth even further.
     if (PvNode && !ttData.move)
-        depth -= 3 + (ss->ttHit && ttData.depth >= depth);
+        depth -= 3 + static_cast<int>(ss->ttHit && ttData.depth >= depth);
 
     // Use qsearch if depth <= 0.
     if (depth <= 0)
@@ -843,7 +843,7 @@ Value Search::Worker::search(
     // For cutNodes, if depth is high enough, decrease depth by 2 if there is no ttMove, or
     // by 1 if there is a ttMove with an upper bound.
     if (cutNode && depth >= 8 && (!ttData.move || ttData.bound == BOUND_UPPER))
-        depth -= 1 + !ttData.move;
+        depth -= 1 + static_cast<int>(!ttData.move);
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
@@ -1136,8 +1136,8 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction if position is or has been on the PV (~7 Elo)
         if (ss->ttPv)
-            r -= 1 + (ttData.value > alpha) + (ttData.depth >= depth)
-               - (PvNode && ttData.value < alpha && ttData.depth >= depth);
+            r -= 1 + static_cast<int>(ttData.value > alpha) + static_cast<int>(ttData.depth >= depth) 
+                   - static_cast<int>(PvNode && ttData.value < alpha && ttData.depth >= depth);
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
@@ -1147,8 +1147,8 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes (~4 Elo)
         if (cutNode)
-            r += 2 - (ttData.depth >= depth && ss->ttPv)
-               + (!ss->ttPv && move != ttData.move && move != ss->killers[0]);
+            r += 2 - static_cast<int>(ttData.depth >= depth && ss->ttPv) 
+                 + static_cast<int>(!ss->ttPv && move != ttData.move && move != ss->killers[0]);
 
         // Increase reduction if ttMove is a capture (~3 Elo)
         if (ttCapture)
@@ -1671,7 +1671,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return (reductionScale + 1236 - delta * 746 / rootDelta) / 1024 + (!i && reductionScale > 1326);
+    return (reductionScale + 1236 - delta * 746 / rootDelta) / 1024 + static_cast<int>(!i) * (reductionScale > 1326);
 }
 
 // elapsed() returns the time elapsed since the search started. If the
