@@ -293,7 +293,7 @@ void Search::Worker::iterative_deepening() {
             rm.previousScore = rm.score;
 
         // Reset average score if a new best move is found at a deeper depth
-        if (rootMoves[0].pv[0] != lastBestPV[0]) {
+        if (rootMoves[0].pv[0] != lastBestPV[0])
             rootMoves[0].averageScore = -VALUE_INFINITE;
 
         size_t pvFirst = 0;
