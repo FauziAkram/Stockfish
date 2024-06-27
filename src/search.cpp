@@ -857,7 +857,7 @@ Value Search::Worker::search(
       // because probCut search has depth set to depth - 4 but we also do a move before it
       // So effective depth is equal to depth - 3
       && !(ttData.depth >= depth - 3 && ttData.value != VALUE_NONE && ttData.value < probCutBeta)
-      && !ss->inCheck))
+      && !ss->inCheck)
     {
         assert(probCutBeta < VALUE_INFINITE && probCutBeta > beta);
 
