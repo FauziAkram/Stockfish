@@ -160,7 +160,7 @@ inline Bitboard pawn_attacks_bb(Color c, Square s) {
 // to board edge) that intersects the two given squares. If the given squares
 // are not on a same file/rank/diagonal, the function returns 0. For instance,
 // line_bb(SQ_C4, SQ_F7) will return a bitboard with the A2-G8 diagonal.
-inline Bitboard line_bb(Square s1, Square s2) {
+constexpr Bitboard line_bb(Square s1, Square s2) {
 
     assert(is_ok(s1) && is_ok(s2));
     return LineBB[s1][s2];
@@ -174,7 +174,7 @@ inline Bitboard line_bb(Square s1, Square s2) {
 // between_bb(SQ_E6, SQ_F8) will return a bitboard with the square F8. This trick
 // allows to generate non-king evasion moves faster: the defending piece must either
 // interpose itself to cover the check or capture the checking piece.
-inline Bitboard between_bb(Square s1, Square s2) {
+constexpr Bitboard between_bb(Square s1, Square s2) {
 
     assert(is_ok(s1) && is_ok(s2));
     return BetweenBB[s1][s2];
