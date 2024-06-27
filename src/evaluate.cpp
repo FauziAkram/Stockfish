@@ -79,8 +79,9 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Blend optimism and eval with nnue complexity
-    optimism += optimism * nnueComplexity / 457;
-    nnue -= nnue * nnueComplexity / 19157;
+    double sigmoid = 1.0 / (1.0 + std::exp(-nnueComplexity / 2000.0));
+    optimism = int(optimism * sigmoid);
+    nnue = int(nnue * (1.0 - sigmoid));
 
     int material = 554 * pos.count<PAWN>() + pos.non_pawn_material();
     v            = (nnue * (73921 + material) + optimism * (8112 + material)) / 73260;
