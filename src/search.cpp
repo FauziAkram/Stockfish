@@ -1065,9 +1065,12 @@ moves_loop:  // When in check, search starts here
                 Depth singularDepth = newDepth / 2;
 
                 ss->excludedMove = move;
-                value            = singularValue =
-                  search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
-                singularBound    = singularValue >= singularBeta ? BOUND_LOWER : BOUND_UPPER;
+                value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
+                // Update singularValue and singularBound only if the search returned a value within the bounds
+                if (value >= singularBeta - 1 && value <= singularBeta) {
+                     singularValue = value;
+                     singularBound = singularValue >= singularBeta ? BOUND_LOWER : BOUND_UPPER;
+                }
                 ss->excludedMove = Move::none();
 
                 if (value < singularBeta)
