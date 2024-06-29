@@ -312,11 +312,11 @@ void Search::Worker::iterative_deepening() {
             // Reset UCI info selDepth for each depth and each PV line
             selDepth = 0;
 
-            // Reset aspiration window starting size
-            Value avg = rootMoves[pvIdx].averageScore;
-            delta     = 9 + avg * avg / 10182;
-            alpha     = std::max(avg - delta, -VALUE_INFINITE);
-            beta      = std::min(avg + delta, VALUE_INFINITE);
+            // Reset aspiration window starting size based on previous iteration's score
+            Value previousScore = rootMoves[pvIdx].previousScore;
+            delta = (previousScore == -VALUE_INFINITE) ? 256 : std::max(16, int(abs(previousScore) / 64));
+            alpha = std::max(previousScore - delta, -VALUE_INFINITE);
+            beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
             optimism[us]  = 127 * avg / (std::abs(avg) + 86);
