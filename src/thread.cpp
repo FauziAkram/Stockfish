@@ -304,13 +304,18 @@ Thread* ThreadPool::get_best_thread() const {
     std::unordered_map<Move, int64_t, Move::MoveHash> votes(
       2 * std::min(size(), bestThread->worker->rootMoves.size()));
 
-    // Find the minimum score of all threads
+    // Find the minimum score of all threads, excluding mates
     for (auto&& th : threads)
-        minScore = std::min(minScore, th->worker->rootMoves[0].score);
+        if (th->worker->rootMoves[0].score > VALUE_MATE_IN_MAX_PLY)
+            minScore = std::min(minScore, th->worker->rootMoves[0].score);
 
-    // Vote according to score and depth, and select the best thread
+    // Vote according to score and depth, prioritize mates, and select the best thread
     auto thread_voting_value = [minScore](Thread* th) {
-        return (th->worker->rootMoves[0].score - minScore + 14) * int(th->worker->completedDepth);
+        Value score = th->worker->rootMoves[0].score;
+        // Prioritize mate scores
+        if (score <= VALUE_MATED_IN_MAX_PLY)
+            score = VALUE_MATED_IN_MAX_PLY - 1;
+        return (score - minScore + 14) * int(th->worker->completedDepth);
     };
 
     for (auto&& th : threads)
