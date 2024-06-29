@@ -313,6 +313,7 @@ void Search::Worker::iterative_deepening() {
             selDepth = 0;
 
             // Reset aspiration window starting size based on previous iteration's score
+            Value avg = rootMoves[pvIdx].averageScore;
             Value previousScore = rootMoves[pvIdx].previousScore;
             delta = (previousScore == -VALUE_INFINITE) ? 256 : std::max(16, int(abs(previousScore) / 64));
             alpha = std::max(previousScore - delta, -VALUE_INFINITE);
