@@ -225,10 +225,9 @@ std::tuple<bool, TTData, TTWriter> TranspositionTable::probe(const Key key) cons
     TTEntry* const tte   = first_entry(key);
     const uint16_t key16 = uint16_t(key);  // Use the low 16 bits as key inside the cluster
 
+    std::shared_lock<std::shared_mutex> lock(mutex); // Acquire a shared lock for reading
     for (int i = 0; i < ClusterSize; ++i)
         if (tte[i].key16 == key16)
-            // This gap is the main place for read races.
-            // After `read()` completes that copy is final, but may be self-inconsistent.
             return {tte[i].is_occupied(), tte[i].read(), TTWriter(&tte[i])};
 
     // Find an entry to be replaced according to the replacement strategy
