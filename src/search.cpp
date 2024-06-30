@@ -57,7 +57,6 @@ TUNE(yy11,yy12);
 TUNE(SetRange(1, 321), yy13);
 TUNE(SetRange(-3, 7), yy14);
 TUNE(yy15,yy16,yy17,yy18,yy19,yy20,yy21,yy22);
-TUNE(EvalLevel);
 
 namespace TB = Tablebases;
 
@@ -68,6 +67,7 @@ namespace {
 
 double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
+TUNE(EvalLevel);
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
