@@ -27,7 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int xx1= 32768, xx2=16384, xx3=3560;
+TUNE(xx1,xx2,xx3);
 namespace {
 
 enum Stages {
@@ -187,7 +188,7 @@ void MovePicker::score() {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += bool(pos.check_squares(pt) & to) * 16384;
+            m.value += bool(pos.check_squares(pt) & to) * (pt == QUEEN ? xx1 : xx2);
 
             // bonus for escaping from capture
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
@@ -237,7 +238,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3560 * d; };
+    auto quiet_threshold = [](Depth d) { return -xx3 * d; };
 
 top:
     switch (stage)
