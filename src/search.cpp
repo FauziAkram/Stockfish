@@ -1398,7 +1398,7 @@ moves_loop:  // When in check, search starts here
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
-    return bestValue;
+    return bestValue >= beta ? (bestValue + beta) / 2 : bestValue;
 }
 
 
