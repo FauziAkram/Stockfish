@@ -66,8 +66,8 @@ using namespace Search;
 
 namespace {
 
-double EvalLevel[10] = {zz1, zz2, zz3, zz4, zz5,
-                                         zz6, zz7, zz8, zz9, zz10};
+double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
+                                         0.942, 0.933, 0.890, 0.984, 0.941};
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
