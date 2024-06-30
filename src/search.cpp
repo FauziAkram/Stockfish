@@ -50,14 +50,14 @@ namespace Stockfish {
 
 int yy1=100,yy2=1067, yy3=223, yy4=97, yy5=580, yy6=1667, yy7=1495, yy8=687, yy9=1480, yy10=2170,
 yy11=1880, yy12=750, yy13=150, yy14=0, yy15=9, yy16=9550, yy17=1005, yy18=500, yy19=10, yy20=97,
-yy21=739, yy22=506, zz1=981, zz2=956, zz3=895, zz4=949, zz5=913, zz6=942, zz7=933, zz8=890, zz9=984, zz10=941;
+yy21=739, yy22=506;
 TUNE(yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9);
 TUNE(SetRange(1, 4341), yy10);
 TUNE(yy11,yy12);
 TUNE(SetRange(1, 321), yy13);
 TUNE(SetRange(-3, 7), yy14);
 TUNE(yy15,yy16,yy17,yy18,yy19,yy20,yy21,yy22);
-TUNE(zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz10);
+TUNE(EvalLevel);
 
 namespace TB = Tablebases;
 
@@ -66,7 +66,7 @@ using namespace Search;
 
 namespace {
 
-static constexpr double EvalLevel[10] = {zz1, zz2, zz3, zz4, zz5,
+double EvalLevel[10] = {zz1, zz2, zz3, zz4, zz5,
                                          zz6, zz7, zz8, zz9, zz10};
 
 // Futility margin
