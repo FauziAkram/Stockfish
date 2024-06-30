@@ -461,11 +461,11 @@ void Search::Worker::iterative_deepening() {
             fallingEval = std::clamp(fallingEval, (yy5 / 1000.0), (yy6 / 1000.0));
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? (yy7 / 1000) : (yy8 / 1000);
-            double reduction = ((yy9 / 1000) + mainThread->previousTimeReduction) / ((yy10 / 1000) * timeReduction);
-            double bestMoveInstability = 1 + (yy11 / 1000) * totBestMoveChanges / threads.size();
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? (yy7 / 1000.0) : (yy8 / 1000.0);
+            double reduction = ((yy9 / 1000.0) + mainThread->previousTimeReduction) / ((yy10 / 1000.0) * timeReduction);
+            double bestMoveInstability = 1 + (yy11 / 1000.0) * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + yy12) / yy13, yy14, yy15);
-            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? (yy16 / 10000) : (yy17 / 1000);
+            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? (yy16 / 10000.0) : (yy17 / 1000.0);
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * recapture / 1000.0;
@@ -476,7 +476,7 @@ void Search::Worker::iterative_deepening() {
 
             auto elapsedTime = elapsed();
 
-            if (completedDepth >= yy19 && nodesEffort >= yy20 && elapsedTime > totalTime * (yy21/1000)
+            if (completedDepth >= yy19 && nodesEffort >= yy20 && elapsedTime > totalTime * (yy21/1000.0)
                 && !mainThread->ponder)
                 threads.stop = true;
 
@@ -491,7 +491,7 @@ void Search::Worker::iterative_deepening() {
                     threads.stop = true;
             }
             else
-                threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * (yy22/1000);
+                threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * (yy22/1000.0);
         }
 
         mainThread->iterValue[iterIdx] = bestValue;
