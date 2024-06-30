@@ -1181,7 +1181,10 @@ bool Position::has_game_cycle(int ply) const {
             Square s1   = move.from_sq();
             Square s2   = move.to_sq();
 
-            if (!((between_bb(s1, s2) ^ s2) & pieces()))
+            // Verify if the stored move is valid for the current position
+            if (piece_on(s1) == moved_piece(move) && piece_on(s2) == captured_piece(move) &&
+                !((between_bb(s1, s2) ^ s2) & pieces()))
+
             {
                 if (ply > i)
                     return true;
