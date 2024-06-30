@@ -55,8 +55,8 @@ using namespace Search;
 
 namespace {
 
-static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
-                                         0.942, 0.933, 0.890, 0.984, 0.941};
+static constexpr double EvalLevel[10] = {0.981, 0.956, 1, 1, 0.913,
+                                         0.962, 0.936, 0.890, 0.984, 1};
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -444,28 +444,28 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
+            double fallingEval = (1067 + 228 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 97 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+            fallingEval = std::clamp(fallingEval, 0.667, 1.81);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
-            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.65 : 0.687;
+            double reduction = (1.64 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
+            int    el                  = std::clamp((bestValue + 670) / 172, 0, 8);
+            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.352;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
-                totalTime = std::min(500.0, totalTime);
+                totalTime = std::min(430.0, totalTime);
 
             auto elapsedTime = elapsed();
 
-            if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.739
+            if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.780
                 && !mainThread->ponder)
                 threads.stop = true;
 
