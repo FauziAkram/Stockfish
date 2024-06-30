@@ -65,8 +65,8 @@ using namespace Search;
 
 namespace {
 
-int EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
-                                         0.942, 0.933, 0.890, 0.984, 0.941};
+int EvalLevel[10] = {981, 956, 895, 949, 913,
+                                         942, 933, 890, 984, 941};
 TUNE(EvalLevel);
 
 // Futility margin
@@ -468,7 +468,7 @@ void Search::Worker::iterative_deepening() {
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? (yy16 / 10000) : (yy17 / 1000);
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * recapture / 1000;
+                             * bestMoveInstability * EvalLevel[el] * recapture / 1000.0;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
