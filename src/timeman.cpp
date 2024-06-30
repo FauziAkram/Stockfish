@@ -97,9 +97,9 @@ void TimeManagement::init(Search::LimitsType& limits,
     int mtg = limits.movestogo ? std::min(limits.movestogo, xx0) : xx0;
 
     // If less than one second, gradually reduce mtg
-    if (scaledTime < xx1 && double(mtg) / scaledInc > (xx2 / 100000))
+    if (scaledTime < xx1 && double(mtg) / scaledInc > (xx2 / 100000.0))
     {
-        mtg = scaledTime * (xx3 / 100000);
+        mtg = scaledTime * (xx3 / 100000.0);
     }
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
@@ -113,7 +113,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     {
         // Extra time according to timeLeft
         if (originalTimeAdjust < 0)
-            originalTimeAdjust = (xx4 / 10000) * std::log10(timeLeft) - (xx5 / 10000);
+            originalTimeAdjust = (xx4 / 10000.0) * std::log10(timeLeft) - (xx5 / 10000.0);
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
