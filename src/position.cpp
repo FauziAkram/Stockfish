@@ -980,7 +980,7 @@ void Position::do_null_move(StateInfo& newSt, TranspositionTable& tt) {
     ++st->rule50;
     prefetch(tt.first_entry(key()));
 
-    st->pliesFromNull = 0;
+    newSt.pliesFromNull = 0; // Update pliesFromNull in the new state
 
     sideToMove = ~sideToMove;
 
