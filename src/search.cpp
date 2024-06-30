@@ -369,7 +369,7 @@ void Search::Worker::iterative_deepening() {
                 else if (bestValue >= beta)
                 {
                     if (bestValue >= beta + delta)
-                        alpha = (alpha + beta) / 2;
+                        alpha = (alpha + alpha + beta) / 3;
                     beta = std::min(bestValue + delta, VALUE_INFINITE);
                     ++failedHighCnt;
                 }
