@@ -1666,7 +1666,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
-    return bestValue >= beta ? (2 * bestValue + beta) / 3 : bestValue;
+    return bestValue >= beta ? (3 * bestValue + beta) / 4 : bestValue;
 }
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
