@@ -28,9 +28,11 @@
 
 namespace Stockfish {
 
-int xx0=50 xx1=1000 xx2=5000 xx3=5000 xx4=3285 xx5=4830 xx6=3080 xx7=3190 xx8=5060 xx9=3390 xx10=3010
-   xx11=2930 xx12=1220 xx13=2950 xx14=4620 xx15=2130 xx16=6640 xx17=1200 xx18=8250;
-TUNE(xx0,xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18);
+int xx0=50, xx1=1000, xx2=5000, xx3=5000, xx4=3285, xx5=4830, xx6=3080, xx7=3190, xx8=5060, xx9=3390, xx10=3010,
+    xx11=2930, xx12=1220, xx13=2950, xx14=4620, xx15=2130, xx16=6640, xx17=1200, xx18=8250;
+TUNE(xx0,xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx18);
+TUNE(SetRange(1, 2501), xx17);
+
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
@@ -135,7 +137,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     // Limit the maximum possible time for this move
     optimumTime = TimePoint(optScale * timeLeft);
     maximumTime =
-      TimePoint(std::min((xx17 / 10000) * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
+      TimePoint(std::min((xx18 / 10000) * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
