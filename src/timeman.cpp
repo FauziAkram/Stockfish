@@ -117,14 +117,14 @@ void TimeManagement::init(Search::LimitsType& limits,
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
-        double optConstant  = std::min((xx6 / 1000000.0) + (xx7 / 10000000.0) * logTimeInSec, (xx8 / 1000000));
+        double optConstant  = std::min((xx6 / 1000000.0) + (xx7 / 10000000.0) * logTimeInSec, (xx8 / 1000000.0));
         double maxConstant  = std::max((xx9 / 1000.0) + (xx10 / 1000.0) * logTimeInSec, (xx11 / 1000.0));
 
         optScale = std::min((xx12 / 100000.0) + std::pow(ply + (xx13 / 1000.0), (xx14 / 10000.0)) * optConstant,
                             (xx15 / 10000.0) * limits.time[us] / timeLeft)
                  * originalTimeAdjust;
 
-        maxScale = std::min((xx16 / 1000), maxConstant + ply / (xx17 / 100.0));
+        maxScale = std::min((xx16 / 1000.0), maxConstant + ply / (xx17 / 100.0));
     }
 
     // x moves in y seconds (+ z increment)
@@ -137,7 +137,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     // Limit the maximum possible time for this move
     optimumTime = TimePoint(optScale * timeLeft);
     maximumTime =
-      TimePoint(std::min((xx18 / 10000) * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
+      TimePoint(std::min((xx18 / 10000.0) * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
