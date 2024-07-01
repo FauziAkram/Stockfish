@@ -187,7 +187,7 @@ void MovePicker::score() {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += bool(pos.check_squares(pt) & to) * (pt == QUEEN ? 30915 : 16900);
+            m.value += bool(pos.check_squares(pt) & to) * (pt == QUEEN ? 29188 : 16756);
 
             // bonus for escaping from capture
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
@@ -237,7 +237,7 @@ Move MovePicker::select(Pred filter) {
 // moves left, picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3366 * d; };
+    auto quiet_threshold = [](Depth d) { return -3450 * d; };
 
 top:
     switch (stage)
