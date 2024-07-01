@@ -28,10 +28,11 @@
 
 namespace Stockfish {
 
-int xx0=50, xx1=1000, xx2=5000, xx3=5000, xx4=3285, xx5=4830, xx6=3080, xx7=3190, xx8=5060, xx9=3390, xx10=3010,
+int xx0=50, xx1=1000, xx4=3285, xx5=4830, xx6=3080, xx7=3190, xx8=5060, xx9=3390, xx10=3010,
     xx11=2930, xx12=1220, xx13=2950, xx14=4620, xx15=2130, xx16=6640, xx17=1200, xx18=8250;
-TUNE(xx0,xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx18);
+TUNE(xx0,xx1,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16);
 TUNE(SetRange(1, 2501), xx17);
+TUNE(xx18);
 
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
@@ -97,9 +98,9 @@ void TimeManagement::init(Search::LimitsType& limits,
     int mtg = limits.movestogo ? std::min(limits.movestogo, xx0) : xx0;
 
     // If less than one second, gradually reduce mtg
-    if (scaledTime < xx1 && double(mtg) / scaledInc > (xx2 / 100000.0))
+    if (scaledTime < xx1 && double(mtg) / scaledInc > 0.05)
     {
-        mtg = scaledTime * (xx3 / 100000.0);
+        mtg = scaledTime * 0.05;
     }
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
