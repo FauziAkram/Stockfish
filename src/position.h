@@ -233,7 +233,7 @@ inline int Position::count(Color c) const {
 
 template<PieceType Pt>
 inline int Position::count() const {
-    return count<Pt>(WHITE) + count<Pt>(BLACK);
+    return pieceCount[make_piece(WHITE, Pt)] + pieceCount[make_piece(BLACK, Pt)];
 }
 
 template<PieceType Pt>
