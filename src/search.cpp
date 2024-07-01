@@ -1663,7 +1663,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
     if (std::abs(bestValue) < VALUE_TB_WIN_IN_MAX_PLY && bestValue >= beta) {
         bestValue = (3 * bestValue + beta) / 4;
-        dbg_mean_of(bestValue=beta);
+        dbg_mean_of(bestValue==beta);
           }
 
     // Save gathered info in transposition table
