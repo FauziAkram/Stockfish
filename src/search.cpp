@@ -48,6 +48,10 @@
 
 namespace Stockfish {
 
+int yy2=1067, yy3=223, yy4=97, yy5=580, yy6=1667, yy7=1495, yy8=687, yy9=1480, yy10=2170,
+yy11=1880, yy12=750, yy13=150, yy15=9, yy16=9550, yy17=1005, yy18=500, yy19=10, yy20=97,
+yy21=739, yy22=506;
+
 namespace TB = Tablebases;
 
 using Eval::evaluate;
@@ -55,8 +59,9 @@ using namespace Search;
 
 namespace {
 
-static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
-                                         0.942, 0.933, 0.890, 0.984, 0.941};
+int EvalLevel[10] = {981, 956, 895, 949, 913,
+                                         942, 933, 890, 984, 941};
+TUNE(EvalLevel);
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -444,28 +449,28 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 97 * (mainThread->iterValue[iterIdx] - bestValue))
+            double fallingEval = (yy2 + yy3 * (mainThread->bestPreviousAverageScore - bestValue)
+                                  + yy4 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+            fallingEval = std::clamp(fallingEval, (yy5 / 1000.0), (yy6 / 1000.0));
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
-            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
-            double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? (yy7 / 1000.0) : (yy8 / 1000.0);
+            double reduction = ((yy9 / 1000.0) + mainThread->previousTimeReduction) / ((yy10 / 1000.0) * timeReduction);
+            double bestMoveInstability = 1 + (yy11 / 1000.0) * totBestMoveChanges / threads.size();
+            int    el                  = std::clamp((bestValue + yy12) / yy13, 0, yy15);
+            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? (yy16 / 10000.0) : (yy17 / 1000.0);
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * recapture;
+                             * bestMoveInstability * EvalLevel[el] * recapture / 1000.0;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
-                totalTime = std::min(500.0, totalTime);
+                totalTime = std::min((yy18 / 1.0), totalTime);
 
             auto elapsedTime = elapsed();
 
-            if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.739
+            if (completedDepth >= yy19 && nodesEffort >= yy20 && elapsedTime > totalTime * (yy21/1000.0)
                 && !mainThread->ponder)
                 threads.stop = true;
 
@@ -480,7 +485,7 @@ void Search::Worker::iterative_deepening() {
                     threads.stop = true;
             }
             else
-                threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * 0.506;
+                threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * (yy22/1000.0);
         }
 
         mainThread->iterValue[iterIdx] = bestValue;
