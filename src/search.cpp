@@ -48,10 +48,10 @@
 
 namespace Stockfish {
 
-int yy1=100,yy2=1067, yy3=223, yy4=97, yy5=580, yy6=1667, yy7=1495, yy8=687, yy9=1480, yy10=2170,
+int yy2=1067, yy3=223, yy4=97, yy5=580, yy6=1667, yy7=1495, yy8=687, yy9=1480, yy10=2170,
 yy11=1880, yy12=750, yy13=150, yy15=9, yy16=9550, yy17=1005, yy18=500, yy19=10, yy20=97,
 yy21=739, yy22=506;
-TUNE(yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9);
+TUNE(yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9);
 TUNE(SetRange(1, 4341), yy10);
 TUNE(yy11,yy12);
 TUNE(SetRange(1, 321), yy13);
@@ -452,7 +452,7 @@ void Search::Worker::iterative_deepening() {
         // Do we have time for the next iteration? Can we stop searching now?
         if (limits.use_time_management() && !threads.stop && !mainThread->stopOnPonderhit)
         {
-            int nodesEffort = rootMoves[0].effort * yy1 / std::max(size_t(1), size_t(nodes));
+            int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
             double fallingEval = (yy2 + yy3 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + yy4 * (mainThread->iterValue[iterIdx] - bestValue))
@@ -463,7 +463,7 @@ void Search::Worker::iterative_deepening() {
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? (yy7 / 1000.0) : (yy8 / 1000.0);
             double reduction = ((yy9 / 1000.0) + mainThread->previousTimeReduction) / ((yy10 / 1000.0) * timeReduction);
             double bestMoveInstability = 1 + (yy11 / 1000.0) * totBestMoveChanges / threads.size();
-            int    el                  = std::clamp((bestValue + yy12) / yy13, yy14, yy15);
+            int    el                  = std::clamp((bestValue + yy12) / yy13, 0, yy15);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? (yy16 / 10000.0) : (yy17 / 1000.0);
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
