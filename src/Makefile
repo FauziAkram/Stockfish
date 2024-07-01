@@ -595,7 +595,7 @@ ifeq ($(optimize),yes)
 
 	ifeq ($(comp),gcc)
 		ifeq ($(OS), Android)
-			CXXFLAGS += -fno-gcse -mthumb -march=armv7-a -mfloat-abi=softfp
+			CXXFLAGS += -fno-gcse -mthumb -march=armv7-a -mfloat-abi=softfp -fsplit-loops
 		endif
 	endif
 
