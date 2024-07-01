@@ -539,7 +539,7 @@ Value Search::Worker::search(
     if (!rootNode && alpha < VALUE_DRAW && pos.has_game_cycle(ss->ply))
     {
         alpha = value_draw(this->nodes);
-        if (alpha >= beta)
+        if (alpha > beta)
             return alpha;
     }
 
@@ -597,7 +597,7 @@ Value Search::Worker::search(
         // mate. In this case, return a fail-high score.
         alpha = std::max(mated_in(ss->ply), alpha);
         beta  = std::min(mate_in(ss->ply + 1), beta);
-        if (alpha >= beta)
+        if (alpha > beta)
             return alpha;
     }
 
@@ -1429,7 +1429,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
     if (alpha < VALUE_DRAW && pos.has_game_cycle(ss->ply))
     {
         alpha = value_draw(this->nodes);
-        if (alpha >= beta)
+        if (alpha > beta)
             return alpha;
     }
 
