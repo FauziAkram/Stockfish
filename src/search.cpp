@@ -48,14 +48,7 @@
 
 namespace Stockfish {
 
-int yy2=1067, yy3=223, yy4=97, yy5=580, yy6=1667, yy7=1495, yy8=687, yy9=1480, yy10=2170,
-yy11=1880, yy12=750, yy13=150, yy16=9550, yy17=1005, yy18=5000, yy19=10, yy20=97,
-yy21=739, yy22=506;
-TUNE(yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9);
-TUNE(SetRange(1, 4341), yy10);
-TUNE(yy11,yy12);
-TUNE(SetRange(1, 321), yy13);
-TUNE(yy16,yy17,yy18,yy19,yy20,yy21,yy22);
+int yy2=1067,	yy3=229,	yy4=95,	yy5=569,	yy6=1704,	yy7=1474,	yy8=709,	yy9=1467,	yy10=2172,	yy11=1909,	yy12=766,	yy13=153,	yy16=9477,	yy17=1009,	yy18=5100,	yy19=10,	yy20=92,	yy21=724,	yy22=519;
 
 namespace TB = Tablebases;
 
@@ -64,9 +57,8 @@ using namespace Search;
 
 namespace {
 
-int EvalLevel[10] = {981, 956, 895, 949, 913,
-                                         942, 933, 890, 984, 941};
-TUNE(EvalLevel);
+static constexpr double EvalLevel[10] = {0.975, 0.982, 0.924, 0.931, 0.901,
+                                         0.947, 0.955, 0.881, 0.991, 0.943};
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -467,7 +459,7 @@ void Search::Worker::iterative_deepening() {
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? (yy16 / 10000.0) : (yy17 / 1000.0);
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * recapture / 1000.0;
+                             * bestMoveInstability * EvalLevel[el] * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
