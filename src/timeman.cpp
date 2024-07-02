@@ -28,8 +28,8 @@
 
 namespace Stockfish {
 
-int xx0=50, xx1=1000, xx4=3285, xx5=4830, xx6=3080, xx7=3190, xx8=5060, xx9=3390, xx10=3010,
-    xx11=2930, xx12=1220, xx13=2950, xx14=4620, xx15=2130, xx16=6640, xx17=1200, xx18=8250;
+int xx0=50, xx1=1000, xx4=3285, xx5=4830, xx6=308, xx7=319, xx8=506, xx9=339, xx10=301,
+    xx11=293, xx12=122, xx13=295, xx14=462, xx15=213, xx16=664, xx17=120, xx18=825;
 TUNE(xx0,xx1,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16);
 TUNE(SetRange(1, 2501), xx17);
 TUNE(xx18);
@@ -118,14 +118,14 @@ void TimeManagement::init(Search::LimitsType& limits,
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
-        double optConstant  = std::min((xx6 / 1000000.0) + (xx7 / 10000000.0) * logTimeInSec, (xx8 / 1000000.0));
-        double maxConstant  = std::max((xx9 / 1000.0) + (xx10 / 1000.0) * logTimeInSec, (xx11 / 1000.0));
+        double optConstant  = std::min((xx6 / 100000.0) + (xx7 / 1000000.0) * logTimeInSec, (xx8 / 100000.0));
+        double maxConstant  = std::max((xx9 / 100.0) + (xx10 / 100.0) * logTimeInSec, (xx11 / 100.0));
 
-        optScale = std::min((xx12 / 100000.0) + std::pow(ply + (xx13 / 1000.0), (xx14 / 10000.0)) * optConstant,
-                            (xx15 / 10000.0) * limits.time[us] / timeLeft)
+        optScale = std::min((xx12 / 10000.0) + std::pow(ply + (xx13 / 100.0), (xx14 / 1000.0)) * optConstant,
+                            (xx15 / 1000.0) * limits.time[us] / timeLeft)
                  * originalTimeAdjust;
 
-        maxScale = std::min((xx16 / 1000.0), maxConstant + ply / (xx17 / 100.0));
+        maxScale = std::min((xx16 / 100.0), maxConstant + ply / (xx17 / 10.0));
     }
 
     // x moves in y seconds (+ z increment)
@@ -138,7 +138,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     // Limit the maximum possible time for this move
     optimumTime = TimePoint(optScale * timeLeft);
     maximumTime =
-      TimePoint(std::min((xx18 / 10000.0) * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
+      TimePoint(std::min((xx18 / 1000.0) * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
