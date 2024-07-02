@@ -30,9 +30,6 @@ namespace Stockfish {
 
 int xx0=50, xx1=1000, xx4=3285, xx5=4830, xx6=308, xx7=319, xx8=506, xx9=339, xx10=301,
     xx11=293, xx12=122, xx13=295, xx14=462, xx15=213, xx16=664, xx17=120, xx18=825;
-TUNE(xx0,xx1,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16);
-TUNE(SetRange(1, 2501), xx17);
-TUNE(xx18);
 
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
