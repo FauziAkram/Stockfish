@@ -118,7 +118,7 @@ void TimeManagement::init(Search::LimitsType& limits,
                             0.213 * limits.time[us] / timeLeft)
                  * originalTimeAdjust;
 
-        maxScale = std::min(6.64, maxConstant + ply / 12.0);
+        maxScale = std::min(6.65, maxConstant + ply / 10.0);
     }
 
     // x moves in y seconds (+ z increment)
