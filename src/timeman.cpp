@@ -91,7 +91,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     int mtg = limits.movestogo ? std::min(limits.movestogo, 50) : 50;
 
     // If less than one second, gradually reduce mtg
-    if (scaledTime < 1000 && double(mtg) / scaledInc > 0.05)
+    if (scaledTime < 984 && double(mtg) / scaledInc > 0.05)
     {
         mtg = scaledTime * 0.05;
     }
@@ -112,7 +112,7 @@ void TimeManagement::init(Search::LimitsType& limits,
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
         double optConstant  = std::min(0.00308 + 0.000319 * logTimeInSec, 0.00506);
-        double maxConstant  = std::max(3.39 + 3.01 * logTimeInSec, 2.93);
+        double maxConstant  = std::max(3.40 + 3.14 * logTimeInSec, 2.90);
 
         optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
                             0.213 * limits.time[us] / timeLeft)
@@ -131,7 +131,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     // Limit the maximum possible time for this move
     optimumTime = TimePoint(optScale * timeLeft);
     maximumTime =
-      TimePoint(std::min(0.825 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
+      TimePoint(std::min(0.83 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
