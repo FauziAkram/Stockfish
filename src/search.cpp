@@ -1434,7 +1434,7 @@ moves_loop:  // When in check, search starts here
 // See https://www.chessprogramming.org/Horizon_Effect and https://www.chessprogramming.org/Quiescence_Search
 // (~155 Elo)
 template<NodeType nodeType>
-Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth) {
+Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode) {
 
     static_assert(nodeType != Root);
     constexpr bool PvNode = nodeType == PV;
