@@ -559,7 +559,7 @@ Value Search::Worker::search(
     Key   posKey;
     Move  move, excludedMove, bestMove;
     Depth extension, newDepth;
-    Value bestValue, value, eval, maxValue, probCutBeta, singularValue;
+    Value bestValue, value, eval, maxValue, probCutBeta, singularValue, initialAlpha;
     bool  givesCheck, improving, priorCapture, opponentWorsening;
     bool  capture, moveCountPruning, ttCapture;
     Piece movedPiece;
@@ -572,6 +572,7 @@ Value Search::Worker::search(
     priorCapture       = pos.captured_piece();
     Color us           = pos.side_to_move();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
+    initialAlpha       = alpha;
     bestValue                                             = -VALUE_INFINITE;
     maxValue                                              = VALUE_INFINITE;
 
@@ -1684,7 +1685,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
     // Save gathered info in transposition table
     // Static evaluation is saved as it was before adjustment by correction history
-    ttWriter.write(posKey, value_to_tt(bestValue, ss->ply), pvHit,
+    ttWriter.write(posKey, value_to_tt(bestValue, ss->ply), pvHit || (PvNode && cutNode && alpha > initialAlpha),
                    bestValue >= beta ? BOUND_LOWER : BOUND_UPPER, qsTtDepth, bestMove,
                    unadjustedStaticEval, tt.generation());
 
