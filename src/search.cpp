@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=10, xx2=1664, xx3=1471, xx4=752, xx5=34, xx6=29, xx7=30, xx8=26;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -754,11 +755,11 @@ Value Search::Worker::search(
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-10 * int((ss - 1)->staticEval + ss->staticEval), -1664, 1471) + 752;
-        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
+        int bonus = std::clamp(-xx1 * int((ss - 1)->staticEval + ss->staticEval), -xx2, xx3) + xx4;
+        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * (bonus > 0 ? xx5 : xx6) / 32;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus / 2;
+              << bonus * (bonus > 0 ? xx7 : xx8) / 64;
     }
 
     // Set up the improving flag, which is true if current static evaluation is
