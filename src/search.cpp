@@ -1685,7 +1685,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
 
     // Save gathered info in transposition table
     // Static evaluation is saved as it was before adjustment by correction history
-    ttWriter.write(posKey, value_to_tt(bestValue, ss->ply), pvHit || (PvNode && cutNode && alpha > initialAlpha),
+    ttWriter.write(posKey, value_to_tt(bestValue, ss->ply), pvHit || ((PvNode || cutNode) && alpha > initialAlpha),
                    bestValue >= beta ? BOUND_LOWER : BOUND_UPPER, qsTtDepth, bestMove,
                    unadjustedStaticEval, tt.generation());
 
