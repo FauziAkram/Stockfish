@@ -755,10 +755,10 @@ Value Search::Worker::search(
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
         int bonus = std::clamp(-10 * int((ss - 1)->staticEval + ss->staticEval), -1664, 1471) + 752;
-        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
+        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * (bonus > 0 ? 38 : 32) / 32;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus / 2;
+              << bonus * (bonus > 0 ? 16 : 12) / 32;
     }
 
     // Set up the improving flag, which is true if current static evaluation is
