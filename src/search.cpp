@@ -67,11 +67,13 @@ namespace {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
-    Value futilityMult       = 122 - 37 * noTtCutNode;
-    Value improvingDeduction = 58 * improving * futilityMult / 32;
-    Value worseningDeduction = oppWorsening * futilityMult / 3;
+    Value futilityMult1       = xx1 - xx2 * noTtCutNode;
+    Value futilityMult2       = xx3 - xx4 * noTtCutNode;
+    Value futilityMult3       = xx5 - xx5 * noTtCutNode;
+    Value improvingDeduction = xx6 * improving * futilityMult2 / 64;
+    Value worseningDeduction = xx7 * oppWorsening * futilityMult3 / 64;
 
-    return futilityMult * d - improvingDeduction - worseningDeduction;
+    return futilityMult1 * d - improvingDeduction - worseningDeduction;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
@@ -786,7 +788,7 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 13
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
-               - (ss - 1)->statScore / 260
+               - (ss - 1)->statScore / xx9
              >= beta
         && eval >= beta && (!ttData.move || ttCapture) && beta > VALUE_TB_LOSS_IN_MAX_PLY
         && eval < VALUE_TB_WIN_IN_MAX_PLY)
