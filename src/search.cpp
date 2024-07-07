@@ -739,6 +739,8 @@ Value Search::Worker::search(
         if (ttData.value != VALUE_NONE
             && (ttData.bound & (ttData.value > eval ? BOUND_LOWER : BOUND_UPPER)))
             eval = ttData.value;
+        if (eval > ss->staticEval)
+            eval = (4 * eval + ss->staticEval) / 5;
     }
     else
     {
