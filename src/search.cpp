@@ -1906,6 +1906,7 @@ Move Skill::pick_best(const RootMoves& rootMoves, size_t multiPV) {
         {
             maxScore = rootMoves[i].score + push;
             best     = rootMoves[i].pv[0];
+            dbg_hit_on(push == maxScore);
         }
     }
 
