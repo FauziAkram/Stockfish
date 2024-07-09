@@ -124,7 +124,6 @@ struct LimitsType {
     int                      movestogo, depth, mate, perft, infinite;
     uint64_t                 nodes;
     bool                     ponderMode;
-    Square                   capSq;
 };
 
 
