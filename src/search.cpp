@@ -1814,7 +1814,7 @@ void update_all_stats(const Position& pos,
     {
         // Increase stats for the best move in case it was a capture move
         captured = type_of(pos.piece_on(bestMove.to_sq()));
-        captureHistory[moved_piece][bestMove.to_sq()][captured] << quietMoveBonus * std:clamp((xx1 * (bestValue - beta) / 2048),-xx2,xx3);
+        captureHistory[moved_piece][bestMove.to_sq()][captured] << quietMoveBonus * std::clamp((xx1 * (bestValue - beta) / 2048),-xx2,xx3);
     }
 
     // Extra penalty for a quiet early move that was not a TT move or
