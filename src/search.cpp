@@ -1671,6 +1671,16 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
                    bestValue >= beta ? BOUND_LOWER : BOUND_UPPER, qsTtDepth, bestMove,
                    unadjustedStaticEval, tt.generation());
 
+    // Adjust correction history
+    if (!ss->inCheck && (!bestMove || !pos.capture(bestMove))
+        && !(bestValue >= beta && bestValue <= ss->staticEval)
+        && !(!bestMove && bestValue >= ss->staticEval) && depth < 10)
+    {
+        auto bonus = std::clamp(int(bestValue - ss->staticEval), -CORRECTION_HISTORY_LIMIT / 4,
+                                CORRECTION_HISTORY_LIMIT / 4);
+        thisThread->correctionHistory[us][pawn_structure_index<Correction>(pos)] << bonus;
+    }
+
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
     return bestValue;
