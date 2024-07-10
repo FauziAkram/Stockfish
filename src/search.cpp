@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0, xx3=0, xx4=200, xx5=100, xx6=100, xx7=46640, xx8=10898;
+TUNE(SetRange(-200, 400), xx1,xx2,xx3,xx4,xx5,xx6);
+TUNE(xx7,xx8);
 
 namespace TB = Tablebases;
 
@@ -1168,12 +1171,16 @@ moves_loop:  // When in check, search starts here
         else if (move == ttData.move)
             r = std::max(0, r - 2);
 
-        ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
-                      + (*contHist[0])[movedPiece][move.to_sq()]
-                      + (*contHist[1])[movedPiece][move.to_sq()] - 4664;
+        ss->statScore = (xx1 * cutNode
+          + xx2 * thisThread->mainHistory[us][move.from_to()]
+          + xx3 * cutNode * thisThread->mainHistory[us][move.from_to()]
+          + xx4 * thisThread->mainHistory[us][move.from_to()]
+                      + xx5 * (*contHist[0])[movedPiece][move.to_sq()]
+                      + xx6 * (*contHist[1])[movedPiece][move.to_sq()]
+                      - xx7) / 100;
 
         // Decrease/increase reduction for moves with a good/bad history (~8 Elo)
-        r -= ss->statScore / 10898;
+        r -= ss->statScore / xx8;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1 + (rootNode && depth < 10))
