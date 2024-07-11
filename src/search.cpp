@@ -51,8 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=7, xx2=15;
-TUNE(SetRange(3, 28), xx1,xx2);
+int xx0= 15, xx1=7, xx2=15;
+TUNE(SetRange(3, 28), xx0, xx1,xx2);
 
 namespace TB = Tablebases;
 
@@ -839,7 +839,7 @@ Value Search::Worker::search(
     // Step 10. Internal iterative reductions (~9 Elo)
     // For PV nodes without a ttMove, we decrease depth.
     if (PvNode && !ttData.move)
-        depth -= 3;
+        depth -= 2 + (depth < xx0);
 
     // Use qsearch if depth <= 0
     if (depth <= 0)
