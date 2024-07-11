@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=7, xx2=15;
+TUNE(SetRange(3, 28), xx1,xx2);
 
 namespace TB = Tablebases;
 
@@ -845,8 +847,8 @@ Value Search::Worker::search(
 
     // For cutNodes, if depth is high enough, decrease depth by 2 if there is no ttMove,
     // or by 1 if there is a ttMove with an upper bound.
-    if (cutNode && depth >= 7 && (!ttData.move || ttData.bound == BOUND_UPPER))
-        depth -= 1 + !ttData.move;
+    if (cutNode && depth >= xx1 && (!ttData.move || ttData.bound == BOUND_UPPER))
+        depth -= (depth < xx2) + !ttData.move;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search
