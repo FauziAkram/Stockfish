@@ -237,7 +237,6 @@ void Search::Worker::iterative_deepening() {
 
     Move pv[MAX_PLY + 1];
 
-    Depth lastBestMoveDepth = 0;
     Value lastBestScore     = -VALUE_INFINITE;
     auto  lastBestPV        = std::vector{Move::none()};
 
@@ -421,7 +420,6 @@ void Search::Worker::iterative_deepening() {
         {
             lastBestPV        = rootMoves[0].pv;
             lastBestScore     = rootMoves[0].score;
-            lastBestMoveDepth = rootDepth;
         }
 
         if (!mainThread)
