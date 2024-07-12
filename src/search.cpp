@@ -1152,6 +1152,9 @@ moves_loop:  // When in check, search starts here
         if (PvNode)
             r--;
 
+        if (capture && pos.attackers_to(move.to_sq()) & pos.pieces(~us))
+            r--;
+
         // These reduction adjustments have no proven non-linear scaling
 
         // Increase reduction for cut nodes (~4 Elo)
