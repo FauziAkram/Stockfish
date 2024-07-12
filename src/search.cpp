@@ -1365,7 +1365,7 @@ moves_loop:  // When in check, search starts here
     else if (!priorCapture && prevSq != SQ_NONE)
     {
         int bonus = (114 * (depth > 5) + 116 * (PvNode || cutNode) + 123 * ((ss - 1)->moveCount > 8)
-                     + 64 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
+                     + (!ss->inCheck? std::clamp(ss->staticEval - bestValue - 108, 0, 64: 0)
                      + 153 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 76));
 
         // Proportional to "how much damage we have to undo"
