@@ -210,6 +210,7 @@ void MovePicker::score() {
                         + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
                         + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
         }
+        std::sort(begin(), end(), std::greater<>());
 }
 
 // Returns the next move satisfying a predicate function.
