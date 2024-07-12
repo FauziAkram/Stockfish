@@ -1152,6 +1152,9 @@ moves_loop:  // When in check, search starts here
         if (PvNode)
             r--;
 
+        if (givesCheck)
+            r--;
+
         // These reduction adjustments have no proven non-linear scaling
 
         // Increase reduction for cut nodes (~4 Elo)
