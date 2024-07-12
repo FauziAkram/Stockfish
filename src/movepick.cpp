@@ -26,6 +26,8 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=0;
+TUNE(SetRange(-20000, 20000), xx1);
 
 namespace {
 
@@ -198,6 +200,16 @@ void MovePicker::score() {
             m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000
                         : pt == ROOK ? bool(to & threatenedByMinor) * 24335
                                      : bool(to & threatenedByPawn) * 14900);
+
+            int repCount = 0;
+            StateInfo* stp = pos.state();
+            for (int i = 2; i <= std::min(stp->rule50, 8); i += 2) {
+                 stp = stp->previous->previous;
+            if (stp->key == pos.key() && stp->previous->currentMove == m) {
+                repCount++;
+            }
+            }
+            m.value -= xx1 * repCount;
         }
 
         else  // Type == EVASIONS
