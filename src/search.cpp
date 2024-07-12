@@ -51,6 +51,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0, xx2=114, xx3=114, xx4=114, xx5=0, xx6=0, xx7=123, xx8=123, xx9=123, xx10=0, xx11=0, xx12=0, xx13=64,
+    xx14=0, xx15=0, xx16=0, xx17=0, xx18=0, xx19=153, xx20=0, xx21=0, xx22=0, xx23=116, xx24=100, xx25=50, xx26=274;
+TUNE(SetRange(-300, 300), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23);
+TUNE(SetRange(1, 221), xx24);
+TUNE(xx25,xx26);
 
 namespace TB = Tablebases;
 
@@ -1364,12 +1369,32 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (114 * (depth > 5) + 116 * (PvNode || cutNode) + 123 * ((ss - 1)->moveCount > 8)
-                     + 64 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
-                     + 153 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 76));
+        int bonus = (xx1 * (depth <= 5)
+            + xx2 * (depth > 5 && depth <= 8)
+            + xx3 * (depth > 8 && depth <=11)
+            + xx4 * (depth > 11)
+            + xx5 * ((ss - 1)->moveCount <= 5)
+            + xx6 * ((ss - 1)->moveCount > 5 && + ((ss - 1)->moveCount <= 8))
+            + xx7 * ((ss - 1)->moveCount > 8 && ((ss - 1)->moveCount <= 11))
+            + xx8 * ((ss - 1)->moveCount > 11 && ((ss - 1)->moveCount <= 14))
+            + xx9 * ((ss - 1)->moveCount > 14)
+            + xx10 * (!ss->inCheck && bestValue > ss->staticEval + 308)
+            + xx11 * (!ss->inCheck && bestValue > ss->staticEval + 108)
+            + xx12 * (!ss->inCheck && bestValue > ss->staticEval - 108)
+            + xx13 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
+            + xx14 * (!ss->inCheck && bestValue <= ss->staticEval - 208)
+            + xx15 * (!ss->inCheck && bestValue <= ss->staticEval - 308)
+            + xx16 * (!(ss - 1)->inCheck && bestValue > -(ss - 1)->staticEval + 176)
+            + xx17 * (!(ss - 1)->inCheck && bestValue > -(ss - 1)->staticEval + 76)
+            + xx18 * (!(ss - 1)->inCheck && bestValue > -(ss - 1)->staticEval - 76)
+            + 153 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 76)
+            + xx20 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 176)
+            + xx21 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 274)
+            + xx22 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 372)
+            + xx23 * (PvNode || cutNode));
 
         // Proportional to "how much damage we have to undo"
-        bonus += std::clamp(-(ss - 1)->statScore / 100, -50, 274);
+        bonus += std::clamp(-(ss - 1)->statScore / xx24, -xx25, xx26);
 
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus / 100);
