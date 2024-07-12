@@ -1364,7 +1364,7 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (114 * (depth > 5) + 116 * (PvNode || cutNode) + 123 * ((ss - 1)->moveCount > 8)
+        int bonus = (std::min(20 * depth, 114) + 116 * (PvNode || cutNode) + 123 * ((ss - 1)->moveCount > 8)
                      + 64 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
                      + 153 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 76));
 
