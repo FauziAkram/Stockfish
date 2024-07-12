@@ -1366,7 +1366,7 @@ moves_loop:  // When in check, search starts here
     {
         int bonus = (114 * (depth > 5) + 116 * (PvNode || cutNode) + 123 * ((ss - 1)->moveCount > 8)
                      + 64 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
-                     + (!(ss - 1)->inCheck? std::clamp(-(ss - 1)->staticEval - bestValue - 76, 0, 153 :0));
+                     + (!(ss - 1)->inCheck? std::clamp(-(ss - 1)->staticEval - bestValue - 76, 0, 153) :0));
 
         // Proportional to "how much damage we have to undo"
         bonus += std::clamp(-(ss - 1)->statScore / 100, -50, 274);
