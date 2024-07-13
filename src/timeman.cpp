@@ -107,7 +107,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     {
         // Extra time according to timeLeft
         if (originalTimeAdjust < 0)
-            originalTimeAdjust = 0.2956 * std::log10(timeLeft) - 0.4347;
+            originalTimeAdjust = 0.3614 * std::log10(timeLeft) - 0.4347;
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
