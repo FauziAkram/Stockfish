@@ -51,6 +51,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=100, xx2=2, xx3=100, xx4=2, yy1=1, yy2=1, yy3=1, yy4=1;
+TUNE(SetRange(-1000, 3000), xx1);
+TUNE(SetRange(-4, 20), xx2);
+TUNE(SetRange(1000, 3000), xx3);
+TUNE(SetRange(-4, 20), xx4);
+TUNE(SetRange(-4, 6), yy1,yy2,yy3,yy4);
 
 namespace TB = Tablebases;
 
@@ -1146,7 +1152,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction if position is or has been on the PV (~7 Elo)
         if (ss->ttPv)
-            r -= 1 + (ttData.value > alpha) + (ttData.depth >= depth);
+            r -= 1 + (ttData.value > alpha) + (ttData.depth >= depth) + yy1 * (ttData.value > alpha + xx1) + yy2 * (ttData.depth >= depth + xx2) - yy3 * (ttData.value < alpha - xx3) - yy4 * (ttData.depth < depth - xx4);
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
