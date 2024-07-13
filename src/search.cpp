@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=4000, xx2=8000;
+TUNE(xx1,xx2);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1118,8 +1119,10 @@ moves_loop:  // When in check, search starts here
             else if (PvNode && move.to_sq() == prevSq
                      && thisThread->captureHistory[movedPiece][move.to_sq()]
                                                   [type_of(pos.piece_on(move.to_sq()))]
-                          > 3994)
-                extension = 1;
+                          > xx1)
+                extension = 1 + (thisThread->captureHistory[movedPiece][move.to_sq()]
+                                                  [type_of(pos.piece_on(move.to_sq()))]
+                          > xx2) ;
         }
 
         // Add extension to new depth
