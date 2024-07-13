@@ -51,6 +51,16 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=138, 	xx2=64, 	xx3=160, 	xx4=81, 	xx5=108, 	xx6=153, 	xx7=76, 	xx8=32, 	xx9=76, 	xx10=90, 	xx11=67, 	xx12=317, 	xx13=100, 	xx14=200, xx15=25;
+TUNE(SetRange(-100, 300), xx1,xx2,xx3,xx4);
+TUNE(xx5);
+TUNE(SetRange(-100, 300), xx6,xx7,xx8,xx9);
+TUNE(SetRange(1, 201), xx10);
+TUNE(xx11,xx12);
+TUNE(SetRange(1, 201), xx13);
+TUNE(SetRange(1, 401), xx14);
+TUNE(SetRange(1, 51), xx15);
+
 
 namespace TB = Tablebases;
 
@@ -1364,23 +1374,23 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (138 * (depth > 5) + 64 * (PvNode || cutNode) + 160 * ((ss - 1)->moveCount > 8)
-                     + 81 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
-                     + 153 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 76)
-                     + 32  *  (!(ss - 1)->inCheck && bestValue > -(ss - 1)->staticEval + 76));
+        int bonus = (xx1 * (depth > 5) + xx2 * (PvNode || cutNode) + xx3 * ((ss - 1)->moveCount > 8)
+                     + xx4 * (!ss->inCheck && bestValue <= ss->staticEval - xx5)
+                     + xx6 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - xx7)
+                     + xx8  *  (!(ss - 1)->inCheck && bestValue > -(ss - 1)->staticEval + xx9));
 
         // Proportional to "how much damage we have to undo"
-        bonus += std::clamp(-(ss - 1)->statScore / 90, -67, 317);
+        bonus += std::clamp(-(ss - 1)->statScore / xx10, -xx11, xx12);
 
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                      stat_bonus(depth) * bonus / 100);
+                                      stat_bonus(depth) * bonus / xx13);
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()]
-          << stat_bonus(depth) * bonus / 200;
+          << stat_bonus(depth) * bonus / xx14;
 
 
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << stat_bonus(depth) * bonus / 25;
+              << stat_bonus(depth) * bonus / xx15;
     }
 
     if (PvNode)
