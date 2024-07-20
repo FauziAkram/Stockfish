@@ -98,7 +98,7 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
     TimePoint timeLeft = std::max(TimePoint(1), limits.time[us] + limits.inc[us] * (mtg - 1)
-                                                  - moveOverhead * (2 + mtg));
+                                                  - moveOverhead);
 
     // x basetime (+ z increment)
     // If there is a healthy increment, timeLeft can exceed the actual available
