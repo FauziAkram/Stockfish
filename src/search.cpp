@@ -82,7 +82,7 @@ constexpr int futility_move_count(bool improving, Depth depth) {
 // does not hit the tablebase range.
 Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
     auto cv = w.correctionHistory[pos.side_to_move()][pawn_structure_index<Correction>(pos)];
-    v += cv * std::abs(cv) / 5073;
+    v += 66 * cv / 512;
     return std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 }
 
@@ -90,7 +90,7 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 int stat_bonus(Depth d) { return std::min(190 * d - 108, 1596); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return (d < 4 ? 736 * d - 268 : 2044); }
+int stat_malus(Depth d) { return std::min(736 * d - 268, 2044); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
@@ -713,7 +713,7 @@ Value Search::Worker::search(
     if (ss->inCheck)
     {
         // Skip early pruning when in check
-        ss->staticEval = eval = VALUE_NONE;
+        ss->staticEval = eval = (ss - 2)->staticEval;
         improving             = false;
         goto moves_loop;
     }
@@ -764,12 +764,9 @@ Value Search::Worker::search(
 
     // Set up the improving flag, which is true if current static evaluation is
     // bigger than the previous static evaluation at our turn (if we were in
-    // check at our previous move we look at static evaluation at move prior to it
-    // and if we were in check at move prior to it flag is set to true) and is
+    // check at our previous move we go back until we weren't in check) and is
     // false otherwise. The improving flag is used in various pruning heuristics.
-    improving = (ss - 2)->staticEval != VALUE_NONE
-                ? ss->staticEval > (ss - 2)->staticEval
-                : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval;
+    improving = ss->staticEval > (ss - 2)->staticEval;
 
     opponentWorsening = ss->staticEval + (ss - 1)->staticEval > 2;
 
@@ -794,7 +791,7 @@ Value Search::Worker::search(
         return beta + (eval - beta) / 3;
 
     // Step 9. Null move search with verification search (~35 Elo)
-    if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < 14389
+    if (cutNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < 14389
         && eval >= beta && ss->staticEval >= beta - 21 * depth + 390 && !excludedMove
         && pos.non_pawn_material(us) && ss->ply >= thisThread->nmpMinPly
         && beta > VALUE_TB_LOSS_IN_MAX_PLY)
@@ -809,7 +806,7 @@ Value Search::Worker::search(
 
         pos.do_null_move(st, tt);
 
-        Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, !cutNode);
+        Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, false);
 
         pos.undo_null_move();
 
@@ -1371,7 +1368,9 @@ moves_loop:  // When in check, search starts here
                      + 32 * (!(ss - 1)->inCheck && bestValue > -(ss - 1)->staticEval + 76));
 
         // Proportional to "how much damage we have to undo"
-        bonus += std::clamp(-(ss - 1)->statScore / 100, -64, 300);
+        bonus += std::clamp(-(ss - 1)->statScore / 100, -94, 300);
+
+        bonus = std::max(bonus, 0);
 
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       stat_bonus(depth) * bonus / 100);
