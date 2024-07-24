@@ -492,8 +492,10 @@ void Search::Worker::clear() {
                 for (auto& h : to)
                     h->fill(-58);
 
+    double threadScaling = 1.0 + (options["Threads"] > 1 ? 0.2 / log2(options["Threads"]) : 0.0);
+
     for (size_t i = 1; i < reductions.size(); ++i)
-        reductions[i] = int((18.62 + std::log(size_t(options["Threads"])) / 2) * std::log(i));
+        reductions[i] = int(threadScaling * (18.62 + std::log(size_t(options["Threads"])) / 2) * std::log(i));
 
     refreshTable.clear(networks[numaAccessToken]);
 }
