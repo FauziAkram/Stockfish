@@ -51,6 +51,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=700, xx2=2, xx3=0;
+TUNE(SetRange(-3000, 3000), xx1);
+TUNE(SetRange(-8, 8), xx2);
+TUNE(SetRange(-3, 3), xx3);
+
 
 namespace TB = Tablebases;
 
@@ -1137,6 +1142,14 @@ moves_loop:  // When in check, search starts here
         // Increase reduction if ttMove is a capture (~3 Elo)
         if (ttCapture)
             r++;
+
+        bool WpiecesImbalance = (pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK)) > xx1;
+        bool BpiecesImbalance = (pos.non_pawn_material(BLACK) - pos.non_pawn_material(WHITE)) > xx1;
+        bool WpawnsImbalance  =  (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK)) > xx2;
+        bool BpawnsImbalance  =  (pos.count<PAWN>(BLACK) - pos.count<PAWN>(WHITE)) > xx2;
+        if (WpiecesImbalance && BpawnsImbalance || BpiecesImbalance && WpawnsImbalance)
+            r += xx3;
+        
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
