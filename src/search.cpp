@@ -1147,7 +1147,7 @@ moves_loop:  // When in check, search starts here
         bool BpiecesImbalance = (pos.non_pawn_material(BLACK) - pos.non_pawn_material(WHITE)) > xx1;
         bool WpawnsImbalance  =  (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK)) > xx2;
         bool BpawnsImbalance  =  (pos.count<PAWN>(BLACK) - pos.count<PAWN>(WHITE)) > xx2;
-        if (WpiecesImbalance && BpawnsImbalance || BpiecesImbalance && WpawnsImbalance)
+        if ((WpiecesImbalance && BpawnsImbalance) || (BpiecesImbalance && WpawnsImbalance))
             r += xx3;
         
 
