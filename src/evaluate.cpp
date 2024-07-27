@@ -67,6 +67,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
+    nnueComplexity = (nnueComplexity * (22 * pos.count<ALL_PIECES>())) / 1024;
+
     // Re-evaluate the position when higher eval accuracy is worth the time spent
     if (smallNet && (nnue * psqt < 0 || std::abs(nnue) < 227))
     {
