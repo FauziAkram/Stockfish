@@ -107,6 +107,9 @@ void find_nnz(const std::int32_t* input, std::uint16_t* out, IndexType& count_ou
         {
             const vec_t inputChunk = inputVector[i * InputsPerChunk + j];
             nnz |= unsigned(vec_nnz(inputChunk)) << (j * InputSimdWidth);
+            // Early exit if all bits are set
+            if (nnz == (1 << (InputsPerChunk * InputSimdWidth)) - 1)
+            break;
         }
         for (IndexType j = 0; j < OutputsPerChunk; ++j)
         {
