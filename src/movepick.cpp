@@ -26,6 +26,12 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=1, 	xx2=1, 	xx3=1, 	xx4=1, 	xx5=1, 	xx6=1, 	xx7=1, 	xx8=1, 	xx9=1, 	xx10=1, 	xx11=1, 	xx12=1, 	xx13=1, 	xx14=1, 	xx15=1, 	xx16=1;
+int yy1=1, 	yy2=1, 	yy3=1, 	yy4=1, 	yy5=1, 	yy6=1, 	yy7=1, 	yy8=1, 	yy9=1, 	yy10=1, 	yy11=1, 	yy12=1, 	yy13=1, 	yy14=1, 	xx15=1, 	xx16=1;
+int zz1=1, 	zz2=1, 	zz3=1, 	zz4=1, 	zz5=1, 	zz6=1, 	zz7=1, 	zz8=1, 	zz9=1, 	zz10=1, 	zz11=1, 	zz12=1, 	zz13=1, 	zz14=2, 	xx15=1, 	xx16=1;
+TUNE(SetRange(-4, 6), xx1,	xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14, xx15, xx16);
+TUNE(SetRange(-4, 6), yy1,	yy2,	yy3,	yy4,	yy5,	yy6,	yy7,	yy8,	yy9,	yy10,	yy11,	yy12,	yy13,	yy14, yy15, yy16);
+TUNE(SetRange(-4, 6), zz1,	zz2,	zz3,	zz4,	zz5,	zz6,	zz7,	zz8,	zz9,	zz10,	zz11,	zz12,	zz13,	zz14, zz15, zz16);
 
 namespace {
 
@@ -153,27 +159,27 @@ void MovePicker::score() {
 
             // histories
             m.value = (*mainHistory)[pos.side_to_move()][m.from_to()];
-            m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
-            m.value += 2 * (*continuationHistory[0])[pc][to];
-            m.value += (*continuationHistory[1])[pc][to];
-            m.value += (*continuationHistory[2])[pc][to] / 3;
-            m.value += (*continuationHistory[3])[pc][to];
-            m.value += (*continuationHistory[5])[pc][to];
+            m.value += (depth > 0 ? (depth > 9) ? xx1 : yy1: zz1) * 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
+            m.value += (depth > 0 ? (depth > 9) ? xx2 : yy2: zz2) * 2 * (*continuationHistory[0])[pc][to];
+            m.value += (depth > 0 ? (depth > 9) ? xx3 : yy3: zz3) * (*continuationHistory[1])[pc][to];
+            m.value += (depth > 0 ? (depth > 9) ? xx4 : yy4: zz4) * (*continuationHistory[2])[pc][to] / 3;
+            m.value += (depth > 0 ? (depth > 9) ? xx5 : yy5: zz5) * (*continuationHistory[3])[pc][to];
+            m.value += (depth > 0 ? (depth > 9) ? xx6 : yy6: zz6) * (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += bool(pos.check_squares(pt) & to) * 16384;
+            m.value += bool(pos.check_squares(pt) & to) * 16384 * (depth > 0 ? (depth > 9) ? xx7 : yy7: zz7);
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700 * (depth > 0 ? (depth > 9) ? xx8 : yy8: zz8)
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600 * (depth > 0 ? (depth > 9) ? xx9 : yy9: zz9)
+                                                  : !(to & threatenedByPawn)                ? 14450 * (depth > 0 ? (depth > 9) ? xx10 : yy10: zz10)
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000
-                        : pt == ROOK ? bool(to & threatenedByMinor) * 24335
-                                     : bool(to & threatenedByPawn) * 14900);
+            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000 * (depth > 0 ? (depth > 9) ? xx11 : yy11: zz11)
+                        : pt == ROOK ? bool(to & threatenedByMinor) * 24335 * (depth > 0 ? (depth > 9) ? xx12 : yy12: zz12)
+                                     : bool(to & threatenedByPawn) * 14900) * (depth > 0 ? (depth > 9) ? xx13 : yy13: zz13);
         }
 
         else  // Type == EVASIONS
@@ -182,9 +188,9 @@ void MovePicker::score() {
                 m.value =
                   PieceValue[pos.piece_on(m.to_sq())] - type_of(pos.moved_piece(m)) + (1 << 28);
             else
-                m.value = (*mainHistory)[pos.side_to_move()][m.from_to()]
-                        + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
-                        + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
+                m.value = (depth > 0 ? (depth > 9) ? xx14 : yy14: zz14) * (*mainHistory)[pos.side_to_move()][m.from_to()]
+                        + (depth > 0 ? (depth > 9) ? xx15 : yy15: zz15) * (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
+                        + (depth > 0 ? (depth > 9) ? xx16 : yy16: zz16) * (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
         }
 }
 
