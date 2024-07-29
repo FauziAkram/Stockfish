@@ -27,8 +27,8 @@
 
 namespace Stockfish {
 int xx1=1, 	xx2=1, 	xx3=1, 	xx4=1, 	xx5=1, 	xx6=1, 	xx7=1, 	xx8=1, 	xx9=1, 	xx10=1, 	xx11=1, 	xx12=1, 	xx13=1, 	xx14=1, 	xx15=1, 	xx16=1;
-int yy1=1, 	yy2=1, 	yy3=1, 	yy4=1, 	yy5=1, 	yy6=1, 	yy7=1, 	yy8=1, 	yy9=1, 	yy10=1, 	yy11=1, 	yy12=1, 	yy13=1, 	yy14=1, 	xx15=1, 	xx16=1;
-int zz1=1, 	zz2=1, 	zz3=1, 	zz4=1, 	zz5=1, 	zz6=1, 	zz7=1, 	zz8=1, 	zz9=1, 	zz10=1, 	zz11=1, 	zz12=1, 	zz13=1, 	zz14=2, 	xx15=1, 	xx16=1;
+int yy1=1, 	yy2=1, 	yy3=1, 	yy4=1, 	yy5=1, 	yy6=1, 	yy7=1, 	yy8=1, 	yy9=1, 	yy10=1, 	yy11=1, 	yy12=1, 	yy13=1, 	yy14=1, 	yy15=1, 	yy16=1;
+int zz1=1, 	zz2=1, 	zz3=1, 	zz4=1, 	zz5=1, 	zz6=1, 	zz7=1, 	zz8=1, 	zz9=1, 	zz10=1, 	zz11=1, 	zz12=1, 	zz13=1, 	zz14=2, 	zz15=1, 	zz16=1;
 TUNE(SetRange(-4, 6), xx1,	xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14, xx15, xx16);
 TUNE(SetRange(-4, 6), yy1,	yy2,	yy3,	yy4,	yy5,	yy6,	yy7,	yy8,	yy9,	yy10,	yy11,	yy12,	yy13,	yy14, yy15, yy16);
 TUNE(SetRange(-4, 6), zz1,	zz2,	zz3,	zz4,	zz5,	zz6,	zz7,	zz8,	zz9,	zz10,	zz11,	zz12,	zz13,	zz14, zz15, zz16);
