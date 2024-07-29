@@ -51,6 +51,15 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int ww1=4165, ww2=3853, ww3=0, ww4=10898;
+int xx1=1, 	xx2=1, 	xx3=1, 	xx4=1;
+int yy1=1, 	yy2=1, 	yy3=1, 	yy4=1;
+int zz1=1, 	zz2=1, 	zz3=1, 	zz4=1;
+TUNE(SetRange(-4, 6),xx1,xx2,xx3,xx4,yy1,yy2,yy3,yy4,zz1,zz2,zz3,zz4);
+TUNE(SetRange(0, 10000),ww1);
+TUNE(SetRange(1, 8000),ww2);
+TUNE(SetRange(-350, 350),ww3);
+TUNE(SetRange(1, 24000),ww4);
 
 namespace TB = Tablebases;
 
@@ -991,12 +1000,12 @@ moves_loop:  // When in check, search starts here
                   + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
 
                 // Continuation history based pruning (~2 Elo)
-                if (history < -4165 * depth)
+                if (history < -ww1 * depth)
                     continue;
 
-                history += 2 * thisThread->mainHistory[us][move.from_to()];
+                history += (depth > 5 ? (depth > 10) ? xx1 : yy1: zz1) * 2 * thisThread->mainHistory[us][move.from_to()];
 
-                lmrDepth += history / 3853;
+                lmrDepth += history / ww2;
 
                 Value futilityValue =
                   ss->staticEval + (bestValue < ss->staticEval - 51 ? 143 : 52) + 135 * lmrDepth;
@@ -1142,12 +1151,13 @@ moves_loop:  // When in check, search starts here
         else if (move == ttData.move)
             r = std::max(0, r - 2);
 
-        ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
-                      + (*contHist[0])[movedPiece][move.to_sq()]
-                      + (*contHist[1])[movedPiece][move.to_sq()] - 4664;
+        ss->statScore = (depth > 5 ? (depth > 10) ? xx2 : yy2: zz2) * 2 * thisThread->mainHistory[us][move.from_to()]
+                      + (depth > 5 ? (depth > 10) ? xx3 : yy3: zz3) * (*contHist[0])[movedPiece][move.to_sq()]
+                      + (depth > 5 ? (depth > 10) ? xx4 : yy4: zz4) * (*contHist[1])[movedPiece][move.to_sq()]
+                      - 4664 + ww3 * depth;
 
         // Decrease/increase reduction for moves with a good/bad history (~8 Elo)
-        r -= ss->statScore / 10898;
+        r -= ss->statScore / ww4;
 
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1 + (rootNode && depth < 10))
