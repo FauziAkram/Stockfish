@@ -996,7 +996,7 @@ moves_loop:  // When in check, search starts here
 
                 history += thisThread->mainHistory[us][move.from_to()];
 
-                lmrDepth += history / 4096;
+                lmrDepth += history / 4480;
 
                 Value futilityValue =
                   ss->staticEval + (bestValue < ss->staticEval - 51 ? 143 : 52) + 135 * lmrDepth;
