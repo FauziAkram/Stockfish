@@ -27,12 +27,9 @@
 
 namespace Stockfish {
 int xx1=51700, 	xx2=25600, 	xx3=14450, 	xx4=49000, 	xx5=24335, 	xx6=14900, 
-yy1=100, 	yy2=50, 	yy3=25, 	yy4=100, 	yy5=50, 	yy6=25, zz1=7, 	zz2=0;
+yy1=100, 	yy2=50, 	yy3=25, 	yy4=100, 	yy5=50, 	yy6=25;
 TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
 TUNE(SetRange(-200, 400), yy1,yy2,yy3,yy4,yy5,yy6);
-TUNE(zz1);
-TUNE(SetRange(-200, 200), zz2);
-
 
 namespace {
 
@@ -148,7 +145,7 @@ void MovePicker::score() {
     for (auto& m : *this)
         if constexpr (Type == CAPTURES)
             m.value =
-              zz1 * int(PieceValue[pos.piece_on(m.to_sq())]) + zz2 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
+              7 * int(PieceValue[pos.piece_on(m.to_sq())])
               + (*captureHistory)[pos.moved_piece(m)][m.to_sq()][type_of(pos.piece_on(m.to_sq()))];
 
         else if constexpr (Type == QUIETS)
