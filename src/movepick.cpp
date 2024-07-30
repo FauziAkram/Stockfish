@@ -26,6 +26,13 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=51700, 	xx2=25600, 	xx3=14450, 	xx4=49000, 	xx5=24335, 	xx6=14900, 
+yy1=100, 	yy2=50, 	yy3=25, 	yy4=100, 	yy5=50, 	yy6=25, zz1=7, 	zz2=0;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
+TUNE(SetRange(-200, 400), yy1,yy2,yy3,yy4,yy5,yy6);
+TUNE(zz1);
+TUNE(SetRange(-200, 200), zz2);
+
 
 namespace {
 
@@ -141,7 +148,7 @@ void MovePicker::score() {
     for (auto& m : *this)
         if constexpr (Type == CAPTURES)
             m.value =
-              7 * int(PieceValue[pos.piece_on(m.to_sq())])
+              zz1 * int(PieceValue[pos.piece_on(m.to_sq())] + zz2 * SquareDistance[from][pos.square<KING>(pos.side_to_move())])
               + (*captureHistory)[pos.moved_piece(m)][m.to_sq()][type_of(pos.piece_on(m.to_sq()))];
 
         else if constexpr (Type == QUIETS)
@@ -164,16 +171,16 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? xx1 + yy1 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? xx2 + yy2 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
+                                                  : !(to & threatenedByPawn)                ? xx3 + yy3 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000
-                        : pt == ROOK ? bool(to & threatenedByMinor) * 24335
-                                     : bool(to & threatenedByPawn) * 14900);
+            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * xx4 + yy4 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
+                        : pt == ROOK ? bool(to & threatenedByMinor) * xx5 + yy5 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
+                                     : bool(to & threatenedByPawn) * xx6) + yy6 * SquareDistance[from][pos.square<KING>(pos.side_to_move())];
         }
 
         else  // Type == EVASIONS
