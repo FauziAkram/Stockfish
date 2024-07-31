@@ -84,7 +84,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     v = (nnue * (73921 + material) + optimism * (8112 + material)) / (smallNet ? 68104 : 74715);
 
     // Evaluation grain (to get more alpha-beta cuts) with randomization (for robustness)
-    v = (v / 16) * 16 - 1 + (pos.key() & 0x2);
+    v = (v + 8) / 16 * 16 - 8 + (pos.key() & 0x3);
 
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 212;
