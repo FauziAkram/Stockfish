@@ -1133,7 +1133,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes (~4 Elo)
         if (cutNode)
-            r += 2 - (ttData.depth >= depth && ss->ttPv) + !ss->ttPv;
+            r += 2 - (ttData.depth >= depth) * ss->ttPv;
 
         // Increase reduction if ttMove is a capture (~3 Elo)
         if (ttCapture)
@@ -1293,7 +1293,7 @@ moves_loop:  // When in check, search starts here
 
                 if (value >= beta)
                 {
-                    ss->cutoffCnt += 1 + !ttData.move - (extension >= 2);
+                    ss->cutoffCnt += !ttData.move + (extension < 2);
                     assert(value >= beta);  // Fail high
                     break;
                 }
