@@ -164,16 +164,16 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 53143
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 27404
+                                                  : !(to & threatenedByPawn)                ? 14958
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000
-                        : pt == ROOK ? bool(to & threatenedByMinor) * 24335
-                                     : bool(to & threatenedByPawn) * 14900);
+            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49261
+                        : pt == ROOK ? bool(to & threatenedByMinor) * 23000
+                                     : bool(to & threatenedByPawn) * 15186);
         }
 
         else  // Type == EVASIONS
@@ -182,7 +182,7 @@ void MovePicker::score() {
                 m.value =
                   PieceValue[pos.piece_on(m.to_sq())] - type_of(pos.moved_piece(m)) + (1 << 28);
             else
-                m.value = (*mainHistory)[pos.side_to_move()][m.from_to()]
+                m.value = 3 * (*mainHistory)[pos.side_to_move()][m.from_to()] / 2
                         + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
                         + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
         }
