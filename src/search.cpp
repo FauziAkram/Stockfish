@@ -1581,6 +1581,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 }
             }
 
+            bool improving = ss->staticEval > (ss - 2)->staticEval;
+
             // Continuation history based pruning (~3 Elo)
             if (!capture && improving
                 && (*contHist[0])[pos.moved_piece(move)][move.to_sq()]
