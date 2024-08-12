@@ -1001,7 +1001,7 @@ moves_loop:  // When in check, search starts here
                     continue;
 
                 history += thisThread->mainHistory[us][move.from_to()]
-                        + (depth > 3) * thisThread->mainHistory[us][move.from_to()];
+                        + (depth > 5) * thisThread->mainHistory[us][move.from_to()];
 
                 lmrDepth += history / 4763;
 
