@@ -164,16 +164,16 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51064 + 127 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 26061 + 30 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
+                                                  : !(to & threatenedByPawn)                ? 15057 + 18 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000
-                        : pt == ROOK ? bool(to & threatenedByMinor) * 24335
-                                     : bool(to & threatenedByPawn) * 14900);
+            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 42421 + 101 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
+                        : pt == ROOK ? bool(to & threatenedByMinor) * 23655 + 42 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
+                                     : bool(to & threatenedByPawn) * 14484) + 27 * SquareDistance[from][pos.square<KING>(pos.side_to_move())];
         }
 
         else  // Type == EVASIONS
