@@ -164,16 +164,17 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
-                                                                                            : 0)
-                                               : 0;
+            if (threatenedPieces & from) {  m.value += (pt == QUEEN && !(to & threatenedByRook)   ? 51700
+                                                      : pt == ROOK && !(to & threatenedByMinor) ? 25600
+                                                      : !(to & threatenedByPawn)                ? 14450
+                                                                                            : 0);
+            } else {
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000
+            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 42421 + 101 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
                         : pt == ROOK ? bool(to & threatenedByMinor) * 24335
                                      : bool(to & threatenedByPawn) * 14900);
+            }
         }
 
         else  // Type == EVASIONS
