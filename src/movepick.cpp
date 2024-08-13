@@ -171,8 +171,8 @@ void MovePicker::score() {
             } else {
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 42421 + 101 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
-                        : pt == ROOK ? bool(to & threatenedByMinor) * 24335
+            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000
+                        : pt == ROOK ? bool(to & threatenedByMinor) * 23655 + 42 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
                                      : bool(to & threatenedByPawn) * 14900);
             }
         }
