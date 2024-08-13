@@ -165,7 +165,7 @@ void MovePicker::score() {
 
             // bonus for escaping from capture
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 26061 + 30 * SquareDistance[from][pos.square<KING>(pos.side_to_move())]
                                                   : !(to & threatenedByPawn)                ? 14450
                                                                                             : 0)
                                                : 0;
