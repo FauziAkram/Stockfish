@@ -1116,6 +1116,12 @@ moves_loop:  // When in check, search starts here
         thisThread->nodes.fetch_add(1, std::memory_order_relaxed);
         pos.do_move(move, st, givesCheck);
 
+        // If this is a PV node and we have a child PV, prefetch the next move in the PV
+        if constexpr (nodeType == PV) {
+            if ((ss + 1)->pv && (ss + 1)->pv[0] != Move::none())
+                prefetch(tt.first_entry(pos.key_after((ss + 1)->pv[0])));
+        }
+
         // These reduction adjustments have proven non-linear scaling.
         // They are optimized to time controls of 180 + 1.8 and longer,
         // so changing them or adding conditions that are similar requires
