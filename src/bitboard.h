@@ -125,20 +125,26 @@ constexpr Bitboard file_bb(File f) { return FileABB << f; }
 constexpr Bitboard file_bb(Square s) { return file_bb(file_of(s)); }
 
 
+// Moves a bitboard one step as specified by the direction D
+template<Direction D>
+constexpr Bitboard shift_one(Bitboard b) {
+    return D == NORTH      ? b << 8
+         : D == SOUTH      ? b >> 8
+         : D == EAST       ? (b & ~FileHBB) << 1
+         : D == WEST       ? (b & ~FileABB) >> 1
+         : D == NORTH_EAST ? (b & ~FileHBB) << 9
+         : D == NORTH_WEST ? (b & ~FileABB) << 7
+         : D == SOUTH_EAST ? (b & ~FileHBB) >> 7
+         : D == SOUTH_WEST ? (b & ~FileABB) >> 9
+                          : 0;
+}
+
 // Moves a bitboard one or two steps as specified by the direction D
 template<Direction D>
 constexpr Bitboard shift(Bitboard b) {
-    return D == NORTH         ? b << 8
-         : D == SOUTH         ? b >> 8
-         : D == NORTH + NORTH ? b << 16
-         : D == SOUTH + SOUTH ? b >> 16
-         : D == EAST          ? (b & ~FileHBB) << 1
-         : D == WEST          ? (b & ~FileABB) >> 1
-         : D == NORTH_EAST    ? (b & ~FileHBB) << 9
-         : D == NORTH_WEST    ? (b & ~FileABB) << 7
-         : D == SOUTH_EAST    ? (b & ~FileHBB) >> 7
-         : D == SOUTH_WEST    ? (b & ~FileABB) >> 9
-                              : 0;
+    return D == NORTH + NORTH ? shift_one<NORTH>(shift_one<NORTH>(b))
+         : D == SOUTH + SOUTH ? shift_one<SOUTH>(shift_one<SOUTH>(b))
+         : shift_one<D>(b);
 }
 
 
