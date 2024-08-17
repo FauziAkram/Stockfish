@@ -36,7 +36,7 @@ namespace Stockfish {
 
 constexpr int PAWN_HISTORY_SIZE        = 512;    // has to be a power of 2
 constexpr int CORRECTION_HISTORY_SIZE  = 16384;  // has to be a power of 2
-constexpr int CORRECTION_HISTORY_LIMIT = 1024;
+constexpr int CORRECTION_HISTORY_LIMIT = 993;
 
 static_assert((PAWN_HISTORY_SIZE & (PAWN_HISTORY_SIZE - 1)) == 0,
               "PAWN_HISTORY_SIZE has to be a power of 2");
@@ -131,7 +131,7 @@ using PieceToHistory = Stats<int16_t, 29650, PIECE_NB, SQUARE_NB>;
 using ContinuationHistory = Stats<PieceToHistory, NOT_USED, PIECE_NB, SQUARE_NB>;
 
 // PawnHistory is addressed by the pawn structure and a move's [piece][to]
-using PawnHistory = Stats<int16_t, 7946, PAWN_HISTORY_SIZE, PIECE_NB, SQUARE_NB>;
+using PawnHistory = Stats<int16_t, 8192, PAWN_HISTORY_SIZE, PIECE_NB, SQUARE_NB>;
 
 // CorrectionHistory is addressed by color and pawn structure
 using CorrectionHistory =
