@@ -26,6 +26,11 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=53000, 	xx2=27400, 	xx3=512, 	xx4=14920, 	xx5=49000, 	xx6=23060, 	xx7=14900, 	xx8=3560, 	xx9=7998, 	xx10=0, 	xx11=0, 	xx12=0;
+TUNE(xx1,xx2);
+TUNE(SetRange(-1024, 2048), xx3);
+TUNE(xx4,xx5,xx6,xx7,xx8,xx9);
+TUNE(SetRange(-30000, 30000), xx10,xx11,xx12);
 
 namespace {
 
@@ -159,21 +164,22 @@ void MovePicker::score() {
             m.value += (*continuationHistory[2])[pc][to] / 3;
             m.value += (*continuationHistory[3])[pc][to];
             m.value += (*continuationHistory[5])[pc][to];
+            m.value += xx10;
 
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
-                                                                                            : 0)
-                                               : 0;
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? xx1
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? xx2 + depth * xx3
+                                                  : !(to & threatenedByPawn)                ? xx4
+                                                                                            : xx11)
+                                               : xx12;
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000
-                        : pt == ROOK ? bool(to & threatenedByMinor) * 24335
-                                     : bool(to & threatenedByPawn) * 14900);
+            m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * xx5
+                        : pt == ROOK ? bool(to & threatenedByMinor) * xx6
+                                     : bool(to & threatenedByPawn) * xx7);
         }
 
         else  // Type == EVASIONS
@@ -211,7 +217,7 @@ Move MovePicker::select(Pred filter) {
 // picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move(bool skipQuiets) {
 
-    auto quiet_threshold = [](Depth d) { return -3560 * d; };
+    auto quiet_threshold = [](Depth d) { return -xx8 * d; };
 
 top:
     switch (stage)
@@ -262,7 +268,7 @@ top:
     case GOOD_QUIET :
         if (!skipQuiets && select<Next>([]() { return true; }))
         {
-            if ((cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > -xx9 || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
