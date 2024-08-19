@@ -628,7 +628,7 @@ Value Search::Worker::search(
 
         // Partial workaround for the graph history interaction problem
         // For high rule50 counts don't produce transposition table cutoffs.
-        if (pos.rule50_count() < 90)
+        if (pos.rule50_count() < 92 || (std::abs(ttData.value) < std::abs(beta)))
             return ttData.value;
     }
 
