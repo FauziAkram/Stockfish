@@ -825,7 +825,7 @@ Value Search::Worker::search(
     if (!PvNode && !excludedMove && ttData.depth > depth && ttData.value != VALUE_NONE
         && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER))
         && pos.rule50_count() < 92)
-        return ttValue;
+        return ttData.value;
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search
