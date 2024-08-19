@@ -823,7 +823,7 @@ Value Search::Worker::search(
         depth -= 1 + !ttData.move;
 
     if (!PvNode && !excludedMove && tte->depth() > depth && ttValue != VALUE_NONE
-        && (tte->bound() & (ttValue >= beta ? BOUND_LOWER : BOUND_UPPER))
+        && (tte->bound() & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER))
         && pos.rule50_count() < 92)
         return ttValue;
 
