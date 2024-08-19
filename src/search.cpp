@@ -822,8 +822,8 @@ Value Search::Worker::search(
     if (cutNode && depth >= 7 && (!ttData.move || ttData.bound == BOUND_UPPER))
         depth -= 1 + !ttData.move;
 
-    if (!PvNode && !excludedMove && tte->depth() > depth && ttValue != VALUE_NONE
-        && (tte->bound() & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER))
+    if (!PvNode && !excludedMove && ttData.depth > depth && ttData.value != VALUE_NONE
+        && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER))
         && pos.rule50_count() < 92)
         return ttValue;
 
