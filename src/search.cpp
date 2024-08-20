@@ -1140,7 +1140,7 @@ moves_loop:  // When in check, search starts here
             r++;
 
         if (ss->inCheck && type_of(movedPiece) == KING && moveCountPruning)
-            r += 2;
+            r++;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
