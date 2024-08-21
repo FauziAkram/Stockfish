@@ -1586,7 +1586,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 }
             }
 
-            impd = ss->staticEval - (ss - 2)->staticEval;
+            int impd = ss->staticEval - (ss - 2)->staticEval;
 
             // Continuation history based pruning (~3 Elo)
             if (!capture
