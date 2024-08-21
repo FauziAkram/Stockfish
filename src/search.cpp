@@ -1019,7 +1019,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE (~4 Elo)
-                if (!pos.see_ge(move, -24 * lmrDepth * lmrDepth))
+                if (pos.non_pawn_material(~us) && !pos.see_ge(move, -24 * lmrDepth * lmrDepth))
                     continue;
             }
         }
