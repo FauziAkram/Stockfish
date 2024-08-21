@@ -51,6 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1274, xx2=746, xx3=1024, xx4=1293;
+int yy1=1, yy2=0, yy3=0, yy4=0, yy5=0, yy6=0, yy7=0, yy8=0, yy9=0, yy10=0, yy11=0, yy12=0, yy13=0, yy14=0, yy15=0, yy16=0;
+TUNE(xx1,xx2,xx3,xx4);
+TUNE(SetRange(-5, 5), yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9,yy10,yy11,yy12,yy13,yy14,yy15,yy16);
 
 namespace TB = Tablebases;
 
@@ -1659,7 +1663,23 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return (reductionScale + 1274 - delta * 746 / rootDelta) / 1024 + (!i && reductionScale > 1293);
+    return (reductionScale + xx1 - delta * xx2 / rootDelta) / xx3
+      + yy1 * (!i && reductionScale > xx4)
+      + yy2 * (!i)
+      + yy3 * (reductionScale <= 250)
+      + yy4 * (i && reductionScale <= 250)
+      + yy5 * (reductionScale <= 500 && reductionScale > 250)
+      + yy6 * (i && reductionScale <= 500 && reductionScale > 250)
+      + yy7 * (reductionScale <= 750 && reductionScale > 500)
+      + yy8 * (i && reductionScale <= 750 && reductionScale > 500)
+      + yy9 * (reductionScale <= 1000 && reductionScale > 750)
+      + yy10 * (i && reductionScale <= 1000 && reductionScale > 750)
+      + yy11 * (reductionScale <= 1500 && reductionScale > 1000)
+      + yy12 * (!i && reductionScale <= 1500 && reductionScale > 1000)
+      + yy13 * (reductionScale <= 2500 && reductionScale > 1500)
+      + yy14 * (!i && reductionScale <= 2500 && reductionScale > 1500)
+      + yy15 * (reductionScale > 2500)
+      + yy16 * (!i && reductionScale > 2500);
 }
 
 // elapsed() returns the time elapsed since the search started. If the
