@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1310 xx2=795, xx3=1012, xx4=1515, xx5=750;
+TUNE(xx1,xx2,xx3,xx4);
+TUNE(SetRange(0, 2200), xx5);
 
 namespace TB = Tablebases;
 
@@ -1659,7 +1662,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return (reductionScale + 1274 - delta * 746 / rootDelta) / 1024 + (!i && reductionScale > 1293);
+    return (reductionScale + xx1 - delta * xx2 / rootDelta) / xx3 + (!i && reductionScale > xx4)
+      + (i && reductionScale <= xx5);
 }
 
 // elapsed() returns the time elapsed since the search started. If the
