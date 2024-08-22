@@ -1583,13 +1583,15 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 }
             }
 
+            int impd = (ss - 2)->staticEval - ss->staticEval;
+
             // Continuation history based pruning (~3 Elo)
             if (!capture
                 && (*contHist[0])[pos.moved_piece(move)][move.to_sq()]
                        + (*contHist[1])[pos.moved_piece(move)][move.to_sq()]
                        + thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
-                                                [move.to_sq()]
-                     <= 4643)
+                                                [move.to_sq()] + 16 * impd
+                     <= 5242)
                 continue;
 
             // Do not search moves with bad enough SEE values (~5 Elo)
