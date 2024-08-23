@@ -1556,6 +1556,10 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 if (moveCount > 2)
                     continue;
 
+                const bool allNode = !(PvNode || cutNode);
+
+                if (allNode) {
+
                 Value futilityValue = futilityBase + PieceValue[pos.piece_on(move.to_sq())];
 
                 // If static eval + value of piece we are going to capture is
@@ -1580,6 +1584,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 {
                     bestValue = alpha;
                     continue;
+                }
                 }
             }
 
