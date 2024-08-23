@@ -70,7 +70,7 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorseni
     Value futilityMult       = 122 - 37 * noTtCutNode;
     Value improvingDeduction = improving * futilityMult * 2;
     Value worseningDeduction = oppWorsening * futilityMult / 3;
-    Value rootImpDeduction   = rootImproving * futilityMult;
+    Value rootImpDeduction   = rootImproving * futilityMult * 3;
 
     return futilityMult * d - improvingDeduction - worseningDeduction - rootImpDeduction;
 }
