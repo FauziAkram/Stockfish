@@ -412,11 +412,8 @@ template<typename Arch, typename Transformer>
 bool Network<Arch, Transformer>::read_parameters(std::istream& stream,
                                                  std::string&  netDescription) const {
     std::uint32_t hashValue;
-    if (!read_header(stream, &hashValue, &netDescription))
-        return false;
-    if (hashValue != Network::hash)
-        return false;
-    if (!Detail::read_parameters(stream, *featureTransformer))
+    if (!read_header(stream, &hashValue, &netDescription) || hashValue != Network::hash
+    || !Detail::read_parameters(stream, *featureTransformer))
         return false;
     for (std::size_t i = 0; i < LayerStacks; ++i)
     {
