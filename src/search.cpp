@@ -819,7 +819,7 @@ Value Search::Worker::search(
 
     // For cutNodes, if depth is high enough, decrease depth by 2 if there is no ttMove,
     // or by 1 if there is a ttMove with an upper bound.
-    if (cutNode && depth >= 7 && (!ttData.move || ttData.bound == BOUND_UPPER))
+    if (cutNode && depth >= (improving? 6: 7) && (!ttData.move || ttData.bound == BOUND_UPPER))
         depth -= 1 + !ttData.move;
 
     // Step 11. ProbCut (~10 Elo)
@@ -976,7 +976,7 @@ moves_loop:  // When in check, search starts here
                   thisThread->captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)];
 
                 // Futility pruning for captures (~2 Elo)
-                if (!givesCheck && lmrDepth < 7 && !ss->inCheck)
+                if (!givesCheck && lmrDepth < (improving? 9: 7) && !ss->inCheck)
                 {
                     Value futilityValue = ss->staticEval + 285 + 251 * lmrDepth
                                         + PieceValue[capturedPiece] + captHist / 7;
