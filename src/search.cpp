@@ -1347,6 +1347,8 @@ moves_loop:  // When in check, search starts here
 
         // Proportional to "how much damage we have to undo"
         bonus += std::clamp(-(ss - 1)->statScore / 100, -94, 304);
+       dbg_mean_of(bonus);
+       dbg_extremes_of(bonus);
 
         bonus = std::max(bonus, 0);
 
