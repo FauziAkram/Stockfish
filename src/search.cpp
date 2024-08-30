@@ -87,10 +87,10 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(190 * d - 108, 1596); }
+int stat_bonus(Depth d) { return std::min(188 * d - 108, 1596); }
 
 // History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(736 * d - 268, 2044); }
+int stat_malus(Depth d) { return std::min(740 * d - 267, 2048); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
@@ -301,7 +301,7 @@ void Search::Worker::iterative_deepening() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 125 * avg / (std::abs(avg) + 89);
+            optimism[us]  = 128 * avg / (std::abs(avg) + 90);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
@@ -986,7 +986,7 @@ moves_loop:  // When in check, search starts here
                 }
 
                 // SEE based pruning for captures and checks (~11 Elo)
-                int seeHist = std::clamp(captHist / 32, -182 * depth, 166 * depth);
+                int seeHist = std::clamp(captHist / 32, -178 * depth, 164 * depth);
                 if (!pos.see_ge(move, -168 * depth - seeHist))
                     continue;
             }
@@ -1058,7 +1058,7 @@ moves_loop:  // When in check, search starts here
                 if (value < singularBeta)
                 {
                     int doubleMargin = 293 * PvNode - 195 * !ttCapture;
-                    int tripleMargin = 107 + 259 * PvNode - 260 * !ttCapture + 98 * ss->ttPv;
+                    int tripleMargin = 107 + 259 * PvNode - 256 * !ttCapture + 98 * ss->ttPv;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
@@ -1660,7 +1660,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return (reductionScale + 1274 - delta * 746 / rootDelta) / 1024 + (!i && reductionScale > 1293);
+    return (reductionScale + 1274 - delta * 752 / rootDelta) / 1024 + (!i && reductionScale > 1293);
 }
 
 // elapsed() returns the time elapsed since the search started. If the
