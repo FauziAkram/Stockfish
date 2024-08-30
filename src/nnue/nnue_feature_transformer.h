@@ -666,9 +666,11 @@ class FeatureTransformer {
             std::memcpy((states_to_update[i]->*accPtr).accumulation[Perspective],
                         (st->*accPtr).accumulation[Perspective], HalfDimensions * sizeof(BiasType));
 
+            if (states_to_update[i]->dirtyPiece.piece[0] != make_piece(Perspective, PAWN)) {
             for (std::size_t k = 0; k < PSQTBuckets; ++k)
                 (states_to_update[i]->*accPtr).psqtAccumulation[Perspective][k] =
-                  (st->*accPtr).psqtAccumulation[Perspective][k];
+                    (st->*accPtr).psqtAccumulation[Perspective][k];
+            }
 
             st = states_to_update[i];
 
