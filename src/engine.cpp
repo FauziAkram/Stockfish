@@ -174,10 +174,7 @@ void Engine::set_position(const std::string& fen, const std::vector<std::string>
         states->emplace_back();
         pos.do_move(m, states->back());
 
-        capSq          = SQ_NONE;
-        DirtyPiece& dp = states->back().dirtyPiece;
-        if (dp.dirty_num > 1 && dp.to[1] == SQ_NONE)
-            capSq = m.to_sq();
+        capSq = pos.captured_piece() != NO_PIECE ? m.to_sq() : SQ_NONE;
     }
 }
 
