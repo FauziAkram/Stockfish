@@ -24,7 +24,6 @@
 #include <cassert>
 #include <chrono>
 #include <cmath>
-#include <cstdint>
 #include <cstdlib>
 #include <initializer_list>
 #include <iostream>
@@ -426,8 +425,6 @@ void Search::Worker::iterative_deepening() {
         // Do we have time for the next iteration? Can we stop searching now?
         if (limits.use_time_management() && !threads.stop && !mainThread->stopOnPonderhit)
         {
-            int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
-
             double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 97 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
@@ -447,10 +444,6 @@ void Search::Worker::iterative_deepening() {
                 totalTime = std::min(500.0, totalTime);
 
             auto elapsedTime = elapsed();
-
-            if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.739
-                && !mainThread->ponder)
-                threads.stop = true;
 
             // Stop the search if we have exceeded the totalTime
             if (elapsedTime > totalTime)
@@ -1111,8 +1104,6 @@ moves_loop:  // When in check, search starts here
         ss->continuationHistory =
           &thisThread->continuationHistory[ss->inCheck][capture][movedPiece][move.to_sq()];
 
-        uint64_t nodeCount = rootNode ? uint64_t(nodes) : 0;
-
         // Step 16. Make the move
         thisThread->nodes.fetch_add(1, std::memory_order_relaxed);
         pos.do_move(move, st, givesCheck);
@@ -1229,8 +1220,6 @@ moves_loop:  // When in check, search starts here
         {
             RootMove& rm =
               *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
-
-            rm.effort += nodes - nodeCount;
 
             rm.averageScore =
               rm.averageScore != -VALUE_INFINITE ? (value + rm.averageScore) / 2 : value;
