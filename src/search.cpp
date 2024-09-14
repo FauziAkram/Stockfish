@@ -821,7 +821,7 @@ Value Search::Worker::search(
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
 
-    if (!PvNode && ttValue < alpha && tte->depth() >= depth && ttCapture && tte->bound() == BOUND_UPPER)
+    if (!PvNode && ttData.value < alpha && ttData.depth && ttCapture && ttData.bound == BOUND_UPPER)
         depth --;
 
     if (depth <= 0)
