@@ -88,7 +88,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     kingSafety += popcount(attacks_bb<ROOK>(blackKingSq, 0) & ~pos.pieces()) * 2;
     kingSafety -= popcount(pawn_attacks_bb<BLACK>(whiteKingSq) & ~pos.pieces(PAWN));
     kingSafety += popcount(pawn_attacks_bb<WHITE>(blackKingSq) & ~pos.pieces(PAWN));
-    v = (nnue * (73921 + material) + optimism * (8112 + material) + 128 * kingSafety) / (smallNet ? 68104 : 74715);
+    v = (nnue * (73921 + material) + optimism * (8112 + material) + 512 * kingSafety) / (smallNet ? 68104 : 74715);
 
     // Evaluation grain (to get more alpha-beta cuts) with randomization (for robustness)
     v = (v / 16) * 16 - 1 + (pos.key() & 0x2);
