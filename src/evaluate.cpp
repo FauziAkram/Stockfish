@@ -36,6 +36,9 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int xx1=0;
+TUNE(SetRange(-5000, 5000), xx1);
+
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
@@ -47,7 +50,7 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
-    return std::abs(simpleEval) > 962;
+    return std::abs(simpleEval) > 966;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
@@ -80,7 +83,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     optimism += optimism * nnueComplexity / (smallNet ? 433 : 453);
     nnue -= nnue * nnueComplexity / (smallNet ? 18815 : 17864);
 
-    int material = (smallNet ? 553 : 532) * pos.count<PAWN>() + pos.non_pawn_material();
+    int materialImbalance = std::abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK));
+    int material = (smallNet ? 553 : 532) * pos.count<PAWN>() + pos.non_pawn_material() + xx1 * materialImbalance;
     v = (nnue * (73921 + material) + optimism * (8112 + material)) / (smallNet ? 68104 : 74715);
 
     // Evaluation grain (to get more alpha-beta cuts) with randomization (for robustness)
