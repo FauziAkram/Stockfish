@@ -65,6 +65,14 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
                                        : networks.big.evaluate(pos, &caches.big);
 
+    int activity = 0;
+    for (PieceType pt : {KNIGHT, BISHOP, ROOK, QUEEN}) {
+        activity += popcount(attacks_bb<Pt>(pos.square<Pt>(WHITE), pos.pieces())) 
+                  - popcount(attacks_bb<Pt>(pos.square<Pt>(BLACK), pos.pieces()));
+    }
+
+    positional += activity;
+
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
