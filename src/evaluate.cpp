@@ -36,6 +36,9 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int xx1=962, 	xx2=125, 	xx3=131, 	xx4=227, 	xx5=433, 	xx6=453, 	xx7=18815, 	xx8=17864, 	xx9=553, 	xx10=532, 	xx11=700, 	xx12=700, 	xx13=800, 	xx14=800;
+int xx15=1280, 	x16=1280, 	x17=2400, 	x18=2400, 	x19=73921, 	x20=73921, 	x21=8112, 	xx22=8112, 	x23=68104, 	xx24=74715, 	xx25=212;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23,xx24,xx25);
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
@@ -47,7 +50,7 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
-    return std::abs(simpleEval) > 962;
+    return std::abs(simpleEval) > xx1;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
@@ -65,29 +68,30 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
                                        : networks.big.evaluate(pos, &caches.big);
 
-    Value nnue = (125 * psqt + 131 * positional) / 128;
+    Value nnue = (xx2 * psqt + xx3 * positional) / 128;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (nnue * psqt < 0 || std::abs(nnue) < 227))
+    if (smallNet && (nnue * psqt < 0 || std::abs(nnue) < xx4))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
-        nnue                       = (125 * psqt + 131 * positional) / 128;
+        nnue                       = (xx2 * psqt + xx3 * positional) / 128;
         smallNet                   = false;
     }
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / (smallNet ? 433 : 453);
-    nnue -= nnue * nnueComplexity / (smallNet ? 18815 : 17864);
+    optimism += optimism * nnueComplexity / (smallNet ? xx5 : xx6);
+    nnue -= nnue * nnueComplexity / (smallNet ? xx7 : xx8);
 
-    int material = (smallNet ? 553 : 532) * pos.count<PAWN>() + pos.non_pawn_material();
-    v = (nnue * (73921 + material) + optimism * (8112 + material)) / (smallNet ? 68104 : 74715);
+    int material = (smallNet ? xx9 : xx10) * pos.count<PAWN>() + (smallNet ? xx11 : xx12) * pos.count<KNIGHT>() + (smallNet ? xx13 : xx14) * pos.count<BISHOP>()
+                 + (smallNet ? xx15 : xx16) * pos.count<ROOK>() + (smallNet ? xx17 : xx18) * pos.count<QUEEN>();
+    v = (nnue * ((smallNet ? xx19 : xx20) + material) + optimism * ((smallNet ? xx21 : xx22) + material)) / (smallNet ? xx23 : xx24);
 
     // Evaluation grain (to get more alpha-beta cuts) with randomization (for robustness)
     v = (v / 16) * 16 - 1 + (pos.key() & 0x2);
 
     // Damp down the evaluation linearly when shuffling
-    v -= v * pos.rule50_count() / 212;
+    v -= v * pos.rule50_count() / xx25;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
