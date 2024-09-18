@@ -168,15 +168,15 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 53000
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 27400
+                                                  : !(to & threatenedByPawn)                ? 14920
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
             m.value -= (pt == QUEEN  ? bool(to & threatenedByRook) * 49000
-                        : pt == ROOK ? bool(to & threatenedByMinor) * 24335
+                        : pt == ROOK ? bool(to & threatenedByMinor) * 23050
                                      : bool(to & threatenedByPawn) * 14900);
 
             if (rootNode)
@@ -245,7 +245,7 @@ top:
     case GOOD_CAPTURE :
         if (select<Next>([&]() {
                 // Move losing capture to endBadCaptures to be tried later
-                return pos.see_ge(*cur, -cur->value / 18) ? true
+                return pos.see_ge(*cur, -64 - cur->value / 18) ? true
                                                           : (*endBadCaptures++ = *cur, false);
             }))
             return *(cur - 1);
