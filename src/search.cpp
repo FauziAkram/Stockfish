@@ -315,7 +315,7 @@ void Search::Worker::iterative_deepening() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 132 * avg / (std::abs(avg) + 89);
+            optimism[us]  = 132 * avg / (std::abs(avg) + 90);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
@@ -782,7 +782,7 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 13
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
-               - (ss - 1)->statScore / 272
+               - (ss - 1)->statScore / 270
              >= beta
         && eval >= beta && (!ttData.move || ttCapture) && beta > VALUE_TB_LOSS_IN_MAX_PLY
         && eval < VALUE_TB_WIN_IN_MAX_PLY)
@@ -1147,7 +1147,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
-            r--;
+            r -= 2;
 
         // These reduction adjustments have no proven non-linear scaling
 
@@ -1846,7 +1846,7 @@ void update_quiet_histories(const Position& pos,
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus);
 
     int pIndex = pawn_structure_index(pos);
-    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus / 2;
+    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << 5 * bonus / 8;
 }
 
 }
