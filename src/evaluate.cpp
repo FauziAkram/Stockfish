@@ -37,7 +37,7 @@
 
 namespace Stockfish {
 int xx1=962, 	xx2=125, 	xx3=131, 	xx4=227, 	xx5=433, 	xx6=453, 	xx7=18815, 	xx8=17864, 	xx9=553, 	xx10=532, 	xx11=700, 	xx12=700, 	xx13=800, 	xx14=800;
-int xx15=1280, 	x16=1280, 	x17=2400, 	x18=2400, 	x19=73921, 	x20=73921, 	x21=8112, 	xx22=8112, 	x23=68104, 	xx24=74715, 	xx25=212;
+int xx15=1280, 	xx16=1280, 	xx17=2400, 	xx18=2400, 	xx19=73921, 	xx20=73921, 	xx21=8112, 	xx22=8112, 	xx23=68104, 	xx24=74715, 	xx25=212;
 TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23,xx24,xx25);
 
 // Returns a static, purely materialistic evaluation of the position from
