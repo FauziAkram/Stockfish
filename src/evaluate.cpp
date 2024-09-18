@@ -71,7 +71,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
                   - popcount(attacks_bb<Pt>(pos.square<Pt>(BLACK), pos.pieces()));
     }
 
-    positional += activity;
+    positional += 4 * activity;
 
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
