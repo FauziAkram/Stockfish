@@ -81,7 +81,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     nnue -= nnue * nnueComplexity / (smallNet ? 18815 : 17864);
 
     int materialImbalance = std::abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK));
-    int material = (smallNet ? 553 : 532) * pos.count<PAWN>() + pos.non_pawn_material() + 256 * materialImbalance;
+    int material = (smallNet ? 553 : 532) * pos.count<PAWN>() + pos.non_pawn_material() + 384 * materialImbalance;
     v = (nnue * (73921 + material) + optimism * (8112 + material)) / (smallNet ? 68104 : 74715);
 
     // Evaluation grain (to get more alpha-beta cuts) with randomization (for robustness)
