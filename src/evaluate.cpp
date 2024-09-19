@@ -47,7 +47,7 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
-    return std::abs(simpleEval) > 1000;
+    return std::abs(simpleEval) > 984;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
@@ -68,7 +68,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     Value nnue = (127 * psqt + 131 * positional) / 128;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (nnue * psqt < 0 || std::abs(nnue) < 243))
+    if (smallNet && (nnue * psqt < 0 || std::abs(nnue) < 244))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
         nnue                       = (127 * psqt + 131 * positional) / 128;
@@ -77,12 +77,12 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / (smallNet ? 441 : 480);
-    nnue -= nnue * nnueComplexity / (smallNet ? 19086 : 18030);
+    optimism += optimism * nnueComplexity / (smallNet ? 434 : 485);
+    nnue -= nnue * nnueComplexity / (smallNet ? 19044 : 17922);
 
-    int material = (smallNet ? 548 : 556) * pos.count<PAWN>() + 700 * pos.count<KNIGHT>() + 840 * pos.count<BISHOP>()
-                 + 1314 * pos.count<ROOK>() + (smallNet ? 2282 : 2442) * pos.count<QUEEN>();
-    v = (nnue * ((smallNet ? 69129 : 76004) + material) + optimism * ((smallNet ? 8347 : 7863) + material)) / (smallNet ? 67032 : 78000);
+    int material = (smallNet ? 551 : 563) * pos.count<PAWN>() + 703 * pos.count<KNIGHT>() + 830 * pos.count<BISHOP>()
+                 + 1314 * pos.count<ROOK>() + (smallNet ? 2286 : 2454) * pos.count<QUEEN>();
+    v = (nnue * ((smallNet ? 68892 : 75833) + material) + optimism * ((smallNet ? 8300 : 7784) + material)) / (smallNet ? 66186 : 77877);
 
     // Evaluation grain (to get more alpha-beta cuts) with randomization (for robustness)
     v = (v / 16) * 16 - 1 + (pos.key() & 0x2);
