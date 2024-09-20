@@ -80,9 +80,9 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     optimism += optimism * nnueComplexity / (smallNet ? 428 : 498);
     nnue -= nnue * nnueComplexity / (smallNet ? 19295 : 17777);
 
-    int material = 544 * pos.count<PAWN>() + 700 * pos.count<KNIGHT>() + 819 * pos.count<BISHOP>()
-                 + 1313 * pos.count<ROOK>() + 2400 * pos.count<QUEEN>();
-    v = (nnue * (73921 + material) + optimism * (8112 + material)) / (smallNet ? 68104 : 74720);
+    int material = 544 * pos.count<PAWN>() + (smallNet ? 709 : 686) * pos.count<KNIGHT>() + 818 * pos.count<BISHOP>()
+                 + (smallNet ? 1239 : 1329) * pos.count<ROOK>() + (smallNet ? 2366 : 2404) * pos.count<QUEEN>();
+    v = (nnue * (73921 + material) + optimism * (8112 + material)) / (smallNet ? 68104 : 74725);
 
     // Evaluation grain (to get more alpha-beta cuts) with randomization (for robustness)
     v = (v / 16) * 16 - 1 + (pos.key() & 0x2);
