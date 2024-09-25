@@ -738,7 +738,7 @@ Value Search::Worker::search(
         if (ttData.value != VALUE_NONE
             && (ttData.bound & (ttData.value > eval ? BOUND_LOWER : BOUND_UPPER)))
             eval = ttData.value >= eval && std::abs(ttData.value) < VALUE_TB_WIN_IN_MAX_PLY
-            && ttData.depth <= depth / 2 ? (ttData.value * 3 + eval) / 4 : ttData.value;
+            && ttData.depth < depth ? (ttData.value * 3 + eval) / 4 : ttData.value;
     }
     else
     {
