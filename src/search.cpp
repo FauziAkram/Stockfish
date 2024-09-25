@@ -50,6 +50,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=95, xx2=0;
+TUNE(SetRange(1, 141), xx1);
+TUNE(SetRange(-400, 500), xx2);
 
 namespace TB = Tablebases;
 
@@ -275,6 +278,12 @@ void Search::Worker::iterative_deepening() {
 
     rootHistory.fill(0);
 
+    for (Color c : {WHITE, BLACK}) {
+    for (int i = 0; i < SQUARE_NB * SQUARE_NB; ++i) {
+        mainHistory[c][i] = mainHistory[c][i] * xx1 / 100;
+    }
+    }
+
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
            && !(limits.depth && mainThread && rootDepth > limits.depth))
@@ -498,7 +507,7 @@ void Search::Worker::iterative_deepening() {
 
 // Reset histories, usually before a new game
 void Search::Worker::clear() {
-    mainHistory.fill(0);
+    mainHistory.fill(xx2);
     rootHistory.fill(0);
     captureHistory.fill(-753);
     pawnHistory.fill(-1152);
