@@ -277,7 +277,7 @@ void Search::Worker::iterative_deepening() {
 
     for (Color c : {WHITE, BLACK}) {
     for (int i = 0; i < SQUARE_NB * SQUARE_NB; ++i) {
-        mainHistory[c][i] = mainHistory[c][i] * 95 / 100;
+        mainHistory[c][i] = mainHistory[c][i] * 59 / 64;
     }
     }
 
@@ -504,7 +504,7 @@ void Search::Worker::iterative_deepening() {
 
 // Reset histories, usually before a new game
 void Search::Worker::clear() {
-    mainHistory.fill(1);
+    mainHistory.fill(16);
     rootHistory.fill(0);
     captureHistory.fill(-753);
     pawnHistory.fill(-1152);
