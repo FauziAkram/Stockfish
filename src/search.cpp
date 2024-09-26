@@ -504,7 +504,7 @@ void Search::Worker::iterative_deepening() {
 
 // Reset histories, usually before a new game
 void Search::Worker::clear() {
-    mainHistory.fill(0);
+    mainHistory.fill(20);
     rootHistory.fill(0);
     captureHistory.fill(-753);
     pawnHistory.fill(-1152);
