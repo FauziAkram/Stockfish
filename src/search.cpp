@@ -275,6 +275,12 @@ void Search::Worker::iterative_deepening() {
 
     rootHistory.fill(0);
 
+    for (Color c : {WHITE, BLACK}) {
+    for (int i = 0; i < SQUARE_NB * SQUARE_NB; ++i) {
+        mainHistory[c][i] = mainHistory[c][i] * 7 / 8;
+    }
+    }
+
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
            && !(limits.depth && mainThread && rootDepth > limits.depth))
