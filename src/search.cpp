@@ -797,6 +797,9 @@ Value Search::Worker::search(
 
         // Null move dynamic reduction based on depth and eval
         Depth R = std::min(int(eval - beta) / 209, 6) + depth / 3 + 5;
+      
+        int materialImbalance = std::abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK));
+        R = std::max(1, R - materialImbalance / (2 * RookValue));
 
         ss->currentMove         = Move::null();
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
