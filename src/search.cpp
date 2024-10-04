@@ -732,7 +732,7 @@ Value Search::Worker::search(
         // ttValue can be used as a better position evaluation (~7 Elo)
         if (ttData.value != VALUE_NONE
             && (ttData.bound & (ttData.value > eval ? BOUND_LOWER : BOUND_UPPER)))
-            eval = ttData.value - ((ttData.value > eval) * std::min(ttData.value - eval, 8))
+            eval = ttData.value - ((ttData.value > eval) * std::min(ttData.value - eval, 8));
     }
     else
     {
