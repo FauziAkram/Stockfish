@@ -732,8 +732,8 @@ Value Search::Worker::search(
         // ttValue can be used as a better position evaluation (~7 Elo)
         if (ttData.value != VALUE_NONE
             && (ttData.bound & (ttData.value > eval ? BOUND_LOWER : BOUND_UPPER)))
-            dbg_mean_of(eval);
-            dbg_extremes_of(eval);
+            dbg_mean_of(ttData.value);
+            dbg_extremes_of(ttData.value);
 ;
     }
     else
