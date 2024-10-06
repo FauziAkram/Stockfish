@@ -50,6 +50,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0, xx3=0, xx4=0;
+TUNE(SetRange(-1028, 1028), xx1,xx3);
+TUNE(SetRange(-256, 256), xx2,xx4);
+
 
 namespace TB = Tablebases;
 
@@ -732,7 +736,7 @@ Value Search::Worker::search(
         // ttValue can be used as a better position evaluation (~7 Elo)
         if (ttData.value != VALUE_NONE
             && (ttData.bound & (ttData.value > eval ? BOUND_LOWER : BOUND_UPPER)))
-            eval = ttData.value;
+            eval = ttData.value + xx1 + xx2 * (ss->ttPv && !PvNode);
     }
     else
     {
@@ -1512,7 +1516,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             // ttValue can be used as a better position evaluation (~13 Elo)
             if (std::abs(ttData.value) < VALUE_TB_WIN_IN_MAX_PLY
                 && (ttData.bound & (ttData.value > bestValue ? BOUND_LOWER : BOUND_UPPER)))
-                bestValue = ttData.value;
+                bestValue = ttData.value + xx3 + xx4 * (ss->ttPv && !PvNode);
         }
         else
         {
