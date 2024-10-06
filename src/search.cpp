@@ -1515,7 +1515,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             // ttValue can be used as a better position evaluation (~13 Elo)
             if (std::abs(ttData.value) < VALUE_TB_WIN_IN_MAX_PLY
                 && (ttData.bound & (ttData.value > bestValue ? BOUND_LOWER : BOUND_UPPER)))
-                bestValue = ttData.value - ((ttData.value > eval) * std::min(ttData.value - eval, xx2);
+                bestValue = ttData.value - ((ttData.value > bestValue) * std::min(ttData.value - bestValue, xx2);
         }
         else
         {
