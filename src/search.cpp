@@ -1198,8 +1198,8 @@ moves_loop:  // When in check, search starts here
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates (~1 Elo)
-                int bonus = value >= beta ? (xx3 * stat_bonus(newDepth)
-                                          : -xx4 * stat_malus(newDepth);
+                int bonus = value >= beta ? xx3 * stat_bonus(newDepth)
+                                         : -xx4 * stat_malus(newDepth);
                 update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
 
                 if (PvNode && value > bestValue + xx1)
