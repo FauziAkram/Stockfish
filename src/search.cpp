@@ -1145,8 +1145,8 @@ moves_loop:  // When in check, search starts here
         if (PvNode)
             r--;
 
-        if (moveCountPruning && !formerPv)
-            r++;
+        if (!moveCountPruning && formerPv)
+            r--;
 
         // These reduction adjustments have no proven non-linear scaling
 
