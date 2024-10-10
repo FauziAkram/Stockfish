@@ -930,7 +930,7 @@ moves_loop:  // When in check, search starts here
 
     int  moveCount        = 0;
     bool moveCountPruning = false;
-    bool formerPv = ttPv && !PvNode;
+    bool formerPv = ss->ttPv && !PvNode;
 
     // Step 13. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
