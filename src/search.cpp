@@ -50,6 +50,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=36, 	xx2=54, 	xx3=64, 	xx4=12, 	xx5=262, 	xx6=204, 	xx7=97, 	xx8=266, 	xx9=255, 	xx10=94, 	xx11=14;
+TUNE(xx1,xx2,xx3);
+TUNE(SetRange(-20, 60), xx4);
+TUNE(xx5,xx6,xx7,xx8,xx9,xx10,xx11);
 
 namespace TB = Tablebases;
 
@@ -1057,11 +1061,11 @@ moves_loop:  // When in check, search starts here
             // and lower extension margins scale well.
 
             if (!rootNode && move == ttData.move && !excludedMove
-                && depth >= 4 - (thisThread->completedDepth > 36) + ss->ttPv
+                && depth >= 4 - (thisThread->completedDepth > xx1) + ss->ttPv
                 && std::abs(ttData.value) < VALUE_TB_WIN_IN_MAX_PLY && (ttData.bound & BOUND_LOWER)
                 && ttData.depth >= depth - 3)
             {
-                Value singularBeta  = ttData.value - (54 + 77 * (ss->ttPv && !PvNode)) * depth / 64;
+                Value singularBeta  = ttData.value - (xx2 + xx3 * (ss->ttPv && !PvNode) + xx4 * !PvNode) * depth / 64;
                 Depth singularDepth = newDepth / 2;
 
                 ss->excludedMove = move;
@@ -1071,13 +1075,13 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int doubleMargin = 262 * PvNode - 204 * !ttCapture;
-                    int tripleMargin = 97 + 266 * PvNode - 255 * !ttCapture + 94 * ss->ttPv;
+                    int doubleMargin = xx5 * PvNode - xx6 * !ttCapture;
+                    int tripleMargin = xx7 + xx8 * PvNode - xx9 * !ttCapture + xx10 * ss->ttPv;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
 
-                    depth += ((!PvNode) && (depth < 14));
+                    depth += ((!PvNode) && (depth < xx11));
                 }
 
                 // Multi-cut pruning
