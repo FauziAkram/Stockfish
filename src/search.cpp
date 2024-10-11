@@ -96,9 +96,6 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos) {
 // History and stats update bonus, based on depth
 int stat_bonus(Depth d) { return std::min(179 * d - 108, 1598); }
 
-// History and stats update malus, based on depth
-int stat_malus(Depth d) { return std::min(820 * d - 261, 2246); }
-
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
 Value value_to_tt(Value v, int ply);
@@ -639,7 +636,7 @@ Value Search::Worker::search(
             // the previous ply (~1 Elo on STC, ~2 Elo on LTC)
             if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 2 && !priorCapture)
                 update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                              -stat_malus(depth + 1));
+                                              -stat_bonus(depth + 1));
         }
 
         // Partial workaround for the graph history interaction problem
@@ -1767,15 +1764,14 @@ void update_all_stats(const Position&      pos,
     PieceType              captured;
 
     int quietMoveBonus = stat_bonus(depth);
-    int quietMoveMalus = stat_malus(depth);
 
     if (!pos.capture_stage(bestMove))
     {
-        update_quiet_histories(pos, ss, workerThread, bestMove, quietMoveBonus);
+        update_quiet_histories(pos, ss, workerThread, bestMove, bestMoveBonus);
 
         // Decrease stats for all non-best quiet moves
         for (Move move : quietsSearched)
-            update_quiet_histories(pos, ss, workerThread, move, -quietMoveMalus);
+            update_quiet_histories(pos, ss, workerThread, move, -bestMoveBonus);
     }
     else
     {
@@ -1787,14 +1783,14 @@ void update_all_stats(const Position&      pos,
     // Extra penalty for a quiet early move that was not a TT move in
     // previous ply when it gets refuted.
     if (prevSq != SQ_NONE && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit) && !pos.captured_piece())
-        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -quietMoveMalus);
+        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -bestMoveBonus);
 
     // Decrease stats for all non-best capture moves
     for (Move move : capturesSearched)
     {
         moved_piece = pos.moved_piece(move);
         captured    = type_of(pos.piece_on(move.to_sq()));
-        captureHistory[moved_piece][move.to_sq()][captured] << -quietMoveMalus;
+        captureHistory[moved_piece][move.to_sq()][captured] << -bestMoveBonus;
     }
 }
 
