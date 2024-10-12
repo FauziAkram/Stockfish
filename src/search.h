@@ -63,6 +63,7 @@ namespace Search {
 struct Stack {
     Move*           pv;
     PieceToHistory* continuationHistory;
+    PieceToCorrectionHistory* continuationCorrectionHistory;
     int             ply;
     Move            currentMove;
     Move            excludedMove;
@@ -94,6 +95,7 @@ struct RootMove {
     Value             score           = -VALUE_INFINITE;
     Value             previousScore   = -VALUE_INFINITE;
     Value             averageScore    = -VALUE_INFINITE;
+    Value             meanSquaredScore = -VALUE_INFINITE*VALUE_INFINITE;
     Value             uciScore        = -VALUE_INFINITE;
     bool              scoreLowerbound = false;
     bool              scoreUpperbound = false;
@@ -285,10 +287,10 @@ class Worker {
     PawnHistory           pawnHistory;
 
     PawnCorrectionHistory       pawnCorrectionHistory;
-    MaterialCorrectionHistory   materialCorrectionHistory;
     MajorPieceCorrectionHistory majorPieceCorrectionHistory;
     MinorPieceCorrectionHistory minorPieceCorrectionHistory;
     NonPawnCorrectionHistory    nonPawnCorrectionHistory[COLOR_NB];
+    ContinuationCorrectionHistory   continuationCorrectionHistory;
 
    private:
     void iterative_deepening();
