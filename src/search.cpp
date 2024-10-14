@@ -1699,9 +1699,10 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     return bestValue;
 }
 
-Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
+Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta, const Position& pos) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return (reductionScale + 1239 - delta * 795 / rootDelta) / 1024 + (!i && reductionScale > 1341);
+    int endgameFactor = pos.non_pawn_material() < 3800 ? 2 : 1;
+    return (reductionScale + 1239 - delta * 795 / rootDelta) / (1024 * endgameFactor) + (!i && reductionScale > 1341);
 }
 
 // elapsed() returns the time elapsed since the search started. If the
