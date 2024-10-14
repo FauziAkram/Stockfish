@@ -79,12 +79,7 @@ struct Magic {
 #ifdef USE_PEXT
         return unsigned(pext(occupied, mask));
 #else
-        if (Is64Bit)
-            return unsigned(((occupied & mask) * magic) >> shift);
-
-        unsigned lo = unsigned(occupied) & unsigned(mask);
-        unsigned hi = unsigned(occupied >> 32) & unsigned(mask >> 32);
-        return (lo * unsigned(magic) ^ hi * unsigned(magic >> 32)) >> shift;
+        return unsigned(((occupied & mask) * magic) >> shift);
 #endif
     }
 
