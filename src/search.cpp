@@ -806,6 +806,8 @@ Value Search::Worker::search(
 
         // Null move dynamic reduction based on depth and eval
         Depth R = std::min(int(eval - beta) / 209, 6) + depth / 3 + 5;
+        if (pos.attackers_to(pos.square<KING>(pos.side_to_move()))) {
+        R--;
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
