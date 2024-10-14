@@ -65,12 +65,13 @@ using namespace Search;
 namespace {
 
 // Futility margin
-Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
+Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening, const Position& pos) {
     Value futilityMult       = 118 - 33 * noTtCutNode;
     Value improvingDeduction = improving * futilityMult * 2;
     Value worseningDeduction = oppWorsening * futilityMult / 3;
+    Value kSM = (pos.attackers_to(pos.square<KING>(pos.side_to_move())) & pos.pieces(~pos.side_to_move())) ? futilityMult * 2 : 0;
 
-    return futilityMult * d - improvingDeduction - worseningDeduction;
+    return futilityMult * d - improvingDeduction - worseningDeduction + kSM;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
