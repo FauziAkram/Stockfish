@@ -46,7 +46,7 @@ int material = PawnValue * (pos.count<PAWN>(c) - pos.count<PAWN>(~c))
 int kingSafety = 0;
     Square ksq = pos.square<KING>(c);
     if (pos.attackers_to(ksq)) {
-        kingSafety = -16;
+        kingSafety = 16;
     }
 
     return material + kingSafety;
