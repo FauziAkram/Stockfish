@@ -463,6 +463,9 @@ void Search::Worker::iterative_deepening() {
             if (rootMoves.size() == 1)
                 totalTime = std::min(500.0, totalTime);
 
+            if (bestValue > VALUE_TB_WIN_IN_MAX_PLY - 100)
+            totalTime *= 1.1;
+
             auto elapsedTime = elapsed();
 
             if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.739
