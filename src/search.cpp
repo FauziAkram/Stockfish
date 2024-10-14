@@ -1858,6 +1858,11 @@ void update_quiet_histories(
 
     int pIndex = pawn_structure_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus / 2;
+
+    if (!pos.empty(move.to_sq())) {
+        int interactionBonus = bonus / 4;
+        workerThread.mainHistory[us][make_square(file_of(move.from_sq()), rank_of(move.to_sq()))] << interactionBonus;
+    }
 }
 
 }
