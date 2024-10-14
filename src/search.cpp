@@ -464,7 +464,7 @@ void Search::Worker::iterative_deepening() {
                 totalTime = std::min(500.0, totalTime);
 
             if (bestValue > VALUE_TB_WIN_IN_MAX_PLY - 100)
-            totalTime *= 1.1;
+            totalTime *= 0.9;
 
             auto elapsedTime = elapsed();
 
