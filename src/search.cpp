@@ -1850,6 +1850,7 @@ void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
 
     Color us = pos.side_to_move();
+    int checkBonus = pos.gives_check(move) ? 2 * bonus : bonus;
     workerThread.mainHistory[us][move.from_to()] << bonus;
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
         workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus;
