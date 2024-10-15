@@ -1074,11 +1074,11 @@ moves_loop:  // When in check, search starts here
             // and lower extension margins scale well.
 
             if (!rootNode && move == ttData.move && !excludedMove
-                && depth >= 4 - (thisThread->completedDepth > 36) + ss->ttPv
+                && depth >= 4 - (thisThread->completedDepth > 37) + ss->ttPv
                 && std::abs(ttData.value) < VALUE_TB_WIN_IN_MAX_PLY && (ttData.bound & BOUND_LOWER)
                 && ttData.depth >= depth - 3)
             {
-                Value singularBeta  = ttData.value - (54 + 77 * (ss->ttPv && !PvNode)) * depth / 64;
+                Value singularBeta  = ttData.value - (53 + 66 * (ss->ttPv && !PvNode) + 12 * !PvNode) * depth / 64;
                 Depth singularDepth = newDepth / 2;
 
                 ss->excludedMove = move;
@@ -1088,8 +1088,8 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int doubleMargin = 262 * PvNode - 204 * !ttCapture;
-                    int tripleMargin = 97 + 266 * PvNode - 255 * !ttCapture + 94 * ss->ttPv;
+                    int doubleMargin = 267 * PvNode - 202 * !ttCapture;
+                    int tripleMargin = 97 + 262 * PvNode - 253 * !ttCapture + 95 * ss->ttPv;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
