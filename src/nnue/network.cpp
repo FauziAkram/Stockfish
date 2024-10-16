@@ -208,6 +208,10 @@ template<typename Arch, typename Transformer>
 NetworkOutput
 Network<Arch, Transformer>::evaluate(const Position&                         pos,
                                      AccumulatorCaches::Cache<FTDimensions>* cache) const {
+
+    if (resultCached)
+        return cachedResult;
+      
     // We manually align the arrays on the stack because with gcc < 9.3
     // overaligning stack variables with alignas() doesn't work correctly.
 
@@ -229,7 +233,8 @@ Network<Arch, Transformer>::evaluate(const Position&                         pos
     const int  bucket     = (pos.count<ALL_PIECES>() - 1) / 4;
     const auto psqt       = featureTransformer->transform(pos, cache, transformedFeatures, bucket);
     const auto positional = network[bucket].propagate(transformedFeatures);
-    return {static_cast<Value>(psqt / OutputScale), static_cast<Value>(positional / OutputScale)};
+    cachedResult = {psqt / OutputScale, positional / OutputScale};
+    resultCached = true;
 }
 
 
