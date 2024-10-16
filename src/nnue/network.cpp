@@ -235,6 +235,7 @@ Network<Arch, Transformer>::evaluate(const Position&                         pos
     const auto positional = network[bucket].propagate(transformedFeatures);
     cachedResult = {psqt / OutputScale, positional / OutputScale};
     resultCached = true;
+    return cachedResult;
 }
 
 
