@@ -36,6 +36,9 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int xx1= 950, xx2=256;
+TUNE(xx1);
+TUNE(SetRange(-4096, 4096), xx2);
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
@@ -48,7 +51,7 @@ int Eval::simple_eval(const Position& pos, Color c) {
 bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
     int pc         = pos.count<ALL_PIECES>();
-    return std::abs(simpleEval) > (950 + pc);
+    return std::abs(simpleEval) > (xx1 + (xx2 * pc / 256));
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
