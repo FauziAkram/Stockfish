@@ -44,6 +44,13 @@ int Eval::simple_eval(const Position& pos, Color c) {
     return PawnValue * (pos.count<PAWN>(c) - pos.count<PAWN>(~c))
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
+namespace {
+
+// Helper functions for pawn structure
+Bitboard passed_pawns(const Position& pos, Color c);
+Bitboard isolated_pawns(const Position& pos, Color c);
+Bitboard doubled_pawns(const Position& pos, Color c);
+}
 
 bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
@@ -55,6 +62,7 @@ bool Eval::use_smallnet(const Position& pos) {
     int isolatedpawnComplexity = popcount(isolated_pawns(pos, c)) * 15;
     int doubledpawnComplexity = popcount(doubled_pawns(pos, c)) * 20;
 
+    // Combined heuristic
     int score = std::abs(simpleEval) + passedpawnComplexity + isolatedpawnComplexity + doubledpawnComplexity;
 
     return score > 1500;
