@@ -74,6 +74,10 @@ class Network {
     NnueEvalTrace trace_evaluate(const Position&                         pos,
                                  AccumulatorCaches::Cache<FTDimensions>* cache) const;
 
+    mutable NetworkOutput cachedResult;
+    mutable bool resultCached = false;
+    NetworkOutput get_cached_result() const { return cachedResult; }
+
    private:
     void load_user_net(const std::string&, const std::string&);
     void load_internal();
