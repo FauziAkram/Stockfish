@@ -47,7 +47,17 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
-    return std::abs(simpleEval) > 962;
+
+    Color c = pos.side_to_move();
+
+    // Calculate pawn structure complexities separately
+    int passedpawnComplexity = popcount(passed_pawns(pos, c)) * 10;
+    int isolatedpawnComplexity = popcount(isolated_pawns(pos, c)) * 15;
+    int doubledpawnComplexity = popcount(doubled_pawns(pos, c)) * 20;
+
+    int score = std::abs(simpleEval) + passedpawnComplexity + isolatedpawnComplexity + doubledpawnComplexity;
+
+    return score > 1500;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
