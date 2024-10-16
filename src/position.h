@@ -123,6 +123,11 @@ class Position {
     Bitboard check_squares(PieceType pt) const;
     Bitboard pinners(Color c) const;
 
+    // Pawn structure
+    Bitboard passed_pawns(Color c) const;
+    Bitboard isolated_pawns(Color c) const;
+    Bitboard doubled_pawns(Color c) const;
+
     // Attacks to/from a given square
     Bitboard attackers_to(Square s) const;
     Bitboard attackers_to(Square s, Bitboard occupied) const;
