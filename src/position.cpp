@@ -501,6 +501,56 @@ Bitboard Position::attackers_to(Square s, Bitboard occupied) const {
          | (attacks_bb<KING>(s) & pieces(KING));
 }
 
+Bitboard Position::passed_pawns(Color c) const {
+    Bitboard pawns = pieces(c, PAWN);
+    Bitboard empty = ~pieces(); // All empty squares
+    Bitboard passed = 0;
+
+    while (pawns) {
+        Square s = pop_lsb(pawns);
+        Bitboard potentialBlockers = 
+            (c == WHITE) ? 
+            (shift<NORTH>(square_bb(s)) | shift<NORTH + NORTH>(square_bb(s)) | shift<NORTH + NORTH + NORTH>(square_bb(s)) | shift<NORTH + NORTH + NORTH + NORTH>(square_bb(s)) | shift<NORTH + NORTH + NORTH + NORTH + NORTH>(square_bb(s)) | shift<NORTH + NORTH + NORTH + NORTH + NORTH + NORTH>(square_bb(s)) | shift<NORTH + NORTH + NORTH + NORTH + NORTH + NORTH + NORTH>(square_bb(s)) | shift<NORTH + NORTH + NORTH + NORTH + NORTH + NORTH + NORTH + NORTH>(square_bb(s)) ) :
+            (shift<SOUTH>(square_bb(s)) | shift<SOUTH + SOUTH>(square_bb(s)) | shift<SOUTH + SOUTH + SOUTH>(square_bb(s)) | shift<SOUTH + SOUTH + SOUTH + SOUTH>(square_bb(s)) | shift<SOUTH + SOUTH + SOUTH + SOUTH + SOUTH>(square_bb(s)) | shift<SOUTH + SOUTH + SOUTH + SOUTH + SOUTH + SOUTH>(square_bb(s)) | shift<SOUTH + SOUTH + SOUTH + SOUTH + SOUTH + SOUTH + SOUTH>(square_bb(s)) | shift<SOUTH + SOUTH + SOUTH + SOUTH + SOUTH + SOUTH + SOUTH + SOUTH>(square_bb(s)) );
+
+        if (!(potentialBlockers & pieces(~c, PAWN))) { // No opponent pawns blocking
+            passed |= s;
+        }
+    }
+    return passed;
+}
+
+Bitboard Position::isolated_pawns(Color c) const {
+    Bitboard pawns = pieces(c, PAWN);
+    Bitboard isolated = 0;
+
+    while (pawns) {
+        Square s = pop_lsb(pawns);
+        if (!(adjacent_files(file_of(s)) & pieces(c, PAWN))) { // No friendly pawns on adjacent files
+            isolated |= s;
+        }
+    }
+    return isolated;
+}
+
+Bitboard Position::doubled_pawns(Color c) const {
+    Bitboard doubled = 0;
+    for (File f = FILE_A; f <= FILE_H; ++f) {
+        if (popcount(pieces(c, PAWN) & file_bb(f)) > 1) {
+            doubled |= (pieces(c, PAWN) & file_bb(f));
+        }
+    }
+    return doubled;
+}
+
+// Helper function for isolated pawns
+inline Bitboard adjacent_files(File f) {
+    Bitboard bb = 0;
+    if (f > FILE_A) bb |= file_bb(f - 1);
+    if (f < FILE_H) bb |= file_bb(f + 1);
+    return bb;
+}
+
 
 // Tests whether a pseudo-legal move is legal
 bool Position::legal(Move m) const {
