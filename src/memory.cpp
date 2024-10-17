@@ -219,9 +219,7 @@ bool has_large_pages() {
     constexpr size_t page_size = 2 * 1024 * 1024;  // 2MB page size assumed
     void*            mem       = aligned_large_pages_alloc_windows(page_size);
     if (mem == nullptr)
-    {
         return false;
-    }
     else
     {
         aligned_large_pages_free(mem);
