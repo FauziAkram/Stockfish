@@ -50,6 +50,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=43, xx2=43, xx3=41;
+TUNE(SetRange(-20, 150), xx1,xx2,xx3);
+
 
 namespace TB = Tablebases;
 
@@ -996,7 +999,11 @@ moves_loop:  // When in check, search starts here
         if (!rootNode && pos.non_pawn_material(us) && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
         {
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
-            moveCountPruning = moveCount >= futility_move_count(improving, depth);
+                int fmc = futility_move_count(improving, depth);
+                int negcap = -xx1 * fmc / 256;
+                int poscap = xx2 * fmc / 256;
+                fmc -= std::clamp(xx3 * (alpha - ss->staticEval) / 2048, negcap, poscap);
+                moveCountPruning = moveCount >= fmc;
 
             // Reduced depth of the next LMR search
             int lmrDepth = newDepth - r;
