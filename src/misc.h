@@ -54,9 +54,7 @@ size_t str_to_size_t(const std::string& s);
 struct PipeDeleter {
     void operator()(FILE* file) const {
         if (file != nullptr)
-        {
             pclose(file);
-        }
     }
 };
 
@@ -221,9 +219,7 @@ void move_to_front(std::vector<T>& vec, Predicate pred) {
     auto it = std::find_if(vec.begin(), vec.end(), pred);
 
     if (it != vec.end())
-    {
         std::rotate(vec.begin(), it, it + 1);
-    }
 }
 }
 
