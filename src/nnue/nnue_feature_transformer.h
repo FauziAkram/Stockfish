@@ -573,6 +573,7 @@ class FeatureTransformer {
                 for (const auto index : removed)
                 {
                     const IndexType offset = HalfDimensions * index + i * TileHeight;
+                    prefetch(&weights[offset]);
                     auto            column = reinterpret_cast<const vec_t*>(&weights[offset]);
                     for (IndexType j = 0; j < NumRegs; ++j)
                         acc[j] = vec_sub_16(acc[j], column[j]);
