@@ -360,9 +360,7 @@ void dbg_print() {
 
     for (int i = 0; i < MaxDebugSlots; ++i)
         if ((n = mean[i][0]))
-        {
             std::cerr << "Mean #" << i << ": Total " << n << " Mean " << E(mean[i][1]) << std::endl;
-        }
 
     for (int i = 0; i < MaxDebugSlots; ++i)
         if ((n = stdev[i][0]))
