@@ -700,6 +700,8 @@ class FeatureTransformer {
 
         auto& accumulator                 = pos.state()->*accPtr;
         accumulator.computed[Perspective] = true;
+        prefetch(&biases[0]);
+        prefetch(&weights[0]);
 
 #ifdef VECTOR
         vec_t      acc[NumRegs];
