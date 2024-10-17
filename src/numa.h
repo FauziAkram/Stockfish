@@ -40,7 +40,7 @@
 #include "memory.h"
 
 // We support linux very well, but we explicitly do NOT support Android,
-// because there is no affected systems, not worth maintaining.
+// because there are no affected systems, so not worth maintaining.
 #if defined(__linux__) && !defined(__ANDROID__)
     #if !defined(_GNU_SOURCE)
         #define _GNU_SOURCE
@@ -83,7 +83,7 @@ using NumaIndex = size_t;
 inline CpuIndex get_hardware_concurrency() {
     CpuIndex concurrency = std::thread::hardware_concurrency();
 
-    // Get all processors across all processor groups on windows, since
+    // Get all processors across all processor groups on Windows, since
     // hardware_concurrency() only returns the number of processors in
     // the first group, because only these are available to std::thread.
 #ifdef _WIN64
@@ -450,7 +450,7 @@ class NumaReplicatedAccessToken {
 //
 // We use startup affinities so as not to modify its own behaviour in time.
 //
-// Since Stockfish doesn't support exceptions all places where an exception
+// Since Stockfish doesn't support exceptions, all places where an exception
 // should be thrown are replaced by std::exit.
 class NumaConfig {
    public:
@@ -479,7 +479,7 @@ class NumaConfig {
             return !respectProcessAffinity || allowedCpus.count(c) == 1;
         };
 
-        // On Linux things are straightforward, since there's no processor groups and
+        // On Linux things are straightforward, since there are no processor groups and
         // any thread can be scheduled on all processors.
         // We try to gather this information from the sysfs first
         // https://www.kernel.org/doc/Documentation/ABI/stable/sysfs-devices-node
@@ -767,7 +767,7 @@ class NumaConfig {
 
         if (nodes.size() == 1)
         {
-            // Special case for when there's no NUMA nodes. This doesn't buy us
+            // Special case for when there are no NUMA nodes. This doesn't buy us
             // much, but let's keep the default path simple.
             ns.resize(numThreads, NumaIndex{0});
         }
@@ -838,7 +838,7 @@ class NumaConfig {
           (void (*)()) GetProcAddress(k32, "SetThreadSelectedCpuSetMasks"));
 
         // We ALWAYS set affinity with the new API if available, because
-        // there's no downsides, and we forcibly keep it consistent with
+        // there are no downsides, and we forcibly keep it consistent with
         // the old API should we need to use it. I.e. we always keep this
         // as a superset of what we set with SetThreadGroupAffinity.
         if (SetThreadSelectedCpuSetMasks_f != nullptr)
@@ -873,11 +873,11 @@ class NumaConfig {
         // Sometimes we need to force the old API, but do not use it unless necessary.
         if (SetThreadSelectedCpuSetMasks_f == nullptr || STARTUP_USE_OLD_AFFINITY_API)
         {
-            // On earlier windows version (since windows 7) we cannot run a single thread
+            // On earlier Windows versions (since windows 7) we cannot run a single thread
             // on multiple processor groups, so we need to restrict the group.
             // We assume the group of the first processor listed for this node.
-            // Processors from outside this group will not be assigned for this thread.
-            // Normally this won't be an issue because windows used to assign NUMA nodes
+            // Processors from outside this group will not be assigned to this thread.
+            // Normally this won't be an issue because Windows used to assign NUMA nodes
             // such that they cannot span processor groups. However, since Windows 10
             // Build 20348 the behaviour changed, so there's a small window of versions
             // between this and Windows 11 that might exhibit problems with not all
@@ -899,7 +899,7 @@ class NumaConfig {
                 const size_t procGroupIndex     = c / WIN_PROCESSOR_GROUP_SIZE;
                 const size_t idxWithinProcGroup = c % WIN_PROCESSOR_GROUP_SIZE;
                 // We skip processors that are not in the same processor group.
-                // If everything was set up correctly this will never be an issue,
+                // If everything was set up correctly this would never be an issue,
                 // but we have to account for bad NUMA node specification.
                 if (procGroupIndex != forcedProcGroupIndex)
                     continue;
@@ -976,7 +976,7 @@ class NumaConfig {
     }
 
     // Returns true if successful
-    // Returns false if failed, i.e. when any of the cpus is already present
+    // Returns false if failed, i.e. when any of the CPUs is already present
     //                          strong guarantee, the structure remains unmodified
     bool add_cpu_range_to_node(NumaIndex n, CpuIndex cfirst, CpuIndex clast) {
         for (CpuIndex c = cfirst; c <= clast; ++c)
