@@ -1321,7 +1321,7 @@ moves_loop:  // When in check, search starts here
             {
                 bestMove = move;
 
-                if (PvNode && !rootNode)  // Update pv even in fail-high case
+                if (PvNode)  // Update pv even in fail-high case
                     update_pv(ss->pv, move, (ss + 1)->pv);
 
                 if (value >= beta)
