@@ -997,7 +997,7 @@ moves_loop:  // When in check, search starts here
         {
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
             int fmc = futility_move_count(improving, depth);
-                int cap = fmc / 5;
+                int cap = fmc / 6;
                 fmc -= std::clamp((alpha - ss->staticEval) / 48, -cap, cap);
                 moveCountPruning = moveCount >= fmc;
 
