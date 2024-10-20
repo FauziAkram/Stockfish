@@ -996,7 +996,11 @@ moves_loop:  // When in check, search starts here
         if (!rootNode && pos.non_pawn_material(us) && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
         {
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold (~8 Elo)
-            moveCountPruning = moveCount >= futility_move_count(improving, depth);
+            int fmc = futility_move_count(improving, depth);
+                int negcap = fmc / 5;
+                int poscap = fmc / 6;
+                fmc -= std::clamp((alpha - ss->staticEval) / 48, -negcap, poscap);
+                moveCountPruning = moveCount >= fmc;
 
             // Reduced depth of the next LMR search
             int lmrDepth = newDepth - r;
