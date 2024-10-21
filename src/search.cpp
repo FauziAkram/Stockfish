@@ -566,7 +566,7 @@ Value Search::Worker::search(
     Move  move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, eval, maxValue, probCutBeta;
-    bool  givesCheck, improving, priorCapture, opponentWorsening;
+    bool  givesCheck, improving, opponentWorsening;
     bool  capture, ttCapture;
     Piece movedPiece;
 
@@ -576,7 +576,7 @@ Value Search::Worker::search(
     // Step 1. Initialize node
     Worker* thisThread = this;
     ss->inCheck        = pos.checkers();
-    priorCapture       = pos.captured_piece();
+    ss->priorCapture   = pos.captured_piece();
     Color us           = pos.side_to_move();
     ss->moveCount      = 0;
     bestValue          = -VALUE_INFINITE;
@@ -649,7 +649,7 @@ Value Search::Worker::search(
 
             // Extra penalty for early quiet moves of
             // the previous ply (~1 Elo on STC, ~2 Elo on LTC)
-            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 2 && !priorCapture)
+            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 2 && !ss->priorCapture)
                 update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                               -stat_malus(depth + 1));
         }
@@ -760,7 +760,7 @@ Value Search::Worker::search(
     }
 
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
-    if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
+    if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !ss->priorCapture)
     {
         int bonus = std::clamp(-10 * int((ss - 1)->staticEval + ss->staticEval), -1641, 1423) + 760;
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus;
@@ -1374,7 +1374,7 @@ moves_loop:  // When in check, search starts here
         update_all_stats(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth);
 
     // Bonus for prior countermove that caused the fail low
-    else if (!priorCapture && prevSq != SQ_NONE)
+    else if (!ss->priorCapture && prevSq != SQ_NONE)
     {
         int bonus = (118 * (depth > 5) + 38 * !allNode + 169 * ((ss - 1)->moveCount > 8)
                      + 116 * (!ss->inCheck && bestValue <= ss->staticEval - 101)
@@ -1840,7 +1840,7 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
         if (ss->inCheck && i > 2)
             break;
         if (((ss - i)->currentMove).is_ok())
-            (*(ss - i)->continuationHistory)[pc][to] << bonus / (1 + (i == 3));
+            (*(ss - i)->continuationHistory)[pc][to] << bonus / ((1 + (i == 3) + (ss->priorCapture && i > 2)));
     }
 }
 
