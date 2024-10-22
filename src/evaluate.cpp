@@ -44,6 +44,10 @@ TUNE(zz0,zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz10,zz11);
 Value PawnValue = Value(xx1), KnightValue = Value(xx2), BishopValue = Value(xx3),
       RookValue = Value(xx4), QueenValue = Value(xx5);
 
+Value PieceValue[PIECE_NB] = {
+  VALUE_ZERO, PawnValue, KnightValue, BishopValue, RookValue, QueenValue, VALUE_ZERO, VALUE_ZERO,
+  VALUE_ZERO, PawnValue, KnightValue, BishopValue, RookValue, QueenValue, VALUE_ZERO, VALUE_ZERO};
+
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
