@@ -1310,7 +1310,7 @@ moves_loop:  // When in check, search starts here
         // In case we have an alternative move equal in eval to the current bestmove,
         // promote it to bestmove by pretending it just exceeds alpha (but not beta).
         int inc =
-          (value == bestValue && (int(nodes) & 15) == 0 && ss->ply + 2 >= thisThread->rootDepth
+          (value == bestValue && (int(nodes) & 31) == 0 && ss->ply + 2 >= thisThread->rootDepth
            && std::abs(value) + 1 < VALUE_TB_WIN_IN_MAX_PLY);
 
         if (value + inc > bestValue)
