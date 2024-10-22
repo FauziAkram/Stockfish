@@ -37,6 +37,9 @@
 
 namespace Stockfish {
 
+int zz0=962, zz1=227, zz2=250, zz3=468, zz4=20233, zz5=17879, zz6=553, zz7=532, zz8=77777, zz9=7777, zz10=77777, zz11=212;
+TUNE(zz0,zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz10,zz11);
+
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -47,7 +50,7 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
-    return std::abs(simpleEval) > 962;
+    return std::abs(simpleEval) > zz0;
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
@@ -63,26 +66,26 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
                                        : networks.big.evaluate(pos, &caches.big);
 
-    Value nnue = (125 * psqt + 131 * positional) / 128;
+    Value nnue = (zz2 * psqt + 262 * positional) / 256;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (nnue * psqt < 0 || std::abs(nnue) < 227))
+    if (smallNet && (nnue * psqt < 0 || std::abs(nnue) < zz1))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
-        nnue                       = (125 * psqt + 131 * positional) / 128;
+        nnue                       = (zz2 * psqt + 262 * positional) / 256;
         smallNet                   = false;
     }
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / (smallNet ? 430 : 474);
-    nnue -= nnue * nnueComplexity / (smallNet ? 20233 : 17879);
+    optimism += optimism * nnueComplexity / zz3 ;
+    nnue -= nnue * nnueComplexity / (smallNet ? zz4 : zz5);
 
-    int material = (smallNet ? 553 : 532) * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
+    int material = (smallNet ? zz6 : zz7) * pos.count<PAWN>() + pos.non_pawn_material();
+    int v        = (nnue * (zz8 + material) + optimism * (zz9 + material)) / zz10;
 
     // Damp down the evaluation linearly when shuffling
-    v -= v * pos.rule50_count() / 212;
+    v -= v * pos.rule50_count() / zz11;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
