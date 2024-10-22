@@ -158,11 +158,33 @@ constexpr Value VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY;
 // In the code, we make the assumption that these values
 // are such that non_pawn_material() can be used to uniquely
 // identify the material on the board.
-constexpr Value PawnValue   = 208;
-constexpr Value KnightValue = 781;
-constexpr Value BishopValue = 825;
-constexpr Value RookValue   = 1276;
-constexpr Value QueenValue  = 2538;
+extern Value PawnValue, KnightValue, BishopValue, RookValue, QueenValue;
+
+struct PieceValueArray {
+    inline Value operator[](int i) const {
+        switch (i % 8)
+        {
+        case 0 :
+        case 6 :
+        case 7 :
+            return VALUE_ZERO;
+        case 1 :
+            return PawnValue;
+        case 2 :
+            return KnightValue;
+        case 3 :
+            return BishopValue;
+        case 4 :
+            return RookValue;
+        case 5 :
+            return QueenValue;
+        default:
+            __builtin_unreachable();
+        }
+    }
+};
+
+extern PieceValueArray PieceValue;
 
 
 // clang-format off
@@ -179,10 +201,6 @@ enum Piece {
     PIECE_NB = 16
 };
 // clang-format on
-
-constexpr Value PieceValue[PIECE_NB] = {
-  VALUE_ZERO, PawnValue, KnightValue, BishopValue, RookValue, QueenValue, VALUE_ZERO, VALUE_ZERO,
-  VALUE_ZERO, PawnValue, KnightValue, BishopValue, RookValue, QueenValue, VALUE_ZERO, VALUE_ZERO};
 
 using Depth = int;
 
