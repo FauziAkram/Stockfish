@@ -221,6 +221,12 @@ inline Bitboard attacks_bb(Square s) {
     return PseudoAttacks[Pt][s];
 }
 
+inline Bitboard attacks_bb(PieceType Pt, Square s) {
+
+    assert((Pt != PAWN) && (is_ok(s)));
+    return PseudoAttacks[Pt][s];
+}
+
 
 // Returns the attacks by the given piece
 // assuming the board is occupied according to the passed Bitboard.
