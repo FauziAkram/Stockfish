@@ -602,7 +602,7 @@ bool Position::pseudo_legal(const Move m) const {
                  && (relative_rank(us, from) == RANK_2) && empty(to) && empty(to - pawn_push(us))))
             return false;
     }
-    else if (!(attacks_bb(type_of(pc), from, pieces()) & to))
+    else if (((between_bb(from, to) ^ to) & pieces()) || !(attacks_bb(type_of(pc), from) & to))
         return false;
 
     // Evasions generator already takes care to avoid some kind of illegal moves
