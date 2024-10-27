@@ -845,7 +845,7 @@ Value Search::Worker::search(
     if (PvNode && !ttData.move)
         depth -= std::clamp((xx1 + xx2 * PvNode + xx3 * !ttData.move + xx4 * (ss->ttHit && ttData.depth >= depth)
           + xx5 * ss->ttHit + xx6 * (ttData.depth >= depth) + xx7 * ((ss + 1)->cutoffCnt > 3 && depth < 5) + xx8 * ((ss + 1)->cutoffCnt > 3)
-          + xx9 * (depth < 5)) / 100, -3, 8);
+          + xx9 * (depth < 5)) / 100, 0, 9);
 
     // Use qsearch if depth <= 0
     if (depth <= 0)
