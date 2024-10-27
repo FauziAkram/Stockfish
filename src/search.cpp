@@ -843,9 +843,9 @@ Value Search::Worker::search(
     // Step 10. Internal iterative reductions (~9 Elo)
     // For PV nodes without a ttMove, we decrease depth.
     if (PvNode && !ttData.move)
-        depth -= std::clamp((xx1+ xx2* PvNode+ xx3* !ttData.move+ xx4*(ss->ttHit && ttData.depth >= depth)
-          +xx5* ss->ttHit+ xx6* ttData.depth >= depth+ xx7* ((ss + 1)->cutoffCnt > 3 && depth < 5)+ xx8* (ss + 1)->cutoffCnt > 3
-          +xx9* (depth < 5))/100, -3,8);
+        depth -= std::clamp((xx1 + xx2 * PvNode + xx3 * !ttData.move + xx4 * (ss->ttHit && ttData.depth >= depth)
+          + xx5 * ss->ttHit + xx6 * (ttData.depth >= depth) + xx7 * ((ss + 1)->cutoffCnt > 3 && depth < 5) + xx8 * ((ss + 1)->cutoffCnt > 3)
+          + xx9 * (depth < 5)) / 100, -3, 8);
 
     // Use qsearch if depth <= 0
     if (depth <= 0)
