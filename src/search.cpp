@@ -50,7 +50,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=300, xx2=0,  xx3=0,  xx4=0,  xx5=0,  xx6=0,  xx7=0,  xx8=0,  xx9=0;
+TUNE(SetRange(-150, 850), xx1);
+TUNE(SetRange(-250, 550), xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
