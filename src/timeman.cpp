@@ -102,7 +102,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     TimePoint timeLeft = std::max(TimePoint(1), limits.time[us] + limits.inc[us] * (mtg - 1)
                                                   - moveOverhead * (2 + mtg));
 
-    double repetitionFactor = pos.has_repeated() ? 0.7 : 1.0;
+    double repetitionFactor = pos.has_repeated() ? 0.9 : 1.0;
     timeLeft *= repetitionFactor;
 
     // x basetime (+ z increment)
