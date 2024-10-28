@@ -1633,7 +1633,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 continue;
 
             // Do not search moves with bad enough SEE values (~5 Elo)
-            if (!pos.see_ge(move, -82))
+            int seeThreshold = -84 - 2 * (DEPTH_QS - depth);
+           if (!pos.see_ge(move, seeThreshold))
                 continue;
         }
 
