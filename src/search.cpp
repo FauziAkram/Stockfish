@@ -989,7 +989,7 @@ moves_loop:  // When in check, search starts here
 
         int delta = beta - alpha;
 
-        Depth r = reduction(improving, depth, moveCount, delta);
+        Depth r = reduction(improving, depth, moveCount, delta, ss->moveCount);
 
         // Step 14. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
@@ -1699,9 +1699,10 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     return bestValue;
 }
 
-Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
+Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta, int currentMoveCount) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return (reductionScale + 1239 - delta * 795 / rootDelta) / 1024 + (!i && reductionScale > 1341);
+    int moveCountReduction = currentMoveCount > 5 ? 1 : 0;
+    return (reductionScale + 1242 - delta * 800 / rootDelta) / 1024 + (!i && reductionScale > 1344) + moveCountReduction;
 }
 
 // elapsed() returns the time elapsed since the search started. If the
