@@ -540,7 +540,7 @@ Value Search::Worker::search(
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
-        return qsearch < PvNode ? PV : NonPV > (pos, ss, alpha, beta);
+        return qsearch < PvNode ? PV : NonPV > (pos, ss, alpha, beta, improving);
 
     // Limit the depth if extensions made it too large
     depth = std::min(depth, MAX_PLY - 1);
