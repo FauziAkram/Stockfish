@@ -1176,7 +1176,7 @@ moves_loop:  // When in check, search starts here
         if ((ss + 1)->cutoffCnt > 3)
             r += 1 + allNode;
 
-         if (ss->ttHit && ttData.value <= alpha && depth < 5)
+         if (ss->ttHit && ttData.value <= alpha && depth < 11)
             r++;
 
         // For first picked move (ttMove) reduce reduction (~3 Elo)
