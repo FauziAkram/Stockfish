@@ -50,6 +50,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=100, xx2=40, xx3=0, xx4=0, xx5=200;
+TUNE(SetRange(-350, 350), xx1);
+TUNE(SetRange(-250, 250), xx2,xx3);
+TUNE(SetRange(-250, 150), xx4);
+TUNE(SetRange(150, 450), xx5);
 
 namespace TB = Tablebases;
 
@@ -565,9 +570,9 @@ Value Search::Worker::search(
     Key   posKey;
     Move  move, excludedMove, bestMove;
     Depth extension, newDepth;
-    Value bestValue, value, eval, maxValue, probCutBeta;
+    Value bestValue, alpha, value, eval, maxValue, probCutBeta;
     bool  givesCheck, improving, priorCapture, opponentWorsening;
-    bool  capture, ttCapture;
+    bool  capture, ttCapture, cutNode, PvNode;
     Piece movedPiece;
 
     ValueList<Move, 32> capturesSearched;
@@ -1371,7 +1376,7 @@ moves_loop:  // When in check, search starts here
     // If there is a move that produces search value greater than alpha,
     // we update the stats of searched moves.
     else if (bestMove)
-        update_all_stats(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth);
+        update_all_stats(pos, ss, *this, bestMove, alpha, prevSq, quietsSearched, capturesSearched, depth, cutNode, PvNode);
 
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
@@ -1786,10 +1791,13 @@ void update_all_stats(const Position&      pos,
                       Stack*               ss,
                       Search::Worker&      workerThread,
                       Move                 bestMove,
+                      Value                alpha,
                       Square               prevSq,
                       ValueList<Move, 32>& quietsSearched,
                       ValueList<Move, 32>& capturesSearched,
-                      Depth                depth) {
+                      Depth                depth
+                      bool                 cutNode,
+                      bool                 PvNode) {
 
     CapturePieceToHistory& captureHistory = workerThread.captureHistory;
     Piece                  moved_piece    = pos.moved_piece(bestMove);
@@ -1797,6 +1805,10 @@ void update_all_stats(const Position&      pos,
 
     int quietMoveBonus = stat_bonus(depth);
     int quietMoveMalus = stat_malus(depth);
+
+    quietMoveMalus = quietMoveMalus
+                   * std::clamp(xx1 - xx2 * cutNode + xx3 * PvNode, xx4, xx5)
+                   / 100;
 
     if (!pos.capture_stage(bestMove))
     {
