@@ -1096,7 +1096,7 @@ moves_loop:  // When in check, search starts here
 
                     depth += ((!PvNode) && (depth < 14));
                   
-                    if (value < singularBeta - doubleMargin)
+                    if (value < singularBeta - tripleMargin)
                       singularQuietLMR = true;
                 }
 
