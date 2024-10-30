@@ -567,7 +567,7 @@ Value Search::Worker::search(
     Depth extension, newDepth;
     Value bestValue, value, eval, maxValue, probCutBeta;
     bool  givesCheck, improving, priorCapture, opponentWorsening;
-    bool  capture, ttCapture;
+    bool  capture, ttCapture, singularQuietLMR;
     Piece movedPiece;
 
     ValueList<Move, 32> capturesSearched;
@@ -946,7 +946,7 @@ moves_loop:  // When in check, search starts here
     value = bestValue;
 
     int  moveCount        = 0;
-    bool moveCountPruning = false;
+    bool moveCountPruning = singularQuietLMR = false;
 
     // Step 13. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1095,6 +1095,9 @@ moves_loop:  // When in check, search starts here
                               + (value < singularBeta - tripleMargin);
 
                     depth += ((!PvNode) && (depth < 14));
+                  
+                    if (value < singularBeta - doubleMargin)
+                      singularQuietLMR = true;
                 }
 
                 // Multi-cut pruning
@@ -1156,7 +1159,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction if position is or has been on the PV (~7 Elo)
         if (ss->ttPv)
-            r -= 1 + (ttData.value > alpha) + (ttData.depth >= depth);
+            r -= 1 + (ttData.value > alpha) + (ttData.depth >= depth) + singularQuietLMR;
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
