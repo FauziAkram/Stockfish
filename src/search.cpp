@@ -803,6 +803,19 @@ Value Search::Worker::search(
 
         // Null move dynamic reduction based on depth and eval
         Depth R = std::min(int(eval - beta) / 209, 6) + depth / 3 + 5;
+        int openFiles = 0;
+        int openDiagonals = 0;
+
+        for (File f = FILE_A; f <= FILE_H; ++f) {
+          if (!(pos.pieces(PAWN) & file_bb(f)))
+            openFiles++;
+        }
+
+        // Check for open diagonals
+        if (!(pos.pieces(PAWN) & square_bb(SQ_E4)))
+          openDiagonals++;
+      
+        R -= (openFiles + openDiagonals) / 2;
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
