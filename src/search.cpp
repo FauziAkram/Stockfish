@@ -815,7 +815,7 @@ Value Search::Worker::search(
         if (!(pos.pieces(PAWN) & square_bb(SQ_E4)))
           openDiagonals++;
       
-        R -= (openFiles + openDiagonals) / 2;
+        R += (openFiles + openDiagonals) / 2;
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
