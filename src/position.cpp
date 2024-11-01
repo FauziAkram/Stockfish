@@ -1012,7 +1012,7 @@ void Position::do_castling(Color us, Square from, Square& to, Square& rfrom, Squ
 
 // Used to do a "null move": it flips
 // the side to move without executing any move on the board.
-void Position::do_null_move(StateInfo& newSt, TranspositionTable& tt) {
+void Position::do_null_move(StateInfo& newSt) {
 
     assert(!checkers());
     assert(&newSt != st);
