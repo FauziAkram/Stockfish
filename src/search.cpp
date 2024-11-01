@@ -315,10 +315,6 @@ void Search::Worker::iterative_deepening() {
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
-            // Adjust optimism based on root move's averageScore (~4 Elo)
-            optimism[us]  = 132 * avg / (std::abs(avg) + 89);
-            optimism[~us] = -optimism[us];
-
             // Start with a small aspiration window and, in the case of a fail
             // high/low, re-search with a bigger window until we don't fail
             // high/low anymore.
@@ -392,6 +388,14 @@ void Search::Worker::iterative_deepening() {
 
             if (threads.stop)
                 break;
+        }
+
+      
+        // Adjust optimism based on root move's averageScore (~4 Elo)
+        if (rootMoves[pvIdx].averageScore != -VALUE_INFINITE) {
+        Value avg = rootMoves[pvIdx].averageScore;
+        optimism[us] = 132 * avg / (std::abs(avg) + 89);
+        optimism[~us] = -optimism[us];
         }
 
         if (!threads.stop)
