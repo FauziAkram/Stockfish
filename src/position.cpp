@@ -1036,7 +1036,6 @@ void Position::do_null_move(StateInfo& newSt, TranspositionTable& tt) {
 
     st->key ^= Zobrist::side;
     ++st->rule50;
-    prefetch(tt.first_entry(key()));
 
     st->pliesFromNull = 0;
 
