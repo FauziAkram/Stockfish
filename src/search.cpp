@@ -50,6 +50,15 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+Value PawnValue   = 208;
+Value KnightValue = 816;
+Value BishopValue = 825;
+Value RookValue   = 1338;
+Value QueenValue  = 2538;
+
+PieceValueArray PieceValue;
+
+TUNE(PawnValue, KnightValue, BishopValue, RookValue, QueenValue);
 
 namespace TB = Tablebases;
 
