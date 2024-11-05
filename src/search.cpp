@@ -814,6 +814,9 @@ Value Search::Worker::search(
         // Check for open diagonals
         if (!(pos.pieces(PAWN) & square_bb(SQ_E4)))
           openDiagonals++;
+
+        dbg_mean_of(openFiles);
+        dbg_extremes_of(openFiles);
       
         R -= (openFiles + openDiagonals) / 4;
 
