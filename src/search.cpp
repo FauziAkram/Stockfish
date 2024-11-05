@@ -50,6 +50,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0, 	xx2=0, 	xx3=0, 	xx4=0, 	xx5=0, 	xx6=0;
+int yy1=0, 	yy2=0, 	yy3=0, 	yy4=0, 	yy5=0, 	yy6=0;
+int zz1=0, 	zz2=0, 	zz3=0, 	zz4=0, 	zz5=0, 	zz6=0;
+TUNE(SetRange(-10, 10), xx1,xx2,xx3,xx4,xx5,xx6);
+TUNE(SetRange(-10, 10), yy1,yy2,yy3,yy4,yy5,yy6);
+TUNE(SetRange(-10, 10), zz1,zz2,zz3,zz4,zz5,zz6);
 
 namespace TB = Tablebases;
 
@@ -802,7 +808,51 @@ Value Search::Worker::search(
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 209, 6) + depth / 3 + 5;
+        Depth R = std::min(int(eval - beta) / 235, 7) + depth / 3 + 5;
+
+        int openFiles = 0;
+
+        for (File f = FILE_A; f <= FILE_H; ++f) {
+          if (!(pos.pieces(PAWN) & file_bb(f)))
+            openFiles++;
+        }
+        if (openFiles == 0)
+        R -= xx1;
+        if (openFiles == 1)
+        R -= xx2;
+        if (openFiles == 2)
+        R -= xx3;
+        if (openFiles == 3 || openFiles == 4)
+        R -= xx4;
+        if (openFiles == 5 || openFiles == 6)
+        R -= xx5;
+        if (openFiles == 7 || openFiles == 8)
+        R -= xx6;
+        if (openFiles == 0 && (pos.count<ROOK>(pos.side_to_move()) > 2))
+        R -= yy1;
+        if (openFiles == 0 && (pos.count<ROOK>(pos.side_to_move()) > 2))
+        R -= yy2;
+        if (openFiles == 0 && (pos.count<ROOK>(pos.side_to_move()) > 2))
+        R -= yy3;
+        if (openFiles == 0 && (pos.count<ROOK>(pos.side_to_move()) > 2))
+        R -= yy4;
+        if (openFiles == 0 && (pos.count<ROOK>(pos.side_to_move()) > 2))
+        R -= yy5;
+        if (openFiles == 0 && (pos.count<ROOK>(pos.side_to_move()) > 2))
+        R -= yy6;
+        if (openFiles == 0 && (pos.count<ROOK>(pos.side_to_move()) > 0 || pos.count<QUEEN>(pos.side_to_move()) > 0))
+        R -= zz1;
+        if (openFiles == 1 && (pos.count<ROOK>(pos.side_to_move()) > 0 || pos.count<QUEEN>(pos.side_to_move()) > 0))
+        R -= zz2;
+        if (openFiles == 2 && (pos.count<ROOK>(pos.side_to_move()) > 0 || pos.count<QUEEN>(pos.side_to_move()) > 0))
+        R -= zz3;
+        if ((openFiles == 3 || openFiles == 4) && (pos.count<ROOK>(pos.side_to_move()) > 0 || pos.count<QUEEN>(pos.side_to_move()) > 0))
+        R -= zz4;
+        if ((openFiles == 5 || openFiles == 6) && (pos.count<ROOK>(pos.side_to_move()) > 0 || pos.count<QUEEN>(pos.side_to_move()) > 0))
+        R -= zz5;
+        if ((openFiles == 7 || openFiles == 8) && (pos.count<ROOK>(pos.side_to_move()) > 0 || pos.count<QUEEN>(pos.side_to_move()) > 0))
+        R -= zz6;
+        
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
