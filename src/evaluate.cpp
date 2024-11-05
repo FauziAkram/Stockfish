@@ -37,7 +37,7 @@
 
 namespace Stockfish {
 int zz1=1129, zz2=234, zz3=474, zz4=20750, zz5=17750, zz6=555, zz7=532, zz8=77777, zz9=79000, zz10=79000, zz11=200;
-TUNE(zz0,zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz10,zz11);
+TUNE(zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz10,zz11);
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
