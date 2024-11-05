@@ -815,8 +815,8 @@ Value Search::Worker::search(
         if (!(pos.pieces(PAWN) & square_bb(SQ_E4)))
           openDiagonals++;
 
-        dbg_mean_of(openFiles);
-        dbg_extremes_of(openFiles);
+        dbg_mean_of(openDiagonals);
+        dbg_extremes_of(openDiagonals);
       
         R -= (openFiles + openDiagonals) / 4;
 
