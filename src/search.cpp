@@ -1082,11 +1082,11 @@ moves_loop:  // When in check, search starts here
                 value =
                   search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
                 ss->excludedMove = Move::none();
-                    dbg_mean_of(value);
-                    dbg_extremes_of(value);
-                if (value < singularBeta)
+                int fazz= singularBeta - value;
+                if (fazz > 0)
                 {
-
+                    dbg_mean_of(fazz);
+                    dbg_extremes_of(fazz);
                     int doubleMargin = 262 * PvNode - 204 * !ttCapture;
                     int tripleMargin = 97 + 266 * PvNode - 255 * !ttCapture + 94 * ss->ttPv;
 
