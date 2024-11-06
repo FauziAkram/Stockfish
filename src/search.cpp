@@ -1085,8 +1085,8 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    dbg_mean_of(value);
-                    dbg_extremes_of(value);
+                    dbg_mean_of(singularBeta);
+                    dbg_extremes_of(singularBeta);
 
                     int doubleMargin = 262 * PvNode - 204 * !ttCapture;
                     int tripleMargin = 97 + 266 * PvNode - 255 * !ttCapture + 94 * ss->ttPv;
