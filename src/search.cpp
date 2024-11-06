@@ -1086,8 +1086,8 @@ moves_loop:  // When in check, search starts here
                 int fauzi= singularBeta - value;
                 if (fauzi > 0)
                 {
-                    int doubleMargin = 249 * PvNode - 194 * !ttCapture + std::min(fauzi, 64);
-                    int tripleMargin = 94 + 287 * PvNode - 249 * !ttCapture + 99 * ss->ttPv + std::min(fauzi, 64);
+                    int doubleMargin = 249 * PvNode - 194 * !ttCapture + std::min(fauzi, 128);
+                    int tripleMargin = 94 + 287 * PvNode - 249 * !ttCapture + 99 * ss->ttPv + std::min(fauzi, 128);
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
