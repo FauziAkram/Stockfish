@@ -811,7 +811,7 @@ Value Search::Worker::search(
             openFiles++;
 
         if (openFiles < 7)
-           R+= pos.count<ROOK>(pos.side_to_move()) / 2;
+           R+= pos.count<ROOK>(pos.side_to_move());
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
