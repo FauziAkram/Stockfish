@@ -810,7 +810,7 @@ Value Search::Worker::search(
           if (!(pos.pieces(PAWN) & file_bb(f)))
             openFiles++;
 
-        if (openFiles > 0 && openFiles < 7)
+        if (openFiles < 7)
            R++;
 
         ss->currentMove                   = Move::null();
