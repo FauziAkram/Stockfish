@@ -812,6 +812,8 @@ Value Search::Worker::search(
 
         if (openFiles > 6)
            R--;
+        else
+           R++;
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
