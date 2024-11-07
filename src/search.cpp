@@ -810,8 +810,8 @@ Value Search::Worker::search(
           if (!(pos.pieces(PAWN) & file_bb(f)))
             openFiles++;
 
-        if (openFiles > 0 && openFiles < 7)
-           R++;
+        if (openFiles == 0 && (pos.count<ROOK>(pos.side_to_move()) > 2))
+           R+= 2;
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
