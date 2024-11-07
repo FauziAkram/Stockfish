@@ -811,7 +811,7 @@ Value Search::Worker::search(
             openFiles++;
 
         if (openFiles > 6)
-           R--;
+           R-= 1 + (pos.count<ROOK>(pos.side_to_move()) > 2);
         else
            R++;
 
