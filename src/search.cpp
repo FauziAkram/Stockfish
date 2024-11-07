@@ -810,7 +810,7 @@ Value Search::Worker::search(
           if (!(pos.pieces(PAWN) & file_bb(f)))
             openFiles++;}
 
-        if ((pos.count<ROOK>(pos.side_to_move()) > 0 || pos.count<QUEEN>(pos.side_to_move()) > 0) && (openFiles == 0  || openFiles > 6)
+        if ((pos.count<ROOK>(pos.side_to_move()) > 0 || pos.count<QUEEN>(pos.side_to_move()) > 0) && (openFiles == 0  || openFiles > 6))
            R++;
 
         ss->currentMove                   = Move::null();
