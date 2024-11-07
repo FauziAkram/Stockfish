@@ -808,7 +808,7 @@ Value Search::Worker::search(
 
         for (File f = FILE_A; f <= FILE_H; ++f) {
           if (!(pos.pieces(PAWN) & file_bb(f)))
-            openFiles++;
+            openFiles++;}
 
         if ((pos.count<ROOK>(pos.side_to_move()) > 0 || pos.count<QUEEN>(pos.side_to_move()) > 0) && (openFiles == 0  || openFiles > 6)
            R++;
