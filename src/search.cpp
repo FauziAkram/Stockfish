@@ -808,7 +808,7 @@ Value Search::Worker::search(
 
         for (File f = FILE_A; f <= FILE_H; ++f) {
           if (!(pos.pieces(PAWN) & file_bb(f)))
-            openFiles++;
+            openFiles++;}
 
         if (openFiles > 6)
            R--;
