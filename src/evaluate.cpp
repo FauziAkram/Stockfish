@@ -64,8 +64,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
                                        : networks.big.evaluate(pos, &caches.big);
 
     Value nnue = (125 * psqt + 131 * positional) / 128;
-        dbg_mean_of(nnue);
-        dbg_extremes_of(nnue);
+        dbg_mean_of(psqt);
+        dbg_extremes_of(psqt);
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
     if (smallNet && (nnue * psqt < 0 || std::abs(nnue) < 227))
