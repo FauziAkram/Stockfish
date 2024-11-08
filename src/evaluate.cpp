@@ -47,6 +47,9 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
+    dbg_mean_of(simpleEval);
+dbg_extremes_of(simpleEval);
+ 
     return std::abs(simpleEval) > 962;
 }
 
