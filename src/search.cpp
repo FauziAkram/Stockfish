@@ -1513,7 +1513,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     if (!PvNode && ttData.depth >= DEPTH_QS
         && ttData.value != VALUE_NONE  // Can happen when !ttHit or when access race in probe()
         && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER)))
-        return (4 * ttData.value + beta) / 5;
+        return ttData.value > beta? (4 * ttData.value + beta) / 5: ttData.value;
 
     // Step 4. Static evaluation of the position
     Value unadjustedStaticEval = VALUE_NONE;
