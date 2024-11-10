@@ -451,7 +451,7 @@ std::optional<std::string> read_file_to_string(const std::string& path) {
 }
 
 void remove_whitespace(std::string& s) {
-    s.erase(std::remove_if(s.begin(), s.end(), ::isspace), s.end());
+    s.erase(std::remove_if(s.begin(), s.end(), std::isspace), s.end());
 }
 
 bool is_whitespace(std::string_view s) {
