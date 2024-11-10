@@ -237,6 +237,7 @@ class MovePicker {
     int                          ply;
     bool                         skipQuiets = false;
     ExtMove                      moves[MAX_MOVES];
+    int                          threshold = 0;
 };
 
 }  // namespace Stockfish
