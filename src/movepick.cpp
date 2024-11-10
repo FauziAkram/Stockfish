@@ -123,6 +123,11 @@ MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceTo
 template<GenType Type>
 void MovePicker::score() {
 
+    int probCutBonus = 0;
+
+    if (Type == CAPTURES && threshold > 0)
+        probCutBonus = 384;
+
     static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
 
     [[maybe_unused]] Bitboard threatenedByPawn, threatenedByMinor, threatenedByRook,
