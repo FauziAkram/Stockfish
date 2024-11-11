@@ -802,8 +802,6 @@ Value Search::Worker::search(
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 209, 6) + depth / 3 + 5;
-
         Depth R = depth / 3;
         if (!thisThread->nmpMinPly) // more reduction on first null move, less on recursive
           R += std::min(int(eval - beta) / 209, 6) + 5;
