@@ -804,6 +804,13 @@ Value Search::Worker::search(
         // Null move dynamic reduction based on depth and eval
         Depth R = std::min(int(eval - beta) / 209, 6) + depth / 3 + 5;
 
+        Depth R = depth / 3;
+        if (!thisThread->nmpMinPly) // more reduction on first null move, less on recursive
+          R += std::min(int(eval - beta) / 209, 6) + 5;
+
+        int restore = thisThread->nmpMinPly;
+        thisThread->nmpMinPly = ss->ply + 3;
+
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
         ss->continuationCorrectionHistory = &thisThread->continuationCorrectionHistory[NO_PIECE][0];
@@ -813,6 +820,7 @@ Value Search::Worker::search(
         Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, false);
 
         pos.undo_null_move();
+        thisThread->nmpMinPly = restore;
 
         // Do not return unproven mate or TB scores
         if (nullValue >= beta && nullValue < VALUE_TB_WIN_IN_MAX_PLY)
