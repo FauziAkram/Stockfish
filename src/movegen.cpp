@@ -29,7 +29,7 @@ namespace Stockfish {
 namespace {
 
 template<GenType Type, Direction D, bool Enemy>
-ExtMove* make_promotions(ExtMove* moveList, [[maybe_unused]] Square to) {
+ExtMove* make_promotions(ExtMove* moveList, Square to) {
 
     if constexpr (Type == CAPTURES || Type == EVASIONS || Type == NON_EVASIONS) {
         *moveList++ = Move::make<PROMOTION>(to - D, to, QUEEN);
