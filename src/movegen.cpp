@@ -31,18 +31,14 @@ namespace {
 template<GenType Type, Direction D, bool Enemy>
 ExtMove* make_promotions(ExtMove* moveList, [[maybe_unused]] Square to) {
 
-    constexpr bool all = Type == EVASIONS || Type == NON_EVASIONS;
-
-    if constexpr (Type == CAPTURES || all)
+    if constexpr (Type == CAPTURES || Type == EVASIONS || Type == NON_EVASIONS) {
         *moveList++ = Move::make<PROMOTION>(to - D, to, QUEEN);
-
-    if constexpr ((Type == CAPTURES && Enemy) || (Type == QUIETS && !Enemy) || all)
-    {
-        *moveList++ = Move::make<PROMOTION>(to - D, to, ROOK);
-        *moveList++ = Move::make<PROMOTION>(to - D, to, BISHOP);
-        *moveList++ = Move::make<PROMOTION>(to - D, to, KNIGHT);
+        if constexpr (Enemy || Type == QUIETS || Type == NON_EVASIONS) {
+            *moveList++ = Move::make<PROMOTION>(to - D, to, ROOK);
+            *moveList++ = Move::make<PROMOTION>(to - D, to, BISHOP);
+            *moveList++ = Move::make<PROMOTION>(to - D, to, KNIGHT);
+        }
     }
-
     return moveList;
 }
 
