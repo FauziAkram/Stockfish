@@ -1012,7 +1012,12 @@ moves_loop:  // When in check, search starts here
                 if (!givesCheck && lmrDepth < 7 && !ss->inCheck)
                 {
                     Value futilityValue = ss->staticEval + 287 + 253 * lmrDepth
-                                        + PieceValue[capturedPiece] + captHist / 7;
+                    + PieceValue[capturedPiece] + captHist / 7;
+
+                    int attackers = popcount(pos.attackers_to(move.to_sq()));
+                    int defenders = popcount(pos.attackers_to(move.to_sq(), pos.pieces() ^ move.from_sq() ^ move.to_sq()) & pos.pieces(us));
+                    futilityValue += (defenders - attackers) * 16; 
+                  
                     if (futilityValue <= alpha)
                         continue;
                 }
