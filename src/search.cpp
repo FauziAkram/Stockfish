@@ -1016,7 +1016,7 @@ moves_loop:  // When in check, search starts here
 
                     int attackers = popcount(pos.attackers_to(move.to_sq()));
                     int defenders = popcount(pos.attackers_to(move.to_sq(), pos.pieces() ^ move.from_sq() ^ move.to_sq()) & pos.pieces(us));
-                    futilityValue += (defenders - attackers) * 16; 
+                    futilityValue += (defenders - attackers) * 64; 
                   
                     if (futilityValue <= alpha)
                         continue;
