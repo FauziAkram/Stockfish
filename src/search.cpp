@@ -1819,7 +1819,7 @@ void update_all_stats(const Position&      pos,
         if (pos.see_ge(bestMove)) {
         captureHistory[moved_piece][bestMove.to_sq()][captured] << bonus;
         } else {
-        captureHistory[moved_piece][bestMove.to_sq()][captured] << bonus / 2;
+        captureHistory[moved_piece][bestMove.to_sq()][captured] << bonus / 4;
 }
     }
 
