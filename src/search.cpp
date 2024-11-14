@@ -1817,7 +1817,7 @@ void update_all_stats(const Position&      pos,
         // Increase stats for the best move in case it was a capture move
         captured = type_of(pos.piece_on(bestMove.to_sq()));
         if (pos.see_ge(bestMove)) {
-        captureHistory[moved_piece][bestMove.to_sq()][captured] << 3 * bonus / 2;
+        captureHistory[moved_piece][bestMove.to_sq()][captured] << 2 * bonus;
         } else {
         captureHistory[moved_piece][bestMove.to_sq()][captured] << bonus;
 }
