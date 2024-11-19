@@ -444,9 +444,9 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (11 + 2 * (mainThread->bestPreviousAverageScore - bestValue)
+            double fallingEval = (12 + 2 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + (mainThread->iterValue[iterIdx] - bestValue))
-                               / 100.0;
+                               / 98.0;
             fallingEval = std::clamp(fallingEval, 0.580, 1.667);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
