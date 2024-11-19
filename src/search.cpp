@@ -442,7 +442,7 @@ void Search::Worker::iterative_deepening() {
         // Do we have time for the next iteration? Can we stop searching now?
         if (limits.use_time_management() && !threads.stop && !mainThread->stopOnPonderhit)
         {
-            bool nodesEffortHigh = rootMoves[0].effort > std::max(size_t(1), size_t(nodes));
+            bool nodesEffortHigh = rootMoves[0].effort >= std::max(size_t(1), size_t(nodes));
 
             double fallingEval = (11 + 2 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + (mainThread->iterValue[iterIdx] - bestValue))
