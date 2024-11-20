@@ -80,6 +80,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     int material = (smallNet ? 553 : 532) * pos.count<PAWN>() + pos.non_pawn_material();
     int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
+  
+    v += 8 * pos.can_castle(ANY_CASTLING);
 
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 212;
