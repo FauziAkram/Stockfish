@@ -106,7 +106,14 @@ int stat_bonus(Depth d) { return std::min(168 * d - 100, 1718); }
 int stat_malus(Depth d) { return std::min(768 * d - 257, 2351); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
-Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
+Value value_draw(const Position& pos, size_t nodes) {
+    int endgame_material = 10 * PawnValue ;
+    if (pos.non_pawn_material() > endgame_material) {
+        return VALUE_DRAW - 1 + Value(nodes & 0x2);
+    } else {
+        return VALUE_DRAW;
+    }
+}
 Value value_to_tt(Value v, int ply);
 Value value_from_tt(Value v, int ply, int r50c);
 void  update_pv(Move* pv, Move move, const Move* childPv);
