@@ -552,7 +552,7 @@ Value Search::Worker::search(
     // Check if we have an upcoming move that draws by repetition
     if (!rootNode && alpha < VALUE_DRAW && pos.upcoming_repetition(ss->ply))
     {
-        alpha = value_draw(pos, this->nodes, depth/ss->ply);
+        alpha = value_draw(pos, this->nodes, depth);
         if (alpha >= beta)
             return alpha;
     }
@@ -602,7 +602,7 @@ Value Search::Worker::search(
             return (ss->ply >= MAX_PLY && !ss->inCheck)
                    ? evaluate(networks[numaAccessToken], pos, refreshTable,
                               thisThread->optimism[us])
-                   : value_draw(pos, thisThread->nodes, depth/ss->ply);
+                   : value_draw(pos, thisThread->nodes, depth);
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply + 1), but if alpha is already bigger because
@@ -1476,7 +1476,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     // Check if we have an upcoming move that draws by repetition (~1 Elo)
     if (alpha < VALUE_DRAW && pos.upcoming_repetition(ss->ply))
     {
-        alpha = value_draw(pos, this->nodes, depth/ss->ply);
+        alpha = value_draw(pos, this->nodes, depth);
         if (alpha >= beta)
             return alpha;
     }
