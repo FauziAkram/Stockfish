@@ -106,7 +106,12 @@ int stat_bonus(Depth d) { return std::min(168 * d - 100, 1718); }
 int stat_malus(Depth d) { return std::min(768 * d - 257, 2351); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
-Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
+Value value_draw(const Position& pos, size_t nodes) {
+    int repetition_count = pos.rule50_count();
+    int random_offset = (nodes & 0x6) - 3;
+    int scaled_offset = std::min(3, repetition_count / 20) * random_offset;
+    return VALUE_DRAW + scaled_offset;
+}
 Value value_to_tt(Value v, int ply);
 Value value_from_tt(Value v, int ply, int r50c);
 void  update_pv(Move* pv, Move move, const Move* childPv);
