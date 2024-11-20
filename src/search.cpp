@@ -603,7 +603,7 @@ Value Search::Worker::search(
             return (ss->ply >= MAX_PLY && !ss->inCheck)
                    ? evaluate(networks[numaAccessToken], pos, refreshTable,
                               thisThread->optimism[us])
-                   : value_draw(thisThread->nodes);
+                   : value_draw(pos, thisThread->nodes);
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply + 1), but if alpha is already bigger because
