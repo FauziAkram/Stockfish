@@ -108,7 +108,7 @@ int stat_malus(Depth d) { return std::min(768 * d - 257, 2351); }
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Position& pos, size_t nodes) {
     int endgame_material = 10 * PawnValue ;
-    if (pos.non_pawn_material() > endgame_material) {
+    if (pos.non_pawn_material() <= endgame_material) {
         return VALUE_DRAW - 1 + Value(nodes & 0x2);
     } else {
         return VALUE_DRAW;
