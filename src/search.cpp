@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=3, xx2=20;
+TUNE(SetRange(-3, 7), xx1);
+TUNE(SetRange(1, 101), xx2);
 
 namespace TB = Tablebases;
 
@@ -106,7 +109,11 @@ int stat_bonus(Depth d) { return std::min(168 * d - 100, 1718); }
 int stat_malus(Depth d) { return std::min(768 * d - 257, 2351); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
-Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
+Value value_draw(const Position& pos, size_t nodes) {
+    int random_offset = (nodes & 0x6) - 3;
+    int scaled_offset = std::min(xx1, pos.rule50_count() / xx2) * random_offset;
+    return VALUE_DRAW + scaled_offset;
+}
 Value value_to_tt(Value v, int ply);
 Value value_from_tt(Value v, int ply, int r50c);
 void  update_pv(Move* pv, Move move, const Move* childPv);
