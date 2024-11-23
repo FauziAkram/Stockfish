@@ -107,7 +107,7 @@ int stat_malus(Depth d) { return std::min(768 * d - 257, 2351); }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
 Value value_draw(const Position& pos, size_t nodes) {
-    int scaled_offset = std::min(4, pos.rule50_count() / 21) * (nodes & 0x6) - 3;
+    int scaled_offset = std::min(4, pos.rule50_count() / 21) * (nodes & 0x8) - 4;
     return VALUE_DRAW + scaled_offset;
 }
 Value value_to_tt(Value v, int ply);
