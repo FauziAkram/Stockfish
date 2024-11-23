@@ -568,7 +568,6 @@ Value Search::Worker::search(
     bool  capture, ttCapture;
     Piece movedPiece;
 
-    ValueList<Move, 32> capturesSearched;
     ValueList<Move, 32> quietsSearched;
 
     // Step 1. Initialize node
@@ -1348,13 +1347,8 @@ moves_loop:  // When in check, search starts here
 
         // If the move is worse than some previously searched move,
         // remember it, to update its stats later.
-        if (move != bestMove && moveCount <= 32)
-        {
-            if (capture)
-                capturesSearched.push_back(move);
-            else
+        if (move != bestMove && moveCount <= 32 && !capture)
                 quietsSearched.push_back(move);
-        }
     }
 
     // Step 21. Check for mate and stalemate
@@ -1791,7 +1785,6 @@ void update_all_stats(const Position&      pos,
                       Move                 bestMove,
                       Square               prevSq,
                       ValueList<Move, 32>& quietsSearched,
-                      ValueList<Move, 32>& capturesSearched,
                       Depth                depth) {
 
     CapturePieceToHistory& captureHistory = workerThread.captureHistory;
@@ -1820,14 +1813,6 @@ void update_all_stats(const Position&      pos,
     // previous ply when it gets refuted.
     if (prevSq != SQ_NONE && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit) && !pos.captured_piece())
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -malus);
-
-    // Decrease stats for all non-best capture moves
-    for (Move move : capturesSearched)
-    {
-        moved_piece = pos.moved_piece(move);
-        captured    = type_of(pos.piece_on(move.to_sq()));
-        captureHistory[moved_piece][move.to_sq()][captured] << -malus;
-    }
 }
 
 
