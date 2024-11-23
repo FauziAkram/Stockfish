@@ -464,8 +464,7 @@ void Search::Worker::iterative_deepening() {
 
             auto elapsedTime = elapsed();
 
-            if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.739
-                && !mainThread->ponder)
+            if (completedDepth >= 10 && nodesEffort >= 97 && !mainThread->ponder)
                 threads.stop = true;
 
             // Stop the search if we have exceeded the totalTime
