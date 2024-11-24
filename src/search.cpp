@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=117, xx2=39, xx3=168, xx4=110, xx5=100, xx6=64, xx7=119;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7);
 
 namespace TB = Tablebases;
 
@@ -1380,9 +1382,10 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (117 * (depth > 5) + 39 * !allNode + 168 * ((ss - 1)->moveCount > 8)
-                     + 115 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
-                     + 119 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 83));
+        int bonus = (xx1 * (depth > 5) + xx2 * !allNode + xx3 * ((ss - 1)->moveCount > 8)
+                     + xx4 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
+                     + xx5 * (!ss->inCheck && bestValue < alpha - xx6 * depth)
+                     + xx7 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 83));
 
         // Proportional to "how much damage we have to undo"
         bonus += std::min(-(ss - 1)->statScore / 113, 300);
