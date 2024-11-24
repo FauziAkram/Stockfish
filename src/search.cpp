@@ -51,8 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=117, xx2=39, xx3=168, xx4=110, xx5=100, xx6=64, xx7=119;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7);
+int xx1=117, xx2=39, xx3=168, xx4=110, xx6=64, xx7=119;
+TUNE(xx1,xx2,xx3,xx4,xx6,xx7);
 
 namespace TB = Tablebases;
 
@@ -1383,8 +1383,7 @@ moves_loop:  // When in check, search starts here
     else if (!priorCapture && prevSq != SQ_NONE)
     {
         int bonus = (xx1 * (depth > 5) + xx2 * !allNode + xx3 * ((ss - 1)->moveCount > 8)
-                     + xx4 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
-                     + xx5 * (!ss->inCheck && bestValue < alpha - xx6 * depth)
+                     + xx4 * (!ss->inCheck && (bestValue <= ss->staticEval - 108 || bestValue < alpha - xx6 * depth))
                      + xx7 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 83));
 
         // Proportional to "how much damage we have to undo"
