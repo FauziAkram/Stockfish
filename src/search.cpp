@@ -1380,9 +1380,10 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonus = (117 * (depth > 5) + 39 * !allNode + 168 * ((ss - 1)->moveCount > 8)
-                     + 115 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
-                     + 119 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 83));
+        int bonus = (118 * (depth > 5) + 42 * !allNode + 173 * ((ss - 1)->moveCount > 8)
+                     + 105 * (!ss->inCheck && bestValue <= ss->staticEval - 108)
+                     + 110 * (!ss->inCheck && bestValue < alpha - 64 * depth)
+                     + 113 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 83));
 
         // Proportional to "how much damage we have to undo"
         bonus += std::min(-(ss - 1)->statScore / 113, 300);
