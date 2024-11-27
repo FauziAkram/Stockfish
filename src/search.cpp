@@ -51,6 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=100, xx2=200;
+TUNE(SetRange(-20, 260), xx1);
+TUNE(SetRange(-200, 600), xx2);
+
 
 namespace TB = Tablebases;
 
@@ -100,7 +104,8 @@ Value to_corrected_static_eval(Value v, const Worker& w, const Position& pos, St
 }
 
 // History and stats update bonus, based on depth
-int stat_bonus(Depth d) { return std::min(168 * d - 100, 1718); }
+int stat_bonus(Depth d, bool gives_check) { 
+    return std::min(168 * d - xx1 + (gives_check ? xx2 : 0), 1718 + xx2);
 
 // History and stats update malus, based on depth
 int stat_malus(Depth d) { return std::min(768 * d - 257, 2351); }
