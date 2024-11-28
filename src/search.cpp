@@ -51,6 +51,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=341, 	xx2=235, 	xx3=7, 	xx4=5, 	xx5=160, 	xx6=1650, 	xx7=3;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
+TUNE(SetRange(1, 11), xx7);
+
+
 
 namespace TB = Tablebases;
 
@@ -616,6 +621,7 @@ Value Search::Worker::search(
     (ss + 2)->cutoffCnt = 0;
     Square prevSq = ((ss - 1)->currentMove).is_ok() ? ((ss - 1)->currentMove).to_sq() : SQ_NONE;
     ss->statScore = 0;
+    ss->kingMoves = 0;
 
     // Step 4. Transposition table lookup
     excludedMove                   = ss->excludedMove;
@@ -805,8 +811,28 @@ Value Search::Worker::search(
     {
         assert(eval - beta >= 0);
 
-        // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 235, 7) + depth / 3 + 5;
+        // Null move depth based on depth and eval
+        Depth nmDepth = xx1 * depth / 512 - std::min(int(eval - beta) / xx2, xx3) - xx4;
+        if (abs(beta) < xx5 && pos.non_pawn_material(us) <= xx6 && nmDepth < (thisThread->rootDepth - ss->ply) / 3)
+        {
+         const Square   ksq    = pos.square<KING>(us);
+         Bitboard b = attacks_bb<KING>(ksq) & ~pos.pieces(us);
+         int kingMoves = popcount(b);
+         if (kingMoves < xx7)
+            while (b)
+                if (pos.attackers_to(pop_lsb(b), pos.pieces() ^ ksq) & pos.pieces(~us))
+                  kingMoves--;
+         if (!kingMoves)
+         {
+            b = pos.pieces(~us, PAWN);
+            while (b)
+            if (!(pawn_waytoPromotion(~us, pop_lsb(b)) & pos.pieces(us)))
+            {
+               nmDepth = (thisThread->rootDepth - ss->ply) / 3;
+               break;
+            }
+         }
+        }
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -814,7 +840,7 @@ Value Search::Worker::search(
 
         pos.do_null_move(st, tt);
 
-        Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, false);
+        Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, nmDepth, false);
 
         pos.undo_null_move();
 
@@ -828,9 +854,9 @@ Value Search::Worker::search(
 
             // Do verification search at high depths, with null move pruning disabled
             // until ply exceeds nmpMinPly.
-            thisThread->nmpMinPly = ss->ply + 3 * (depth - R) / 4;
+            thisThread->nmpMinPly = ss->ply + 3 * nmDepth / 4;
 
-            Value v = search<NonPV>(pos, ss, beta - 1, beta, depth - R, false);
+            Value v = search<NonPV>(pos, ss, beta - 1, beta, nmDepth, false);
 
             thisThread->nmpMinPly = 0;
 
@@ -982,6 +1008,7 @@ moves_loop:  // When in check, search starts here
         capture    = pos.capture_stage(move);
         movedPiece = pos.moved_piece(move);
         givesCheck = pos.gives_check(move);
+        ss->kingMoves += type_of(movedPiece) == KING;
 
         // Calculate new depth for this move
         newDepth = depth - 1;
