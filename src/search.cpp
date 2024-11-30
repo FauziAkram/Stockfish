@@ -807,7 +807,7 @@ Value Search::Worker::search(
         assert(eval - beta >= 0);
 
         // Null move depth based on depth and eval
-        Depth nmDepth = 2 * depth / 3 - std::min(int(eval - beta) / 242, 7) - 5;
+        Depth nmDepth = 2 * depth / 3 - std::min(int(eval - beta) / 242, 7) - 4;
         if (abs(beta) < 161 && pos.non_pawn_material(us) <= 1682 && nmDepth < (thisThread->rootDepth - ss->ply) / 3)
         {
          const Square   ksq    = pos.square<KING>(us);
