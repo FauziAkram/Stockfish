@@ -51,11 +51,6 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=341, 	xx2=235, 	xx3=7, 	xx4=5, 	xx5=160, 	xx6=1650, 	xx7=3;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6);
-TUNE(SetRange(1, 11), xx7);
-
-
 
 namespace TB = Tablebases;
 
@@ -812,13 +807,13 @@ Value Search::Worker::search(
         assert(eval - beta >= 0);
 
         // Null move depth based on depth and eval
-        Depth nmDepth = xx1 * depth / 512 - std::min(int(eval - beta) / xx2, xx3) - xx4;
-        if (abs(beta) < xx5 && pos.non_pawn_material(us) <= xx6 && nmDepth < (thisThread->rootDepth - ss->ply) / 3)
+        Depth nmDepth = 2 * depth / 3 - std::min(int(eval - beta) / 242, 7) - 5;
+        if (abs(beta) < 161 && pos.non_pawn_material(us) <= 1682 && nmDepth < (thisThread->rootDepth - ss->ply) / 3)
         {
          const Square   ksq    = pos.square<KING>(us);
          Bitboard b = attacks_bb<KING>(ksq) & ~pos.pieces(us);
          int kingMoves = popcount(b);
-         if (kingMoves < xx7)
+         if (kingMoves < 3)
             while (b)
                 if (pos.attackers_to(pop_lsb(b), pos.pieces() ^ ksq) & pos.pieces(~us))
                   kingMoves--;
