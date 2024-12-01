@@ -502,8 +502,8 @@ void Search::Worker::iterative_deepening() {
 void Search::Worker::clear() {
     mainHistory.fill(-64);
     lowPlyHistory.fill(64);
-    captureHistory.fill(-758);
-    pawnHistory.fill(-1158);
+    captureHistory.fill(-682);
+    pawnHistory.fill(-1078);
     pawnCorrectionHistory.fill(0);
     majorPieceCorrectionHistory.fill(0);
     minorPieceCorrectionHistory.fill(0);
@@ -518,7 +518,7 @@ void Search::Worker::clear() {
         for (StatsType c : {NoCaptures, Captures})
             for (auto& to : continuationHistory[inCheck][c])
                 for (auto& h : to)
-                    h->fill(-645);
+                    h->fill(-548);
 
     for (size_t i = 1; i < reductions.size(); ++i)
         reductions[i] = int((19.43 + std::log(size_t(options["Threads"])) / 2) * std::log(i));
