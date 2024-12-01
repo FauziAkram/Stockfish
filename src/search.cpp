@@ -1614,7 +1614,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 if (futilityValue <= alpha)
                 {
                     if (futilityValue > bestValue)
-                    bestValue = (futilityValue * 2 + bestValue) / 3);
+                    bestValue = ((futilityValue * 2 + bestValue) / 3);
                     continue;
                 }
 
