@@ -275,7 +275,7 @@ void Search::Worker::iterative_deepening() {
 
     int searchAgainCounter = 0;
 
-    lowPlyHistory.fill(0);
+    lowPlyHistory.fill(64);
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -500,8 +500,8 @@ void Search::Worker::iterative_deepening() {
 
 // Reset histories, usually before a new game
 void Search::Worker::clear() {
-    mainHistory.fill(0);
-    lowPlyHistory.fill(0);
+    mainHistory.fill(-64);
+    lowPlyHistory.fill(64);
     captureHistory.fill(-758);
     pawnHistory.fill(-1158);
     pawnCorrectionHistory.fill(0);
