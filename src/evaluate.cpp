@@ -55,7 +55,7 @@ bool Eval::use_smallnet(const Position& pos) {
 Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
                      const Position&                pos,
                      Eval::NNUE::AccumulatorCaches& caches,
-                     int                            optimism
+                     int                            optimism,
                      bool                           forceBig) {
 
     assert(!pos.checkers());
