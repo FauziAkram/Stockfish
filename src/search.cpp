@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1= 100, xx2=100, xx3=100, xx4=100, xx5=100;
+TUNE(xx1,xx2,xx3,xx4,xx5);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -456,7 +457,8 @@ void Search::Worker::iterative_deepening() {
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
             double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * recapture;
+              (xx1 * mainThread->tm.optimum() / 100) * (xx2 * fallingEval / 100) * (xx3 * reduction / 100)
+             * (xx4 * bestMoveInstability / 100) * (xx5 * recapture / 100);
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
