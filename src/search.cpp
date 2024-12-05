@@ -52,7 +52,8 @@
 
 namespace Stockfish {
 
-double evalGroup[10] = {1.043, 1.017, 0.952, 1.009, 0.971, 1.000, 0.992, 0.947, 1.046, 1.000};
+static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
+                                         0.942, 0.933, 0.890, 0.984, 0.941};
 
 namespace TB = Tablebases;
 
@@ -455,11 +456,11 @@ void Search::Worker::iterative_deepening() {
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            int eg = std::clamp((bestValue + 750) / 150, 0, 9);
+            int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
             double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * recapture * evalGroup[eg];
+              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * recapture * EvalLevel[el];
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
