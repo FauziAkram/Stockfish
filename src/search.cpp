@@ -1330,6 +1330,9 @@ moves_loop:  // When in check, search starts here
 
                 if (value >= beta)
                 {
+                  dbg_mean_of(extension);
+                  dbg_extremes_of(extension);
+
                     ss->cutoffCnt += !ttData.move + (extension < 2);
                     assert(value >= beta);  // Fail high
                     break;
