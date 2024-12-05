@@ -1328,7 +1328,7 @@ moves_loop:  // When in check, search starts here
                 if (PvNode && !rootNode)  // Update pv even in fail-high case
                     update_pv(ss->pv, move, (ss + 1)->pv);
 
-                if (value >= beta)
+                if (value >= beta && extension < 3)
                 {
                     ss->cutoffCnt += !ttData.move + (extension < 2);
                     assert(value >= beta);  // Fail high
