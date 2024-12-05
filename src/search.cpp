@@ -1330,7 +1330,7 @@ moves_loop:  // When in check, search starts here
 
                 if (value >= beta)
                 {
-                    ss->cutoffCnt += !ttData.move + (extension < 2) + (r > 8000);
+                    ss->cutoffCnt += !ttData.move + (extension < 2) - (r > 8000);
                     assert(value >= beta);  // Fail high
                     break;
                 }
