@@ -1131,7 +1131,7 @@ moves_loop:  // When in check, search starts here
                 extension = 1;
               
             else if ((ss - 1)->currentMove == Move::null()
-                     && abs(ss->staticEval - (ss - 1)->staticEval) > 870)
+                     && abs(ss->staticEval - (ss - 1)->staticEval) > 930)
                 extension = 1;
         }
 
