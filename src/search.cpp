@@ -65,6 +65,9 @@ using namespace Search;
 
 namespace {
 
+static Move ponderMove;
+static bool ponderMatch;
+
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
     Value futilityMult       = 109 - 27 * noTtCutNode;
@@ -158,6 +161,7 @@ void Search::Worker::start_searching() {
     main_manager()->tm.init(limits, rootPos.side_to_move(), rootPos.game_ply(), options,
                             main_manager()->originalTimeAdjust);
     tt.new_search();
+    ponderMatch = ponderMove != Move::none() && ponderMove == limits.prevMove;
 
     if (rootMoves.empty())
     {
@@ -211,7 +215,10 @@ void Search::Worker::start_searching() {
 
     if (bestThread->rootMoves[0].pv.size() > 1
         || bestThread->rootMoves[0].extract_ponder_from_tt(tt, rootPos))
-        ponder = UCIEngine::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
+    {
+        ponderMove = bestThread->rootMoves[0].pv[1];
+        ponder = UCIEngine::move(ponderMove, rootPos.is_chess960());
+    }
 
     auto bestmove = UCIEngine::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
     main_manager()->updates.onBestmove(bestmove, ponder);
@@ -454,9 +461,10 @@ void Search::Worker::iterative_deepening() {
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
+            double matched             = ponderMatch ? 0.916 : 1.038;
 
             double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * recapture;
+              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * recapture * matched;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
