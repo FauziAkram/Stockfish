@@ -457,7 +457,7 @@ void Search::Worker::iterative_deepening() {
 
             double totalTime =
               mainThread->tm.optimum() * (88 * fallingEval / 100) * reduction
-             * (95 * bestMoveInstability / 100) * (119 * recapture / 100);
+             * bestMoveInstability * (119 * recapture / 100);
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
