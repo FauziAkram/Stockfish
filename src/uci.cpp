@@ -52,6 +52,8 @@ struct overload: Ts... {
 template<typename... Ts>
 overload(Ts...) -> overload<Ts...>;
 
+static Move prevMove;
+
 void UCIEngine::print_info_string(std::string_view str) {
     sync_cout_start();
     for (auto& line : split(str, "\n"))
@@ -220,6 +222,7 @@ Search::LimitsType UCIEngine::parse_limits(std::istream& is) {
 void UCIEngine::go(std::istringstream& is) {
 
     Search::LimitsType limits = parse_limits(is);
+    limits.prevMove = prevMove;
 
     if (limits.perft)
         perft(limits);
@@ -474,6 +477,7 @@ std::uint64_t UCIEngine::perft(const Search::LimitsType& limits) {
 void UCIEngine::position(std::istringstream& is) {
     std::string token, fen;
 
+    prevMove = Move::none();
     is >> token;
 
     if (token == "startpos")
@@ -494,7 +498,7 @@ void UCIEngine::position(std::istringstream& is) {
         moves.push_back(token);
     }
 
-    engine.set_position(fen, moves);
+    prevMove = engine.set_position(fen, moves);
 }
 
 namespace {
