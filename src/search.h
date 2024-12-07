@@ -127,6 +127,7 @@ struct LimitsType {
     uint64_t                 nodes;
     bool                     ponderMode;
     Square                   capSq;
+    Move                     prevMove;
 };
 
 
