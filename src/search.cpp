@@ -847,7 +847,7 @@ Value Search::Worker::search(
 
     // For cutNodes, if depth is high enough, decrease depth by 2 if there is no ttMove,
     // or by 1 if there is a ttMove with an upper bound.
-    else if (cutNode && depth >= 7)
+    else if (cutNode && depth >= 7 && ttData.bound == BOUND_UPPER)
         depth -= 2;
     }
     else if (ttData.depth <= depth - 6)
