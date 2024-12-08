@@ -850,7 +850,7 @@ Value Search::Worker::search(
     else if (cutNode && depth >= 7)
         depth -= 2;
     }
-    else if (ttData.depth <= depth - 7)
+    else if (ttData.depth <= depth - 6)
         depth--;
     if (depth <= 0)
         return qsearch < PvNode ? PV : NonPV > (pos, ss, alpha, beta);
