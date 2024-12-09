@@ -673,6 +673,7 @@ class FeatureTransformer {
 
         Square                ksq   = pos.square<KING>(Perspective);
         auto&                 entry = (*cache)[ksq][Perspective];
+        int                   gain  = FeatureSet::refresh_cost(pos);
         FeatureSet::IndexList removed, added;
 
         for (Color c : {WHITE, BLACK})
@@ -689,13 +690,23 @@ class FeatureTransformer {
                 {
                     Square sq = pop_lsb(toRemove);
                     removed.push_back(FeatureSet::make_index<Perspective>(sq, piece, ksq));
+                    gain--;
                 }
                 while (toAdd)
                 {
                     Square sq = pop_lsb(toAdd);
                     added.push_back(FeatureSet::make_index<Perspective>(sq, piece, ksq));
+                    gain--;
                 }
             }
+        }
+
+        if (gain < 0)
+        {
+            added   = {};
+            removed = {};
+            entry.clear(biases);
+            FeatureSet::append_active_indices<Perspective>(pos, added);
         }
 
         auto& accumulator                 = pos.state()->*accPtr;
