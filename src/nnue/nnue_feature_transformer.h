@@ -671,6 +671,7 @@ class FeatureTransformer {
                                           AccumulatorCaches::Cache<HalfDimensions>* cache) const {
         assert(cache != nullptr);
 
+        int                   gain  = FeatureSet::refresh_cost(pos);
         Square                ksq   = pos.square<KING>(Perspective);
         auto&                 entry = (*cache)[ksq][Perspective];
         FeatureSet::IndexList removed, added;
@@ -704,7 +705,6 @@ class FeatureTransformer {
 
 
         auto& accumulator                 = pos.state()->*accPtr;
-        int   gain                        = FeatureSet::refresh_cost(pos);
         accumulator.computed[Perspective] = true;
 
 #ifdef VECTOR
