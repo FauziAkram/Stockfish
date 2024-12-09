@@ -1119,15 +1119,14 @@ bool Position::see_ge(Move m, int threshold) const {
 
         // Don't allow pinned pieces to attack as long as there are
         // pinners on their original square.
-        if (pinners(~stm) & occupied)
-        {
-            stmAttackers &= ~blockers_for_king(stm);
+      
+        stmAttackers &= pieces(stm);
 
             if (!stmAttackers)
                 break;
-        }
-
+      
         res ^= 1;
+    }
 
         // Locate and remove the next least valuable attacker, and add to
         // the bitboard 'attackers' any X-ray attackers behind it.
