@@ -701,7 +701,7 @@ class FeatureTransformer {
             }
         }
 
-        if (gain < 0)
+        if (gain < 2)
         {
             added   = {};
             removed = {};
