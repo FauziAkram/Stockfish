@@ -1007,6 +1007,9 @@ moves_loop:  // When in check, search starts here
                 // Futility pruning for captures (~2 Elo)
                 if (!givesCheck && lmrDepth < 7 && !ss->inCheck)
                 {
+                  dbg_mean_of(mp.stage);
+                  dbg_extremes_of(mp.stage);
+
                     Value futilityValue = ss->staticEval + 287 + 253 * lmrDepth
                                         + PieceValue[capturedPiece] + captHist / 7;
                     if (futilityValue <= alpha)
