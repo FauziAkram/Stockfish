@@ -51,6 +51,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=110, xx2=20, xx3=10, xx4=30, xx5=580, xx6=1667;
+TUNE(SetRange(0, 320), xx1);
+TUNE(SetRange(0, 60), xx2,xx3,xx4);
+TUNE(SetRange(0, 1400), xx5);
+TUNE(SetRange(1000, 2400), xx6);
 
 namespace TB = Tablebases;
 
@@ -444,10 +449,10 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (11 + 2 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + (mainThread->iterValue[iterIdx] - bestValue))
-                               / 100.0;
-            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+            double fallingEval = (xx1 + xx2 * mainThread->bestPreviousAverageScore - bestValue
+                                  + xx3 * mainThread->iterValue[iterIdx] - xx4 * bestValue)
+                               / 1024.0;
+            fallingEval = std::clamp(fallingEval, xx5/1000.0, xx6/1000.0);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
