@@ -689,16 +689,22 @@ class FeatureTransformer {
                 {
                     Square sq = pop_lsb(toRemove);
                     removed.push_back(FeatureSet::make_index<Perspective>(sq, piece, ksq));
+                    gain--;
                 }
                 while (toAdd)
                 {
                     Square sq = pop_lsb(toAdd);
                     added.push_back(FeatureSet::make_index<Perspective>(sq, piece, ksq));
+                    gain--;
                 }
             }
         }
+      dbg_mean_of(gain);
+      dbg_extremes_of(gain);
+
 
         auto& accumulator                 = pos.state()->*accPtr;
+        int   gain                        = FeatureSet::refresh_cost(pos);
         accumulator.computed[Perspective] = true;
 
 #ifdef VECTOR
