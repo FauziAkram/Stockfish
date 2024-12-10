@@ -1337,7 +1337,7 @@ moves_loop:  // When in check, search starts here
                 {
                     // Reduce other moves if we have found at least one score improvement (~2 Elo)
                     if (depth > 2 && depth < 14 && !is_decisive(value))
-                        depth -= 1 + (depth < 10);
+                        depth -= 1 + (depth < 6);
 
                     assert(depth > 0);
                     alpha = value;  // Update alpha! Always alpha < beta
