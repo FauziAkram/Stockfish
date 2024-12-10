@@ -444,16 +444,16 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (11 + 2 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + (mainThread->iterValue[iterIdx] - bestValue))
-                               / 100.0;
-            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+            double fallingEval = (105 + 22 * mainThread->bestPreviousAverageScore
+                                  + 11 * mainThread->iterValue[iterIdx] - 33 * bestValue)
+                               / 1024.0;
+            fallingEval = std::clamp(fallingEval, 0.633, 1.6);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
-            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
-            double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.5 : 0.667;
+            double reduction = (1.38 + mainThread->previousTimeReduction) / (2.52 * timeReduction);
+            double bestMoveInstability = 1 + 1.92 * totBestMoveChanges / threads.size();
+            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.935 : 0.96;
 
             double totalTime =
               mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * recapture;
@@ -464,7 +464,7 @@ void Search::Worker::iterative_deepening() {
 
             auto elapsedTime = elapsed();
 
-            if (completedDepth >= 10 && nodesEffort >= 97 && elapsedTime > totalTime * 0.739
+            if (completedDepth >= 10 && nodesEffort >= 87 && elapsedTime > totalTime * 0.732
                 && !mainThread->ponder)
                 threads.stop = true;
 
@@ -479,7 +479,7 @@ void Search::Worker::iterative_deepening() {
                     threads.stop = true;
             }
             else
-                threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * 0.506;
+                threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * 0.458;
         }
 
         mainThread->iterValue[iterIdx] = bestValue;
