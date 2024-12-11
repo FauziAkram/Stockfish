@@ -308,7 +308,11 @@ top:
         return select([]() { return true; });
 
     case PROBCUT :
+        dbg_mean_of(threshold);
+dbg_extremes_of(threshold);
+
         return select([&]() { return pos.see_ge(*cur, threshold); });
+      
     }
 
     assert(false);
