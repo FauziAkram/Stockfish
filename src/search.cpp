@@ -372,7 +372,7 @@ void Search::Worker::iterative_deepening() {
 
                     diff = bestValue - delta
                     if (diff > alpha)
-                    alpha = std::max((alpha + diff) / 2, -VALUE_INFINITE);
+                    alpha = std::max((3 * alpha + diff) / 4, -VALUE_INFINITE);
                 }
                 else
                     break;
