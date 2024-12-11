@@ -370,7 +370,7 @@ void Search::Worker::iterative_deepening() {
                     beta = std::min(bestValue + delta, VALUE_INFINITE);
                     ++failedHighCnt;
 
-                    diff = bestValue - delta
+                    diff = bestValue - delta;
                     if (diff > alpha)
                     alpha = std::max((alpha + diff) / 2, -VALUE_INFINITE);
                 }
