@@ -367,8 +367,8 @@ void Search::Worker::iterative_deepening() {
                 }
                 else if (bestValue >= beta)
                 {
-                    dbg_mean_of(beta);
-dbg_extremes_of(beta);
+                    dbg_mean_of(bestValue);
+dbg_extremes_of(bestValue);
 
                     beta = std::min(bestValue + delta, VALUE_INFINITE);
                     ++failedHighCnt;
