@@ -1355,14 +1355,11 @@ moves_loop:  // When in check, search starts here
                 quietsSearched.push_back(move);
         }
 
-        // Step 21. Update history heuristics for quiet moves
-        if (!capture && move == bestMove) {
-            // This is the best move, give a larger bonus for deeper depths
+        // Update history heuristics for quiet moves
+        if (!capture && move == bestMove)
             update_quiet_histories(pos, ss, *this, move, stat_bonus(depth));
-        } else if (!capture) {
-            // This is a quiet move that did not cause a beta cutoff, penalize it
+        else if (!capture)
             update_quiet_histories(pos, ss, *this, move, -stat_malus(depth));
-        }
     }
 
     // Step 21. Check for mate and stalemate
