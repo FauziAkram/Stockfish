@@ -1108,8 +1108,6 @@ bool Position::see_ge(Move m, int threshold, bool considerPins) const {
     Bitboard stmAttackers, bb;
     int      res = 1;
 
-    // If after we remove the attacker from to we have more attackers,
-    // then we are winning material.
     if (considerPins && !(attackers_to(to, occupied ^ to) & pieces(~stm)))
         return true;
 
