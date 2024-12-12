@@ -841,7 +841,7 @@ Value Search::Worker::search(
     // Step 10. Internal iterative reductions (~9 Elo)
     // For PV nodes without a ttMove, we decrease depth.
     if (PvNode && !ttData.move)
-        depth -= 3 + (thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] > 256);
+        depth -= 3 + (thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] > 512);
 
     // Use qsearch if depth <= 0
     if (depth <= 0)
