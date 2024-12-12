@@ -1083,7 +1083,7 @@ Key Position::key_after(Move m) const {
 // Tests if the SEE (Static Exchange Evaluation)
 // value of move is greater or equal to the given threshold. We'll use an
 // algorithm similar to alpha-beta pruning with a null window.
-bool Position::see_ge(Move m, int threshold) const {
+bool Position::see_ge(Move m, int threshold, bool considerPins) const {
 
     assert(m.is_ok());
 
@@ -1102,11 +1102,16 @@ bool Position::see_ge(Move m, int threshold) const {
         return true;
 
     assert(color_of(piece_on(from)) == sideToMove);
-    Bitboard occupied  = pieces() ^ from ^ to;  // xoring to is important for pinned piece logic
+    Bitboard occupied  = pieces() ^ from;
     Color    stm       = sideToMove;
     Bitboard attackers = attackers_to(to, occupied);
     Bitboard stmAttackers, bb;
     int      res = 1;
+
+    // If after we remove the attacker from to we have more attackers,
+    // then we are winning material.
+    if (considerPins && !(attackers_to(to, occupied ^ to) & pieces(~stm)))
+        return true;
 
     while (true)
     {
@@ -1119,7 +1124,7 @@ bool Position::see_ge(Move m, int threshold) const {
 
         // Don't allow pinned pieces to attack as long as there are
         // pinners on their original square.
-        if (pinners(~stm) & occupied)
+        if (considerPins && pinners(~stm) & occupied)
         {
             stmAttackers &= ~blockers_for_king(stm);
 
