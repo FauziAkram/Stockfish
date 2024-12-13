@@ -52,7 +52,11 @@
 
 namespace Stockfish {
 int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0;
+int zz1=-900, zz2=-900, zz3=-900, zz4=-900, zz=-900;
+int yy1=900, yy2=900, yy3=900, yy4=900, yy5=900;
 TUNE(SetRange(-64, 64), xx1, xx2, xx3, xx4, xx5);
+TUNE(SetRange(-1024, 1024), zz1, zz2, zz3, zz4, zz5);
+TUNE(SetRange(-1024, 1024), yy1, yy2, yy3, yy4, yy5);
 
 namespace TB = Tablebases;
 
@@ -1171,11 +1175,11 @@ moves_loop:  // When in check, search starts here
         if (ttCapture && !capture)
             r += 1043 + (depth < 8) * 999;
 
-        r += xx1 * thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)]
-+ xx2 * thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)]
-+ xx3 * thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)]
-+ xx4 * thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)]
-+ xx5 * thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)];
+        r += xx1 * (std::clamp(thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)]),zz1,yy1)
++ xx2 * (std::clamp(thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)],zz2,yy2)
++ xx3 * (std::clamp(thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)],zz3,yy3)
++ xx4 * (std::clamp(thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)],zz4,yy4)
++ xx5 * (std::clamp(thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)],zz5,yy5);
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
