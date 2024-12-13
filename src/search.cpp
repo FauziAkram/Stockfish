@@ -52,7 +52,15 @@
 
 namespace Stockfish {
 int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0;
-TUNE(SetRange(-64, 64), xx1, xx2, xx3, xx4, xx5);
+int zz1=0, zz2=0, zz3=0, zz4=0, zz5=0;
+int yy1=0, yy2=0, yy3=0, yy4=0, yy5=0;
+int ww1=0, ww2=0, ww3=0, ww4=0, ww5=0;
+int vv1=0, vv2=0, vv3=0, vv4=0, vv5=0;
+TUNE(SetRange(-5000, 5000), xx1, xx2, xx3, xx4, xx5);
+TUNE(SetRange(-5000, 5000), yy1, yy2, yy3, yy4, yy5);
+TUNE(SetRange(-5000, 5000), zz1, zz2, zz3, zz4, zz5);
+TUNE(SetRange(-5000, 5000), ww1, ww2, ww3, ww4, ww5);
+TUNE(SetRange(-5000, 5000), vv1, vv2, vv3, vv4, vv5);
 
 namespace TB = Tablebases;
 
@@ -1171,11 +1179,26 @@ moves_loop:  // When in check, search starts here
         if (ttCapture && !capture)
             r += 1043 + (depth < 8) * 999;
 
-        r += xx1 * thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)]
-+ xx2 * thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)]
-+ xx3 * thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)]
-+ xx4 * thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)]
-+ xx5 * thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)];
+        r += xx1 * (thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)] < -500)
++ xx2 * (thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)] < 0)
++ xx3 * (thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)] > 0)
++ xx3 * (thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)] > 500)
+          + zz1 * thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] < -500)
++ zz2 * thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] < 0)
++ zz3 * thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] > 0)
++ zz3 * (thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] > 500)
+          + yy1 * thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] < -500)
++ yy2 * thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] < 0)
++ yy3 * thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] > 0)
++ yy3 * thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] > 500)
+           + ww1 * thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)] < -500)
++ ww2 * thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)] < 0)
++ ww3 * thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)] > 0)
++ ww3 * thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)] > 500)
+          + vv1 * thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)] < -500)
++ vv2 * thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)] < 0)
++ vv3 * thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)] > 0)
++ vv3 * thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)] > 500);
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
