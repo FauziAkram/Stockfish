@@ -1170,8 +1170,8 @@ moves_loop:  // When in check, search starts here
             r += 1043 + (depth < 8) * 999;
             }
 
-            r += 4 * (std::clamp(static_cast<int>(thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)]),-773,798))
-            r += 3 * (std::clamp(static_cast<int>(thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)]),-822,770))
+            r += std::clamp(4 * thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)],-3092,3192);
+            r += std::clamp(3 * thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)],-2466,2310);
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
