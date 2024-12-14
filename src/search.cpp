@@ -1166,8 +1166,9 @@ moves_loop:  // When in check, search starts here
             r += 2518 - (ttData.depth >= depth && ss->ttPv) * 991;
 
         // Increase reduction if ttMove is a capture but the current move is not a capture (~3 Elo)
-        if (ttCapture && !capture)
+        if (ttCapture && !capture) {
             r += 1043 + (depth < 8) * 999;
+            }
 
             r += 5 * thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)];
             r += 4 * thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)];
