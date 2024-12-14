@@ -1169,6 +1169,27 @@ moves_loop:  // When in check, search starts here
         if (ttCapture && !capture)
             r += 1043 + (depth < 8) * 999;
 
+        r += -424 * (thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)] < -500)
++ 214 * (thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)] < 0)
+- 173 * (thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)] > 0)
+- 723 * (thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)] > 500)
+          - 214 * (thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] < -500)
++ 132 * (thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] < 0)
++ 127 * (thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] > 0)
+- 312 * (thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] > 500)
+          - 352 * (thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] < -500)
++ 207 * (thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] < 0)
+- 69 * (thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] > 0)
+- 34 * (thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] > 500)
+           - 50 * (thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)] < -500)
++ 323 * (thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)] < 0)
++ 252 * (thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)] > 0)
+- 121 * (thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)] > 500)
+          - 322 * (thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)] < -500)
+- 328 * (thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)] < 0)
++ 78 * (thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)] > 0)
+- 592 * (thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)] > 500);
+
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
             r += 938 + allNode * 960;
