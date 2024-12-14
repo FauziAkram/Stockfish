@@ -1169,6 +1169,9 @@ moves_loop:  // When in check, search starts here
         if (ttCapture && !capture)
             r += 1043 + (depth < 8) * 999;
 
+            r += 5 * thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)];
+            r += 4 * thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)];
+
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
             r += 938 + allNode * 960;
