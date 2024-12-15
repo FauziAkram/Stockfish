@@ -36,6 +36,7 @@ namespace Eval {
 #define EvalFileDefaultNameBig "nn-1c0000000000.nnue"
 #define EvalFileDefaultNameSmall "nn-37f18f62d772.nnue"
 
+// Material imbalance table declaration
 extern int imbalance[COLOR_NB][COLOR_NB][PIECE_TYPE_NB];
 
 namespace NNUE {
