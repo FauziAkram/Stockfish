@@ -36,6 +36,8 @@ namespace Eval {
 #define EvalFileDefaultNameBig "nn-1c0000000000.nnue"
 #define EvalFileDefaultNameSmall "nn-37f18f62d772.nnue"
 
+extern int imbalance[COLOR_NB][COLOR_NB][PIECE_TYPE_NB];
+
 namespace NNUE {
 struct Networks;
 struct AccumulatorCaches;
@@ -49,6 +51,9 @@ Value evaluate(const NNUE::Networks&          networks,
                const Position&                pos,
                Eval::NNUE::AccumulatorCaches& caches,
                int                            optimism);
+
+Value evaluate_imbalance(const Position& pos);
+
 }  // namespace Eval
 
 }  // namespace Stockfish
