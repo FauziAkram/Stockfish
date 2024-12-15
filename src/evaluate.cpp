@@ -50,7 +50,7 @@ int Eval::imbalance[COLOR_NB][COLOR_NB][PIECE_TYPE_NB] =
     },
     {   // us == BLACK
         {   // them == WHITE
-             0,  -4,  16,  -5,  -26, // Pawn, Knight, Bishop, Rook, Queen
+            0,  -4,  16,  -5,  -26, // Pawn, Knight, Bishop, Rook, Queen
         },
         {   // them == BLACK
             0,  0,  0,  0,  0,  // unused
@@ -81,10 +81,11 @@ Value Eval::evaluate_imbalance(const Position& pos) {
     }
 
     return v;
+}
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
-Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
+Value evaluate(const Eval::NNUE::Networks&    networks,
                      const Position&                pos,
                      Eval::NNUE::AccumulatorCaches& caches,
                      int                            optimism) {
@@ -128,7 +129,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 // a string (suitable for outputting to stdout) that contains the detailed
 // descriptions and values of each evaluation term. Useful for debugging.
 // Trace scores are from white's point of view
-std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks) {
+std::string trace(Position& pos, const Eval::NNUE::Networks& networks) {
 
     if (pos.checkers())
         return "Final evaluation: none (in check)";
