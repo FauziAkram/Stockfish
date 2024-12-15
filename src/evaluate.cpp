@@ -75,8 +75,8 @@ Value Eval::evaluate_imbalance(const Position& pos) {
     Value v = VALUE_ZERO;
 
     for (PieceType pt : {PAWN, KNIGHT, BISHOP, ROOK, QUEEN}) {
-        int us   = pos.count(make_piece(pos.side_to_move(), pt));
-        int them = pos.count(make_piece(~pos.side_to_move(), pt));
+        int us   = pos.count<PAWN>(pos.side_to_move());
+        int them = pos.count<PAWN>(~pos.side_to_move());
         v += imbalance[pos.side_to_move()][~pos.side_to_move()][pt] * (us - them);
     }
 
