@@ -1169,7 +1169,7 @@ moves_loop:  // When in check, search starts here
         if (ttCapture && !capture)
             r += 1043 + (depth < 8) * 999;
 
-        if (std::abs((thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)]) >= 512)
+        if (std::abs(thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)] >= 512))
             r -= 1024;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
