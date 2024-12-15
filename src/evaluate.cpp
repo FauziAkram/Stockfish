@@ -37,7 +37,26 @@
 
 namespace Stockfish {
 
-int Eval::imbalance[COLOR_NB][COLOR_NB][PIECE_TYPE_NB] = {};
+// Material imbalance table definition and initialization
+int Eval::imbalance[COLOR_NB][COLOR_NB][PIECE_TYPE_NB] =
+{
+    {   // us == WHITE
+        {   // them == WHITE
+            0,  0,  0,  0,  0, // unused
+        },
+        {   // them == BLACK
+            0,  4,  -16,  5,  26,  // Pawn, Knight, Bishop, Rook, Queen
+        },
+    },
+    {   // us == BLACK
+        {   // them == WHITE
+             0,  -4,  16,  -5,  -26, // Pawn, Knight, Bishop, Rook, Queen
+        },
+        {   // them == BLACK
+            0,  0,  0,  0,  0,  // unused
+        },
+    }
+};
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
