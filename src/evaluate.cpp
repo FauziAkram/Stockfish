@@ -37,6 +37,8 @@
 
 namespace Stockfish {
 
+int Eval::imbalance[COLOR_NB][COLOR_NB][PIECE_TYPE_NB] = {};
+
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -49,6 +51,17 @@ bool Eval::use_smallnet(const Position& pos) {
     int simpleEval = simple_eval(pos, pos.side_to_move());
     return std::abs(simpleEval) > 962;
 }
+
+Value Eval::evaluate_imbalance(const Position& pos) {
+    Value v = VALUE_ZERO;
+
+    for (PieceType pt : {PAWN, KNIGHT, BISHOP, ROOK, QUEEN}) {
+        int us   = pos.count(make_piece(pos.side_to_move(), pt));
+        int them = pos.count(make_piece(~pos.side_to_move(), pt));
+        v += imbalance[pos.side_to_move()][~pos.side_to_move()][pt] * (us - them);
+    }
+
+    return v;
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
@@ -80,6 +93,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     int material = (smallNet ? 553 : 532) * pos.count<PAWN>() + pos.non_pawn_material();
     int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
+
+    v += evaluate_imbalance(pos);
 
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 212;
