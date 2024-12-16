@@ -1444,7 +1444,7 @@ moves_loop:  // When in check, search starts here
         thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] << bonus * 162 / 128;
         thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] << bonus * 148 / 128;
         thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)]
-          << bonus * nonPawnWeight / 128;
+          << bonus;
         thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)]
           << bonus * nonPawnWeight / 128;
 
