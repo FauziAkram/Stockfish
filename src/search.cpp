@@ -51,6 +51,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=21, xx2=421, xx3=16, xx4=2048;
+TUNE(SetRange(0, 48), xx1);
+TUNE(SetRange(0, 900), xx2);
+TUNE(SetRange(-16, 40), xx3);
+TUNE(SetRange(1, 8000), xx4);
+
 
 namespace TB = Tablebases;
 
@@ -799,7 +805,7 @@ Value Search::Worker::search(
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (cutNode && (ss - 1)->currentMove != Move::null() && eval >= beta
-        && ss->staticEval >= beta - 21 * depth + 421 && !excludedMove && pos.non_pawn_material(us)
+        && ss->staticEval >= beta - xx1 * depth + xx2 - xx3 * improving + (ss - 1)->statScore / xx4 && !excludedMove && pos.non_pawn_material(us)
         && ss->ply >= thisThread->nmpMinPly && !is_loss(beta))
     {
         assert(eval - beta >= 0);
