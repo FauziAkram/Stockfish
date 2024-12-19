@@ -22,6 +22,7 @@
 #include <cstdint>
 
 #include "misc.h"
+#include "position.h"
 #include "types.h"
 
 namespace Stockfish {
@@ -31,6 +32,8 @@ class OptionsMap;
 namespace Search {
 struct LimitsType;
 }
+
+class Position;
 
 // The TimeManagement class computes the optimal time to think depending on
 // the maximum available time, the game move number, and other parameters.
