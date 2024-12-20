@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=112, xx2=136, xx3=159, xx4=124;
+TUNE(xx1,xx2,xx3,xx4);
 
 namespace TB = Tablebases;
 
@@ -1840,7 +1842,7 @@ void update_all_stats(const Position&      pos,
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
-    bonus = bonus * 50 / 64;
+    bonus = bonus * (xx1 * ss->ply + xx2) / (xx3 * ss->ply + xx4);
 
     for (int i : {1, 2, 3, 4, 6})
     {
