@@ -27,6 +27,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=50, xx2=20, xx3=20, xx4=1000, xx4b=500, xx5=88, xx6=1164,
+    xx7=88, xx8=63, xx9=150, xx10=110;
+TUNE(xx1,xx2,xx3,xx4,xx4b,xx5,xx6,xx7,xx8,xx9,xx10);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
@@ -91,9 +94,9 @@ void TimeManagement::init(Search::LimitsType& limits,
         mtg += xx2 - std::min(ply, xx3)
 
     // If less than one second, gradually reduce mtg
-    if (scaledTime < xx4 && double(mtg) / scaledInc > (xx4 / 10000.0))
+    if (scaledTime < xx4 && double(mtg) / scaledInc > (xx4b / 10000.0))
     {
-        mtg = scaledTime * (xx4 / 10000.0);
+        mtg = scaledTime * (xx4b / 10000.0);
     }
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
