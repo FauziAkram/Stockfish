@@ -1860,7 +1860,7 @@ void update_quiet_histories(
 
     Color us = pos.side_to_move();
 
-    int materialCount = pos.count<PAWN>() + pos.non_pawn_material();
+    int materialCount = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
   dbg_mean_of(materialCount);
 dbg_extremes_of(materialCount);
 
