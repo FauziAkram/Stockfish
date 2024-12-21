@@ -1866,14 +1866,14 @@ void update_quiet_histories(
   
     int scaledBonus = (bonus * scale) / 64;
   
-    workerThread.mainHistory[us][move.from_to()] << bonus;
+    workerThread.mainHistory[us][move.from_to()] << scaledBonus;
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus;
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << scaledBonus;
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus);
+    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), scaledBonus);
 
     int pIndex = pawn_structure_index(pos);
-    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus / 2;
+    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << scaledBonus / 2;
 }
 
 }
