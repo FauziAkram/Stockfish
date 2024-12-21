@@ -51,6 +51,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+const int scalingTable[] = {64, 65, 66, 68, 71, 77, 83, 90, 98, 105, 112, 119, 125};
 
 namespace TB = Tablebases;
 
@@ -1859,15 +1860,9 @@ void update_quiet_histories(
 
     Color us = pos.side_to_move();
 
-    int materialCount = pos.count<PAWN>() + 3 * pos.count<KNIGHT>() + 3 * pos.count<BISHOP>()
-                      + 5 * pos.count<ROOK>() + 9 * pos.count<QUEEN>();
-
-    int scale = 64;
-    if (materialCount > 60) scale = 78;
-    else if (materialCount > 50) scale = 72;
-    else if (materialCount > 40) scale = 69;
-    else if (materialCount > 30) scale = 66;
-
+    int materialCount = pos.count<PAWN>() + pos.non_pawn_material();
+    int scale = scalingTable[std::min(materialCount / 6, (int)(std::size(scalingTable) - 1))];
+  
     int scaledBonus = (bonus * scale) / 64;
   
     workerThread.mainHistory[us][move.from_to()] << bonus;
