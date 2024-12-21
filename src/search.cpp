@@ -1861,6 +1861,9 @@ void update_quiet_histories(
     Color us = pos.side_to_move();
 
     int materialCount = pos.count<PAWN>() + pos.non_pawn_material();
+  dbg_mean_of(materialCount);
+dbg_extremes_of(materialCount);
+
     int scale = scalingTable[std::min(materialCount / 6, (int)(std::size(scalingTable) - 1))];
   
     int scaledBonus = (bonus * scale) / 64;
