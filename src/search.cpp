@@ -1055,7 +1055,7 @@ moves_loop:  // When in check, search starts here
 
         // Step 15. Extensions (~100 Elo)
         // We take care to not overdo to avoid search getting stuck.
-        if (ss->ply < thisThread->rootDepth * 2)
+        if (ss->ply < thisThread->rootDepth * 2 || (thisThread->rootDepth >= 10))
         {
             // Singular extension search (~76 Elo, ~170 nElo). If all moves but one
             // fail low on a search of (alpha-s, beta-s), and just one fails high on
@@ -1241,7 +1241,7 @@ moves_loop:  // When in check, search starts here
             (ss + 1)->pv[0] = Move::none();
 
             // Extend move from transposition table if we are about to dive into qsearch.
-            if (move == ttData.move && ss->ply <= thisThread->rootDepth * 2)
+            if (move == ttData.move && (ss->ply <= thisThread->rootDepth * 2 || thisThread->rootDepth >= 10))
                 newDepth = std::max(newDepth, 1);
 
             value = -search<PV>(pos, ss + 1, -beta, -alpha, newDepth, false);
