@@ -89,6 +89,7 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     // Maximum move horizon
     int mtg = limits.movestogo ? std::min(limits.movestogo, 56) : 56;
+       mtg += 21 - std::min(ply, 21);
 
     // If less than one second, gradually reduce mtg
     if (scaledTime < 1077 && double(mtg) / scaledInc > 0.052)
