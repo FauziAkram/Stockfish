@@ -52,8 +52,9 @@
 
 namespace Stockfish {
 
-int scalingTable[] = {1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024};
-TUNE(scalingTable);
+int scalingTable1[] = {1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024};
+int scalingTable2[] = {1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024};
+TUNE(scalingTable1,scalingTable2);
 
 namespace TB = Tablebases;
 
@@ -1809,33 +1810,38 @@ void update_all_stats(const Position&      pos,
 
     int bonus = stat_bonus(depth);
     int malus = stat_malus(depth);
+    int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
+    int scale1 = scalingTable1[std::min(material / 2000, (int)(std::size(scalingTable) - 1))];
+    int scale2 = scalingTable2[std::min(material / 2000, (int)(std::size(scalingTable) - 1))];
+    int scaledBonus = (bonus * scale1) / 1024;
+    int scaleMalus  = (malus * scale2) / 1024;
 
     if (!pos.capture_stage(bestMove))
     {
-        update_quiet_histories(pos, ss, workerThread, bestMove, bonus * 1131 / 1024);
+        update_quiet_histories(pos, ss, workerThread, bestMove, scaledBonus * 1131 / 1024);
 
         // Decrease stats for all non-best quiet moves
         for (Move move : quietsSearched)
-            update_quiet_histories(pos, ss, workerThread, move, -malus * 1028 / 1024);
+            update_quiet_histories(pos, ss, workerThread, move, -scaleMalus * 1028 / 1024);
     }
     else
     {
         // Increase stats for the best move in case it was a capture move
         captured = type_of(pos.piece_on(bestMove.to_sq()));
-        captureHistory[moved_piece][bestMove.to_sq()][captured] << bonus * 1291 / 1024;
+        captureHistory[moved_piece][bestMove.to_sq()][captured] << scaledBonus * 1291 / 1024;
     }
 
     // Extra penalty for a quiet early move that was not a TT move in
     // previous ply when it gets refuted.
     if (prevSq != SQ_NONE && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit) && !pos.captured_piece())
-        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -malus * 919 / 1024);
+        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -scaleMalus * 919 / 1024);
 
     // Decrease stats for all non-best capture moves
     for (Move move : capturesSearched)
     {
         moved_piece = pos.moved_piece(move);
         captured    = type_of(pos.piece_on(move.to_sq()));
-        captureHistory[moved_piece][move.to_sq()][captured] << -malus * 1090 / 1024;
+        captureHistory[moved_piece][move.to_sq()][captured] << -scaleMalus * 1090 / 1024;
     }
 }
 
@@ -1862,20 +1868,16 @@ void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
 
     Color us = pos.side_to_move();
-  
-    int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
-    int scale = scalingTable[std::min(material / 1000, (int)(std::size(scalingTable) - 1))];
-    int scaledBonus = (bonus * scale) / 1024;
 
-    workerThread.mainHistory[us][move.from_to()] << scaledBonus;
+    workerThread.mainHistory[us][move.from_to()] << bonus;
   
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << scaledBonus * 874 / 1024;
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * 874 / 1024;
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), scaledBonus * 853 / 1024);
+    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 853 / 1024);
 
     int pIndex = pawn_structure_index(pos);
-    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << scaledBonus * 628 / 1024;
+    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
 }
 
 }
