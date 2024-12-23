@@ -52,6 +52,8 @@
 
 namespace Stockfish {
 
+const int scalingTable[] = {64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64};
+
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1859,15 +1861,20 @@ void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
 
     Color us = pos.side_to_move();
-    workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
+  
+    int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
+    int scale = scalingTable[std::min(material / 1000, (int)(std::size(scalingTable) - 1))];
+    int scaledBonus = (bonus * scale) / 64;
 
+    workerThread.mainHistory[us][move.from_to()] << scaledBonus;
+  
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * 874 / 1024;
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << scaledBonus * 874 / 1024;
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 853 / 1024);
+    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), scaledBonus * 853 / 1024);
 
     int pIndex = pawn_structure_index(pos);
-    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
+    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << scaledBonus * 628 / 1024;
 }
 
 }
