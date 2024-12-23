@@ -1811,8 +1811,8 @@ void update_all_stats(const Position&      pos,
     int bonus = stat_bonus(depth);
     int malus = stat_malus(depth);
     int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
-    int scale1 = scalingTable1[std::min(material / 2000, (int)(std::size(scalingTable) - 1))];
-    int scale2 = scalingTable2[std::min(material / 2000, (int)(std::size(scalingTable) - 1))];
+    int scale1 = scalingTable1[std::min(material / 2000, (int)(std::size(scalingTable1) - 1))];
+    int scale2 = scalingTable2[std::min(material / 2000, (int)(std::size(scalingTable2) - 1))];
     int scaledBonus = (bonus * scale1) / 1024;
     int scaleMalus  = (malus * scale2) / 1024;
 
