@@ -1220,7 +1220,7 @@ moves_loop:  // When in check, search starts here
 
                 // Post LMR continuation history updates (~1 Elo)
                 int bonus = (value >= beta) * stat_bonus(newDepth);
-                update_continuation_histories(ss, movedPiece, move.to_sq(), bonus * 1427 / 1024);
+                update_continuation_histories(pos, ss, movedPiece, move.to_sq(), bonus * 1427 / 1024);
             }
         }
 
@@ -1393,7 +1393,7 @@ moves_loop:  // When in check, search starts here
 
         const int scaledBonus = stat_bonus(depth) * bonusScale / 32;
 
-        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
+        update_continuation_histories(pos, ss - 1, pos.piece_on(prevSq), prevSq,
                                       scaledBonus * 416 / 1024);
 
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << scaledBonus * 212 / 1024;
@@ -1828,7 +1828,7 @@ void update_all_stats(const Position&      pos,
     // Extra penalty for a quiet early move that was not a TT move in
     // previous ply when it gets refuted.
     if (prevSq != SQ_NONE && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit) && !pos.captured_piece())
-        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -malus * 919 / 1024);
+        update_continuation_histories(pos, ss - 1, pos.piece_on(prevSq), prevSq, -malus * 919 / 1024);
 
     // Decrease stats for all non-best capture moves
     for (Move move : capturesSearched)
@@ -1846,7 +1846,7 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
     static constexpr std::array<ConthistBonus, 5> conthist_bonuses = {
       {{1, 1024}, {2, 571}, {3, 339}, {4, 500}, {6, 592}}};
 
-    int material = pos.non_pawn_material() + pos.count<PAWN>() * 208;
+    int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
     int scale = scalingTable[std::min(material / 1000, (int)(std::size(scalingTable) - 1))];
     int scaledBonus = (bonus * scale) / 1024;
 
@@ -1873,7 +1873,7 @@ void update_quiet_histories(
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
         workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * 874 / 1024;
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 853 / 1024);
+    update_continuation_histories(pos, ss, pos.moved_piece(move), move.to_sq(), bonus * 853 / 1024);
 
     int pIndex = pawn_structure_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
