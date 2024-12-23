@@ -23,32 +23,31 @@
 
 #include "bitboard.h"
 #include "position.h"
+#include "tune.h"
 
 namespace Stockfish {
 
 namespace {
 
-template<GenType Type, Direction D, bool Enemy>
-ExtMove* make_promotions(ExtMove* moveList, [[maybe_unused]] Square to) {
+template<GenType Type, Direction D, bool Enemy, typename Action>
+void make_promotions(Action append, [[maybe_unused]] Square to) {
 
     constexpr bool all = Type == EVASIONS || Type == NON_EVASIONS;
 
     if constexpr (Type == CAPTURES || all)
-        *moveList++ = Move::make<PROMOTION>(to - D, to, QUEEN);
+        append(Move::make<PROMOTION>(to - D, to, QUEEN));
 
     if constexpr ((Type == CAPTURES && Enemy) || (Type == QUIETS && !Enemy) || all)
     {
-        *moveList++ = Move::make<PROMOTION>(to - D, to, ROOK);
-        *moveList++ = Move::make<PROMOTION>(to - D, to, BISHOP);
-        *moveList++ = Move::make<PROMOTION>(to - D, to, KNIGHT);
+        append(Move::make<PROMOTION>(to - D, to, ROOK));
+        append(Move::make<PROMOTION>(to - D, to, BISHOP));
+        append(Move::make<PROMOTION>(to - D, to, KNIGHT));
     }
-
-    return moveList;
 }
 
 
-template<Color Us, GenType Type>
-ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard target) {
+template<Color Us, GenType Type, typename Action>
+void generate_pawn_moves(const Position& pos, Bitboard target, Action append) {
 
     constexpr Color     Them     = ~Us;
     constexpr Bitboard  TRank7BB = (Us == WHITE ? Rank7BB : Rank2BB);
@@ -78,13 +77,13 @@ ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard ta
         while (b1)
         {
             Square to   = pop_lsb(b1);
-            *moveList++ = Move(to - Up, to);
+            append(Move(to - Up, to));
         }
 
         while (b2)
         {
             Square to   = pop_lsb(b2);
-            *moveList++ = Move(to - Up - Up, to);
+            append(Move(to - Up - Up, to));
         }
     }
 
@@ -99,13 +98,13 @@ ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard ta
             b3 &= target;
 
         while (b1)
-            moveList = make_promotions<Type, UpRight, true>(moveList, pop_lsb(b1));
+            make_promotions<Type, UpRight, true>(append, pop_lsb(b1));
 
         while (b2)
-            moveList = make_promotions<Type, UpLeft, true>(moveList, pop_lsb(b2));
+            make_promotions<Type, UpLeft, true>(append, pop_lsb(b2));
 
         while (b3)
-            moveList = make_promotions<Type, Up, false>(moveList, pop_lsb(b3));
+            make_promotions<Type, Up, false>(append, pop_lsb(b3));
     }
 
     // Standard and en passant captures
@@ -117,13 +116,13 @@ ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard ta
         while (b1)
         {
             Square to   = pop_lsb(b1);
-            *moveList++ = Move(to - UpRight, to);
+            append(Move(to - UpRight, to));
         }
 
         while (b2)
         {
             Square to   = pop_lsb(b2);
-            *moveList++ = Move(to - UpLeft, to);
+            append(Move(to - UpLeft, to));
         }
 
         if (pos.ep_square() != SQ_NONE)
@@ -132,23 +131,24 @@ ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard ta
 
             // An en passant capture cannot resolve a discovered check
             if (Type == EVASIONS && (target & (pos.ep_square() + Up)))
-                return moveList;
+                return;
 
             b1 = pawnsNotOn7 & pawn_attacks_bb(Them, pos.ep_square());
 
             assert(b1);
 
             while (b1)
-                *moveList++ = Move::make<EN_PASSANT>(pop_lsb(b1), pos.ep_square());
+                append(Move::make<EN_PASSANT>(pop_lsb(b1), pos.ep_square()));
         }
     }
-
-    return moveList;
 }
 
+int MOBILITY_BONUS[4] =    { 552,  303,  325,  136};
+int BASE_MOB_BONUS[4] =    {2307, 1115, 1470, 1214};
+TUNE(MOBILITY_BONUS, AVG_MOB_BONUS);
 
-template<Color Us, PieceType Pt>
-ExtMove* generate_moves(const Position& pos, ExtMove* moveList, Bitboard target) {
+template<Color Us, PieceType Pt, GenType Type, typename Action>
+void generate_moves(const Position& pos, Bitboard target, Action append) {
 
     static_assert(Pt != KING && Pt != PAWN, "Unsupported piece type in generate_moves()");
 
@@ -157,18 +157,25 @@ ExtMove* generate_moves(const Position& pos, ExtMove* moveList, Bitboard target)
     while (bb)
     {
         Square   from = pop_lsb(bb);
-        Bitboard b    = attacks_bb<Pt>(from, pos.pieces()) & target;
+        Bitboard b    = attacks_bb<Pt>(from, pos.pieces());
+		/*int moves_defends = popcount(b);*/
+		[[maybe_unused]] int moves;
+		if constexpr (Type == QUIETS && Pt >= 2 && Pt <= 5)
+			moves = popcount(b);
+		b &= target;
+
+		int score = 0;
+		if constexpr (Type == QUIETS && Pt >= 2 && Pt <= 5)
+            score = BASE_MOB_BONUS[Pt -2] - MOBILITY_BONUS[Pt - 2] * moves;
 
         while (b)
-            *moveList++ = Move(from, pop_lsb(b));
+            append(Move(from, pop_lsb(b)), score);
     }
-
-    return moveList;
 }
 
 
-template<Color Us, GenType Type>
-ExtMove* generate_all(const Position& pos, ExtMove* moveList) {
+template<Color Us, GenType Type, typename Action>
+void generate_all(const Position& pos, Action append) {
 
     static_assert(Type != LEGAL, "Unsupported type in generate_all()");
 
@@ -183,24 +190,22 @@ ExtMove* generate_all(const Position& pos, ExtMove* moveList) {
                : Type == CAPTURES     ? pos.pieces(~Us)
                                       : ~pos.pieces();  // QUIETS
 
-        moveList = generate_pawn_moves<Us, Type>(pos, moveList, target);
-        moveList = generate_moves<Us, KNIGHT>(pos, moveList, target);
-        moveList = generate_moves<Us, BISHOP>(pos, moveList, target);
-        moveList = generate_moves<Us, ROOK>(pos, moveList, target);
-        moveList = generate_moves<Us, QUEEN>(pos, moveList, target);
+        generate_pawn_moves<Us, Type>(pos, target, append);
+        generate_moves<Us, KNIGHT, Type>(pos, target, append);
+        generate_moves<Us, BISHOP, Type>(pos, target, append);
+        generate_moves<Us, ROOK, Type>(pos, target, append);
+        generate_moves<Us, QUEEN, Type>(pos, target, append);
     }
 
     Bitboard b = attacks_bb<KING>(ksq) & (Type == EVASIONS ? ~pos.pieces(Us) : target);
 
     while (b)
-        *moveList++ = Move(ksq, pop_lsb(b));
+        append(Move(ksq, pop_lsb(b)));
 
     if ((Type == QUIETS || Type == NON_EVASIONS) && pos.can_castle(Us & ANY_CASTLING))
         for (CastlingRights cr : {Us & KING_SIDE, Us & QUEEN_SIDE})
             if (!pos.castling_impeded(cr) && pos.can_castle(cr))
-                *moveList++ = Move::make<CASTLING>(ksq, pos.castling_rook_square(cr));
-
-    return moveList;
+                append(Move::make<CASTLING>(ksq, pos.castling_rook_square(cr)));
 }
 
 }  // namespace
@@ -220,8 +225,12 @@ ExtMove* generate(const Position& pos, ExtMove* moveList) {
 
     Color us = pos.side_to_move();
 
-    return us == WHITE ? generate_all<WHITE, Type>(pos, moveList)
-                       : generate_all<BLACK, Type>(pos, moveList);
+    auto append = [&moveList](Move mov, int score = 0) { *moveList++ = { mov, score }; };
+    if (us == WHITE)
+        generate_all<WHITE, Type>(pos, append);
+    else
+        generate_all<BLACK, Type>(pos, append);
+    return moveList;
 }
 
 // Explicit template instantiations
