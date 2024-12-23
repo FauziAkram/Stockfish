@@ -52,7 +52,8 @@
 
 namespace Stockfish {
 
-const int scalingTable[] = {64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64};
+scalingTable[] = {1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024};
+TUNE(scalingTable);
 
 namespace TB = Tablebases;
 
@@ -1864,7 +1865,7 @@ void update_quiet_histories(
   
     int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
     int scale = scalingTable[std::min(material / 1000, (int)(std::size(scalingTable) - 1))];
-    int scaledBonus = (bonus * scale) / 64;
+    int scaledBonus = (bonus * scale) / 1024;
 
     workerThread.mainHistory[us][move.from_to()] << scaledBonus;
   
