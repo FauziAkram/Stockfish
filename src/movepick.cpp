@@ -131,15 +131,10 @@ void MovePicker::score() {
     {
         Color us = pos.side_to_move();
 
-        threatenedByPawn = pos.attacks_by<PAWN>(~us);
-        threatenedByMinor =
-          pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatenedByPawn;
-        threatenedByRook = pos.attacks_by<ROOK>(~us) | threatenedByMinor;
+            Bitboard attackedByEnemy = pos.attacks_by(~us);
+            Bitboard ourPieces = pos.pieces(us);
 
-        // Pieces threatened by pieces of lesser material value
-        threatenedPieces = (pos.pieces(us, QUEEN) & threatenedByRook)
-                         | (pos.pieces(us, ROOK) & threatenedByMinor)
-                         | (pos.pieces(us, KNIGHT, BISHOP) & threatenedByPawn);
+            threatenedPieces = ourPieces & attackedByEnemy;
     }
 
     for (auto& m : *this)
@@ -168,16 +163,10 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
-                                                                                            : 0)
-                                               : 0;
+            m.value += threatenedPieces & from ? ( !(to & attackedByEnemy) ? 14450 : 0) : 0;
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * 49000
-                        : pt == ROOK && bool(to & threatenedByMinor) ? 24335
-                                                                     : 0);
+            m.value -= bool(to & attackedByEnemy) * (pt == QUEEN ? 49000 : pt == ROOK ? 24335 : 0);
 
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
