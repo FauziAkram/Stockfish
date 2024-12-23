@@ -798,6 +798,10 @@ Value Search::Worker::search(
         && ss->staticEval >= beta - 21 * depth + 421 && !excludedMove && pos.non_pawn_material(us)
         && ss->ply >= thisThread->nmpMinPly && !is_loss(beta))
     {
+      
+        dbg_mean_of(ss->staticEval);
+dbg_extremes_of(ss->staticEval);
+
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
