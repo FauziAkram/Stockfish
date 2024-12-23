@@ -1846,7 +1846,7 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
     static constexpr std::array<ConthistBonus, 5> conthist_bonuses = {
       {{1, 1024}, {2, 571}, {3, 339}, {4, 500}, {6, 592}}};
 
-    int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
+    int material = pos.non_pawn_material() + pos.count<PAWN>() * 208;
     int scale = scalingTable[std::min(material / 1000, (int)(std::size(scalingTable) - 1))];
     int scaledBonus = (bonus * scale) / 1024;
 
