@@ -145,7 +145,7 @@ void generate_pawn_moves(const Position& pos, Bitboard target, Action append) {
 
 int MOBILITY_BONUS[4] =    { 552,  303,  325,  136};
 int BASE_MOB_BONUS[4] =    {2307, 1115, 1470, 1214};
-TUNE(MOBILITY_BONUS, AVG_MOB_BONUS);
+TUNE(MOBILITY_BONUS, BASE_MOB_BONUS);
 
 template<Color Us, PieceType Pt, GenType Type, typename Action>
 void generate_moves(const Position& pos, Bitboard target, Action append) {
