@@ -1846,13 +1846,18 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
     static constexpr std::array<ConthistBonus, 5> conthist_bonuses = {
       {{1, 1024}, {2, 571}, {3, 339}, {4, 500}, {6, 592}}};
 
+    int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
+    int scale = scalingTable[std::min(material / 1000, (int)(std::size(scalingTable) - 1))];
+    int scaledBonus = (bonus * scale) / 1024;
+
+
     for (const auto [i, weight] : conthist_bonuses)
     {
         // Only update the first 2 continuation histories if we are in check
         if (ss->inCheck && i > 2)
             break;
         if (((ss - i)->currentMove).is_ok())
-            (*(ss - i)->continuationHistory)[pc][to] << bonus * weight / 1024;
+            (*(ss - i)->continuationHistory)[pc][to] << scaledBonus * weight / 1024;
     }
 }
 
@@ -1863,19 +1868,15 @@ void update_quiet_histories(
 
     Color us = pos.side_to_move();
   
-    int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
-    int scale = scalingTable[std::min(material / 1000, (int)(std::size(scalingTable) - 1))];
-    int scaledBonus = (bonus * scale) / 1024;
-
-    workerThread.mainHistory[us][move.from_to()] << scaledBonus;
+    workerThread.mainHistory[us][move.from_to()] << bonus;
   
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << scaledBonus * 874 / 1024;
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * 874 / 1024;
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), scaledBonus * 853 / 1024);
+    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 853 / 1024);
 
     int pIndex = pawn_structure_index(pos);
-    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << scaledBonus * 628 / 1024;
+    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
 }
 
 }
