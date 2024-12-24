@@ -1860,7 +1860,7 @@ void update_quiet_histories(
 
     Color us = pos.side_to_move();
     int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
-    int scale = (material > 12000) * 950;
+    int scale = (material > 12000)? 950: 1024;
     int scaledBonus = (bonus * scale) / 1024;
 
     workerThread.mainHistory[us][move.from_to()] << scaledBonus;
