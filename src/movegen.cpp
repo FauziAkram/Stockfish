@@ -23,7 +23,6 @@
 
 #include "bitboard.h"
 #include "position.h"
-#include "tune.h"
 
 namespace Stockfish {
 
@@ -143,9 +142,8 @@ void generate_pawn_moves(const Position& pos, Bitboard target, Action append) {
     }
 }
 
-int MOBILITY_BONUS[4] =    { 552,  303,  325,  136};
-int BASE_MOB_BONUS[4] =    {2307, 1115, 1470, 1214};
-TUNE(MOBILITY_BONUS, BASE_MOB_BONUS);
+const int MOBILITY_BONUS[4] =    { 545,  300,  334,  149};
+const int BASE_MOB_BONUS[4] =    {2239, 1087, 1540, 1067};
 
 template<Color Us, PieceType Pt, GenType Type, typename Action>
 void generate_moves(const Position& pos, Bitboard target, Action append) {
