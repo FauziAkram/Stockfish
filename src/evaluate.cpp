@@ -119,7 +119,7 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks) {
     int mobilityBonus = popcount(pawnMobility);
 
     auto [psqt, positional] = networks.big.evaluate(pos, &caches->big);
-    positional             += 16 * mobilityBonus;
+    positional             += 512 * mobilityBonus;
     Value v                 = psqt + positional;
     v                       = pos.side_to_move() == WHITE ? v : -v;
     ss << "NNUE evaluation        " << 0.01 * UCIEngine::to_cp(v, pos) << " (white side)\n";
