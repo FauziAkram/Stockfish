@@ -146,7 +146,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
    dbg_mean_of(psqt);
 dbg_extremes_of(psqt);
 
-    positional += (mobilityBonus * 0) + (openFileBonus * 0) + (isolatedPawnPenalty  * 0) + (doubledPawnPenalty * 0) + (passedPawnBonus * 0);
+    positional += (mobilityBonus * 0) + (isolatedPawnPenalty  * 0) + (doubledPawnPenalty * 0) + (passedPawnBonus * 0);
 
     nnue = (125 * psqt + 131 * positional) / 128; // Recalculate NNUE with adjusted positional
 
