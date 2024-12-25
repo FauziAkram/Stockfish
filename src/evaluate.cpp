@@ -99,6 +99,43 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
             }
         }
     }
+    // 2. Evaluate Pawn Advancement in Semi-Open Files
+int openFileBonus = 0;
+Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
+Bitboard theirPawns = pos.pieces(~pos.side_to_move(), PAWN);
+
+for (File f = FILE_A; f <= FILE_H; ++f) {
+    Bitboard fileBB = file_bb(f);
+    // Check if the file is semi-open for us (we have pawns, but the opponent doesn't)
+    if ((fileBB & ourPawns) && !(fileBB & theirPawns)) {
+        for (Square s : ourPawns & fileBB) { 
+            Rank r = rank_of(s);
+            Bitboard passedPawnMask = 0;
+
+            if (pos.side_to_move() == WHITE) {
+                for (Rank ahead = Rank(r + 1); ahead <= RANK_8; ++ahead) {
+                    passedPawnMask |= square_bb(make_square(f, ahead));
+                }
+            } else {
+                for (Rank ahead = Rank(r - 1); ahead >= RANK_1; --ahead) {
+                    passedPawnMask |= square_bb(make_square(f, ahead));
+                }
+            }
+            // Add adjacent files to the mask
+            if (f != FILE_A) {
+                passedPawnMask |= (passedPawnMask << 1);
+            }
+            if (f != FILE_H) {
+                passedPawnMask |= (passedPawnMask >> 1);
+            }
+
+            // Check if no enemy pawns are in front of our pawn on this file or adjacent files
+            if (!(passedPawnMask & theirPawns)) {
+                openFileBonus += (pos.side_to_move() == WHITE ? r : 7 - r);
+            }
+        }
+    }
+}
 
     // 3. Discourage Isolated Pawns
     int isolatedPawnPenalty = 0;
@@ -157,8 +194,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Combine the modifications into the 'positional' component.
-   dbg_mean_of(doubledPawnPenalty);
-dbg_extremes_of(doubledPawnPenalty);
+   dbg_mean_of(openFileBonus);
+dbg_extremes_of(openFileBonus);
 
     positional += (mobilityBonus * 0) + (openFileBonus * 0) + (isolatedPawnPenalty  * 0) + (doubledPawnPenalty * 0) + (passedPawnBonus * 0);
 
