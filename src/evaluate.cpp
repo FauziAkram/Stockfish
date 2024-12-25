@@ -73,6 +73,73 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
         smallNet                   = false;
     }
 
+    // 1. Threatened Pawns and Safe Mobility
+    Bitboard threatenedByPawn = pos.attacks_by<PAWN>(~pos.side_to_move());
+    Bitboard safeSquares = ~pos.pieces() & ~threatenedByPawn;
+
+    Bitboard pawnMobility = 0;
+    if (pos.side_to_move() == WHITE)
+        pawnMobility = (pos.pieces(WHITE, PAWN) << 8) & safeSquares;
+    else
+        pawnMobility = (pos.pieces(BLACK, PAWN) >> 8) & safeSquares;
+
+    int mobilityBonus = popcount(pawnMobility);
+  
+    // 2. Isolated Pawns
+    int isolatedPawnPenalty = 0;
+    Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
+    // Iterate using pop_lsb
+    Bitboard pawnsCopy = ourPawns; // Work on a copy to avoid modifying the original
+    while (pawnsCopy) {
+        Square s = pop_lsb(pawnsCopy); // Get and remove the least significant bit
+        File f = file_of(s);
+        Bitboard adjacentFiles = (f != FILE_A ? file_bb(File(f - 1)) : 0) | (f != FILE_H ? file_bb(File(f + 1)) : 0);
+        if (!(adjacentFiles & ourPawns))
+            isolatedPawnPenalty--;
+    }
+
+    // 3. Doubled Pawns
+    int doubledPawnPenalty = 0;
+    for (File f = FILE_A; f <= FILE_H; ++f) {
+        Bitboard filePawns = file_bb(f) & ourPawns;
+        if (more_than_one(filePawns))
+            doubledPawnPenalty -= popcount(filePawns) - 1;
+    }
+
+    // 4. Passed Pawns
+    int passedPawnBonus = 0;
+    Bitboard enemyPawns = pos.pieces(~pos.side_to_move(), PAWN);
+
+    // Iterate using pop_lsb
+    pawnsCopy = ourPawns; // Reset copy for reuse
+    while (pawnsCopy) {
+        Square s = pop_lsb(pawnsCopy);
+        File f = file_of(s);
+        Rank r = rank_of(s);
+
+        Bitboard path = 0;
+        if (pos.side_to_move() == WHITE) {
+            for (Rank ahead = Rank(r + 1); ahead <= RANK_8; ++ahead)
+                path |= square_bb(make_square(f, ahead));
+        } else {
+            for (Rank ahead = Rank(r - 1); ahead >= RANK_1; --ahead)
+                path |= square_bb(make_square(f, ahead));
+        }
+        if (f != FILE_A)
+            path |= (path << 1);
+
+        if (f != FILE_H)
+            path |= (path >> 1);
+
+        if (!(path & enemyPawns))
+            passedPawnBonus += (pos.side_to_move() == WHITE ? r : 7 - r); // Based on rank
+    }
+
+    // Combine the modifications into the 'positional' component.
+    positional += (mobilityBonus * 0) + (isolatedPawnPenalty  * 0) + (doubledPawnPenalty * 0) + (passedPawnBonus * 0);
+
+    nnue = (125 * psqt + 131 * positional) / 128; // Recalculate NNUE with adjusted positional
+
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
     optimism += optimism * nnueComplexity / 468;
