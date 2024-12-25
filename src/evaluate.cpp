@@ -87,42 +87,44 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int mobilityBonus = popcount(pawnMobility);
 
     // 2. Evaluate Pawn Advancement in Semi-Open Files
-int openFileBonus = 0;
-Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
-Bitboard theirPawns = pos.pieces(~pos.side_to_move(), PAWN);
+    int openFileBonus = 0;
+    Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN); // Declared here
+    Bitboard theirPawns = pos.pieces(~pos.side_to_move(), PAWN);
 
-for (File f = FILE_A; f <= FILE_H; ++f) {
-    Bitboard fileBB = file_bb(f);
-    // Check if the file is semi-open for us (we have pawns, but the opponent doesn't)
-    if ((fileBB & ourPawns) && !(fileBB & theirPawns)) {
-        for (Square s : ourPawns & fileBB) { 
-            Rank r = rank_of(s);
-            Bitboard passedPawnMask = 0;
+    for (File f = FILE_A; f <= FILE_H; ++f) {
+        Bitboard fileBB = file_bb(f);
+        // Check if the file is semi-open for us (we have pawns, but the opponent doesn't)
+        if ((fileBB & ourPawns) && !(fileBB & theirPawns)) {
+            Bitboard pawnsCopy = ourPawns & fileBB; // Work on a copy
+            while (pawnsCopy) {
+                Square s = pop_lsb(pawnsCopy); // Use pop_lsb for iteration
+                Rank r = rank_of(s);
+                Bitboard passedPawnMask = 0;
 
-            if (pos.side_to_move() == WHITE) {
-                for (Rank ahead = Rank(r + 1); ahead <= RANK_8; ++ahead) {
-                    passedPawnMask |= square_bb(make_square(f, ahead));
+                if (pos.side_to_move() == WHITE) {
+                    for (Rank ahead = Rank(r + 1); ahead <= RANK_8; ++ahead) {
+                        passedPawnMask |= square_bb(make_square(f, ahead));
+                    }
+                } else {
+                    for (Rank ahead = Rank(r - 1); ahead >= RANK_1; --ahead) {
+                        passedPawnMask |= square_bb(make_square(f, ahead));
+                    }
                 }
-            } else {
-                for (Rank ahead = Rank(r - 1); ahead >= RANK_1; --ahead) {
-                    passedPawnMask |= square_bb(make_square(f, ahead));
+                // Add adjacent files to the mask
+                if (f != FILE_A) {
+                    passedPawnMask |= (passedPawnMask << 1);
                 }
-            }
-            // Add adjacent files to the mask
-            if (f != FILE_A) {
-                passedPawnMask |= (passedPawnMask << 1);
-            }
-            if (f != FILE_H) {
-                passedPawnMask |= (passedPawnMask >> 1);
-            }
+                if (f != FILE_H) {
+                    passedPawnMask |= (passedPawnMask >> 1);
+                }
 
-            // Check if no enemy pawns are in front of our pawn on this file or adjacent files
-            if (!(passedPawnMask & theirPawns)) {
-                openFileBonus += (pos.side_to_move() == WHITE ? r : 7 - r);
+                // Check if no enemy pawns are in front of our pawn on this file or adjacent files
+                if (!(passedPawnMask & theirPawns)) {
+                    openFileBonus += (pos.side_to_move() == WHITE ? r : 7 - r);
+                }
             }
         }
     }
-}
 
     // 3. Discourage Isolated Pawns
     int isolatedPawnPenalty = 0;
