@@ -157,7 +157,10 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Combine the modifications into the 'positional' component.
-    positional += (mobilityBonus * 0) + (openFileBonus * 0) + (isolatedPawnPenalty  * 0) + (doubledPawnPenalty * 0) + (passedPawnBonus * 2);
+   dbg_mean_of(mobilityBonus);
+dbg_extremes_of(mobilityBonus);
+
+    positional += (mobilityBonus * 0) + (openFileBonus * 0) + (isolatedPawnPenalty  * 0) + (doubledPawnPenalty * 0) + (passedPawnBonus * 0);
 
     nnue = (125 * psqt + 131 * positional) / 128; // Recalculate NNUE with adjusted positional
 
