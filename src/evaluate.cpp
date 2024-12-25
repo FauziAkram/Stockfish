@@ -107,19 +107,21 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks) {
 
     ss << std::showpoint << std::showpos << std::fixed << std::setprecision(2) << std::setw(15);
 
-    Bitboard threatenedByPawn = pos.attacks_by<PAWN>(~pos.side_to_move()); //Which of my pawns are threatened
-    Bitboard safeSquares = ~pos.pieces() & ~threatenedByPawn; //Empty squares not threatened by enemy pawns
-
-    Bitboard pawnMobility = 0;
-    if (pos.side_to_move() == WHITE)
-        pawnMobility = (pos.pieces(WHITE, PAWN) << 8) & safeSquares;
-    else
-        pawnMobility = (pos.pieces(BLACK, PAWN) >> 8) & safeSquares;
-
-    int mobilityBonus = popcount(pawnMobility);
+    int openFileBonus = 0;
+    for (File f = FILE_A; f <= FILE_H; ++f) {
+        Bitboard fileBB = file_bb(f);
+        if (!(fileBB & pos.pieces(PAWN))) { // Check if the file is open
+            Bitboard ourPawns = fileBB & pos.pieces(pos.side_to_move(), PAWN);
+            if (ourPawns) {
+                Square mostAdvancedPawn = pos.side_to_move() == WHITE ? msb(ourPawns) : lsb(ourPawns);
+                Rank r = rank_of(mostAdvancedPawn);
+                openFileBonus += (pos.side_to_move() == WHITE ? r : 7 - r); // Bonus based on rank
+            }
+        }
+    }
 
     auto [psqt, positional] = networks.big.evaluate(pos, &caches->big);
-    positional             += 512 * mobilityBonus;
+    positional             += 512 * openFileBonus;
     Value v                 = psqt + positional;
     v                       = pos.side_to_move() == WHITE ? v : -v;
     ss << "NNUE evaluation        " << 0.01 * UCIEngine::to_cp(v, pos) << " (white side)\n";
