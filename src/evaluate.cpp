@@ -157,8 +157,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Combine the modifications into the 'positional' component.
-   dbg_mean_of(mobilityBonus);
-dbg_extremes_of(mobilityBonus);
+   dbg_mean_of(openFileBonus);
+dbg_extremes_of(openFileBonus);
 
     positional += (mobilityBonus * 0) + (openFileBonus * 0) + (isolatedPawnPenalty  * 0) + (doubledPawnPenalty * 0) + (passedPawnBonus * 0);
 
