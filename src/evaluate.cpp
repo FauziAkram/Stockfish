@@ -103,11 +103,14 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     // 3. Discourage Isolated Pawns
     int isolatedPawnPenalty = 0;
     Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
-    for (Square s : ourPawns) {
+    // Iterate using pop_lsb
+    Bitboard pawnsCopy = ourPawns; // Work on a copy to avoid modifying the original
+    while (pawnsCopy) {
+        Square s = pop_lsb(pawnsCopy); // Get and remove the least significant bit
         File f = file_of(s);
         Bitboard adjacentFiles = (f != FILE_A ? file_bb(File(f - 1)) : 0) | (f != FILE_H ? file_bb(File(f + 1)) : 0);
         if (!(adjacentFiles & ourPawns)) {
-            isolatedPawnPenalty--;
+            isolatedPawnPenalty--; // Penalty for each isolated pawn
         }
     }
 
@@ -116,7 +119,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     for (File f = FILE_A; f <= FILE_H; ++f) {
         Bitboard filePawns = file_bb(f) & ourPawns;
         if (more_than_one(filePawns)) {
-            doubledPawnPenalty -= popcount(filePawns) - 1;
+            doubledPawnPenalty -= popcount(filePawns) - 1; // Penalty based on the number of doubled pawns
         }
     }
 
@@ -124,7 +127,10 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int passedPawnBonus = 0;
     Bitboard enemyPawns = pos.pieces(~pos.side_to_move(), PAWN);
 
-    for (Square s : ourPawns) {
+    // Iterate using pop_lsb
+    pawnsCopy = ourPawns; // Reset copy for reuse
+    while (pawnsCopy) {
+        Square s = pop_lsb(pawnsCopy);
         File f = file_of(s);
         Rank r = rank_of(s);
 
@@ -146,7 +152,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
         }
 
         if (!(path & enemyPawns)) {
-            passedPawnBonus += (pos.side_to_move() == WHITE ? r : 7 - r);
+            passedPawnBonus += (pos.side_to_move() == WHITE ? r : 7 - r); // Bonus based on rank
         }
     }
 
