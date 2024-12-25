@@ -36,7 +36,8 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
-
+int xx1=0, xx2=0, xx3=0, xx4=0;
+TUNE(SetRange(-100, 100), xx1,xx2,xx3,xx4);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -136,7 +137,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Combine the modifications into the 'positional' component.
-    positional += (mobilityBonus * 0) + (isolatedPawnPenalty  * 0) + (doubledPawnPenalty * 0) + (passedPawnBonus * 0);
+    positional += (mobilityBonus * xx1) + (isolatedPawnPenalty  * xx2) + (doubledPawnPenalty * xx3) + (passedPawnBonus * xx4);
 
     nnue = (125 * psqt + 131 * positional) / 128; // Recalculate NNUE with adjusted positional
 
