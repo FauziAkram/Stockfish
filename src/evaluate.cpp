@@ -107,7 +107,19 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks) {
 
     ss << std::showpoint << std::showpos << std::fixed << std::setprecision(2) << std::setw(15);
 
+    Bitboard threatenedByPawn = pos.attacks_by<PAWN>(~pos.side_to_move()); //Which of my pawns are threatened
+    Bitboard safeSquares = ~pos.pieces() & ~threatenedByPawn; //Empty squares not threatened by enemy pawns
+
+    Bitboard pawnMobility = 0;
+    if (pos.side_to_move() == WHITE)
+        pawnMobility = (pos.pieces(WHITE, PAWN) << 8) & safeSquares;
+    else
+        pawnMobility = (pos.pieces(BLACK, PAWN) >> 8) & safeSquares;
+
+    int mobilityBonus = popcount(pawnMobility);
+
     auto [psqt, positional] = networks.big.evaluate(pos, &caches->big);
+    positional             += mobilityBonus;
     Value v                 = psqt + positional;
     v                       = pos.side_to_move() == WHITE ? v : -v;
     ss << "NNUE evaluation        " << 0.01 * UCIEngine::to_cp(v, pos) << " (white side)\n";
