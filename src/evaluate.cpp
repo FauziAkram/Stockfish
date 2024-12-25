@@ -86,19 +86,6 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     int mobilityBonus = popcount(pawnMobility);
 
-    // 2. Evaluate Pawn Advancement in Open Files
-    int openFileBonus = 0;
-    for (File f = FILE_A; f <= FILE_H; ++f) {
-        Bitboard fileBB = file_bb(f);
-        if (!(fileBB & pos.pieces(PAWN))) {
-            Bitboard ourPawns = fileBB & pos.pieces(pos.side_to_move(), PAWN);
-            if (ourPawns) {
-                Square mostAdvancedPawn = pos.side_to_move() == WHITE ? msb(ourPawns) : lsb(ourPawns);
-                Rank r = rank_of(mostAdvancedPawn);
-                openFileBonus += (pos.side_to_move() == WHITE ? r : 7 - r);
-            }
-        }
-    }
     // 2. Evaluate Pawn Advancement in Semi-Open Files
 int openFileBonus = 0;
 Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
