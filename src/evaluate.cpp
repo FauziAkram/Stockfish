@@ -86,7 +86,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     int mobilityBonus = popcount(pawnMobility);
 
-    // 2. Evaluate Pawn Advancement in Semi-Open Files
+  // 2. Evaluate Pawn Advancement in Semi-Open Files
     int openFileBonus = 0;
     Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN); // Declared here
     Bitboard theirPawns = pos.pieces(~pos.side_to_move(), PAWN);
