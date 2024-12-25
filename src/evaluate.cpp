@@ -85,48 +85,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     int mobilityBonus = popcount(pawnMobility);
-
-   // 2. Evaluate Pawn Advancement in Semi-Open Files
-    int openFileBonus = 0;
-    Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN); // Declared here
-    Bitboard theirPawns = pos.pieces(~pos.side_to_move(), PAWN);
-
-    for (File f = FILE_A; f <= FILE_H; ++f) {
-        Bitboard fileBB = file_bb(f);
-        // Check if the file is semi-open for us (we have pawns, but the opponent doesn't)
-        if ((fileBB & ourPawns) && !(fileBB & theirPawns)) {
-            Bitboard pawnsCopy = ourPawns & fileBB; // Work on a copy
-            while (pawnsCopy) {
-                Square s = pop_lsb(pawnsCopy); // Use pop_lsb for iteration
-                Rank r = rank_of(s);
-                Bitboard passedPawnMask = 0;
-
-                if (pos.side_to_move() == WHITE) {
-                    for (Rank ahead = Rank(r + 1); ahead <= RANK_8; ++ahead) {
-                        passedPawnMask |= square_bb(make_square(f, ahead));
-                    }
-                } else {
-                    for (Rank ahead = Rank(r - 1); ahead >= RANK_1; --ahead) {
-                        passedPawnMask |= square_bb(make_square(f, ahead));
-                    }
-                }
-                // Add adjacent files to the mask
-                if (f != FILE_A) {
-                    passedPawnMask |= (passedPawnMask << 1);
-                }
-                if (f != FILE_H) {
-                    passedPawnMask |= (passedPawnMask >> 1);
-                }
-
-                // Check if no enemy pawns are in front of our pawn on this file or adjacent files
-                if (!(passedPawnMask & theirPawns)) {
-                    openFileBonus += (pos.side_to_move() == WHITE ? r : 7 - r);
-                }
-            }
-        }
-    }
   
-    // 3. Discourage Isolated Pawns
+    // 2. Discourage Isolated Pawns
     int isolatedPawnPenalty = 0;
     Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
     // Iterate using pop_lsb
@@ -140,7 +100,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
         }
     }
 
-    // 4. Discourage Doubled Pawns
+    // 3. Discourage Doubled Pawns
     int doubledPawnPenalty = 0;
     for (File f = FILE_A; f <= FILE_H; ++f) {
         Bitboard filePawns = file_bb(f) & ourPawns;
@@ -149,7 +109,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
         }
     }
 
-    // 5. Bonus for Passed Pawns
+    // 4. Bonus for Passed Pawns
     int passedPawnBonus = 0;
     Bitboard enemyPawns = pos.pieces(~pos.side_to_move(), PAWN);
 
@@ -183,8 +143,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Combine the modifications into the 'positional' component.
-   dbg_mean_of(openFileBonus);
-dbg_extremes_of(openFileBonus);
+   dbg_mean_of(psqt);
+dbg_extremes_of(psqt);
 
     positional += (mobilityBonus * 0) + (openFileBonus * 0) + (isolatedPawnPenalty  * 0) + (doubledPawnPenalty * 0) + (passedPawnBonus * 0);
 
