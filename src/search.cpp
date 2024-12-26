@@ -52,9 +52,8 @@
 
 namespace Stockfish {
 
-int scalingTable1[] = {1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024};
-int scalingTable2[] = {1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024};
-TUNE(scalingTable1,scalingTable2);
+const int scalingTable1[] = {1075,	1147,	911,	1173,	1037,	992,	1110,	1155,	1053,	948};
+const int scalingTable2[] = {1082,	1038,	1006,	1068,	1016,	1050,	960,	909,	954,	992};
 
 namespace TB = Tablebases;
 
