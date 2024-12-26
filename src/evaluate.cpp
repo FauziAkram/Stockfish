@@ -73,6 +73,21 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
         smallNet                   = false;
     }
 
+    // Isolated Pawns
+    int isolatedPawnPenalty = 0;
+    Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
+    // Iterate using pop_lsb
+    Bitboard pawnsCopy = ourPawns; // Work on a copy to avoid modifying the original
+    while (pawnsCopy) {
+        Square s = pop_lsb(pawnsCopy); // Get and remove the least significant bit
+        File f = file_of(s);
+        Bitboard adjacentFiles = (f != FILE_A ? file_bb(File(f - 1)) : 0) | (f != FILE_H ? file_bb(File(f + 1)) : 0);
+        if (!(adjacentFiles & ourPawns))
+            isolatedPawnPenalty--; }
+
+    positional -= 5 * isolatedPawnPenalty;
+    nnue = (125 * psqt + 131 * positional) / 128;
+
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
     optimism += optimism * nnueComplexity / 468;
