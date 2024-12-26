@@ -52,7 +52,6 @@
 
 namespace Stockfish {
 
-const int scalingTable1[] = {1075,	1147,	911,	1173,	1037,	992,	1110,	1155,	1053,	948};
 const int scalingTable2[] = {1082,	1038,	1006,	1068,	1016,	1050,	960,	909,	954,	992};
 
 namespace TB = Tablebases;
@@ -1391,16 +1390,16 @@ moves_loop:  // When in check, search starts here
 
         bonusScale = std::max(bonusScale, 0);
 
-        const int scaledBonus = stat_bonus(depth) * bonusScale / 32;
+        const int bonus = stat_bonus(depth) * bonusScale / 32;
 
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                      scaledBonus * 416 / 1024);
+                                      bonus * 416 / 1024);
 
-        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << scaledBonus * 212 / 1024;
+        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * 212 / 1024;
 
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << scaledBonus * 1073 / 1024;
+              << bonus * 1073 / 1024;
     }
 
     else if (priorCapture && prevSq != SQ_NONE)
@@ -1810,14 +1809,12 @@ void update_all_stats(const Position&      pos,
     int bonus = stat_bonus(depth);
     int malus = stat_malus(depth);
     int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
-    int scale1 = scalingTable1[std::min(material / 2000, (int)(std::size(scalingTable1) - 1))];
     int scale2 = scalingTable2[std::min(material / 2000, (int)(std::size(scalingTable2) - 1))];
-    int scaledBonus = (bonus * scale1) / 1024;
     int scaleMalus  = (malus * scale2) / 1024;
 
     if (!pos.capture_stage(bestMove))
     {
-        update_quiet_histories(pos, ss, workerThread, bestMove, scaledBonus * 1131 / 1024);
+        update_quiet_histories(pos, ss, workerThread, bestMove, bonus * 1131 / 1024);
 
         // Decrease stats for all non-best quiet moves
         for (Move move : quietsSearched)
@@ -1827,7 +1824,7 @@ void update_all_stats(const Position&      pos,
     {
         // Increase stats for the best move in case it was a capture move
         captured = type_of(pos.piece_on(bestMove.to_sq()));
-        captureHistory[moved_piece][bestMove.to_sq()][captured] << scaledBonus * 1291 / 1024;
+        captureHistory[moved_piece][bestMove.to_sq()][captured] << bonus * 1291 / 1024;
     }
 
     // Extra penalty for a quiet early move that was not a TT move in
