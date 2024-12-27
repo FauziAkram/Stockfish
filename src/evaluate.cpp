@@ -75,6 +75,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     // 4. Passed Pawns
     int passedPawnBonus = 0;
+    Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
+    Bitboard pawnsCopy = ourPawns;
     Bitboard enemyPawns = pos.pieces(~pos.side_to_move(), PAWN);
 
     // Iterate using pop_lsb
