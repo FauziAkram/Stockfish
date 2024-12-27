@@ -796,9 +796,11 @@ Value Search::Worker::search(
     // Step 9. Null move search with verification search (~35 Elo)
     if (cutNode && (ss - 1)->currentMove != Move::null() && eval >= beta
         && ss->staticEval >= beta - 21 * depth + 421 && !excludedMove && pos.non_pawn_material(us)
-        && ss->ply > thisThread->nmpMinPly && !is_loss(beta))
+        && !is_loss(beta))
     {
         assert(eval - beta >= 0);
+dbg_mean_of(thisThread->nmpMinPly);
+dbg_extremes_of(thisThread->nmpMinPly);
 
         // Null move dynamic reduction based on depth and eval
         Depth R = std::min(int(eval - beta) / 235, 7) + depth / 3 + 5;
