@@ -75,6 +75,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     // 3. Doubled Pawns
     int doubledPawnPenalty = 0;
+    Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
     for (File f = FILE_A; f <= FILE_H; ++f) {
         Bitboard filePawns = file_bb(f) & ourPawns;
         if (more_than_one(filePawns))
