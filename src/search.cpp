@@ -1865,15 +1865,19 @@ void update_quiet_histories(
 
     Color us = pos.side_to_move();
 
-    workerThread.mainHistory[us][move.from_to()] << bonus;
+    int material = pos.non_pawn_material() + pos.count<PAWN>() * PawnValue;
+    int scale = (material > 10000)? 900: 1024;
+    int scaledBonus = (bonus * scale) / 1024;
+
+    workerThread.mainHistory[us][move.from_to()] << scaledBonus;
   
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * 874 / 1024;
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << scaledBonus * 874 / 1024;
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 853 / 1024);
+    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), scaledBonus * 853 / 1024);
 
     int pIndex = pawn_structure_index(pos);
-    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
+    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << scaledBonus * 628 / 1024;
 }
 
 }
