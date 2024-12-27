@@ -73,39 +73,6 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
         smallNet                   = false;
     }
 
-    // 1. Threatened Pawns and Safe Mobility
-    Bitboard threatenedByPawn = pos.attacks_by<PAWN>(~pos.side_to_move());
-    Bitboard safeSquares = ~pos.pieces() & ~threatenedByPawn;
-
-    Bitboard pawnMobility = 0;
-    if (pos.side_to_move() == WHITE)
-        pawnMobility = (pos.pieces(WHITE, PAWN) << 8) & safeSquares;
-    else
-        pawnMobility = (pos.pieces(BLACK, PAWN) >> 8) & safeSquares;
-
-    int mobilityBonus = popcount(pawnMobility);
-  
-    // 2. Isolated Pawns
-    int isolatedPawnPenalty = 0;
-    Bitboard ourPawns = pos.pieces(pos.side_to_move(), PAWN);
-    // Iterate using pop_lsb
-    Bitboard pawnsCopy = ourPawns; // Work on a copy to avoid modifying the original
-    while (pawnsCopy) {
-        Square s = pop_lsb(pawnsCopy); // Get and remove the least significant bit
-        File f = file_of(s);
-        Bitboard adjacentFiles = (f != FILE_A ? file_bb(File(f - 1)) : 0) | (f != FILE_H ? file_bb(File(f + 1)) : 0);
-        if (!(adjacentFiles & ourPawns))
-            isolatedPawnPenalty--;
-    }
-
-    // 3. Doubled Pawns
-    int doubledPawnPenalty = 0;
-    for (File f = FILE_A; f <= FILE_H; ++f) {
-        Bitboard filePawns = file_bb(f) & ourPawns;
-        if (more_than_one(filePawns))
-            doubledPawnPenalty -= popcount(filePawns) - 1;
-    }
-
     // 4. Passed Pawns
     int passedPawnBonus = 0;
     Bitboard enemyPawns = pos.pieces(~pos.side_to_move(), PAWN);
@@ -136,7 +103,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Combine the modifications into the 'positional' component.
-    positional -= (mobilityBonus * 2) + (isolatedPawnPenalty  * 2) + (doubledPawnPenalty * 9) + (passedPawnBonus * 2);
+    positional -= passedPawnBonus * 2;
 
     nnue = (125 * psqt + 131 * positional) / 128; // Recalculate NNUE with adjusted positional
 
