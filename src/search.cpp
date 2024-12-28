@@ -1867,7 +1867,8 @@ void update_quiet_histories(
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 853 / 1024);
 
     int pIndex = pawn_structure_index(pos);
-    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
+    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * ((type_of(pos.moved_piece(move)) == PAWN) && ((pos.moved_piece(move) == W_PAWN && rank_of(move.to_sq()) >= RANK_6)
+         || (pos.moved_piece(move) == B_PAWN && rank_of(move.to_sq()) <= RANK_3))? 1024: 628) / 1024;
 }
 
 }
