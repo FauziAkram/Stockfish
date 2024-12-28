@@ -502,6 +502,7 @@ void Search::Worker::clear() {
     lowPlyHistory.fill(106);
     captureHistory.fill(-598);
     pawnHistory.fill(-1181);
+    pawnPromotionHistory.fill(0);
     pawnCorrectionHistory.fill(0);
     majorPieceCorrectionHistory.fill(0);
     minorPieceCorrectionHistory.fill(0);
@@ -1868,6 +1869,17 @@ void update_quiet_histories(
 
     int pIndex = pawn_structure_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
+
+    if (type_of(pos.moved_piece(move)) == PAWN)
+    {
+        if ((pos.moved_piece(move) == W_PAWN && rank_of(move.to_sq()) >= RANK_7)
+         || (pos.moved_piece(move) == B_PAWN && rank_of(move.to_sq()) <= RANK_2))
+            workerThread.pawnPromotionHistory[pawn_structure_index(pos)][pos.side_to_move()][move.to_sq()] << bonus * 734 / 1024;
+
+        else
+            workerThread.pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
+    }
+}
 }
 
 }
