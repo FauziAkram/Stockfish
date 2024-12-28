@@ -1871,7 +1871,7 @@ void update_quiet_histories(
     {
         if ((pos.moved_piece(move) == W_PAWN && rank_of(move.to_sq()) >= RANK_6)
          || (pos.moved_piece(move) == B_PAWN && rank_of(move.to_sq()) <= RANK_3))
-            workerThread.pawnPromotionHistory[pawn_structure_index(pos)][pos.side_to_move()][move.to_sq()] << bonus;
+            workerThread.pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)][move.to_sq()] << bonus;
 
         else
             workerThread.pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
