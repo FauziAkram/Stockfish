@@ -62,6 +62,20 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     bool smallNet           = use_smallnet(pos);
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
                                        : networks.big.evaluate(pos, &caches.big);
+    // 1. Threatened Pawns and Safe Mobility
+    Bitboard threatenedByPawn = pos.attacks_by<PAWN>(~pos.side_to_move());
+    Bitboard safeSquares = ~pos.pieces() & ~threatenedByPawn;
+
+    Bitboard pawnMobility = 0;
+    if (pos.side_to_move() == WHITE)
+        pawnMobility = (pos.pieces(WHITE, PAWN) << 8) & safeSquares;
+    else
+        pawnMobility = (pos.pieces(BLACK, PAWN) >> 8) & safeSquares;
+
+    int mobilityBonus = popcount(pawnMobility);
+
+    // Combine the modifications into the 'positional' component.
+    positional -= mobilityBonus * 2;
 
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
