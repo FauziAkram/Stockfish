@@ -931,11 +931,11 @@ moves_loop:  // When in check, search starts here
                                         (ss - 3)->continuationHistory,
                                         (ss - 4)->continuationHistory,
                                         nullptr,
-                                        (ss - 6)->continuationHistory};
-
+                                        (ss - 6)->continuationHistory},
+                                        &thisThread->pawnPromotionHistory[0][0]};
 
     MovePicker mp(pos, ttData.move, depth, &thisThread->mainHistory, &thisThread->lowPlyHistory,
-                  &thisThread->captureHistory, contHist, &thisThread->pawnHistory, ss->ply);
+                  &thisThread->captureHistory, contHist, &thisThread->pawnHistory, &thisThread->pawnPromotionHistory, ss->ply);
 
     value = bestValue;
 
