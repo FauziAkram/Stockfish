@@ -129,9 +129,11 @@ void TimeManagement::init(Search::LimitsType& limits,
     }
 
     // Limit the maximum possible time for this move
+    int n = std::clamp(8 + int(std::cbrt(500 * limits.movetime)), 2, 90);
     optimumTime = TimePoint(optScale * timeLeft);
     maximumTime =
-      TimePoint(std::min(0.825 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
+      TimePoint(std::min(0.825 * limits.time[us] - moveOverhead, maxScale * optimumTime)) /
+      (n - std::min(n - 1, (int)std::lround(0.25 * n * elapsed_time() / optimumTime))) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
