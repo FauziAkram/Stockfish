@@ -1879,7 +1879,6 @@ void update_quiet_histories(
             workerThread.pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
     }
 }
-}
 
 }
 
