@@ -149,7 +149,7 @@ void MovePicker::score() {
             m.value = 7 * int(PieceValue[capturedPiece])
                     + (*captureHistory)[movedPiece][m.to_sq()][type_of(capturedPiece)];
             if (PieceValue[type_of(capturedPiece)] > PieceValue[type_of(movedPiece)]) {
-                m.value += 5000; 
+                m.value += 10000; 
             }
         }
 
