@@ -43,6 +43,7 @@ struct StateInfo {
     // Copied when making a move
     Key    materialKey;
     Key    pawnKey;
+    Key    pawnPromotionKey;
     Key    majorPieceKey;
     Key    minorPieceKey;
     Key    nonPawnKey[COLOR_NB];
