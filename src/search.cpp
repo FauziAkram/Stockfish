@@ -1366,7 +1366,7 @@ moves_loop:  // When in check, search starts here
     // Adjust best value for fail high cases at non-pv nodes
     if (!PvNode && bestValue >= beta && !is_decisive(bestValue) && !is_decisive(beta)
         && !is_decisive(alpha))
-        bestValue = (bestValue + beta) / 2;
+        bestValue = (7 * bestValue + beta) / 8;
 
     if (!moveCount)
         bestValue = excludedMove ? alpha : ss->inCheck ? mated_in(ss->ply) : VALUE_DRAW;
