@@ -66,15 +66,15 @@ namespace {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
-    Value futilityMult       = 109 - 27 * noTtCutNode;
-    Value improvingDeduction = improving * futilityMult * 2;
-    Value worseningDeduction = oppWorsening * futilityMult / 3;
+    Value futilityMult       = noTtCutNode ? 82 : 109;
+    Value improvingDeduction = improving ? futilityMult * 2 : VALUE_ZERO;
+    Value worseningDeduction = oppWorsening ? futilityMult / 3 : VALUE_ZERO;
 
     return futilityMult * d - improvingDeduction - worseningDeduction;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
-    return (3 + depth * depth) / (2 - improving);
+    return (3 + depth * depth) / (improving ? 1 : 2);
 }
 
 int correction_value(const Worker& w, const Position& pos, Stack* ss) {
@@ -851,7 +851,7 @@ Value Search::Worker::search(
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search
     // returns a value much above beta, we can (almost) safely prune the previous move.
-    probCutBeta = beta + 187 - 56 * improving;
+    probCutBeta = beta + (improving? 131: 187);
     if (!PvNode && depth > 3
         && !is_decisive(beta)
         // If value from transposition table is lower than probCutBeta, don't attempt
