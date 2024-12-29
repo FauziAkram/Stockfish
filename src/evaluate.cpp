@@ -75,7 +75,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int mobilityBonus = popcount(pawnMobility);
 
     // Combine the modifications into the 'positional' component.
-    positional -= mobilityBonus * 2;
+    positional -= mobilityBonus;
 
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
