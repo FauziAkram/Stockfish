@@ -66,15 +66,15 @@ namespace {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
-    Value futilityMult       = 109 - 27 * noTtCutNode;
-    Value improvingDeduction = improving * futilityMult * 2;
-    Value worseningDeduction = oppWorsening * futilityMult / 3;
+    Value futilityMult       = noTtCutNode ? 82 : 109;
+    Value improvingDeduction = improving ? futilityMult * 2 : VALUE_ZERO;
+    Value worseningDeduction = oppWorsening ? futilityMult / 3 : VALUE_ZERO;
 
     return futilityMult * d - improvingDeduction - worseningDeduction;
 }
 
 constexpr int futility_move_count(bool improving, Depth depth) {
-    return (3 + depth * depth) / (2 - improving);
+    return (3 + depth * depth) / (improving ? 1 : 2);
 }
 
 int correction_value(const Worker& w, const Position& pos, Stack* ss) {
@@ -523,7 +523,6 @@ void Search::Worker::clear() {
 
     refreshTable.clear(networks[numaAccessToken]);
 }
-
 
 // Main search function for both PV and non-PV nodes
 template<NodeType nodeType>
