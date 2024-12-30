@@ -239,7 +239,7 @@ top:
     case GOOD_CAPTURE :
         if (select([&]() {
                 // Move losing capture to endBadCaptures to be tried later
-                return pos.see_ge(*cur, (type_of(pos.piece_on(cur->to_sq())) == QUEEN) ? -cur->value / 18 : 0) ? true
+                return pos.see_ge(*cur, (type_of(pos.piece_on(cur->to_sq())) == QUEEN && depth < 10) || depth < 4 ? -cur->value / 18 : 0) ? true
                                                           : (*endBadCaptures++ = *cur, false);
             }))
             return *(cur - 1);
