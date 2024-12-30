@@ -93,13 +93,34 @@ bool TTEntry::is_occupied() const { return bool(depth8); }
 void TTEntry::save(
   Key k, Value v, bool pv, Bound b, Depth d, Move m, Value ev, uint8_t generation8) {
 
+    bool should_replace = false;
+
     // Preserve the old ttmove if we don't have a new one
     if (m || uint16_t(k) != key16)
         move16 = m;
 
     // Overwrite less valuable entries (cheapest checks first)
-    if (b == BOUND_EXACT || uint16_t(k) != key16 || d - DEPTH_ENTRY_OFFSET + 2 * pv > depth8 - 4
-        || relative_age(generation8))
+    if (b == BOUND_EXACT || uint16_t(k) != key16) {
+        should_replace = true;
+    } else {
+        // Calculate a score based on depth, PV flag, and bound type.
+        // Higher scores are more valuable.
+        int current_score = depth8 - DEPTH_ENTRY_OFFSET + 2 * (genBound8 & 0x4);
+        int new_score = d + 2 * pv;
+
+        if (current_score == new_score) {
+            // Break ties based on bound type, favoring exact scores.
+            should_replace = b == BOUND_EXACT;
+        } else {
+            should_replace = new_score > current_score;
+        }
+
+        if (!should_replace && relative_age(generation8)) {
+            should_replace = true;
+        }
+    }
+
+    if (should_replace)
     {
         assert(d > DEPTH_ENTRY_OFFSET);
         assert(d < 256 + DEPTH_ENTRY_OFFSET);
