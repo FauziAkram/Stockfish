@@ -225,20 +225,31 @@ std::tuple<bool, TTData, TTWriter> TranspositionTable::probe(const Key key) cons
     TTEntry* const tte   = first_entry(key);
     const uint16_t key16 = uint16_t(key);  // Use the low 16 bits as key inside the cluster
 
-    for (int i = 0; i < ClusterSize; ++i)
-        if (tte[i].key16 == key16)
-            // This gap is the main place for read races.
-            // After `read()` completes that copy is final, but may be self-inconsistent.
+    // First, look for an empty entry within the cluster, while keeping track of the lowest depth entry.
+    TTEntry* empty_entry = nullptr;
+    TTEntry* lowest_depth_entry = tte;
+
+    for (int i = 0; i < ClusterSize; ++i) {
+        if (tte[i].key16 == key16) {
             return {tte[i].is_occupied(), tte[i].read(), TTWriter(&tte[i])};
+        }
 
-    // Find an entry to be replaced according to the replacement strategy
-    TTEntry* replace = tte;
-    for (int i = 1; i < ClusterSize; ++i)
-        if (replace->depth8 - replace->relative_age(generation8) * 2
-            > tte[i].depth8 - tte[i].relative_age(generation8) * 2)
-            replace = &tte[i];
+        if (!tte[i].is_occupied()) {
+            if (!empty_entry) {
+                empty_entry = &tte[i];
+            }
+        } else if (tte[i].depth8 < lowest_depth_entry->depth8) {
+            lowest_depth_entry = &tte[i];
+        }
+    }
 
-    return {false, TTData(), TTWriter(replace)};
+    // If an empty entry is found, use it.
+    if (empty_entry) {
+        return {false, TTData(), TTWriter(empty_entry)};
+    }
+
+    // Otherwise, replace the entry with the lowest depth.
+    return {false, TTData(), TTWriter(lowest_depth_entry)};
 }
 
 
