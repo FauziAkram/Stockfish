@@ -100,24 +100,19 @@ void TTEntry::save(
         move16 = m;
 
     // Overwrite less valuable entries (cheapest checks first)
-    if (b == BOUND_EXACT || uint16_t(k) != key16) {
+    if (b == BOUND_EXACT || uint16_t(k) != key16)
         should_replace = true;
-    } else {
-        // Calculate a score based on depth, PV flag, and bound type.
-        // Higher scores are more valuable.
+    else {
         int current_score = depth8 - DEPTH_ENTRY_OFFSET + 2 * (genBound8 & 0x4);
         int new_score = d + 2 * pv;
 
-        if (current_score == new_score) {
-            // Break ties based on bound type, favoring exact scores.
+        if (current_score == new_score) 
             should_replace = b == BOUND_EXACT;
-        } else {
+        else
             should_replace = new_score > current_score;
-        }
 
-        if (!should_replace && relative_age(generation8)) {
+        if (!should_replace && relative_age(generation8))
             should_replace = true;
-        }
     }
 
     if (should_replace)
