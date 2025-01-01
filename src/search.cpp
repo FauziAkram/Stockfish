@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1= 628, xx2=628;
+TUNE(xx1,xx2);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1867,7 +1868,7 @@ void update_quiet_histories(
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 853 / 1024);
 
     int pIndex = pawn_structure_index(pos);
-    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * 628 / 1024;
+    workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()] << bonus * ((type_of(pos.moved_piece(move)) == PAWN)? xx1: xx2) / 1024;
 }
 
 }
