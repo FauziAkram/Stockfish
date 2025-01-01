@@ -36,15 +36,7 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
-int aa1=1000, aa2=1000,aa3=1000, aa4=1000,aa5=1000, aa6=1000,aa7=1000, aa8=1000,aa9=1000;
-int bb1=1000, bb2=1000,bb3=1000, bb4=1000,bb5=1000, bb6=1000,bb7=1000, bb8=1000,bb9=1000;
-int cc1=1000, cc2=1000,cc3=1000, cc4=1000,cc5=1000, cc6=1000,cc7=1000, cc8=1000,cc9=1000;
-int dd1=1000, dd2=1000,dd3=1000, dd4=1000,dd5=1000, dd6=1000,dd7=1000, dd8=1000,dd9=1000;
-int ee1=1000, ee2=1000,ee3=1000, ee4=1000,ee5=1000, ee6=1000,ee7=1000, ee8=1000,ee9=1000;
-int ff1=1000, ff2=1000,ff3=1000, ff4=1000,ff5=1000, ff6=1000,ff7=1000, ff8=1000,ff9=1000;
-int gg1=1000, gg2=1000,gg3=1000, gg4=1000,gg5=1000, gg6=1000,gg7=1000, gg8=1000,gg9=1000;
-int hh1=1000, hh2=1000,hh3=1000, hh4=1000,hh5=1000, hh6=1000,hh7=1000, hh8=1000,hh9=1000;
-int ii1=1000, ii2=1000,ii3=1000, ii4=1000,ii5=1000, ii6=1000,ii7=1000, ii8=1000,ii9=1000;
+
 int AA1=1048, AA2=1048,AA3=1048, AA4=1048,AA5=1048, AA6=1048,AA7=1048, AA8=1048,AA9=1048;
 int BB1=1048, BB2=1048,BB3=1048, BB4=1048,BB5=1048, BB6=1048,BB7=1048, BB8=1048,BB9=1048;
 int CC1=1048, CC2=1048,CC3=1048, CC4=1048,CC5=1048, CC6=1048,CC7=1048, CC8=1048,CC9=1048;
@@ -54,15 +46,7 @@ int FF1=1048, FF2=1048,FF3=1048, FF4=1048,FF5=1048, FF6=1048,FF7=1048, FF8=1048,
 int GG1=1048, GG2=1048,GG3=1048, GG4=1048,GG5=1048, GG6=1048,GG7=1048, GG8=1048,GG9=1048;
 int HH1=1048, HH2=1048,HH3=1048, HH4=1048,HH5=1048, HH6=1048,HH7=1048, HH8=1048,HH9=1048;
 int II1=1048, II2=1048,II3=1048, II4=1048,II5=1048, II6=1048,II7=1048, II8=1048,II9=1048;
-TUNE(aa1, aa2,aa3, aa4,aa5, aa6,aa7, aa8,aa9);
-TUNE(bb1, bb2,bb3, bb4,bb5, bb6,bb7, bb8,bb9);
-TUNE(cc1, cc2,cc3, cc4,cc5, cc6,cc7, cc8,cc9);
-TUNE(dd1, dd2,dd3, dd4,dd5, dd6,dd7, dd8,dd9);
-TUNE(ee1, ee2,ee3, ee4,ee5, ee6,ee7, ee8,ee9);
-TUNE(ff1, ff2,ff3, ff4,ff5, ff6,ff7, ff8,ff9);
-TUNE(gg1, gg2,gg3, gg4,gg5, gg6,gg7, gg8,gg9);
-TUNE(hh1, hh2,hh3, hh4,hh5, hh6,hh7, hh8,hh9);
-TUNE(ii1, ii2,ii3, ii4,ii5, ii6,ii7, ii8,ii9);
+
 TUNE(AA1, AA2,AA3, AA4,AA5, AA6,AA7, AA8,AA9);
 TUNE(BB1, BB2,BB3, BB4,BB5, BB6,BB7, BB8,BB9);
 TUNE(CC1, CC2,CC3, CC4,CC5, CC6,CC7, CC8,CC9);
@@ -100,78 +84,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
                                        : networks.big.evaluate(pos, &caches.big);
 
-    Value scaled_psqt = ((psqt < -3500)?  ((positional < -3500)? aa1:
-                                     (positional < -2500)? aa2:
-                                     (positional < -1500)? aa3:
-                                     (positional < -500)? aa4:
-                                     (positional < 500)? aa5:
-                                     (positional < 1500)? aa6:
-                                     (positional < 2500)? aa7:
-                                     (positional < 3500)? aa8:aa9):
-                     (psqt < -2500)?  ((positional < -3500)? bb1:
-                                     (positional < -2500)? bb2:
-                                     (positional < -1500)? bb3:
-                                     (positional < -500)? bb4:
-                                     (positional < 500)? bb5:
-                                     (positional < 1500)? bb6:
-                                     (positional < 2500)? bb7:
-                                     (positional < 3500)? bb8:bb9):
-                     (psqt < -1500)?  ((positional < -3500)? cc1:
-                                     (positional < -2500)? cc2:
-                                     (positional < -1500)? cc3:
-                                     (positional < -500)? cc4:
-                                     (positional < 500)? cc5:
-                                     (positional < 1500)? cc6:
-                                     (positional < 2500)? cc7:
-                                     (positional < 3500)? cc8:cc9):
-                     (psqt < -500)?  ((positional < -3500)? dd1:
-                                     (positional < -2500)? dd2:
-                                     (positional < -1500)? dd3:
-                                     (positional < -500)? dd4:
-                                     (positional < 500)? dd5:
-                                     (positional < 1500)? dd6:
-                                     (positional < 2500)? dd7:
-                                     (positional < 3500)? dd8:dd9):
-                     (psqt < 500)?  ((positional < -3500)? ee1:
-                                     (positional < -2500)? ee2:
-                                     (positional < -1500)? ee3:
-                                     (positional < -500)? ee4:
-                                     (positional < 500)? ee5:
-                                     (positional < 1500)? ee6:
-                                     (positional < 2500)? ee7:
-                                     (positional < 3500)? ee8:ee9):
-                    (psqt < 1500)?  ((positional < -3500)? ff1:
-                                     (positional < -2500)? ff2:
-                                     (positional < -1500)? ff3:
-                                     (positional < -500)? ff4:
-                                     (positional < 500)? ff5:
-                                     (positional < 1500)? ff6:
-                                     (positional < 2500)? ff7:
-                                     (positional < 3500)? ff8:ff9):
-                    (psqt < 2500)?  ((positional < -3500)? gg1:
-                                     (positional < -2500)? gg2:
-                                     (positional < -1500)? gg3:
-                                     (positional < -500)? gg4:
-                                     (positional < 500)? gg5:
-                                     (positional < 1500)? gg6:
-                                     (positional < 2500)? gg7:
-                                     (positional < 3500)? gg8:gg9):
-                     (psqt < 3500)?  ((positional < -3500)? hh1:
-                                     (positional < -2500)? hh2:
-                                     (positional < -1500)? hh3:
-                                     (positional < -500)? hh4:
-                                     (positional < 500)? hh5:
-                                     (positional < 1500)? hh6:
-                                     (positional < 2500)? hh7:
-                                     (positional < 3500)? hh8:hh9):
-                                    ((positional < -3500)? ii1:
-                                     (positional < -2500)? ii2:
-                                     (positional < -1500)? ii3:
-                                     (positional < -500)? ii4:
-                                     (positional < 500)? ii5:
-                                     (positional < 1500)? ii6:
-                                     (positional < 2500)? ii7:
-                                     (positional < 3500)? ii8:ii9)) * psqt;
+    Value scaled_psqt = 1000 * psqt;
   
   Value scaled_positional = ((psqt < -3500)?  ((positional < -3500)? AA1:
                                      (positional < -2500)? AA2:
