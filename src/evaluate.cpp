@@ -36,6 +36,36 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+namespace Eval {
+
+    // 2D table to store coefficients for each combination of ranges
+    // Now uses a simple int[2] instead of the Coefficients struct
+    int coeff_table[NUM_EVAL_RANGES][NUM_EVAL_RANGES][2];
+
+    // Helper function to determine the range for a given value
+    EvalRange get_range(int value) {
+        if (value < -4000) return LT_NEG_4000;
+        if (value < -3000) return LT_NEG_3000;
+        if (value < -2000) return LT_NEG_2000;
+        if (value < -1000) return LT_NEG_1000;
+        if (value >  4000) return GT_4000;
+        if (value >  3000) return GT_3000;
+        if (value >  2000) return GT_2000;
+        if (value >  1000) return GT_1000;
+        return LT_NEG_1000; // Default case (between -1000 and 1000 inclusive)
+    }
+
+    // Function to initialize the coefficient table
+    void initialize_coeff_table() {
+        for (int i = 0; i < NUM_EVAL_RANGES; i++) {
+            for (int j = 0; j < NUM_EVAL_RANGES; j++) {
+                coeff_table[i][j][0] = 1000;
+                coeff_table[i][j][1] = 1048;
+            }
+        }
+    }
+      TUNE(coeff_table);
+}
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
@@ -63,13 +93,24 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
                                        : networks.big.evaluate(pos, &caches.big);
 
-    Value nnue = (125 * psqt + 131 * positional) / 128;
+     // Determine ranges for psqt and positional
+    EvalRange psqt_range = get_range(psqt);
+    EvalRange positional_range = get_range(positional);
+
+    // Retrieve coefficients from the table
+    int* coeffs = coeff_table[psqt_range][positional_range];
+
+    // Calculate nnue using the retrieved coefficients
+    Value nnue = (coeffs[0] * psqt + coeffs[1] * positional) / 1024;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
     if (smallNet && (std::abs(nnue) < 236))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
-        nnue                       = (125 * psqt + 131 * positional) / 128;
+        psqt_range = get_range(psqt);
+        positional_range = get_range(positional);
+        coeffs = coeff_table[psqt_range][positional_range];
+        nnue                       = (coeffs[0] * psqt + coeffs[1] * positional) / 1024;
         smallNet                   = false;
     }
 
