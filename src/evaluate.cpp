@@ -36,6 +36,8 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int aa1=1000, aa2=1000,aa3=1000, aa4=1000,aa5=1000, aa6=1000,aa7=1000, aa8=1000,aa9=1000, aa10=1000;
+int AA1=1048, AA2=1048,AA3=1048, AA4=1048,AA5=1048, AA6=1048,AA7=1048, AA8=1048,AA9=1048, AA10=1048;
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
@@ -62,14 +64,33 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     bool smallNet           = use_smallnet(pos);
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
                                        : networks.big.evaluate(pos, &caches.big);
-
-    Value nnue = (125 * psqt + 131 * positional) / 128;
+if (psqt < -3500){
+  if (positional < -3500)
+    Value nnue = (aa1 * psqt + AA1 * positional) / 1024;
+  else if (positional < -2500)
+    Value nnue = (aa2 * psqt + AA2 * positional) / 1024;
+  else if (positional < -1500)
+    Value nnue = (aa3 * psqt + AA3 * positional) / 1024;
+  else if (positional < -500)
+    Value nnue = (aa4 * psqt + AA4 * positional) / 1024;
+  else if (positional < 500)
+    Value nnue = (aa5 * psqt + AA5 * positional) / 1024;
+  else if (positional < 1500)
+    Value nnue = (aa6 * psqt + AA6 * positional) / 1024;
+  else if (positional < 2500)
+    Value nnue = (aa7 * psqt + AA7 * positional) / 1024;
+  else if (positional < 2500)
+    Value nnue = (aa8 * psqt + AA8 * positional) / 1024;
+  else
+    Value nnue = (aa9 * psqt + AA9 * positional) / 1024;}
+  else
+    Value nnue = (aa10 * psqt + AA10 * positional) / 1024;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
     if (smallNet && (std::abs(nnue) < 236))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
-        nnue                       = (125 * psqt + 131 * positional) / 128;
+        nnue                       = (1000 * psqt + 1048 * positional) / 1024;
         smallNet                   = false;
     }
 
