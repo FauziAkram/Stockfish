@@ -36,6 +36,19 @@ namespace Eval {
 #define EvalFileDefaultNameBig "nn-1c0000000000.nnue"
 #define EvalFileDefaultNameSmall "nn-37f18f62d772.nnue"
 
+// Define the number of evaluation ranges
+constexpr int NUM_EVAL_RANGES = 9;
+enum EvalRange {
+    LT_NEG_4000,
+    LT_NEG_3000,
+    LT_NEG_2000,
+    LT_NEG_1000,
+    GT_1000,
+    GT_2000,
+    GT_3000,
+    GT_4000
+};
+
 namespace NNUE {
 struct Networks;
 struct AccumulatorCaches;
@@ -49,6 +62,8 @@ Value evaluate(const NNUE::Networks&          networks,
                const Position&                pos,
                Eval::NNUE::AccumulatorCaches& caches,
                int                            optimism);
+void initialize_coeff_table();
+EvalRange get_range(int value);
 }  // namespace Eval
 
 }  // namespace Stockfish
