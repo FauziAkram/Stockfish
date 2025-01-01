@@ -1386,7 +1386,7 @@ moves_loop:  // When in check, search starts here
         // Proportional to "how much damage we have to undo"
         bonusScale += std::min(-(ss - 1)->statScore / 113, 300);
 
-        bonusScale = std::max(bonusScale, 0);
+        bonusScale = std::max(bonusScale, 16);
 
         const int scaledBonus = stat_bonus(depth) * bonusScale / 32;
 
