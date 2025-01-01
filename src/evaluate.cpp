@@ -36,8 +36,6 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
-
-namespace Eval {
     
     // 2D table to store coefficients for each combination of ranges
     // Now uses a simple int[2] instead of the Coefficients struct
@@ -66,7 +64,6 @@ namespace Eval {
         }
     }
       TUNE(coeff_table);
-}
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
