@@ -979,8 +979,6 @@ moves_loop:  // When in check, search starts here
         // Calculate new depth for this move
         newDepth = depth - 1;
 
-        int delta = beta - alpha;
-
         Depth r = reduction(improving, depth, moveCount);
 
         // Step 14. Pruning at shallow depth (~120 Elo).
