@@ -69,7 +69,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     if (smallNet && (std::abs(nnue) < 236))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, &caches.big);
-        nnue                       = (125 * psqt + 131 * positional) / 128;
+        nnue                       = psqt + positional;;
         smallNet                   = false;
     }
 
