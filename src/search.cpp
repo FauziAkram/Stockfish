@@ -840,7 +840,7 @@ Value Search::Worker::search(
     if (PvNode && !ttData.move)
         depth -= 3;
 
-    if (!PvNode && ss->ttHit && (ttData.bound & BOUND_UPPER) && ttData.value > alpha + 2 * depth)
+    if (!PvNode && ss->ttHit && (ttData.bound & BOUND_UPPER) && ttData.value > alpha + 4 * depth)
         depth--;
 
     // Use qsearch if depth <= 0
