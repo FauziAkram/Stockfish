@@ -65,78 +65,78 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
    Value scaled_psqt = 1000 * psqt;
 
-Value scaled_positional = ((psqt < -3500)?  ((positional < -3500)? 997:
-                                     (positional < -2500)? 1060:
-                                     (positional < -1500)? 1012:
-                                     (positional < -500)? 1025:
-                                     (positional < 500)? 1046:
-                                     (positional < 1500)? 1070:
-                                     (positional < 2500)? 1049:
-                                     (positional < 3500)? 1034:999):
-                     (psqt < -2500)?  ((positional < -3500)? 1096:
-                                     (positional < -2500)? 1073:
-                                     (positional < -1500)? 1067:
-                                     (positional < -500)? 1054:
-                                     (positional < 500)? 1051:
-                                     (positional < 1500)? 981:
-                                     (positional < 2500)? 1003:
-                                     (positional < 3500)? 1032:1071):
-                     (psqt < -1500)?  ((positional < -3500)? 1105:
-                                     (positional < -2500)? 1061:
-                                     (positional < -1500)? 1051:
-                                     (positional < -500)? 1034:
-                                     (positional < 500)? 1041:
-                                     (positional < 1500)? 993:
-                                     (positional < 2500)? 1012:
-                                     (positional < 3500)? 1078:1078):
-                     (psqt < -500)?  ((positional < -3500)? 992:
-                                     (positional < -2500)? 1047:
-                                     (positional < -1500)? 1020:
-                                     (positional < -500)? 1083:
-                                     (positional < 500)? 1057:
-                                     (positional < 1500)? 994:
-                                     (positional < 2500)? 1051:
-                                     (positional < 3500)? 1070:1060):
-                     (psqt < 500)?  ((positional < -3500)? 1055:
-                                     (positional < -2500)? 1036:
-                                     (positional < -1500)? 1014:
-                                     (positional < -500)? 1020:
-                                     (positional < 500)? 1054:
-                                     (positional < 1500)? 1035:
-                                     (positional < 2500)? 1039:
-                                     (positional < 3500)? 1013:1103):
-                    (psqt < 1500)?  ((positional < -3500)? 1048:
-                                     (positional < -2500)? 1047:
-                                     (positional < -1500)? 1027:
-                                     (positional < -500)? 1052:
-                                     (positional < 500)? 1042:
-                                     (positional < 1500)? 1009:
-                                     (positional < 2500)? 1119:
-                                     (positional < 3500)? 1121:982):
-                    (psqt < 2500)?  ((positional < -3500)? 1044:
-                                     (positional < -2500)? 967:
-                                     (positional < -1500)? 1055:
-                                     (positional < -500)? 1045:
-                                     (positional < 500)? 970:
-                                     (positional < 1500)? 1032:
-                                     (positional < 2500)? 1012:
-                                     (positional < 3500)? 978:1075):
-                     (psqt < 3500)?  ((positional < -3500)? 1090:
-                                     (positional < -2500)? 1036:
-                                     (positional < -1500)? 1058:
-                                     (positional < -500)? 1078:
-                                     (positional < 500)? 1040:
-                                     (positional < 1500)? 1045:
-                                     (positional < 2500)? 1069:
-                                     (positional < 3500)? 1111:1062):
-                                    ((positional < -3500)? 1029:
-                                     (positional < -2500)? 1063:
-                                     (positional < -1500)? 1017:
-                                     (positional < -500)? 1054:
-                                     (positional < 500)? 1051:
-                                     (positional < 1500)? 1043:
-                                     (positional < 2500)? 1007:
-                                     (positional < 3500)? 1033:1092)) * positional;
+Value scaled_positional = ((psqt < -3500)?  ((positional < -3500)? 1000 * positional:
+                                 (positional < -2500)? 1060 * positional:
+                                 (positional < -1500)? 1012 * positional:
+                                 (positional < -500)? 1025 * positional:
+                                 (positional < 500)? 1046 * positional:
+                                 (positional < 1500)? 1070 * positional:
+                                 (positional < 2500)? 1049 * positional:
+                                 (positional < 3500)? 1034 * positional:1000 * positional):
+                 (psqt < -2500)?  ((positional < -3500)? 1096 * positional:
+                                 (positional < -2500)? 1073 * positional:
+                                 (positional < -1500)? 1067 * positional:
+                                 (positional < -500)? 1054 * positional:
+                                 (positional < 500)? 1051 * positional:
+                                 (positional < 1500)? 1000 * positional:
+                                 (positional < 2500)? 1003 * positional:
+                                 (positional < 3500)? 1032 * positional:1071 * positional):
+                 (psqt < -1500)?  ((positional < -3500)? 1100 * positional:
+                                 (positional < -2500)? 1061 * positional:
+                                 (positional < -1500)? 1051 * positional:
+                                 (positional < -500)? 1034 * positional:
+                                 (positional < 500)? 1041 * positional:
+                                 (positional < 1500)? 1000 * positional:
+                                 (positional < 2500)? 1012 * positional:
+                                 (positional < 3500)? 1078 * positional:1078 * positional):
+                 (psqt < -500)?  ((positional < -3500)? 1000 * positional:
+                                 (positional < -2500)? 1047 * positional:
+                                 (positional < -1500)? 1020 * positional:
+                                 (positional < -500)? 1083 * positional:
+                                 (positional < 500)? 1057 * positional:
+                                 (positional < 1500)? 1000 * positional:
+                                 (positional < 2500)? 1051 * positional:
+                                 (positional < 3500)? 1070 * positional:1060 * positional):
+                 (psqt < 500)?  ((positional < -3500)? 1055 * positional:
+                                 (positional < -2500)? 1036 * positional:
+                                 (positional < -1500)? 1014 * positional:
+                                 (positional < -500)? 1020 * positional:
+                                 (positional < 500)? 1054 * positional:
+                                 (positional < 1500)? 1035 * positional:
+                                 (positional < 2500)? 1039 * positional:
+                                 (positional < 3500)? 1013 * positional:1100 * positional):
+                (psqt < 1500)?  ((positional < -3500)? 1048 * positional:
+                                 (positional < -2500)? 1047 * positional:
+                                 (positional < -1500)? 1027 * positional:
+                                 (positional < -500)? 1052 * positional:
+                                 (positional < 500)? 1042 * positional:
+                                 (positional < 1500)? 1009 * positional:
+                                 (positional < 2500)? 1100 * positional:
+                                 (positional < 3500)? 1100 * positional:1000 * positional):
+                (psqt < 2500)?  ((positional < -3500)? 1044 * positional:
+                                 (positional < -2500)? 1000 * positional:
+                                 (positional < -1500)? 1055 * positional:
+                                 (positional < -500)? 1045 * positional:
+                                 (positional < 500)? 1000 * positional:
+                                 (positional < 1500)? 1032 * positional:
+                                 (positional < 2500)? 1012 * positional:
+                                 (positional < 3500)? 1000 * positional:1075 * positional):
+                 (psqt < 3500)?  ((positional < -3500)? 1090 * positional:
+                                 (positional < -2500)? 1036 * positional:
+                                 (positional < -1500)? 1058 * positional:
+                                 (positional < -500)? 1078 * positional:
+                                 (positional < 500)? 1040 * positional:
+                                 (positional < 1500)? 1045 * positional:
+                                 (positional < 2500)? 1069 * positional:
+                                 (positional < 3500)? 1100 * positional:1062 * positional):
+                                ((positional < -3500)? 1029 * positional:
+                                 (positional < -2500)? 1063 * positional:
+                                 (positional < -1500)? 1017 * positional:
+                                 (positional < -500)? 1054 * positional:
+                                 (positional < 500)? 1051 * positional:
+                                 (positional < 1500)? 1043 * positional:
+                                 (positional < 2500)? 1007 * positional:
+                                 (positional < 3500)? 1033 * positional:1092 * positional));
 
 Value nnue = (scaled_psqt + scaled_positional) / 1024;
 
