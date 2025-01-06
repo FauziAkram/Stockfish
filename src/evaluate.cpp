@@ -63,7 +63,82 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, &caches.small)
                                        : networks.big.evaluate(pos, &caches.big);
 
-    Value nnue = (125 * psqt + 131 * positional) / 128;
+   Value scaled_psqt = 1000 * psqt;
+
+Value scaled_positional = ((psqt < -3500)?  ((positional < -3500)? 997:
+                                     (positional < -2500)? 1060:
+                                     (positional < -1500)? 1012:
+                                     (positional < -500)? 1025:
+                                     (positional < 500)? 1046:
+                                     (positional < 1500)? 1070:
+                                     (positional < 2500)? 1049:
+                                     (positional < 3500)? 1034:999):
+                     (psqt < -2500)?  ((positional < -3500)? 1096:
+                                     (positional < -2500)? 1073:
+                                     (positional < -1500)? 1067:
+                                     (positional < -500)? 1054:
+                                     (positional < 500)? 1051:
+                                     (positional < 1500)? 981:
+                                     (positional < 2500)? 1003:
+                                     (positional < 3500)? 1032:1071):
+                     (psqt < -1500)?  ((positional < -3500)? 1105:
+                                     (positional < -2500)? 1061:
+                                     (positional < -1500)? 1051:
+                                     (positional < -500)? 1034:
+                                     (positional < 500)? 1041:
+                                     (positional < 1500)? 993:
+                                     (positional < 2500)? 1012:
+                                     (positional < 3500)? 1078:1078):
+                     (psqt < -500)?  ((positional < -3500)? 992:
+                                     (positional < -2500)? 1047:
+                                     (positional < -1500)? 1020:
+                                     (positional < -500)? 1083:
+                                     (positional < 500)? 1057:
+                                     (positional < 1500)? 994:
+                                     (positional < 2500)? 1051:
+                                     (positional < 3500)? 1070:1060):
+                     (psqt < 500)?  ((positional < -3500)? 1055:
+                                     (positional < -2500)? 1036:
+                                     (positional < -1500)? 1014:
+                                     (positional < -500)? 1020:
+                                     (positional < 500)? 1054:
+                                     (positional < 1500)? 1035:
+                                     (positional < 2500)? 1039:
+                                     (positional < 3500)? 1013:1103):
+                    (psqt < 1500)?  ((positional < -3500)? 1048:
+                                     (positional < -2500)? 1047:
+                                     (positional < -1500)? 1027:
+                                     (positional < -500)? 1052:
+                                     (positional < 500)? 1042:
+                                     (positional < 1500)? 1009:
+                                     (positional < 2500)? 1119:
+                                     (positional < 3500)? 1121:982):
+                    (psqt < 2500)?  ((positional < -3500)? 1044:
+                                     (positional < -2500)? 967:
+                                     (positional < -1500)? 1055:
+                                     (positional < -500)? 1045:
+                                     (positional < 500)? 970:
+                                     (positional < 1500)? 1032:
+                                     (positional < 2500)? 1012:
+                                     (positional < 3500)? 978:1075):
+                     (psqt < 3500)?  ((positional < -3500)? 1090:
+                                     (positional < -2500)? 1036:
+                                     (positional < -1500)? 1058:
+                                     (positional < -500)? 1078:
+                                     (positional < 500)? 1040:
+                                     (positional < 1500)? 1045:
+                                     (positional < 2500)? 1069:
+                                     (positional < 3500)? 1111:1062):
+                                    ((positional < -3500)? 1029:
+                                     (positional < -2500)? 1063:
+                                     (positional < -1500)? 1017:
+                                     (positional < -500)? 1054:
+                                     (positional < 500)? 1051:
+                                     (positional < 1500)? 1043:
+                                     (positional < 2500)? 1007:
+                                     (positional < 3500)? 1033:1092)) * positional;
+
+Value nnue = (scaled_psqt + scaled_positional) / 1024;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
     if (smallNet && (std::abs(nnue) < 236))
