@@ -51,6 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1536, xx2=50;
+TUNE(SetRange(0, 4000), xx1);
+TUNE(SetRange(-20, 500), xx2);
+
 
 namespace TB = Tablebases;
 
@@ -1408,7 +1412,7 @@ moves_loop:  // When in check, search starts here
         Piece capturedPiece = pos.captured_piece();
         assert(capturedPiece != NO_PIECE);
         thisThread->captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)]
-          << stat_bonus(depth) * 2;
+          << stat_bonus(depth) * (xx1 + x2 * depth) / 1024;
     }
 
     // Bonus when search fails low and there is a TT move
