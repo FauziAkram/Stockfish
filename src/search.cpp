@@ -1436,10 +1436,11 @@ moves_loop:  // When in check, search starts here
                        depth, bestMove, unadjustedStaticEval, tt.generation());
 
     // Adjust correction history
-    if (!ss->inCheck && !(bestMove && pos.capture(bestMove))
+    if (!ss->inCheck
         && ((bestValue < ss->staticEval && bestValue < beta)  // negative correction & no fail high
             || (bestValue > ss->staticEval && bestMove)))     // positive correction & no fail low
     {
+      if !(bestMove && pos.capture(bestMove)) {
         const auto       m             = (ss - 1)->currentMove;
         static constexpr int nonPawnWeight = 161;
 
@@ -1456,6 +1457,14 @@ moves_loop:  // When in check, search starts here
 
         if (m.is_ok())
             (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()] << bonus;
+      }
+      else if (m.is_ok()) {
+        const auto       m             = (ss - 1)->currentMove;
+        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
+                                -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+
+            (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()] << -bonus / 4;
+      }
     }
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
