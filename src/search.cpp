@@ -1442,7 +1442,7 @@ moves_loop:  // When in check, search starts here
     {
       if (bestMove && pos.capture(bestMove)){
         const auto       m             = (ss - 1)->currentMove;
-        static constexpr int nonPawnWeight = ((bestMove && pos.capture(bestMove))? 131: 173);
+        static const int nonPawnWeight = ((bestMove && pos.capture(bestMove))? 131: 173);
         thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)]
           << bonus * nonPawnWeight / 128;
         thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)]
@@ -1454,7 +1454,7 @@ moves_loop:  // When in check, search starts here
                auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
                                 -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
         thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)]
-          << bonus * zz2 / 128;
+          << bonus * 110 / 128;
         thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] << bonus * 176 / 128;
         thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] << bonus * 159 / 128;
       }
