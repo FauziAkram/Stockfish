@@ -659,10 +659,7 @@ Value Search::Worker::search(
             return ttData.value;
         }
       else // ttbounds are incompatible with current bounds
-      {
-          cutNode = cutNode ||  (ttData.value >= beta + 270);  // what was a faillow is suddenly a failhigh?
           cutNode = cutNode && !(ttData.value <= alpha - 270); // what was a failhigh is suddenly a faillow?
-      }
     }
 
     // Step 5. Tablebases probe
