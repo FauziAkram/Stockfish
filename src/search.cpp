@@ -660,8 +660,8 @@ Value Search::Worker::search(
         }
       else // ttbounds are incompatible with current bounds
       {
-          cutNode = cutNode ||  (ttValue >= beta + 270);  // what was a faillow is suddenly a failhigh?
-          cutNode = cutNode && !(ttValue <= alpha - 270); // what was a failhigh is suddenly a faillow?
+          cutNode = cutNode ||  (ttData.value >= beta + 270);  // what was a faillow is suddenly a failhigh?
+          cutNode = cutNode && !(ttData.value <= alpha - 270); // what was a failhigh is suddenly a faillow?
       }
     }
 
