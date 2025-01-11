@@ -51,9 +51,6 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, zz1=161, zz2=101, zz3=163, zz4=144, zz5=128;
-TUNE(SetRange(-256, 256), xx1,xx2,xx3,xx4,xx5);
-TUNE(SetRange(0, 256), zz1,zz2,zz3,zz4,zz5);
 
 namespace TB = Tablebases;
 
@@ -1443,23 +1440,25 @@ moves_loop:  // When in check, search starts here
         && ((bestValue < ss->staticEval && bestValue < beta)  // negative correction & no fail high
             || (bestValue > ss->staticEval && bestMove)))     // positive correction & no fail low
     {
+      if (bestMove && pos.capture(bestMove)){
         const auto       m             = (ss - 1)->currentMove;
-        static const int nonPawnWeight = ((bestMove && pos.capture(bestMove))? xx1: zz1);
-
-        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
-                                -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
-        thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)]
-          << bonus * ((bestMove && pos.capture(bestMove))? xx2: zz2) / 128;
-        thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] << bonus * ((bestMove && pos.capture(bestMove))? xx3: zz3) / 128;
-        thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] << bonus * ((bestMove && pos.capture(bestMove))? xx4: zz4) / 128;
+        static constexpr int nonPawnWeight = ((bestMove && pos.capture(bestMove))? 131: 173);
         thisThread->nonPawnCorrectionHistory[WHITE][us][non_pawn_index<WHITE>(pos)]
           << bonus * nonPawnWeight / 128;
         thisThread->nonPawnCorrectionHistory[BLACK][us][non_pawn_index<BLACK>(pos)]
           << bonus * nonPawnWeight / 128;
-
         if (m.is_ok())
-            (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()] << ((bestMove && pos.capture(bestMove)) ? xx5: zz5) / 128 * bonus;
-    }
+            (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()] << ((bestMove && pos.capture(bestMove)) ? -31: 170) / 128 * bonus;
+      }
+      else {
+               auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
+                                -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+        thisThread->pawnCorrectionHistory[us][pawn_structure_index<Correction>(pos)]
+          << bonus * zz2 / 128;
+        thisThread->majorPieceCorrectionHistory[us][major_piece_index(pos)] << bonus * 176 / 128;
+        thisThread->minorPieceCorrectionHistory[us][minor_piece_index(pos)] << bonus * 159 / 128;
+      }
+     }
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
