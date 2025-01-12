@@ -1258,8 +1258,10 @@ moves_loop:  // When in check, search starts here
         // Finished searching the move. If a stop occurred, the return value of
         // the search cannot be trusted, and we return immediately without updating
         // best move, principal variation nor transposition table.
-        if (threads.stop.load(std::memory_order_relaxed))
-            return VALUE_ZERO;
+        if (threads.stop.load(std::memory_order_relaxed)) {
+        bestValue = alpha;
+        break;
+        }
 
         if (rootNode)
         {
