@@ -196,7 +196,7 @@ void TranspositionTable::clear(ThreadPool& threads) {
 int TranspositionTable::hashfull(int maxAge) const {
     int maxAgeInternal = maxAge << GENERATION_BITS;
     int cnt            = 0;
-    for (int i = 0; i < 1000; ++i)
+    for (int i = 0; i < clusterCount; ++i)
         for (int j = 0; j < ClusterSize; ++j)
             cnt += table[i].entry[j].is_occupied()
                 && table[i].entry[j].relative_age(generation8) <= maxAgeInternal;
