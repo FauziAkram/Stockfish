@@ -260,21 +260,19 @@ top:
         [[fallthrough]];
 
     case GOOD_QUIET :
-        if (!skipQuiets && select([]() { return true; }))
-        {
-            if ((cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth))
-                return *(cur - 1);
+    if (!skipQuiets && select([&]() {
+        // Try only good quiets, sorting them if needed
+        return (cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth) ? true
+                                              : (beginBadQuiets ? 0 : beginBadQuiets = cur, false);
+        }))
+        return *(cur - 1);
 
-            // Remaining quiets are bad
-            beginBadQuiets = cur - 1;
-        }
+    // Prepare the pointers to loop over the bad captures
+    cur      = moves;
+    endMoves = endBadCaptures;
 
-        // Prepare the pointers to loop over the bad captures
-        cur      = moves;
-        endMoves = endBadCaptures;
-
-        ++stage;
-        [[fallthrough]];
+    ++stage;
+    [[fallthrough]];
 
     case BAD_CAPTURE :
         if (select([]() { return true; }))
