@@ -795,45 +795,49 @@ Value Search::Worker::search(
     improving |= ss->staticEval >= beta + 100;
 
     // Step 9. Null move search with verification search (~35 Elo)
-    if (cutNode && (ss - 1)->currentMove != Move::null() && eval >= beta
-        && ss->staticEval >= beta - 21 * depth + 421 && !excludedMove && pos.non_pawn_material(us)
-        && ss->ply >= thisThread->nmpMinPly && !is_loss(beta))
+if (cutNode && (ss - 1)->currentMove != Move::null() && eval >= beta
+    && ss->staticEval >= beta - 21 * depth + 421 && !excludedMove && pos.non_pawn_material(us)
+    && ss->ply >= thisThread->nmpMinPly && !is_loss(beta))
+{
+    assert(eval - beta >= 0);
+
+    // Null move dynamic reduction based on depth and eval
+    Depth R = std::min(int(eval - beta) / 235, 7) + depth / 3 + 5;
+
+    // Reset last move and histories
+    ss->currentMove = Move::null();
+    ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
+    ss->continuationCorrectionHistory = &thisThread->continuationCorrectionHistory[NO_PIECE][0];
+
+    pos.do_null_move(st, tt);
+
+    // Search the null move with reduced depth
+    Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, false);
+
+    pos.undo_null_move();
+
+    // Do not return unproven mate or TB scores
+    if (nullValue >= beta && !is_win(nullValue))
     {
-        assert(eval - beta >= 0);
+        // Don't do verification search if score is above our threshold
+        if (thisThread->nmpMinPly || depth < 16)
+            return nullValue;
 
-        // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 235, 7) + depth / 3 + 5;
+        assert(!thisThread->nmpMinPly);  // Recursive verification is not allowed
 
-        ss->currentMove                   = Move::null();
-        ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
-        ss->continuationCorrectionHistory = &thisThread->continuationCorrectionHistory[NO_PIECE][0];
+        // Do verification search at high depths, with null move pruning disabled
+        // until ply exceeds nmpMinPly.
+        thisThread->nmpMinPly = ss->ply + 3 * (depth - R) / 4;
 
-        pos.do_null_move(st, tt);
+        // Search with reduced depth
+        Value v = search<NonPV>(pos, ss, beta - 1, beta, depth - R, false);
 
-        Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, false);
+        thisThread->nmpMinPly = 0;
 
-        pos.undo_null_move();
-
-        // Do not return unproven mate or TB scores
-        if (nullValue >= beta && !is_win(nullValue))
-        {
-            if (thisThread->nmpMinPly || depth < 16)
-                return nullValue;
-
-            assert(!thisThread->nmpMinPly);  // Recursive verification is not allowed
-
-            // Do verification search at high depths, with null move pruning disabled
-            // until ply exceeds nmpMinPly.
-            thisThread->nmpMinPly = ss->ply + 3 * (depth - R) / 4;
-
-            Value v = search<NonPV>(pos, ss, beta - 1, beta, depth - R, false);
-
-            thisThread->nmpMinPly = 0;
-
-            if (v >= beta)
-                return nullValue;
-        }
+        if (v >= beta)
+            return nullValue;
     }
+}
 
     // Step 10. Internal iterative reductions (~9 Elo)
     // For PV nodes without a ttMove, we decrease depth.
