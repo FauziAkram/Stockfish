@@ -185,9 +185,11 @@ void MovePicker::score() {
 
         else  // Type == EVASIONS
         {
-            if (pos.capture_stage(m))
+            if (pos.capture_stage(m)){
                 m.value =
                   PieceValue[pos.piece_on(m.to_sq())] - type_of(pos.moved_piece(m)) + (1 << 28);
+              dbg_mean_of(type_of(pos.moved_piece(m)));
+              dbg_mean_of(type_of(pos.moved_piece(m)));}
             else
                 m.value = (*mainHistory)[pos.side_to_move()][m.from_to()]
                         + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
