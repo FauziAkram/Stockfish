@@ -171,8 +171,7 @@ void MovePicker::score() {
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
                                                   : pt == ROOK && !(to & threatenedByMinor) ? 25600
                                                   : !(to & threatenedByPawn)                ? 14450
-                                                  : (to & threatenedByPawn)                 ? -5000
-                                                                                            : 0)
+                                                                                            : -5000)
                                                : 0;
 
             // malus for putting piece en prise
