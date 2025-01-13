@@ -180,7 +180,7 @@ void MovePicker::score() {
                                                                      : 0);
 
             m.value += (rank_distance(to, RANK_4) + rank_distance(to, RANK_5)
-              + file_distance(to, FILE_D) + file_distance(to, FILE_E)) * 128;
+              + file_distance(to, FILE_D) + file_distance(to, FILE_E)) * 256;
 
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
