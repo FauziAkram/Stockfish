@@ -310,7 +310,7 @@ void Search::Worker::iterative_deepening() {
             selDepth = 0;
 
             // Reset aspiration window starting size
-            delta     = 5 + (rootMoves[pvIdx].meanSquaredScore > 0 ? (rootMoves[pvIdx].meanSquaredScore) / 12991: (-rootMoves[pvIdx].meanSquaredScore) / 12991;
+            delta     = 5 + (rootMoves[pvIdx].meanSquaredScore > 0 ? (rootMoves[pvIdx].meanSquaredScore) / 12991: (-rootMoves[pvIdx].meanSquaredScore) / 12991);
             Value avg = rootMoves[pvIdx].averageScore;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
