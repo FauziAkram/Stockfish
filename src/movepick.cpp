@@ -185,7 +185,7 @@ void MovePicker::score() {
 
         else  // Type == EVASIONS
         {
-            if !(pos.capture_stage(m))
+            if (!pos.capture_stage(m))
                 m.value = (*mainHistory)[pos.side_to_move()][m.from_to()]
                         + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
                         + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
