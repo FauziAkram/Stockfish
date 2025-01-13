@@ -191,7 +191,7 @@ void MovePicker::score() {
                         + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
             else
                 m.value =
-                  (1 << 26) + PieceValue[pos.piece_on(m.to_sq())];
+                  (1 << 30) + PieceValue[pos.piece_on(m.to_sq())];
         }
 }
 
