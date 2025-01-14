@@ -472,21 +472,45 @@ void Position::update_slider_blockers(Color c) const {
     Bitboard snipers = ((attacks_bb<ROOK>(ksq) & pieces(QUEEN, ROOK))
                         | (attacks_bb<BISHOP>(ksq) & pieces(QUEEN, BISHOP)))
                      & pieces(~c);
-    Bitboard occupancy = pieces() ^ snipers;
 
     while (snipers)
     {
         Square   sniperSq = pop_lsb(snipers);
-        Bitboard b        = between_bb(ksq, sniperSq) & occupancy;
+        // Use a precomputed lookup table to get potential blockers
+        Bitboard b = BlockersLookup[ksq][sniperSq];
 
-        if (b && !more_than_one(b))
-        {
-            st->blockersForKing[c] |= b;
-            if (b & pieces(c))
-                st->pinners[~c] |= sniperSq;
+        if (b) {
+            // Lightweight check to see if there is exactly one piece in the potential blockers
+            if (!(b & (b - 1)) && (b & pieces()))
+            {
+                st->blockersForKing[c] |= b;
+                if (b & pieces(c))
+                    st->pinners[~c] |= sniperSq;
+            }
         }
     }
 }
+
+// Global array to store potential blockers for each square pair
+extern Bitboard BlockersLookup[SQUARE_NB][SQUARE_NB];
+
+// Initialization of BlockersLookup in Bitboards::init()
+    for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1)
+    {
+        for (Square s2 = SQ_A1; s2 <= SQ_H8; ++s2)
+        {
+            if (s1 != s2 && (PseudoAttacks[BISHOP][s1] & s2 || PseudoAttacks[ROOK][s1] & s2))
+            {
+                BlockersLookup[s1][s2] =
+                  (attacks_bb(BISHOP, s1, square_bb(s2)) & attacks_bb(BISHOP, s2, square_bb(s1)))
+                  | (attacks_bb(ROOK, s1, square_bb(s2)) & attacks_bb(ROOK, s2, square_bb(s1)));
+            }
+            else
+            {
+                BlockersLookup[s1][s2] = 0;
+            }
+        }
+    }
 
 
 // Computes a bitboard of all pieces which attack a given square.
