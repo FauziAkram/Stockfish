@@ -86,7 +86,8 @@ MovePicker::MovePicker(const Position&              p,
                        const CapturePieceToHistory* cph,
                        const PieceToHistory**       ch,
                        const PawnHistory*           ph,
-                       int                          pl) :
+                       int                          pl,
+                       Search::Stack*               stack) :
     pos(p),
     mainHistory(mh),
     lowPlyHistory(lph),
@@ -95,7 +96,8 @@ MovePicker::MovePicker(const Position&              p,
     pawnHistory(ph),
     ttMove(ttm),
     depth(d),
-    ply(pl) {
+    ply(pl)
+    ss(stack) {
 
     if (pos.checkers())
         stage = EVASION_TT + !(ttm && pos.pseudo_legal(ttm));
@@ -110,7 +112,8 @@ MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceTo
     pos(p),
     captureHistory(cph),
     ttMove(ttm),
-    threshold(th) {
+    threshold(th),
+    ss(nullptr) {
     assert(!pos.checkers());
 
     stage = PROBCUT_TT
@@ -142,8 +145,10 @@ void MovePicker::score() {
                          | (pos.pieces(us, KNIGHT, BISHOP) & threatenedByPawn);
     }
 
-    Move    counterMove                = (ss - 1)->currentMove;
-    Move    followupMove               = (ss - 2)->currentMove;
+    // Use ss to access previous moves
+    Move counterMove = (ss - 1)->currentMove;
+    Move followupMove = (ss - 2)->currentMove;
+
     bool    hasCounterMove             = counterMove != Move::none();
     bool    hasFollowupMove            = followupMove != Move::none();
     Piece   counterMovePiece           = hasCounterMove ? pos.piece_on(counterMove.to_sq()) : NO_PIECE;
