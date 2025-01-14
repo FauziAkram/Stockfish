@@ -96,7 +96,7 @@ MovePicker::MovePicker(const Position&              p,
     pawnHistory(ph),
     ttMove(ttm),
     depth(d),
-    ply(pl)
+    ply(pl),
     ss(stack) {
 
     if (pos.checkers())
