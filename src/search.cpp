@@ -844,6 +844,20 @@ Value Search::Worker::search(
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
 
+    // Step 10.1 Conditional depth increase based on previous iteration's stability
+    if (rootNode && is_mainthread()) {
+        bool stable = true;
+        for (size_t i = 0; i < main_manager()->iterValue.size() - 1; ++i) {
+            if (std::abs(main_manager()->iterValue[i] - main_manager()->iterValue[i + 1]) > 50) {
+                stable = false;
+                break;
+            }
+        }
+        if (stable && rootDepth > 5) {
+            depth++;
+        }
+    }
+
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search
     // returns a value much above beta, we can (almost) safely prune the previous move.
