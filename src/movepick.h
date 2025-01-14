@@ -47,7 +47,7 @@ class MovePicker {
                const PieceToHistory**,
                const PawnHistory*,
                int,
-               Search::Stack*); // Add the ss pointer here
+               Search::Stack*);
     MovePicker(const Position&, Move, int, const CapturePieceToHistory*);
     Move next_move();
     void skip_quiet_moves();
