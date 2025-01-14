@@ -142,6 +142,15 @@ void MovePicker::score() {
                          | (pos.pieces(us, KNIGHT, BISHOP) & threatenedByPawn);
     }
 
+    Move    counterMove                = (ss - 1)->currentMove;
+    Move    followupMove               = (ss - 2)->currentMove;
+    bool    hasCounterMove             = counterMove != Move::none();
+    bool    hasFollowupMove            = followupMove != Move::none();
+    Piece   counterMovePiece           = hasCounterMove ? pos.piece_on(counterMove.to_sq()) : NO_PIECE;
+    Piece   followupMovePiece          = hasFollowupMove ? pos.piece_on(followupMove.to_sq()) : NO_PIECE;
+    Square  counterMoveDestination     = hasCounterMove ? counterMove.to_sq() : SQ_NONE;
+    Square  followupMoveDestination    = hasFollowupMove ? followupMove.to_sq() : SQ_NONE;
+
     for (auto& m : *this)
         if constexpr (Type == CAPTURES)
             m.value =
@@ -178,6 +187,12 @@ void MovePicker::score() {
             m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * 49000
                         : pt == ROOK && bool(to & threatenedByMinor) ? 24335
                                                                      : 0);
+
+            // Countermove and follow-up move history
+            if (hasCounterMove)
+                m.value += (*continuationHistory[0])[counterMovePiece][counterMoveDestination];
+            if (hasFollowupMove)
+                m.value += (*continuationHistory[1])[followupMovePiece][followupMoveDestination];
 
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
