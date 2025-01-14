@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1018, xx2=1018;
+TUNE(SetRange(0, 2048), xx1);
+TUNE(SetRange(-200, 2500), xx2);
 
 namespace TB = Tablebases;
 
@@ -1147,7 +1150,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
-            r -= 1018;
+            r -= xx1;
 
         // These reduction adjustments have no proven non-linear scaling
 
@@ -1187,6 +1190,8 @@ moves_loop:  // When in check, search starts here
         // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1)
         {
+            if (PvNode && capture)
+              r -= xx2;
             // In general we want to cap the LMR depth search at newDepth, but when
             // reduction is negative, we allow this move a limited search extension
             // beyond the first move depth.
