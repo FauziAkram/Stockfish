@@ -125,7 +125,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     else
     {
         optScale = std::min((0.88 + ply / 116.4) / mtg, 0.88 * limits.time[us] / timeLeft);
-        maxScale = std::min(6.3, 1.5 + 0.11 * mtg);
+        maxScale = 6;
     }
 
     // Limit the maximum possible time for this move
