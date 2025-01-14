@@ -1836,11 +1836,10 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
     for (const auto [i, weight] : conthist_bonuses)
     {
-        // Only update the first 2 continuation histories if we are in check
-        if (ss->inCheck && i > 2)
-            break;
-        if (((ss - i)->currentMove).is_ok())
-            (*(ss - i)->continuationHistory)[pc][to] << bonus * weight / 1024;
+        if (   !((ss - i)->currentMove).is_ok()
+            || (ss->inCheck && i > 2))
+          break;
+        (*(ss - i)->continuationHistory)[pc][to] << bonus * weight / 1024;
     }
 }
 
