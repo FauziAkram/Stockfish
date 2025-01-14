@@ -21,6 +21,7 @@
 
 #include "history.h"
 #include "movegen.h"
+#include "search.h"
 #include "types.h"
 
 namespace Stockfish {
