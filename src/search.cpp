@@ -1491,6 +1491,10 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         ss->pv[0]    = Move::none();
     }
 
+    Depth qDepth = std::max(DEPTH_QS, depth);
+    if (ss->ply < thisThread->rootDepth * 2 && pvIdx > 0)
+        qDepth -= pvIdx / 2;
+
     Worker* thisThread = this;
     bestMove           = Move::none();
     ss->inCheck        = pos.checkers();
