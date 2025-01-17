@@ -848,7 +848,7 @@ Value Search::Worker::search(
     if (rootNode && is_mainthread()) {
         bool stable = true;
         for (size_t i = 0; i < main_manager()->iterValue.size() - 1; ++i) {
-            if (std::abs(main_manager()->iterValue[i] - main_manager()->iterValue[i + 1]) > 50) {
+            if (std::abs(main_manager()->iterValue[i] - main_manager()->iterValue[i + 1]) > 53) {
                 stable = false;
                 break;
             }
