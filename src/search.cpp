@@ -445,6 +445,36 @@ void Search::Worker::iterative_deepening() {
             lastBestMoveDepth = rootDepth;
         }
 
+        if (mainThread) {
+            mainThread->bestMoveHistory.emplace_back(rootMoves[0].pv[0], rootMoves[0].score);
+            if (mainThread->bestMoveHistory.size() > 3) { // Keep only the last 3 iterations
+                mainThread->bestMoveHistory.erase(mainThread->bestMoveHistory.begin());
+            }
+
+            // Calculate stability (Defined before the while() loop)
+            double stability = 1.0;
+            if (mainThread->bestMoveHistory.size() >= 3) {
+                // Example: Check if best move has been the same for the last 3 iterations
+                bool sameMove = mainThread->bestMoveHistory[0].first == mainThread->bestMoveHistory[1].first
+                                && mainThread->bestMoveHistory[1].first == mainThread->bestMoveHistory[2].first;
+
+                // Example: Calculate score stability as the inverse of the standard deviation
+                double mean = 0.0;
+                for (const auto& entry : mainThread->bestMoveHistory) {
+                    mean += entry.second;
+                }
+                mean /= mainThread->bestMoveHistory.size();
+
+                double sqDiffSum = 0.0;
+                for (const auto& entry : mainThread->bestMoveHistory) {
+                    sqDiffSum += (entry.second - mean) * (entry.second - mean);
+                }
+                double stdev = std::sqrt(sqDiffSum / mainThread->bestMoveHistory.size());
+                stability = 1.0 / (1.0 + stdev);
+                stability = sameMove ? stability + 0.3 : stability;
+            }
+        }
+
         if (!mainThread)
             continue;
 
