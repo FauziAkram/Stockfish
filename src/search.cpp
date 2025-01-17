@@ -754,6 +754,9 @@ Value Search::Worker::search(
                        unadjustedStaticEval, tt.generation());
     }
 
+    if (!rootNode && multiPV > 1 && bestValue != -VALUE_INFINITE && eval < bestValue - 200)
+        eval -= std::min(int(bestValue - eval) / 4, 200);
+
     // Use static evaluation difference to improve quiet move ordering (~9 Elo)
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
