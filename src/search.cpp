@@ -1850,6 +1850,11 @@ void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
 
     Color us = pos.side_to_move();
+    double scaleFactor = 1.0;
+    if (pvIdx > 0)
+        scaleFactor = std::clamp(1.0 / (pvIdx + 1), 0.5, 1.0);
+    bonus = int(bonus * scaleFactor);
+  
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
