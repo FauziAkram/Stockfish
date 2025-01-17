@@ -325,12 +325,22 @@ void Search::Worker::iterative_deepening() {
             int failedHighCnt = 0;
             while (true)
             {
+                // Adjust depth based on stability
+            Depth depthBonus = 0;
+            if (mainThread && mainThread->bestMoveHistory.size() >= 3) {
+                if (stability > 1.3) {
+                    depthBonus = 1; // Bonus for stable lines
+                } else if (stability < 0.8) {
+                    depthBonus = (depthBonus == 0 && rootDepth > 5) ? -1 : depthBonus; // Penalty for unstable lines, but only after a few plies
+                }
+            }
                 // Adjust the effective depth searched, but ensure at least one
                 // effective increment for every four searchAgain steps (see issue #2717).
                 Depth adjustedDepth =
-                  std::max(1, rootDepth - failedHighCnt - 3 * (searchAgainCounter + 1) / 4);
+                  std::max(1, rootDepth + depthBonus - failedHighCnt - 3 * (searchAgainCounter + 1) / 4);
                 rootDelta = beta - alpha;
                 bestValue = search<Root>(rootPos, ss, alpha, beta, adjustedDepth, false);
+                
 
                 // Bring the best move to the front. It is critical that sorting
                 // is done with a stable algorithm because all the values but the
@@ -415,7 +425,39 @@ void Search::Worker::iterative_deepening() {
             lastBestMoveDepth = rootDepth;
         }
 
-        if (!mainThread)
+        // Update best move history
+        if (mainThread) {
+            mainThread->bestMoveHistory.emplace_back(rootMoves[0].pv[0], rootMoves[0].score);
+            if (mainThread->bestMoveHistory.size() > 3) { // Keep only the last 3 iterations
+                mainThread->bestMoveHistory.erase(mainThread->bestMoveHistory.begin());
+            }
+
+            // Calculate stability
+            double stability = 1.0;
+            if (mainThread->bestMoveHistory.size() >= 3) {
+                // Check if best move has been the same for the last 3 iterations
+                bool sameMove =
+                  mainThread->bestMoveHistory[0].first == mainThread->bestMoveHistory[1].first
+                  && mainThread->bestMoveHistory[1].first == mainThread->bestMoveHistory[2].first;
+
+                // Calculate score stability as the inverse of the standard deviation
+                double mean = 0.0;
+                for (const auto& entry : mainThread->bestMoveHistory) {
+                    mean += entry.second;
+                }
+                mean /= mainThread->bestMoveHistory.size();
+
+                double sqDiffSum = 0.0;
+                for (const auto& entry : mainThread->bestMoveHistory) {
+                    sqDiffSum += (entry.second - mean) * (entry.second - mean);
+                }
+                double stdev = std::sqrt(sqDiffSum / mainThread->bestMoveHistory.size());
+                stability = 1.0 / (1.0 + stdev);
+                stability = sameMove ? stability + 0.3 : stability;
+            }
+        }
+
+        else
             continue;
 
         // Have we found a "mate in x"?
