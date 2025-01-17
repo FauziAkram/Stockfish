@@ -32,6 +32,7 @@
 #include <ratio>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "evaluate.h"
 #include "history.h"
