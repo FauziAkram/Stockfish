@@ -164,6 +164,11 @@ void MovePicker::score() {
             m.value += (*continuationHistory[3])[pc][to];
             m.value += (*continuationHistory[5])[pc][to];
 
+            if (ply < LOW_PLY_HISTORY_SIZE)
+            m.value += (*lowPlyHistory)[ply][m.from_to()];
+            if (rootNode && pvIdx < MAX_MOVES) {
+            m.value += rootMoveHistory[pvIdx][m.from_to()];
+
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
