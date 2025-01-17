@@ -325,12 +325,12 @@ void Search::Worker::iterative_deepening() {
             int failedHighCnt = 0;
             while (true)
             {
-                // Calculate stability for each PV line (example based on score fluctuation)
+                // Calculate stability for each PV line
                 double stability = 1.0 / (1.0 + std::abs(rootMoves[pvIdx].score - rootMoves[pvIdx].previousScore));
 
                 // Adjust depth based on stability
-                Depth depthBonus = (stability > 1.2 && pvIdx < 4) ? 1 :  // Example threshold and bonus
-                                      (stability < 0.8 && pvIdx > 0) ? -1 : 0; // Example penalty, no penalty for first PV
+                Depth depthBonus = (stability > 1.2 && pvIdx < 4) ? 1 :
+                                      (stability < 0.8 && pvIdx > 0) ? -1 : 0;
 
                 // Adjust the effective depth searched, but ensure at least one
                 // effective increment for every four searchAgain steps (see issue #2717).
