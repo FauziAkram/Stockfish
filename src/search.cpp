@@ -315,6 +315,9 @@ void Search::Worker::iterative_deepening() {
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
+            if (multiPV > 1 && pvIdx > 0)
+            delta += 5;
+
             // Adjust optimism based on root move's averageScore (~4 Elo)
             optimism[us]  = 141 * avg / (std::abs(avg) + 83);
             optimism[~us] = -optimism[us];
