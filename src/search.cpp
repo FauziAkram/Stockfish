@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=50, xx2=5;
+TUNE(xx1,xx2);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -843,6 +844,20 @@ Value Search::Worker::search(
     // Use qsearch if depth <= 0
     if (depth <= 0)
         return qsearch<PV>(pos, ss, alpha, beta);
+
+    // Step 10.1 Conditional depth increase based on previous iteration's stability
+    if (rootNode && is_mainthread()) {
+        bool stable = true;
+        for (size_t i = 0; i < main_manager()->iterValue.size() - 1; ++i) {
+            if (std::abs(main_manager()->iterValue[i] - main_manager()->iterValue[i + 1]) > xx1) {
+                stable = false;
+                break;
+            }
+        }
+        if (stable && rootDepth > xx2) {
+            depth++;
+        }
+    }
 
     // Step 11. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search
