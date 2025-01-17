@@ -246,6 +246,7 @@ class SearchManager: public ISearchManager {
     Value                bestPreviousScore;
     Value                bestPreviousAverageScore;
     bool                 stopOnPonderhit;
+    std::vector<std::pair<Move, Value>> bestMoveHistory;
 
     size_t id;
 
