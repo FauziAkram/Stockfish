@@ -324,17 +324,36 @@ void Search::Worker::iterative_deepening() {
             // high/low, re-search with a bigger window until we don't fail
             // high/low anymore.
             int failedHighCnt = 0;
+
+            // Calculate stability for each PV line
+        double stability = 1.0;
+        if (mainThread && mainThread->bestMoveHistory.size() >= 3) {
+            // Check if best move has been the same for the last 3 iterations
+            bool sameMove = mainThread->bestMoveHistory[0].first == mainThread->bestMoveHistory[1].first
+                            && mainThread->bestMoveHistory[1].first == mainThread->bestMoveHistory[2].first;
+
+            // Calculate score stability as the inverse of the standard deviation
+            double mean = 0.0;
+            for (const auto& entry : mainThread->bestMoveHistory) {
+                mean += entry.second;
+            }
+            mean /= mainThread->bestMoveHistory.size();
+
+            double sqDiffSum = 0.0;
+            for (const auto& entry : mainThread->bestMoveHistory) {
+                sqDiffSum += (entry.second - mean) * (entry.second - mean);
+            }
+            double stdev = std::sqrt(sqDiffSum / mainThread->bestMoveHistory.size());
+            stability = 1.0 / (1.0 + stdev);
+            stability = sameMove ? stability + 0.3 : stability;
+        }
+          
             while (true)
             {
                 // Adjust depth based on stability
-            Depth depthBonus = 0;
-            if (mainThread && mainThread->bestMoveHistory.size() >= 3) {
-                if (stability > 1.3) {
-                    depthBonus = 1; // Bonus for stable lines
-                } else if (stability < 0.8) {
-                    depthBonus = (depthBonus == 0 && rootDepth > 5) ? -1 : depthBonus; // Penalty for unstable lines, but only after a few plies
-                }
-            }
+            Depth depthBonus = (stability > 1.3 && pvIdx < 4) ? 1 :
+                                (stability < 0.8 && pvIdx > 0) ? -1 : 0;
+              
                 // Adjust the effective depth searched, but ensure at least one
                 // effective increment for every four searchAgain steps (see issue #2717).
                 Depth adjustedDepth =
