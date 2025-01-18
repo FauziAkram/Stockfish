@@ -972,6 +972,10 @@ moves_loop:  // When in check, search starts here
 
         Depth r = reduction(improving, depth, moveCount, delta);
 
+        // Decrease reduction if position is or has been on the PV (~7 Elo)
+        if (ss->ttPv)
+            r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960;
+
         // Step 14. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
         if (!rootNode && pos.non_pawn_material(us) && !is_loss(bestValue))
@@ -1082,6 +1086,7 @@ moves_loop:  // When in check, search starts here
                               + (value < singularBeta - quadMargin);
 
                     depth += ((!PvNode) && (depth < 15));
+                    r += xx1;
                 }
 
                 // Multi-cut pruning
@@ -1090,8 +1095,9 @@ moves_loop:  // When in check, search starts here
                 // over the original beta, we assume this expected cut-node is not
                 // singular (multiple moves fail high), and we can prune the whole
                 // subtree by returning a softbound.
-                else if (value >= beta && !is_decisive(value))
+                else if (value >= beta && !is_decisive(value)) {
                     return value;
+                    r += xx2; }
 
                 // Negative extensions
                 // If other moves failed high over (ttValue - margin) without the
@@ -1101,21 +1107,24 @@ moves_loop:  // When in check, search starts here
                 // ttMove in favor of other moves based on some conditions:
 
                 // If the ttMove is assumed to fail high over current beta (~7 Elo)
-                else if (ttData.value >= beta)
+                else if (ttData.value >= beta) {
                     extension = -3;
+                     r += xx3; }
 
                 // If we are on a cutNode but the ttMove is not assumed to fail high
                 // over current beta (~1 Elo)
-                else if (cutNode)
+                else if (cutNode) {
                     extension = -2;
+                     r += xx4; }
             }
 
             // Extension for capturing the previous moved piece (~1 Elo at LTC)
             else if (PvNode && move.to_sq() == prevSq
                      && thisThread->captureHistory[movedPiece][move.to_sq()]
                                                   [type_of(pos.piece_on(move.to_sq()))]
-                          > 4126)
+                          > 4126) {
                 extension = 1;
+                 r += xx5; }
         }
 
         // Add extension to new depth
@@ -1140,10 +1149,6 @@ moves_loop:  // When in check, search starts here
         // They are optimized to time controls of 180 + 1.8 and longer,
         // so changing them or adding conditions that are similar requires
         // tests at these types of time controls.
-
-        // Decrease reduction if position is or has been on the PV (~7 Elo)
-        if (ss->ttPv)
-            r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960;
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
