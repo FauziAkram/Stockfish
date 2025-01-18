@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=0, xx2=0, xx3=0;
+TUNE(SetRange(-2048, 2048), xx1, xx2, xx3);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1165,7 +1166,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
-            r += 940 + allNode * 887;
+            r += 940 + allNode * 887 + xx1 * (r > -1) + xx2 * ((r > -1) && (depth < 7)) + xx3 * (depth < 7);
 
         // For first picked move (ttMove) reduce reduction (~3 Elo)
         else if (move == ttData.move)
