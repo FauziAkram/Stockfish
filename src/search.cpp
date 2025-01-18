@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=0, 	xx2=0, 	xx3=0, 	xx4=0, 	xx5=0, 	xx6=0, 	xx7=0, 	xx8=0, 	xx9=0, 	xx10=0;
+TUNE(SetRange(-120, 120), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -972,6 +973,10 @@ moves_loop:  // When in check, search starts here
 
         Depth r = reduction(improving, depth, moveCount, delta);
 
+        // Decrease reduction if position is or has been on the PV (~7 Elo)
+        if (ss->ttPv)
+            r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960  + xx1 * depth;
+
         // Step 14. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
         if (!rootNode && pos.non_pawn_material(us) && !is_loss(bestValue))
@@ -1141,45 +1146,41 @@ moves_loop:  // When in check, search starts here
         // so changing them or adding conditions that are similar requires
         // tests at these types of time controls.
 
-        // Decrease reduction if position is or has been on the PV (~7 Elo)
-        if (ss->ttPv)
-            r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960;
-
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
-            r -= 1018;
+            r -= 1018 + xx2 * depth;
 
         // These reduction adjustments have no proven non-linear scaling
 
-        r += 307;
+        r += 307 + xx3 * depth;
 
         r -= std::abs(correctionValue) / 34112;
 
         // Increase reduction for cut nodes (~4 Elo)
         if (cutNode)
-            r += 2355 - (ttData.depth >= depth && ss->ttPv) * 1141;
+            r += 2355 - (ttData.depth >= depth && ss->ttPv) * 1141 + xx4 * depth;
 
         // Increase reduction if ttMove is a capture but the current move is not a capture (~3 Elo)
         if (ttCapture && !capture)
-            r += 1087 + (depth < 8) * 990;
+            r += 1087 + (depth < 8) * 990 + xx5 * depth;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
-            r += 940 + allNode * 887;
+            r += 940 + allNode * 887 + xx6 * depth;
 
         // For first picked move (ttMove) reduce reduction (~3 Elo)
         else if (move == ttData.move)
-            r -= 1960;
+            r -= 1960 + xx7 * depth;
 
         if (capture)
             ss->statScore =
               7 * int(PieceValue[pos.captured_piece()])
               + thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())]
-              - 4666;
+              - 4666 + xx8 * depth;
         else
             ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
                           + (*contHist[0])[movedPiece][move.to_sq()]
-                          + (*contHist[1])[movedPiece][move.to_sq()] - 3874;
+                          + (*contHist[1])[movedPiece][move.to_sq()] - 3874 + xx9 * depth;
 
         // Decrease/increase reduction for moves with a good/bad history (~8 Elo)
         r -= ss->statScore * 1451 / 16384;
@@ -1221,7 +1222,7 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present (~6 Elo)
             if (!ttData.move)
-                r += 2111;
+                r += 2111 + xx10 * depth;
 
             // Note that if expected reduction is high, we reduce search depth by 1 here (~9 Elo)
             value =
