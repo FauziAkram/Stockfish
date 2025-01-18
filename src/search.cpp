@@ -972,6 +972,10 @@ moves_loop:  // When in check, search starts here
 
         Depth r = reduction(improving, depth, moveCount, delta);
 
+        // Decrease reduction if position is or has been on the PV (~7 Elo)
+        if (ss->ttPv)
+            r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960;
+
         // Step 14. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
         if (!rootNode && pos.non_pawn_material(us) && !is_loss(bestValue))
@@ -1141,10 +1145,6 @@ moves_loop:  // When in check, search starts here
         // so changing them or adding conditions that are similar requires
         // tests at these types of time controls.
 
-        // Decrease reduction if position is or has been on the PV (~7 Elo)
-        if (ss->ttPv)
-            r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960;
-
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
             r -= 1018;
@@ -1165,7 +1165,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
-            r += 940 + allNode * 887;
+            r += 940 + allNode * 887 - 180 * (r > -1);
 
         // For first picked move (ttMove) reduce reduction (~3 Elo)
         else if (move == ttData.move)
