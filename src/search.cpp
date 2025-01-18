@@ -1093,6 +1093,7 @@ moves_loop:  // When in check, search starts here
                               + (value < singularBeta - quadMargin);
 
                     depth += ((!PvNode) && (depth < 15));
+                    r -= 64;
                 }
 
                 // Multi-cut pruning
@@ -1101,8 +1102,10 @@ moves_loop:  // When in check, search starts here
                 // over the original beta, we assume this expected cut-node is not
                 // singular (multiple moves fail high), and we can prune the whole
                 // subtree by returning a softbound.
-                else if (value >= beta && !is_decisive(value))
+                else if (value >= beta && !is_decisive(value)) {
                     return value;
+                    r -= 266;
+                }
 
                 // Negative extensions
                 // If other moves failed high over (ttValue - margin) without the
@@ -1117,16 +1120,20 @@ moves_loop:  // When in check, search starts here
 
                 // If we are on a cutNode but the ttMove is not assumed to fail high
                 // over current beta (~1 Elo)
-                else if (cutNode)
+                else if (cutNode) {
                     extension = -2;
+                    r -= 87;
+                }
             }
 
             // Extension for capturing the previous moved piece (~1 Elo at LTC)
             else if (PvNode && move.to_sq() == prevSq
                      && thisThread->captureHistory[movedPiece][move.to_sq()]
                                                   [type_of(pos.piece_on(move.to_sq()))]
-                          > 4126)
+                          > 4126) {
                 extension = 1;
+                r -= 122;
+            }
         }
 
         // Step 16. Make the move
