@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0, 	xx2=0, 	xx3=0, 	xx4=0, 	xx5=0;
+TUNE(SetRange(-2048, 2048), xx1,xx2,xx3,xx4,xx5);
 
 namespace TB = Tablebases;
 
