@@ -55,7 +55,7 @@ int xx1=53, 	xx2=84, 	xx3=0, 	xx4=250, 	xx5=176, 	xx6=100, 	xx7=285, 	xx8=253, 	
 int zz1=239082, zz1a=-239082, zz2=274334, zz2a=-274334, zz3=270916, zz2a=270916;
 TUNE(xx1,xx2);
 TUNE(SetRange(-80, 160), xx3);
-TUNE(xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13;
+TUNE(xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13);
 TUNE(zz1,zz1a,zz2,zz2a,zz3,zz3a);
 
 namespace TB = Tablebases;
