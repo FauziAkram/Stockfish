@@ -1151,7 +1151,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
-            r -= 1018;
+            r -= 1018 + 18 * depth;
 
         // These reduction adjustments have no proven non-linear scaling
 
