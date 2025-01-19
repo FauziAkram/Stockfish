@@ -981,7 +981,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction if position is or has been on the PV (~7 Elo)
         if (ss->ttPv)
-            r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960;
+            r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960 + 16 * depth;;
 
         // Step 14. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
@@ -1151,29 +1151,29 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
-            r -= 1018;
+            r -= 1018 + 18 * depth;
 
         // These reduction adjustments have no proven non-linear scaling
 
-        r += 307;
+        r += 307 - 10 * depth;
 
         r -= std::abs(correctionValue) / 34112;
 
         // Increase reduction for cut nodes (~4 Elo)
         if (cutNode)
-            r += 2355 - (ttData.depth >= depth && ss->ttPv) * 1141;
+            r += 2355 - (ttData.depth >= depth && ss->ttPv) * 1141 + 11 * depth;
 
         // Increase reduction if ttMove is a capture but the current move is not a capture (~3 Elo)
         if (ttCapture && !capture)
-            r += 1087 + (depth < 8) * 990;
+            r += 1087 + (depth < 8) * 990 - 8 * depth;
 
         // Increase reduction if next ply has a lot of fail high (~5 Elo)
         if ((ss + 1)->cutoffCnt > 3)
-            r += 940 + allNode * 887;
+            r += 940 + allNode * 887 + 9 * depth;
 
         // For first picked move (ttMove) reduce reduction (~3 Elo)
         else if (move == ttData.move)
-            r -= 1960;
+            r -= 1960 + 6 * depth;
 
         if (capture)
             ss->statScore =
