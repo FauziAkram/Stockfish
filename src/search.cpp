@@ -52,7 +52,7 @@
 
 namespace Stockfish {
 int xx1=53, 	xx2=84, 	xx3=0, 	xx4=250, 	xx5=176, 	xx6=100, 	xx7=285, 	xx8=253, 	xx9=97, 	xx10=387, 	xx11=269, 	xx12=236, 	xx13=102;
-int zz1=239082, zz1a=-239082, zz2=274334, zz2a=-274334, zz3=270916, zz2a=270916;
+int zz1=239082, zz1a=-239082, zz2=274334, zz2a=-274334, zz3=270916, zz3a=270916;
 TUNE(xx1,xx2);
 TUNE(SetRange(-80, 160), xx3);
 TUNE(xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13);
