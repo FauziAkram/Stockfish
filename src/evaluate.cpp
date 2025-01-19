@@ -79,6 +79,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     nnue -= nnue * nnueComplexity / (smallNet ? 20233 : 17879);
 
     int material = 535 * pos.count<PAWN>() + pos.non_pawn_material();
+    if (pos.count<PAWN>() == 0)
+      material -= 300;
     int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
 
     // Damp down the evaluation linearly when shuffling
