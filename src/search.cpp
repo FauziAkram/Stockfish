@@ -1173,7 +1173,7 @@ moves_loop:  // When in check, search starts here
 
         // For first picked move (ttMove) reduce reduction (~3 Elo)
         else if (move == ttData.move)
-            r -= 1960;
+            r -= 1960 + 6 * depth;
 
         if (capture)
             ss->statScore =
