@@ -27,6 +27,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx0=5000, xx1=880, xx2=1164, xx3=880, xx4=1300, xx5=1100;
+TUNE(xx0,xx1,xx2,xx3,xx4,xx5);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
@@ -88,7 +90,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     const TimePoint scaledInc   = limits.inc[us] / scaleFactor;
 
     // Maximum move horizon of 50 moves
-    int centiMTG = limits.movestogo ? std::min(limits.movestogo * 100, 5000) : 5051;
+    int centiMTG = limits.movestogo ? std::min(limits.movestogo * 100, xx0) : 5051;
 
     // If less than one second, gradually reduce mtg
     if (scaledTime < 1000 && double(centiMTG) / scaledInc > 5.051)
@@ -127,8 +129,8 @@ void TimeManagement::init(Search::LimitsType& limits,
     else
     {
         optScale =
-          std::min((0.88 + ply / 116.4) / (centiMTG / 100.0), 0.88 * limits.time[us] / timeLeft);
-        maxScale = 1.3 + 0.11 * (centiMTG / 100.0);
+          std::min(((xx1/1000.0) + ply / (xx2/10.0)) / (centiMTG / 100.0), (xx3/1000.0) * limits.time[us] / timeLeft);
+        maxScale = (xx4/1000.0) + (xx5/10000.0) * (centiMTG / 100.0);
     }
 
     // Limit the maximum possible time for this move
