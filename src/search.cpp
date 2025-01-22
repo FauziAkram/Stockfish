@@ -51,12 +51,6 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=53, 	xx2=84, 	xx3=0, 	xx4=250, 	xx5=176, 	xx6=100, 	xx7=285, 	xx8=253, 	xx9=97, 	xx10=387, 	xx11=269, 	xx12=236, 	xx13=102;
-int zz1=239082, zz1a=-239082, zz2=274334, zz2a=-274334, zz3=270916, zz3a=-270916;
-TUNE(xx1,xx2);
-TUNE(SetRange(-80, 160), xx3);
-TUNE(xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13);
-TUNE(zz1,zz1a,zz2,zz2a,zz3,zz3a);
 
 namespace TB = Tablebases;
 
@@ -1078,7 +1072,7 @@ moves_loop:  // When in check, search starts here
                 && (ttData.bound & BOUND_LOWER) && ttData.depth >= depth - 3)
             {
                 Value singularBeta =
-                  ttData.value - (xx1 + xx2 * (ss->ttPv && !PvNode) + xx3 * ss->ttPv) * depth / 64;
+                  ttData.value - (52 + 82 * (ss->ttPv && !PvNode)) * depth / 64;
                 Depth singularDepth = newDepth / 2;
 
                 ss->excludedMove = move;
@@ -1089,11 +1083,11 @@ moves_loop:  // When in check, search starts here
                 if (value < singularBeta)
                 {
                     int doubleMargin =
-                      xx4 * PvNode - xx5 * !ttCapture - (correctionValue / (correctionValue > 0? zz1: zz1a));
-                    int tripleMargin = xx6 + xx7 * PvNode - xx8 * !ttCapture + xx9 * ss->ttPv
-                                     - (correctionValue / (correctionValue > 0? zz2: zz2a));
-                    int quadMargin = xx10 + xx11 * PvNode - xx12 * !ttCapture + xx13 * ss->ttPv
-                                   - (correctionValue / (correctionValue > 0? zz3: zz3a));
+                      246 * PvNode - 178 * !ttCapture - (correctionValue / (correctionValue > 0? 226298: -220028));
+                    int tripleMargin = 100 + 300 * PvNode - 251 * !ttCapture + 94 * ss->ttPv
+                                     - (correctionValue / (correctionValue > 0? 265385: -268812));
+                    int quadMargin = 384 + 268 * PvNode - 256 * !ttCapture + 96 * ss->ttPv
+                                   - (correctionValue / (correctionValue > 0? 275327: -260224));
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin)
