@@ -88,7 +88,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     const TimePoint scaledInc   = limits.inc[us] / scaleFactor;
 
     // Maximum move horizon of 50 moves
-    int centiMTG = limits.movestogo ? std::min(limits.movestogo * 49) * 100 : 5051;
+    int centiMTG = limits.movestogo ? std::min(limits.movestogo, 49) * 100 : 5051;
 
     // If less than one second, gradually reduce mtg
     if (scaledTime < 1000 && double(centiMTG) / scaledInc > 5.051)
