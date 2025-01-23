@@ -55,12 +55,12 @@ static void affine_transform_non_ssse3(std::int32_t*       output,
     #if defined(USE_SSE2) || defined(USE_NEON)
         #if defined(USE_SSE2)
     // At least a multiple of 16, with SSE2.
-    constexpr IndexType NumChunks   = ceil_to_multiple<IndexType>(InputDimensions, 16) / 16;
+    constexpr IndexType NumChunks   = (InputDimensions + 15) / 16;
     const __m128i       Zeros       = _mm_setzero_si128();
     const auto          inputVector = reinterpret_cast<const __m128i*>(input);
 
         #elif defined(USE_NEON)
-    constexpr IndexType NumChunks   = ceil_to_multiple<IndexType>(InputDimensions, 16) / 16;
+    constexpr IndexType NumChunks   = (InputDimensions + 15) / 16;
     const auto          inputVector = reinterpret_cast<const int8x8_t*>(input);
         #endif
 
