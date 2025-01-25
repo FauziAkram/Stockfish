@@ -1334,7 +1334,9 @@ moves_loop:  // When in check, search starts here
 
                 if (value >= beta)
                 {
-                    ss->cutoffCnt += !ttData.move + (extension < 2);
+                    static const int extensionCutoffTable[] = {1, 1, 1, 1, 1, 0, 0, 0};
+                    int extensionIndex = extension + 3;
+                    ss->cutoffCnt += !ttData.move + extensionCutoffTable[extensionIndex];
                     assert(value >= beta);  // Fail high
                     break;
                 }
