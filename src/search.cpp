@@ -1817,6 +1817,7 @@ void update_all_stats(const Position&      pos,
         // Increase stats for the best move in case it was a capture move
         captured = type_of(pos.piece_on(bestMove.to_sq()));
         captureHistory[moved_piece][bestMove.to_sq()][captured] << bonus * 1272 / 1024;
+        workerThread.captureBoardHistory[pos.side_to_move()][bestMove.from_to()] << bonus * 1024 / 1024;
     }
 
     // Extra penalty for a quiet early move that was not a TT move in
@@ -1830,6 +1831,7 @@ void update_all_stats(const Position&      pos,
         moved_piece = pos.moved_piece(move);
         captured    = type_of(pos.piece_on(move.to_sq()));
         captureHistory[moved_piece][move.to_sq()][captured] << -malus * 1205 / 1024;
+        workerThread.captureBoardHistory[pos.side_to_move()][move.from_to()] << -malus * 896 / 1024;
     }
 }
 
