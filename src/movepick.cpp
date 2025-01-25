@@ -233,6 +233,16 @@ top:
         cur = endBadCaptures = moves;
         endMoves             = generate<CAPTURES>(pos, cur);
 
+        if (includeQChecks) {
+            // Generate checks that don't hang pieces
+            ExtMove* it = endMoves;
+            for (const auto& m : MoveList<QUIETS>(pos)) {
+                if (pos.gives_check(m) && !pos.attackers_to(m.to_sq(), pos.pieces() ^ m.from_sq()))
+                    *it++ = m;
+            }
+            endMoves = it;
+        }
+
         score<CAPTURES>();
         partial_insertion_sort(cur, endMoves, std::numeric_limits<int>::min());
         ++stage;
@@ -306,8 +316,14 @@ top:
         [[fallthrough]];
 
     case EVASION :
-    case QCAPTURE :
         return select([]() { return true; });
+    case QCAPTURE :
+        if (includeQChecks)
+            return select([&]() {
+                return pos.capture_stage(*cur) || (pos.gives_check(*cur) && !pos.attackers_to(cur->to_sq(), pos.pieces() ^ cur->from_sq()));
+            });
+        else
+            return select([&]() { return pos.capture_stage(*cur); });
 
     case PROBCUT :
         return select([&]() { return pos.see_ge(*cur, threshold); });
