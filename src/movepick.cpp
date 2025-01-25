@@ -91,6 +91,7 @@ MovePicker::MovePicker(const Position&              p,
     mainHistory(mh),
     lowPlyHistory(lph),
     captureHistory(cph),
+    captureBoardHistory(&p.this_thread()->captureBoardHistory),
     continuationHistory(ch),
     pawnHistory(ph),
     ttMove(ttm),
@@ -109,6 +110,7 @@ MovePicker::MovePicker(const Position&              p,
 MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceToHistory* cph) :
     pos(p),
     captureHistory(cph),
+    captureBoardHistory(&pos.this_thread()->captureBoardHistory),
     ttMove(ttm),
     threshold(th) {
     assert(!pos.checkers());
