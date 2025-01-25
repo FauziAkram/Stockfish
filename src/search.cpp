@@ -1337,7 +1337,7 @@ moves_loop:  // When in check, search starts here
                 {
                     int extensionCutoffTable[] = {xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8};
                     int extensionIndex = extension + 3;
-                    ss->cutoffCnt += !ttData.move + extensionCutoffTable[extensionIndex];
+                    ss->cutoffCnt += extensionCutoffTable[extensionIndex];
                     assert(value >= beta);  // Fail high
                     break;
                 }
