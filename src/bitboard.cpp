@@ -47,7 +47,8 @@ void init_magics(PieceType pt, Bitboard table[], Magic magics[][2]);
 // from the given square. If the step is off the board, returns empty bitboard.
 Bitboard safe_destination(Square s, int step) {
     Square to = Square(s + step);
-    return is_ok(to) && distance(s, to) <= 2 ? square_bb(to) : Bitboard(0);
+    if (!is_ok(to)) return Bitboard(0);
+    return distance(s, to) <= 2 ? square_bb(to) : Bitboard(0);
 }
 }
 
