@@ -51,7 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1= 10, xx2=1037, xx3=965, xx4=960, xx5=1037, xx6=965, xx7=960;
+TUNE(SetRange(1, 61), xx1);
+TUNE(xx2,xx3,xx4,xx5,xx6,xx7);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -980,8 +982,8 @@ moves_loop:  // When in check, search starts here
         Depth r = reduction(improving, depth, moveCount, delta);
 
         // Decrease reduction if position is or has been on the PV (~7 Elo)
-        if (ss->ttPv)
-            r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960;
+        if (ss->ttPv && (depth < xx1))
+            r -= xx2 + (ttData.value > alpha) * xx3 + (ttData.depth >= depth) * xx4;
 
         // Step 14. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
@@ -1148,6 +1150,9 @@ moves_loop:  // When in check, search starts here
         // They are optimized to time controls of 180 + 1.8 and longer,
         // so changing them or adding conditions that are similar requires
         // tests at these types of time controls.
+
+        if (ss->ttPv && (depth >= xx1))
+            r -= xx5 + (ttData.value > alpha) * xx6 + (ttData.depth >= depth) * xx7;
 
         // Decrease reduction for PvNodes (~0 Elo on STC, ~2 Elo on LTC)
         if (PvNode)
