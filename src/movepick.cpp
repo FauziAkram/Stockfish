@@ -87,7 +87,7 @@ MovePicker::MovePicker(const Position&              p,
                        const PieceToHistory**       ch,
                        const PawnHistory*           ph,
                        int                          pl,
-                       bool                         qChecks = false) :
+                       bool                         qChecks) :
     pos(p),
     mainHistory(mh),
     lowPlyHistory(lph),
@@ -96,7 +96,7 @@ MovePicker::MovePicker(const Position&              p,
     pawnHistory(ph),
     ttMove(ttm),
     depth(d),
-    ply(pl)
+    ply(pl),
     includeQChecks(qChecks) {
 
     if (pos.checkers())
