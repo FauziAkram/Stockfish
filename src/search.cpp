@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=1, xx2=1, xx3=1, xx4=1, xx5=1, xx6=0, xx7=0, xx8=0;
+TUNE(SetRange(-5, 5), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1334,7 +1335,7 @@ moves_loop:  // When in check, search starts here
 
                 if (value >= beta)
                 {
-                    int extensionCutoffTable[] = {1, 1, 1, 1, 1, 0, 0, 0};
+                    int extensionCutoffTable[] = {xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8};
                     int extensionIndex = extension + 3;
                     ss->cutoffCnt += !ttData.move + extensionCutoffTable[extensionIndex];
                     assert(value >= beta);  // Fail high
