@@ -327,12 +327,11 @@ void Search::Worker::iterative_deepening() {
             if (rootDepth > 3) {
                 for (int i = 1; i <= 3; i++) {
                     Value diff = mainThread->iterValue[(iterIdx - i) & 3] - mainThread->iterValue[(iterIdx - i - 1) & 3];
-                    variance += diff * diff;
+                    variance += diff;
                 }
-                variance /= 3;
             }
 
-            if (variance > 200)
+            if (variance > 256)
                 delta = delta * 4 / 3;
           
             Value avg = rootMoves[pvIdx].averageScore;
