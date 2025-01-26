@@ -323,7 +323,7 @@ void Search::Worker::iterative_deepening() {
             // Reset aspiration window starting size
             delta     = 5 + std::abs(rootMoves[pvIdx].meanSquaredScore) / 12991;
 
-            double variance = 0;
+            int variance = 0;
             if (rootDepth > 3) {
                 for (int i = 1; i <= 3; i++) {
                     Value diff = mainThread->iterValue[(iterIdx - i) & 3] - mainThread->iterValue[(iterIdx - i - 1) & 3];
