@@ -328,6 +328,9 @@ void Search::Worker::iterative_deepening() {
                 for (int i = 1; i <= 3; i++) {
                     Value diff = mainThread->iterValue[(iterIdx - i) & 3] - mainThread->iterValue[(iterIdx - i - 1) & 3];
                     variance += diff * diff;
+                  dbg_mean_of(variance);
+dbg_extremes_of(variance);
+
                 }
                 variance /= 3;
             }
