@@ -51,7 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=0, xx2=5, xx3=12991;
+TUNE(SetRange(-100, 100), xx1);
+TUNE(SetRange(0, 20), xx2);
+TUNE(xx3);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -321,7 +324,7 @@ void Search::Worker::iterative_deepening() {
             selDepth = 0;
 
             // Reset aspiration window starting size
-            delta     = 5 + std::abs(rootMoves[pvIdx].meanSquaredScore) / 12991;
+            delta     = xx1 * rootDepth + std::max((std::abs(rootMoves[pvIdx].meanSquaredScore) / xx3), xx2);
             Value avg = rootMoves[pvIdx].averageScore;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
