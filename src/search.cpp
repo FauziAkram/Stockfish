@@ -332,9 +332,7 @@ void Search::Worker::iterative_deepening() {
                 variance /= 3;
             }
 
-            if (variance < 50)
-                delta = delta * 3 / 4;
-            else if (variance > 200)
+            if (variance > 200)
                 delta = delta * 4 / 3;
           
             Value avg = rootMoves[pvIdx].averageScore;
