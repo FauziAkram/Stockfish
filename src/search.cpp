@@ -382,6 +382,10 @@ void Search::Worker::iterative_deepening() {
                 }
                 else
                     break;
+              
+dbg_mean_of(delta);
+dbg_extremes_of(delta);
+
 
                 delta += delta / 3;
 
