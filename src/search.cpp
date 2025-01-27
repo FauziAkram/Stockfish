@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=300, 	xx2=300, 	xx3=300, 	xx4=300, 	xx5=300, 	xx6=300, 	xx7=300, 	xx8=300, 	xx9=300, 	xx10=300, 	xx11=300;
+TUNE(SetRange(1, 1001), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11);
 
 namespace TB = Tablebases;
 
@@ -382,8 +384,28 @@ void Search::Worker::iterative_deepening() {
                 }
                 else
                     break;
-
-                delta += delta / 3;
+              if (delta <= 10)
+                delta += 100 * delta / xx1;
+              else if (delta <= 20)
+                delta += 100 * delta / xx2;
+              else if (delta <= 30)
+                delta += 100 * delta / xx3;
+              else if (delta <= 40)
+                delta += 100 * delta / xx4;
+              else if (delta <= 50)
+                delta += 100 * delta / xx5;
+              else if (delta <= 70)
+                delta += 100 * delta / xx6;
+              else if (delta <= 100)
+                delta += 100 * delta / xx7;
+              else if (delta <= 180)
+                delta += 100 * delta / xx8;
+              else if (delta <= 280)
+                delta += 100 * delta / xx9;
+              else if (delta <= 400)
+                delta += 100 * delta / xx10;
+              else
+                delta += 100 * delta / xx11;
 
                 assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
             }
