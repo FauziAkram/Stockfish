@@ -383,7 +383,8 @@ void Search::Worker::iterative_deepening() {
                 else
                     break;
 
-                delta += delta / 3;
+              if (delta < 280) {
+                delta += delta / 3; }
 
                 assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
             }
