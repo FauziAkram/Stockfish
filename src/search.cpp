@@ -384,28 +384,28 @@ void Search::Worker::iterative_deepening() {
                 }
                 else
                     break;
-              if (delta <= 10)
-                delta += 100 * delta / xx1;
-              else if (delta <= 20)
-                delta += 100 * delta / xx2;
-              else if (delta <= 30)
-                delta += 100 * delta / xx3;
-              else if (delta <= 40)
-                delta += 100 * delta / xx4;
-              else if (delta <= 50)
-                delta += 100 * delta / xx5;
-              else if (delta <= 70)
-                delta += 100 * delta / xx6;
-              else if (delta <= 100)
-                delta += 100 * delta / xx7;
-              else if (delta <= 180)
-                delta += 100 * delta / xx8;
-              else if (delta <= 280)
-                delta += 100 * delta / xx9;
-              else if (delta <= 400)
-                delta += 100 * delta / xx10;
-              else
-                delta += 100 * delta / xx11;
+              if (delta <= 10){
+                delta += 100 * delta / xx1;}
+              else if (delta <= 20){
+                delta += 100 * delta / xx2;}
+              else if (delta <= 30){
+                delta += 100 * delta / xx3;}
+              else if (delta <= 40){
+                delta += 100 * delta / xx4;}
+              else if (delta <= 50){
+                delta += 100 * delta / xx5;}
+              else if (delta <= 70){
+                delta += 100 * delta / xx6;}
+              else if (delta <= 100){
+                delta += 100 * delta / xx7;}
+              else if (delta <= 180){
+                delta += 100 * delta / xx8;}
+              else if (delta <= 280){
+                delta += 100 * delta / xx9;}
+              else if (delta <= 400){
+                delta += 100 * delta / xx10;}
+              else{
+                delta += 100 * delta / xx11;}
 
                 assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
             }
