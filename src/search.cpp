@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=1, xx2=-3, xx3=-2, xx4=1;
+TUNE(SetRange(-5, 5), xx1,xx2,xx3,xx4);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1082,7 +1083,7 @@ moves_loop:  // When in check, search starts here
                     int quadMargin =
                       394 + 287 * PvNode - 249 * !ttCapture + 99 * ss->ttPv - corrValAdj;
 
-                    extension = 1 + (value < singularBeta - doubleMargin)
+                    extension = xx1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin)
                               + (value < singularBeta - quadMargin);
 
@@ -1107,12 +1108,12 @@ moves_loop:  // When in check, search starts here
 
                 // If the ttMove is assumed to fail high over current beta
                 else if (ttData.value >= beta)
-                    extension = -3;
+                    extension = xx2;
 
                 // If we are on a cutNode but the ttMove is not assumed to fail high
                 // over current beta
                 else if (cutNode)
-                    extension = -2;
+                    extension = xx3;
             }
 
             // Extension for capturing the previous moved piece
@@ -1120,7 +1121,7 @@ moves_loop:  // When in check, search starts here
                      && thisThread->captureHistory[movedPiece][move.to_sq()]
                                                   [type_of(pos.piece_on(move.to_sq()))]
                           > 4126)
-                extension = 1;
+                extension = xx4;
         }
 
         // Step 16. Make the move
