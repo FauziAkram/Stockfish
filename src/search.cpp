@@ -1185,7 +1185,7 @@ moves_loop:  // When in check, search starts here
         if (depth >= 2 && moveCount > 1)
         {
             if (!ttData.move)
-              r += 256;
+              r += 1024;
             // In general we want to cap the LMR depth search at newDepth, but when
             // reduction is negative, we allow this move a limited search extension
             // beyond the first move depth.
