@@ -1075,6 +1075,10 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
+                  int fauzi = singularBeta - value;
+                  dbg_mean_of(fauzi);
+dbg_extremes_of(fauzi);
+
                     int corrValAdj   = std::abs(correctionValue) / 262144;
                     int doubleMargin = 249 * PvNode - 194 * !ttCapture - corrValAdj;
                     int tripleMargin =
