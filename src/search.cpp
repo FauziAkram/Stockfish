@@ -1171,7 +1171,7 @@ moves_loop:  // When in check, search starts here
         struct ReductionTableEntry {
         int r_increase;
         };
-        static constexpr std::array<ReductionTableEntry, 64> ReductionTable = {{
+        std::array<ReductionTableEntry, 64> ReductionTable = {{
     {xx1   }, {xx2   }, {xx3 }, {xx4}, {xx5   }, {xx6   }, {xx7 }, {xx8},
     {zz1   }, {zz2   }, {zz3 }, {zz4}, {zz5   }, {zz6   }, {zz7 }, {zz8},
     {cc1   }, {cc2   }, {cc3 }, {cc4}, {cc5   }, {cc6   }, {cc7 }, {cc8},
