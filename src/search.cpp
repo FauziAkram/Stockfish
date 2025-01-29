@@ -1152,17 +1152,92 @@ moves_loop:  // When in check, search starts here
 
         r -= std::abs(correctionValue) / 34112;
 
-        // Increase reduction for cut nodes
-        if (cutNode)
-            r += 2355 - (ttData.depth >= depth && ss->ttPv) * 1141;
+        struct ReductionTableEntry {
+    bool cutNode;
+    bool ttDepthGeDepthAndTtPv;
+    bool ttCaptureAndNotCapture;
+    bool depthLt8;
+    bool nextPlyCutoffCntGt3;
+    bool allNode;
+    int r_increase; 
+};
+      static constexpr std::array<ReductionTableEntry, 64> ReductionTable = {{
+    // cutNode, ttDepthGeDepthAndTtPv, ttCaptureAndNotCapture, depthLt8, nextPlyCutoffCntGt3, allNode, r_increase
+    {false, false, false, false, false, false, 0},      
+    {false, false, false, false, false, true,  887},    
+    {false, false, false, false, true,  false, 940},    
+    {false, false, false, false, true,  true,  1827},   
+    {false, false, false, true,  false, false, 0},      
+    {false, false, false, true,  false, true,  887},    
+    {false, false, false, true,  true,  false, 940},    
+    {false, false, false, true,  true,  true,  1827},   
+    {false, false, true,  false, false, false, 1087},   
+    {false, false, true,  false, false, true,  1974},   
+    {false, false, true,  false, true,  false, 2027},   
+    {false, false, true,  false, true,  true,  2914},   
+    {false, false, true,  true,  false, false, 2077},   
+    {false, false, true,  true,  false, true,  2964},   
+    {false, false, true,  true,  true,  false, 3017},   
+    {false, false, true,  true,  true,  true,  3904},  
+    {false, true,  false, false, false, false, 0},      
+    {false, true,  false, false, false, true,  887},    
+    {false, true,  false, false, true,  false, 940},    
+    {false, true,  false, false, true,  true,  1827},   
+    {false, true,  false, true,  false, false, 0},      
+    {false, true,  false, true,  false, true,  887},    
+    {false, true,  false, true,  true,  false, 940},    
+    {false, true,  false, true,  true,  true,  1827},   
+    {false, true,  true,  false, false, false, 1087},   
+    {false, true,  true,  false, false, true,  1974},   
+    {false, true,  true,  false, true,  false, 2027},   
+    {false, true,  true,  false, true,  true,  2914},   
+    {false, true,  true,  true,  false, false, 2077},   
+    {false, true,  true,  true,  false, true,  2964},   
+    {false, true,  true,  true,  true,  false, 3017},   
+    {false, true,  true,  true,  true,  true,  3904},   
+    {true,  false, false, false, false, false, 2355},   
+    {true,  false, false, false, false, true,  3242},   
+    {true,  false, false, false, true,  false, 3295},   
+    {true,  false, false, false, true,  true,  4182},   
+    {true,  false, false, true,  false, false, 2355},   
+    {true,  false, false, true,  false, true,  3242},   
+    {true,  false, false, true,  true,  false, 3295},   
+    {true,  false, false, true,  true,  true,  4182},   
+    {true,  false, true,  false, false, false, 3442},   
+    {true,  false, true,  false, false, true,  4329},   
+    {true,  false, true,  false, true,  false, 4382},   
+    {true,  false, true,  false, true,  true,  5269},   
+    {true,  false, true,  true,  false, false, 4432},   
+    {true,  false, true,  true,  false, true,  5319},  
+    {true,  false, true,  true,  true,  false, 5372},   
+    {true,  false, true,  true,  true,  true,  6259},   
+    {true,  true,  false, false, false, false, 1214},   
+    {true,  true,  false, false, false, true,  2101},   
+    {true,  true,  false, false, true,  false, 2154},   
+    {true,  true,  false, false, true,  true,  3041},   
+    {true,  true,  false, true,  false, false, 1214},   
+    {true,  true,  false, true,  false, true,  2101},   
+    {true,  true,  false, true,  true,  false, 2154},  
+    {true,  true,  false, true,  true,  true,  3041},   
+    {true,  true,  true,  false, false, false, 2301},   
+    {true,  true,  true,  false, false, true,  3188},   
+    {true,  true,  true,  false, true,  false, 3241},   
+    {true,  true,  true,  false, true,  true,  4128},   
+    {true,  true,  true,  true,  false, false, 3291},   
+    {true,  true,  true,  true,  false, true,  4178},   
+    {true,  true,  true,  true,  true,  false, 4231},   
+    {true,  true,  true,  true,  true,  true,  5118}    
+}};
 
-        // Increase reduction if ttMove is a capture but the current move is not a capture
-        if (ttCapture && !capture)
-            r += 1087 + (depth < 8) * 990;
+      int index = 0;
+index |= (cutNode) << 0;
+index |= (ttData.depth >= depth && ss->ttPv) << 1;
+index |= (ttCapture && !capture) << 2;
+index |= (depth < 8) << 3;
+index |= ((ss + 1)->cutoffCnt > 3) << 4;
+index |= (allNode) << 5;
 
-        // Increase reduction if next ply has a lot of fail high
-        if ((ss + 1)->cutoffCnt > 3)
-            r += 940 + allNode * 887;
+      r += ReductionTable[index].r_increase;
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
