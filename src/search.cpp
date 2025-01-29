@@ -1153,12 +1153,6 @@ moves_loop:  // When in check, search starts here
         r -= std::abs(correctionValue) / 34112;
 
         struct ReductionTableEntry {
-    bool cutNode;
-    bool ttDepthGeDepthAndTtPv;
-    bool ttCaptureAndNotCapture;
-    bool depthLt8;
-    bool nextPlyCutoffCntGt3;
-    bool allNode;
     int r_increase; 
 };
       static constexpr std::array<ReductionTableEntry, 64> ReductionTable = {{
