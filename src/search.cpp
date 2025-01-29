@@ -1148,16 +1148,16 @@ moves_loop:  // When in check, search starts here
 
         r -= std::abs(correctionValue) / 34112;
 
-        // Increase reduction for cut nodes
-        if (cutNode)
-            r += 2355 - (ttData.depth >= depth && ss->ttPv) * 1141;
-
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
             r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960;
 
+        // Increase reduction for cut nodes
+        else if (cutNode)
+            r += 2355 - (ttData.depth >= depth && ss->ttPv) * 1141;
+
         // Increase reduction if ttMove is a capture but the current move is not a capture
-        else if (ttCapture && !capture)
+        if (ttCapture && !capture)
             r += 1087 + (depth < 8) * 990;
 
         // Increase reduction if next ply has a lot of fail high
