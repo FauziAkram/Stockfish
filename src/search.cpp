@@ -59,14 +59,14 @@ int bb1=2355, 	bb2=2355, 	bb3=3295, 	bb4=4182, 	bb5=2355, 	bb6=2355, 	bb7=3295, 
 int nn1=3442, 	nn2=3442, 	nn3=4382, 	nn4=5269, 	nn5=4432, 	nn6=4432, 	nn7=5372, 	nn8=6259;
 int mm1=1214, 	mm2=1214, 	mm3=2154, 	mm4=3041, 	mm5=1214, 	mm6=1214, 	mm7=2154, 	mm8=3041;
 int aa1=2301, 	aa2=2301, 	aa3=3241, 	aa4=4128, 	aa5=3291, 	aa6=3291, 	aa7=4231, 	aa8=5118;
-TUNE(SetRange(-1500, 7500), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14);
-TUNE(SetRange(-1500, 7500), zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz10,zz11,zz12,zz13,zz14);
-TUNE(SetRange(-1500, 7500), cc1,cc2,cc3,cc4,cc5,cc6,cc7,cc8,cc9,cc10,cc11,cc12,cc13,cc14);
-TUNE(SetRange(-1500, 7500), vv1,vv2,vv3,vv4,vv5,vv6,vv7,vv8,vv9,vv10,vv11,vv12,vv13,vv14);
-TUNE(SetRange(-1500, 7500), bb1,bb2,bb3,bb4,bb5,bb6,bb7,bb8,bb9,bb10,bb11,bb12,bb13,bb14);
-TUNE(SetRange(-1500, 7500), nn1,nn2,nn3,nn4,nn5,nn6,nn7,nn8,nn9,nn10,nn11,nn12,nn13,nn14);
-TUNE(SetRange(-1500, 7500), mm1,mm2,mm3,mm4,mm5,mm6,mm7,mm8,mm9,mm10,mm11,mm12,mm13,mm14);
-TUNE(SetRange(-1500, 7500), aa1,aa2,aa3,aa4,aa5,aa6,aa7,aa8,aa9,aa10,aa11,aa12,aa13,aa14);
+TUNE(SetRange(-1500, 7500), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
+TUNE(SetRange(-1500, 7500), zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8);
+TUNE(SetRange(-1500, 7500), cc1,cc2,cc3,cc4,cc5,cc6,cc7,cc8);
+TUNE(SetRange(-1500, 7500), vv1,vv2,vv3,vv4,vv5,vv6,vv7,vv8);
+TUNE(SetRange(-1500, 7500), bb1,bb2,bb3,bb4,bb5,bb6,bb7,bb8);
+TUNE(SetRange(-1500, 7500), nn1,nn2,nn3,nn4,nn5,nn6,nn7,nn8);
+TUNE(SetRange(-1500, 7500), mm1,mm2,mm3,mm4,mm5,mm6,mm7,mm8);
+TUNE(SetRange(-1500, 7500), aa1,aa2,aa3,aa4,aa5,aa6,aa7,aa8);
 
 namespace TB = Tablebases;
 
