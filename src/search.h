@@ -252,6 +252,8 @@ class SearchManager: public ISearchManager {
     size_t id;
 
     const UpdateContext& updates;
+
+int stablePVCount = 0;
 };
 
 class NullSearchManager: public ISearchManager {
