@@ -166,22 +166,22 @@ void MovePicker::score() {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += bool(pos.check_squares(pt) & to) * 16384;
+            m.value += bool(pos.check_squares(pt) & to) * 14140;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 47837
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 32964
+                                                  : !(to & threatenedByPawn)                ? 16023
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * 49000
-                        : pt == ROOK && bool(to & threatenedByMinor) ? 24335
+            m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * 49300
+                        : pt == ROOK && bool(to & threatenedByMinor) ? 20067
                                                                      : 0);
 
             if (ply < LOW_PLY_HISTORY_SIZE)
-                m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
+                m.value += 7 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
         }
 
         else  // Type == EVASIONS
@@ -212,7 +212,7 @@ Move MovePicker::select(Pred filter) {
 // picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move() {
 
-    auto quiet_threshold = [](Depth d) { return -3560 * d; };
+    auto quiet_threshold = [](Depth d) { return -3148 * d; };
 
 top:
     switch (stage)
@@ -263,7 +263,7 @@ top:
     case GOOD_QUIET :
         if (!skipQuiets && select([]() { return true; }))
         {
-            if ((cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > -7744 || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
