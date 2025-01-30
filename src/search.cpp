@@ -424,7 +424,11 @@ void Search::Worker::iterative_deepening() {
             lastBestPV        = rootMoves[0].pv;
             lastBestScore     = rootMoves[0].score;
             lastBestMoveDepth = rootDepth;
+            mainThread->stablePVCount = 0;
         }
+
+        else
+        mainThread->stablePVCount++;
 
         if (!mainThread)
             continue;
