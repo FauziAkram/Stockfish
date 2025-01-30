@@ -1116,7 +1116,7 @@ moves_loop:  // When in check, search starts here
             }
 
             // Extension for capturing the previous moved piece
-            else if (PvNode && move.to_sq() == prevSq
+            else if (PvNode && move.to_sq() == prevSq && (depth > 5)
                      && thisThread->captureHistory[movedPiece][move.to_sq()]
                                                   [type_of(pos.piece_on(move.to_sq()))]
                           > 4126)
