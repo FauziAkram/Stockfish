@@ -1009,7 +1009,7 @@ moves_loop:  // When in check, search starts here
 
                 // SEE based pruning for captures and checks
                 int seeHist = std::clamp(captHist / 37, -152 * depth, 141 * depth);
-                if (!pos.see_ge(move, -156 * depth - seeHist))
+                if (!pos.see_ge(move, std::min(-156 * depth - seeHist, 0)))
                     continue;
             }
             else
