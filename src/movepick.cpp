@@ -156,32 +156,32 @@ void MovePicker::score() {
             Square    to   = m.to_sq();
 
             // histories
-            m.value = 2 * (*mainHistory)[pos.side_to_move()][m.from_to()];
-            m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
-            m.value += (*continuationHistory[0])[pc][to];
-            m.value += (*continuationHistory[1])[pc][to];
-            m.value += (*continuationHistory[2])[pc][to];
-            m.value += (*continuationHistory[3])[pc][to];
-            m.value += (*continuationHistory[4])[pc][to] / 3;
-            m.value += (*continuationHistory[5])[pc][to];
+            m.value = 46 * (*mainHistory)[pos.side_to_move()][m.from_to()] / 32;
+            m.value += 55 * (*pawnHistory)[pawn_structure_index(pos)][pc][to] / 32;
+            m.value += 31 * (*continuationHistory[0])[pc][to] / 32;
+            m.value += 35 * (*continuationHistory[1])[pc][to] / 32;
+            m.value += 34 * (*continuationHistory[2])[pc][to] / 32;
+            m.value += 35 * (*continuationHistory[3])[pc][to] / 32;
+            m.value += 10 * (*continuationHistory[4])[pc][to] / 32;
+            m.value += 31 * (*continuationHistory[5])[pc][to] / 32;
 
             // bonus for checks
-            m.value += bool(pos.check_squares(pt) & to) * 16384;
+            m.value += bool(pos.check_squares(pt) & to) * 12172;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
-                                                  : pt == ROOK && !(to & threatenedByMinor) ? 25600
-                                                  : !(to & threatenedByPawn)                ? 14450
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 44358
+                                                  : pt == ROOK && !(to & threatenedByMinor) ? 38747
+                                                  : !(to & threatenedByPawn)                ? 18632
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * 49000
-                        : pt == ROOK && bool(to & threatenedByMinor) ? 24335
+            m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * 45178
+                        : pt == ROOK && bool(to & threatenedByMinor) ? 23073
                                                                      : 0);
 
             if (ply < LOW_PLY_HISTORY_SIZE)
-                m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
+                m.value += 6 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
         }
 
         else  // Type == EVASIONS
@@ -189,9 +189,9 @@ void MovePicker::score() {
             if (pos.capture_stage(m))
                 m.value = PieceValue[pos.piece_on(m.to_sq())] + (1 << 28);
             else
-                m.value = (*mainHistory)[pos.side_to_move()][m.from_to()]
-                        + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
-                        + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
+                m.value = 36 * (*mainHistory)[pos.side_to_move()][m.from_to()] / 32
+                        + 33 * (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()] / 32
+                        + 37 * (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()] / 32;
         }
 }
 
@@ -212,7 +212,7 @@ Move MovePicker::select(Pred filter) {
 // picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move() {
 
-    auto quiet_threshold = [](Depth d) { return -3560 * d; };
+    auto quiet_threshold = [](Depth d) { return -2993 * d; };
 
 top:
     switch (stage)
@@ -263,7 +263,7 @@ top:
     case GOOD_QUIET :
         if (!skipQuiets && select([]() { return true; }))
         {
-            if ((cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth))
+            if ((cur - 1)->value > -7197 || (cur - 1)->value <= quiet_threshold(depth))
                 return *(cur - 1);
 
             // Remaining quiets are bad
