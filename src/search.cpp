@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0;
+TUNE(SetRange(0, 30000), xx1);
 
 namespace TB = Tablebases;
 
@@ -1079,12 +1081,10 @@ moves_loop:  // When in check, search starts here
                     int doubleMargin = 249 * PvNode - 194 * !ttCapture - corrValAdj;
                     int tripleMargin =
                       94 + 287 * PvNode - 249 * !ttCapture + 99 * ss->ttPv - corrValAdj;
-                    int quadMargin =
-                      394 + 287 * PvNode - 249 * !ttCapture + 99 * ss->ttPv - corrValAdj;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin)
-                              + (value < singularBeta - quadMargin);
+                              + (value + xx1 < singularBeta);
 
                     depth += ((!PvNode) && (depth < 15));
                 }
