@@ -1081,7 +1081,8 @@ moves_loop:  // When in check, search starts here
                       94 + 287 * PvNode - 249 * !ttCapture + 99 * ss->ttPv - corrValAdj;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
-                              + (value < singularBeta - tripleMargin);
+                              + (value < singularBeta - tripleMargin)
+                              + (value < singularBeta - 10000);
 
                     depth += ((!PvNode) && (depth < 15));
                 }
