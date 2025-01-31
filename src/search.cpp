@@ -51,6 +51,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=32, xx2=32, xx3=32, xx4=3901, xx5=64, xx6=3459;
+TUNE(SetRange(0, 128), xx1,xx2,xx3);
+TUNE(SetRange(1, 10000), xx4);
+TUNE(SetRange(0, 150), xx5);
+TUNE(SetRange(1, 10000), xx6);
 
 namespace TB = Tablebases;
 
@@ -1015,17 +1020,17 @@ moves_loop:  // When in check, search starts here
             else
             {
                 int history =
-                  (*contHist[0])[movedPiece][move.to_sq()]
-                  + (*contHist[1])[movedPiece][move.to_sq()]
-                  + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
+                 xx1 * (*contHist[0])[movedPiece][move.to_sq()] / 32
+                  + xx2 * (*contHist[1])[movedPiece][move.to_sq()] / 32
+                  + xx3 * thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()] / 32;
 
                 // Continuation history based pruning
-                if (history < -3901 * depth)
+                if (history < -xx4 * depth)
                     continue;
 
-                history += 2 * thisThread->mainHistory[us][move.from_to()];
+                history += xx5 * thisThread->mainHistory[us][move.from_to()] / 32;
 
-                lmrDepth += history / 3459;
+                lmrDepth += history / xx6;
 
                 Value futilityValue = ss->staticEval + (bestMove ? 47 : 137) + 142 * lmrDepth;
 
