@@ -1326,11 +1326,7 @@ moves_loop:  // When in check, search starts here
                     update_pv(ss->pv, move, (ss + 1)->pv);
 
                 if (value >= beta)
-                {
-                    ss->cutoffCnt += (extension < 2);
-                    assert(value >= beta);  // Fail high
                     break;
-                }
                 else
                 {
                     // Reduce other moves if we have found at least one score improvement
