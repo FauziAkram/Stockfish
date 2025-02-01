@@ -579,6 +579,7 @@ Value Search::Worker::search(
     Value bestValue, value, eval, maxValue, probCutBeta;
     bool  givesCheck, improving, priorCapture, opponentWorsening;
     bool  capture, ttCapture;
+    bool  singularExtended = false;
     int   priorReduction = ss->reduction;
     ss->reduction        = 0;
     Piece movedPiece;
@@ -1121,6 +1122,7 @@ moves_loop:  // When in check, search starts here
                                                   [type_of(pos.piece_on(move.to_sq()))]
                           > 4126)
                 extension = 1;
+            singularExtended = extension;
         }
 
         // Step 16. Make the move
@@ -1145,6 +1147,9 @@ moves_loop:  // When in check, search starts here
 
         if (PvNode)
             r -= 1018;
+
+        if (singularExtended && move != ttData.move)
+            r += 512;
 
         // These reduction adjustments have no proven non-linear scaling
 
