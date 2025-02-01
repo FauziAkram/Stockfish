@@ -1144,7 +1144,7 @@ moves_loop:  // When in check, search starts here
             r -= 1037 + (ttData.value > alpha) * 965 + (ttData.depth >= depth) * 960;
 
         if (PvNode)
-            r -= 1018 + 256 * (move.type_of()!= PROMOTION);
+            r -= 1018 + 768 * (move.type_of()!= PROMOTION);
 
         // These reduction adjustments have no proven non-linear scaling
 
