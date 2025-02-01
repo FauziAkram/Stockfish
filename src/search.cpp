@@ -1149,7 +1149,7 @@ moves_loop:  // When in check, search starts here
             r -= 1018;
 
         if (singularExtended && move != ttData.move)
-            r += 512;
+            r += 768;
 
         // These reduction adjustments have no proven non-linear scaling
 
