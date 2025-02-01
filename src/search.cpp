@@ -1020,12 +1020,12 @@ moves_loop:  // When in check, search starts here
                   + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
 
                 // Continuation history based pruning
-                if (history < -3901 * depth)
+                if (history < -3750 * depth)
                     continue;
 
-                history += 2 * thisThread->mainHistory[us][move.from_to()];
+                history += 69 * thisThread->mainHistory[us][move.from_to()] / 32;
 
-                lmrDepth += history / 3459;
+                lmrDepth += history / 3278;
 
                 Value futilityValue = ss->staticEval + (bestMove ? 47 : 137) + 142 * lmrDepth;
 
