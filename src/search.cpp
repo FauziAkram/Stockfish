@@ -1120,7 +1120,10 @@ moves_loop:  // When in check, search starts here
                      && thisThread->captureHistory[movedPiece][move.to_sq()]
                                                   [type_of(pos.piece_on(move.to_sq()))]
                           > 4126)
-                extension = 1;
+                extension = 1 + ((std::abs(ss->staticEval) - std::abs((ss-1)->staticEval) >= 2600
+                || std::abs((ss-1)->staticEval) - std::abs(ss->staticEval) >= 2600)
+                && ss->ply < 8
+                && !ss->inCheck && !(ss-1)->inCheck);
         }
 
         // Step 16. Make the move
