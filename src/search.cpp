@@ -51,65 +51,65 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=112, 	xx2=26, 	xx3=64, 	xx4=10, 	xx5=7037, 	xx6=6671, 	xx7=7631, 	xx8=6362, 	xx9=159, 	xx10=104, 	xx11=145, 	xx12=146, 	xx13=154, 	xx14=102, 	xx15=1661, 	xx16=831,
-xx17=269, 	xx18=2666, 	xx19=97, 	xx20=5, 	xx21=12991, 	xx22=141, 	xx23=83, 	xx24=100, 	xx25=63, 	xx26=108, 	xx27=631, 	xx28=1210, 	xx29=0, 	xx30=0, 	xx31=0, 	xx32=0, 	xx33=0,
-xx34=479, 	xx35=2743, 	xx36=746, 	xx37=2, 	xx38=1, 	xx39=1042, 	xx40=10, 	xx41=1881, 	xx42=1413, 	xx43=616, 	xx44=1151, 	xx45=1107, 	xx46=2, 	xx47=3, 	xx48=1, 	xx49=462, 	xx50=297,
-xx51=14, 	xx52=310, 	xx53=40, 	xx54=131072, 	xx55=20, 	xx56=470, 	xx57=60, 	xx58=215, 	xx59=7, 	xx60=100, 	xx61=5, 	xx62=97, 	xx63=7, 	xx64=4, 	xx65=2, 	xx66=174, 	xx67=56, 	xx68=412,
-xx69=1024, 	xx70=7, 	xx71=271, 	xx72=243, 	xx73=100, 	xx74=37, 	xx75=152, 	xx76=141, 	xx77=156, 	xx78=3901, 	xx79=64, 	xx80=3459, 	xx81=47, 	xx82=137, 	xx83=142, 	xx84=12, 	xx85=25,
-xx86=5, 	xx87=33, 	xx88=3, 	xx89=52, 	xx90=74, 	xx91=64, 	xx92=262144, 	xx93=262144, 	xx94=249, 	xx95=194, 	xx96=94, 	xx97=287, 	xx98=249, 	xx99=99, 	xx100=15, 	xx101=3, 	xx102=2,
-xx103=4126, 	xx104=1, 	xx105=2061, 	xx106=965, 	xx107=960, 	xx108=1018, 	xx109=307, 	xx110=64, 	xx111=34112, 	xx112=2355, 	xx113=1141, 	xx114=1087, 	xx115=8, 	xx116=990, 	xx117=940,
-xx118=887, 	xx119=1960, 	xx120=700, 	xx121=4666, 	xx122=3874, 	xx123=1451, 	xx124=40, 	xx125=2, 	xx126=10, 	xx127=2048, 	xx128=2111, 	xx129=3444, 	xx130=2, 	xx131=14, 	xx132=118,
-xx133=37, 	xx134=169, 	xx135=128, 	xx136=102, 	xx137=115, 	xx138=82, 	xx139=80, 	xx140=106, 	xx141=318, 	xx142=0, 	xx143=436, 	xx144=207, 	xx145=1195, 	xx146=2048, 	xx147=301, 	xx148=2,
-xx149=5228, 	xx150=80, 	xx151=768, 	xx152=184, 	xx153=1168, 	xx154=300, 	xx155=34,	xx156=1216, 	xx157=1062, 	xx158=1272, 	xx159=996, 	xx160=1205, 	xx161=1025, 	xx162=621, 	xx163=325,
-xx164=512, 	xx165=122, 	xx166=534, 	xx167=879, 	xx168=888, 	xx169=634;
+int xx1=112, xx2=26, xx3=64, xx4=10, xx5=7037, xx6=6671, xx7=7631, xx8=6362, xx9=159, xx10=104, xx11=145, xx12=146, xx13=154, xx14=102, xx15=1661, xx16=831,
+xx17=269, xx18=2666, xx19=97, xx20=5, xx21=12991, xx22=141, xx23=83, xx24=100, xx25=63, xx26=108, xx27=631, xx28=1210, xx29=0, xx30=0, xx33=0,
+xx34=479, xx35=2743, xx36=746, xx37=2, xx38=9, xx39=1042, xx40=10, xx41=1881, xx42=1413, xx43=616, xx44=1151, xx45=1107, xx46=2, xx47=3, xx48=1, xx49=462, xx50=297,
+xx51=14, xx52=310, xx53=40, xx54=131072, xx55=20, xx56=470, xx57=60, xx58=215, xx59=7, xx60=100, xx61=5, xx62=97, xx63=7, xx64=4, xx65=2, xx66=174, xx67=56, xx68=412,
+xx69=1024, xx70=7, xx71=271, xx72=243, xx73=100, xx74=37, xx75=152, xx76=141, xx77=156, xx78=3901, xx79=64, xx80=3459, xx81=47, xx82=137, xx83=142, xx84=12, xx85=25,
+xx86=5, xx87=33, xx88=3, xx89=52, xx90=74, xx91=64, xx92=262144, xx93=262144, xx94=249, xx95=194, xx96=94, xx97=287, xx98=249, xx99=99, xx100=15, xx101=3, xx102=2,
+xx103=4126, xx104=1, xx105=2061, xx106=965, xx107=960, xx108=1018, xx109=307, xx110=64, xx111=34112, xx112=2355, xx113=1141, xx114=1087, xx115=8, xx116=990, xx117=940,
+xx118=887, xx119=1960, xx120=700, xx121=4666, xx122=3874, xx123=1451, xx124=40, xx125=2, xx126=10, xx127=2048, xx128=2111, xx129=3444, xx130=2, xx131=14, xx132=118,
+xx133=37, xx134=169, xx135=128, xx136=102, xx137=115, xx138=82, xx139=80, xx140=106, xx141=318, xx142=0, xx143=436, xx144=207, xx145=1195, xx146=2048, xx147=301, xx148=2,
+xx149=5228, xx150=80, xx151=768, xx152=184, xx153=1168, xx154=300, xx155=34, xx156=1216, xx157=1062, xx158=1272, xx159=996, xx160=1205, xx161=1025, xx162=621, xx163=325,
+xx164=512, xx165=122, xx166=534, xx167=879, xx168=888, xx169=634;
 
-TUNE(xx1, xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14,	xx15,	xx16,	xx17,	xx18,	xx19,	xx20,	xx21,	xx22,	xx23,	xx24,	xx25,	xx26,	xx27,	xx28);
-TUNE(SetRange(-80, 80), xx29,	xx30,	xx31,	xx32, xx33);
-TUNE(xx34,	xx35,	xx36);
+TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16, xx17, xx18, xx19, xx20, xx21, xx22, xx23, xx24, xx25, xx26, xx27, xx28);
+TUNE(SetRange(-80, 80), xx29, xx30, xx33);
+TUNE(xx34, xx35, xx36);
 TUNE(SetRange(1, 11),xx37);
-TUNE(SetRange(-5, 5),xx38);
-TUNE(xx39,	xx40,	xx41,	xx42,	xx43,	xx44,	xx45);
+TUNE(SetRange(1, 21),xx38);
+TUNE(xx39, xx40, xx41, xx42, xx43, xx44, xx45);
 TUNE(SetRange(-50, 50),xx46);
 TUNE(SetRange(1, 11),xx47);
 TUNE(SetRange(-5, 5),xx48);
-TUNE(xx49,	xx50);
+TUNE(xx49, xx50);
 TUNE(SetRange(2, 32),xx51);
 TUNE(SetRange(1, 651),xx52);  
 TUNE(xx53);
 TUNE(SetRange(1, 270001),xx54);
-TUNE(xx53,	xx54,	xx55,	xx56,	xx57);
+TUNE(xx53, xx54, xx55, xx56, xx57);
 TUNE(SetRange(1, 451),xx58);
-TUNE(xx59,	xx60,	xx61,	xx62);
+TUNE(xx59, xx60, xx61, xx62);
 TUNE(SetRange(1, 17),xx63);
 TUNE(SetRange(1, 15),xx64);
 TUNE(SetRange(-4, 6),xx65);
-TUNE(xx66,	xx67,	xx68,	xx69,	xx70,	xx71,	xx72,	xx73);
+TUNE(xx66, xx67, xx68, xx69, xx70, xx71, xx72, xx73);
 TUNE(SetRange(1, 79),xx74);
-TUNE(xx75,	xx76,	xx77,	xx78,	xx79,	xx80,	xx81,	xx82,	xx83,	xx84,	xx85);
+TUNE(xx75, xx76, xx77, xx78, xx79, xx80, xx81, xx82, xx83, xx84, xx85);
 TUNE(SetRange(1, 11),xx86);
 TUNE(xx87);
 TUNE(SetRange(-3, 7),xx88);
-TUNE(xx89,	xx90,	xx91);
+TUNE(xx89, xx90, xx91);
 TUNE(SetRange(1, 270001),xx92,xx93); 
-TUNE(xx94,	xx95,	xx96,	xx97,	xx98, xx99);
+TUNE(xx94, xx95, xx96, xx97, xx98, xx99);
 TUNE(SetRange(1, 35),xx100);
 TUNE(SetRange(-5, 5),xx101,xx102,xx104);
-TUNE(xx103,	xx105,	xx106,	xx107,	xx108,	xx109,	xx110);
+TUNE(xx103, xx105, xx106, xx107, xx108, xx109, xx110);
 TUNE(SetRange(1, 68501),xx111);
-TUNE(xx112,	xx113,	xx114);
+TUNE(xx112, xx113, xx114);
 TUNE(SetRange(1, 19),xx115);  
-TUNE(xx116,	xx117,	xx118,	xx119,	xx120,	xx121,	xx122,	xx123, xx124);
+TUNE(xx116, xx117, xx118, xx119, xx120, xx121, xx122, xx123, xx124);
 TUNE(SetRange(-4, 6),xx125);  
 TUNE(SetRange(-4, 26),xx126);
-TUNE(xx127,	xx128,	xx129);
+TUNE(xx127, xx128, xx129);
 TUNE(SetRange(0, 10),xx130);
-TUNE(xx131,	xx132,	xx133,	xx134,	xx135,	xx136,	xx137,	xx138,	xx139);
+TUNE(xx131, xx132, xx133, xx134, xx135, xx136, xx137, xx138, xx139);
 TUNE(SetRange(1, 219),xx140);
 TUNE(xx141);
 TUNE(SetRange(-35, 35),xx142);
-TUNE(xx143,	xx144,	xx145,	xx146,	xx147);
+TUNE(xx143, xx144, xx145, xx146, xx147);
 TUNE(SetRange(1, 11),xx148);
-TUNE(xx149,	xx150, xx151,	xx152,	xx153,	xx154,	xx155,	xx156,	xx157,	xx158,	xx159,	xx160,	xx161,	xx162,	xx163,	xx164,	xx165,	xx166,	xx167,	xx168,	xx169);
+TUNE(xx149, xx150, xx151, xx152, xx153, xx154, xx155, xx156, xx157, xx158, xx159, xx160, xx161, xx162, xx163, xx164, xx165, xx166, xx167, xx168, xx169);
 
 
 namespace TB = Tablebases;
@@ -599,8 +599,8 @@ void Search::Worker::clear() {
     pawnHistory.fill(-xx28);
     pawnCorrectionHistory.fill(xx29);
     minorPieceCorrectionHistory.fill(xx30);
-    nonPawnCorrectionHistory[WHITE].fill(xx31);
-    nonPawnCorrectionHistory[BLACK].fill(xx32);
+    nonPawnCorrectionHistory[WHITE].fill(0);
+    nonPawnCorrectionHistory[BLACK].fill(0);
 
     for (auto& to : continuationCorrectionHistory)
         for (auto& h : to)
@@ -732,7 +732,7 @@ Value Search::Worker::search(
     if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
         && is_valid(ttData.value)  // Can happen when !ttHit or when access race in probe()
         && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER))
-        && (cutNode == (ttData.value >= beta) || depth > 9))
+        && (cutNode == (ttData.value >= beta) || depth > xx38))
     {
         // If ttMove is quiet, update move sorting heuristics on TT hit
         if (ttData.move && ttData.value >= beta)
@@ -744,7 +744,7 @@ Value Search::Worker::search(
             // Extra penalty for early quiet moves of the previous ply
             if (prevSq != SQ_NONE && (ss - 1)->moveCount <= xx37 && !priorCapture)
                 update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                              -stat_malus(depth + xx38) * xx39 / 1024);
+                                              -stat_malus(depth + 1) * xx39 / 1024);
         }
 
         // Partial workaround for the graph history interaction problem
