@@ -77,7 +77,7 @@ TUNE(SetRange(2, 32),xx51);
 TUNE(SetRange(1, 651),xx52);  
 TUNE(xx53);
 TUNE(SetRange(1, 270001),xx54);
-TUNE(xx53, xx54, xx55, xx56, xx57);
+TUNE(xx55, xx56, xx57);
 TUNE(SetRange(1, 451),xx58);
 TUNE(xx59, xx60, xx61, xx62);
 TUNE(SetRange(1, 17),xx63);
