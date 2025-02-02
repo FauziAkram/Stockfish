@@ -1843,17 +1843,26 @@ void update_all_stats(const Position&      pos,
 // Updates histories of the move pairs formed by moves
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
-    static constexpr std::array<ConthistBonus, 6> conthist_bonuses = {
-      {{1, 1025}, {2, 621}, {3, 325}, {4, 512}, {5, 122}, {6, 534}}};
-
-    for (const auto [i, weight] : conthist_bonuses)
+    for (int i = 1; i <= 6; ++i)
+{
+    // Only update the first 2 continuation histories if we are in check
+    if (ss->inCheck && i > 2)
+        break;
+    if (((ss - i)->currentMove).is_ok())
     {
-        // Only update the first 2 continuation histories if we are in check
-        if (ss->inCheck && i > 2)
-            break;
-        if (((ss - i)->currentMove).is_ok())
-            (*(ss - i)->continuationHistory)[pc][to] << bonus * weight / 1024;
+        int weight;
+        switch (i) {
+            case 1: weight = 1025; break;
+            case 2: weight = 621; break;
+            case 3: weight = 325; break;
+            case 4: weight = 512; break;
+            case 5: weight = 122; break;
+            case 6: weight = 534; break;
+            default: weight = 0;  break; // Should never reach here
+        }
+        (*(ss - i)->continuationHistory)[pc][to] << bonus * weight / 1024;
     }
+}
 }
 
 // Updates move sorting heuristics
