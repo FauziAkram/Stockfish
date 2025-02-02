@@ -60,7 +60,7 @@ xx86=5, 	xx87=33, 	xx88=3, 	xx89=52, 	xx90=74, 	xx91=64, 	xx92=262144, 	xx93=262
 xx103=4126, 	xx104=1, 	xx105=2061, 	xx106=965, 	xx107=960, 	xx108=1018, 	xx109=307, 	xx110=64, 	xx111=34112, 	xx112=2355, 	xx113=1141, 	xx114=1087, 	xx115=8, 	xx116=990, 	xx117=940,
 xx118=887, 	xx119=1960, 	xx120=700, 	xx121=4666, 	xx122=3874, 	xx123=1451, 	xx124=40, 	xx125=2, 	xx126=10, 	xx127=2048, 	xx128=2111, 	xx129=3444, 	xx130=2, 	xx131=14, 	xx132=118,
 xx133=37, 	xx134=169, 	xx135=128, 	xx136=102, 	xx137=115, 	xx138=82, 	xx139=80, 	xx140=106, 	xx141=318, 	xx142=0, 	xx143=436, 	xx144=207, 	xx145=1195, 	xx146=2048, 	xx147=301, 	xx148=2,
-xx149=5228, 	xx150=80, 	xx151=768, 	xx152=184, 	xx153=1168, 	xx154=300, 	xx155=34, 	xx156=1216, 	xx157=1062, 	xx158=1272, 	xx159=996, 	xx160=1205, 	xx161=1025, 	xx162=621, 	xx163=325,
+xx149=5228, 	xx150=80, 	xx151=768, 	xx152=184, 	xx153=1168, 	xx154=300, 	xx155=66, viz=300,	xx156=1216, 	xx157=1062, 	xx158=1272, 	xx159=996, 	xx160=1205, 	xx161=1025, 	xx162=621, 	xx163=325,
 xx164=512, 	xx165=122, 	xx166=534, 	xx167=879, 	xx168=888, 	xx169=634;
 
 TUNE(xx1, xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14,	xx15,	xx16,	xx17,	xx18,	xx19,	xx20,	xx21,	xx22,	xx23,	xx24,	xx25,	xx26,	xx27,	xx28,	xx29,	xx30,	xx31,	xx32,
@@ -68,7 +68,7 @@ xx33,	xx34,	xx35,	xx36,	xx37,	xx38,	xx39,	xx40,	xx41,	xx42,	xx43,	xx44,	xx45,	xx
 xx66,	xx67,	xx68,	xx69,	xx70,	xx71,	xx72,	xx73,	xx74,	xx75,	xx76,	xx77,	xx78,	xx79,	xx80,	xx81,	xx82,	xx83,	xx84,	xx85,	xx86,	xx87,	xx88,	xx89,	xx90,	xx91,	xx92,	xx93,	xx94,	xx95,	xx96,	xx97,	xx98,
 xx99,	xx100,	xx101,	xx102,	xx103,	xx104,	xx105,	xx106,	xx107,	xx108,	xx109,	xx110,	xx111,	xx112,	xx113,	xx114,	xx115,	xx116,	xx117,	xx118,	xx119,	xx120,	xx121,	xx122,	xx123,
 xx124,	xx125,	xx126,	xx127,	xx128,	xx129,	xx130,	xx131,	xx132,	xx133,	xx134,	xx135,	xx136,	xx137,	xx138,	xx139,	xx140,	xx141,	xx142,	xx143,	xx144,	xx145,	xx146,	xx147,	xx148,
-xx149,	xx150,	xx151,	xx152,	xx153,	xx154,	xx155,	xx156,	xx157,	xx158,	xx159,	xx160,	xx161,	xx162,	xx163,	xx164,	xx165,	xx166,	xx167,	xx168,	xx169);
+xx149,	xx150,	xx151,	xx152,	xx153,	xx154,	xx155, viz,	xx156,	xx157,	xx158,	xx159,	xx160,	xx161,	xx162,	xx163,	xx164,	xx165,	xx166,	xx167,	xx168,	xx169);
 
 
 namespace TB = Tablebases;
@@ -1828,7 +1828,7 @@ void update_all_stats(const Position&      pos,
     PieceType              captured;
 
     int bonus = stat_bonus(depth) + xx154 * isTTMove;
-    int malus = stat_malus(depth) - xx155 * (moveCount - 1);
+    int malus = std::max(viz, stat_malus(depth) - xx155 * (moveCount - 1));
 
     if (!pos.capture_stage(bestMove))
     {
