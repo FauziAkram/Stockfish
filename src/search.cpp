@@ -129,7 +129,7 @@ void update_correction_history(const Position& pos,
     const Move  m  = (ss - 1)->currentMove;
     const Color us = pos.side_to_move();
 
-    static constexpr int nonPawnWeight = xx9;
+    const int nonPawnWeight = xx9;
 
     workerThread.pawnCorrectionHistory[pawn_structure_index<Correction>(pos)][us]
       << bonus * xx10 / 128;
@@ -1863,7 +1863,7 @@ void update_all_stats(const Position&      pos,
 // Updates histories of the move pairs formed by moves
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
-    static constexpr std::array<ConthistBonus, 6> conthist_bonuses = {
+    static const std::array<ConthistBonus, 6> conthist_bonuses = {
       {{1, xx161}, {2, xx162}, {3, xx163}, {4, xx164}, {5, xx165}, {6, xx166}}};
 
     for (const auto [i, weight] : conthist_bonuses)
