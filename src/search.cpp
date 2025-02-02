@@ -1082,6 +1082,9 @@ moves_loop:  // When in check, search starts here
                     int quadMargin =
                       394 + 287 * PvNode - 249 * !ttCapture + 99 * ss->ttPv - corrValAdj;
 
+                  dbg_hit_on(value < singularBeta - doubleMargin, 0);
+                  dbg_hit_on(value < singularBeta - tripleMargin, 1);
+
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin)
                               + (value < singularBeta - quadMargin);
