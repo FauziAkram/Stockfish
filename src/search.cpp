@@ -803,6 +803,9 @@ Value Search::Worker::search(
     // check at our previous move we go back until we weren't in check) and is
     // false otherwise. The improving flag is used in various pruning heuristics.
     improving = ss->staticEval > (ss - 2)->staticEval;
+  dbg_mean_of(ss->staticEval + (ss - 1)->staticEval);
+dbg_extremes_of(ss->staticEval + (ss - 1)->staticEval);
+
 
     opponentWorsening = ss->staticEval + (ss - 1)->staticEval > 2;
 
