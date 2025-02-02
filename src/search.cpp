@@ -1078,6 +1078,14 @@ moves_loop:  // When in check, search starts here
                     int corrValAdj   = std::abs(correctionValue) / 262144;
                     int tripleMargin =
                       94 + 287 * PvNode - 249 * !ttCapture + 99 * ss->ttPv - corrValAdj;
+dbg_hit_on(value < singularBeta - 4, 0);
+dbg_hit_on(value < singularBeta - 8, 1);
+dbg_hit_on(value < singularBeta - 12, 2);
+dbg_hit_on(value < singularBeta - 16, 3);
+dbg_hit_on(value < singularBeta - 20, 4);
+dbg_hit_on(value < singularBeta - 24, 5);
+dbg_hit_on(value < singularBeta - 28, 6);
+dbg_hit_on(value < singularBeta - 32, 7);
 
                     extension = 1 + (value < singularBeta - 12)
                       + (value < singularBeta - tripleMargin);
