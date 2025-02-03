@@ -1353,6 +1353,8 @@ moves_loop:  // When in check, search starts here
             // Log or store information about the previous best move
             // and the current move when the best move changes
             dbg_mean_of(moveCount, 7); // Slot 7: Move count when best move is not first
+            dbg_hit_on(pos.capture_stage(bestMove), 8); // Slot 8: Was previous best move a capture?
+            dbg_hit_on(type_of(pos.moved_piece(bestMove)) == PAWN, 9); // Slot 9: Was previous best move a pawn move?
         }
                 bestMove = move;
                 dbg_hit_on(moveCount == 1, 4);
