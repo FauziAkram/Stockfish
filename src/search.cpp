@@ -1278,6 +1278,8 @@ moves_loop:  // When in check, search starts here
 
         assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
+        dbg_correl_of(ss->staticEval, value, 0);
+
         // Step 20. Check for a new best move
         // Finished searching the move. If a stop occurred, the return value of
         // the search cannot be trusted, and we return immediately without updating
@@ -1358,6 +1360,7 @@ moves_loop:  // When in check, search starts here
         }
                 bestMove = move;
                 dbg_hit_on(moveCount == 1, 4);
+                dbg_correl_of(depth, moveCount, 1);
 
                 if (PvNode && !rootNode)  // Update pv even in fail-high case
                     update_pv(ss->pv, move, (ss + 1)->pv);
