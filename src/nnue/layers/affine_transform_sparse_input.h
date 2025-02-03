@@ -136,6 +136,7 @@ void find_nnz(const std::int32_t* input, std::uint16_t* out, IndexType& count_ou
             const vec_t inputChunk = inputVector[i * InputsPerChunk + j];
             nnz |= unsigned(vec_nnz(inputChunk)) << (j * InputSimdWidth);
         }
+        dbg_mean_of(popcount(nnz), 9); // Slot 9: Add dbg_mean_of to track average nnz per chunk
         for (IndexType j = 0; j < OutputsPerChunk; ++j)
         {
             const unsigned lookup = (nnz >> (j * 8)) & 0xFF;
