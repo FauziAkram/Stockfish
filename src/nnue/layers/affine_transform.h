@@ -123,9 +123,8 @@ static void affine_transform_non_ssse3(std::int32_t*       output,
                 output[j] += w[j * PaddedInputDimensions] * in;
             }
         }
-    }
-    
-#endif
+   #endif
+}
 
 #endif  // !ENABLE_SEQ_OPT
 
