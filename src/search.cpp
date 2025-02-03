@@ -669,6 +669,10 @@ Value Search::Worker::search(
     ttData.value = ttHit ? value_from_tt(ttData.value, ss->ply, pos.rule50_count()) : VALUE_NONE;
     ss->ttPv     = excludedMove ? ss->ttPv : PvNode || (ttHit && ttData.is_pv);
     ttCapture    = ttData.move && pos.capture_stage(ttData.move);
+    dbg_correl_of(ttHit, depth, 2); // Slot 2: Correlation between TT hit and depth
+    dbg_correl_of(ttHit && ttData.bound == BOUND_EXACT, depth, 3); // Slot 3: Correlation between exact TT hit and depth
+    dbg_correl_of(ttHit, nodes, 4); // Slot 4: Correlation between TT hit and nodes searched
+    dbg_correl_of(ttHit && ttData.bound == BOUND_EXACT, nodes, 5); // Slot 5: Correlation between exact TT hit and nodes searched
 
     // At this point, if excluded, skip straight to step 6, static eval. However,
     // to save indentation, we list the condition in all code between here and there.
