@@ -1341,6 +1341,9 @@ moves_loop:  // When in check, search starts here
 
             if (value + inc > alpha)
             {
+                if (bestMove != Move::none() && pos.capture_stage(bestMove))
+                   captureHistory[pos.moved_piece(bestMove)][bestMove.to_sq()][type_of(pos.piece_on(bestMove.to_sq()))] <<= -stat_malus(depth);
+              
                 bestMove = move;
 
                 if (PvNode && !rootNode)  // Update pv even in fail-high case
