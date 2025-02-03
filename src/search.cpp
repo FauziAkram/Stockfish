@@ -1342,7 +1342,7 @@ moves_loop:  // When in check, search starts here
             if (value + inc > alpha)
             {
                 if (bestMove != Move::none() && pos.capture_stage(bestMove))
-                   captureHistory[pos.moved_piece(bestMove)][bestMove.to_sq()][type_of(pos.piece_on(bestMove.to_sq()))] <<= -stat_malus(depth);
+                   captureHistory[pos.moved_piece(bestMove)][bestMove.to_sq()][type_of(pos.piece_on(bestMove.to_sq()))] <<= -stat_malus(depth) / 4;
               
                 bestMove = move;
 
