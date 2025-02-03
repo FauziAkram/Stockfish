@@ -656,6 +656,7 @@ Value Search::Worker::search(
     excludedMove                   = ss->excludedMove;
     posKey                         = pos.key();
     auto [ttHit, ttData, ttWriter] = tt.probe(posKey);
+    dbg_hit_on(ttHit, 0);
     // Need further processing of the saved data
     ss->ttHit    = ttHit;
     ttData.move  = rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
@@ -847,6 +848,7 @@ Value Search::Worker::search(
         // Do not return unproven mate or TB scores
         if (nullValue >= beta && !is_win(nullValue))
         {
+            dbg_hit_on(true, 2);
             if (thisThread->nmpMinPly || depth < 16)
                 return nullValue;
 
@@ -926,6 +928,7 @@ Value Search::Worker::search(
 
             if (value >= probCutBeta)
             {
+                dbg_hit_on(true, 3);
                 // Save ProbCut data into transposition table
                 ttWriter.write(posKey, value_to_tt(value, ss->ply), ss->ttPv, BOUND_LOWER,
                                probCutDepth + 1, move, unadjustedStaticEval, tt.generation());
@@ -1342,6 +1345,7 @@ moves_loop:  // When in check, search starts here
             if (value + inc > alpha)
             {
                 bestMove = move;
+                dbg_hit_on(moveCount == 1, 4);
 
                 if (PvNode && !rootNode)  // Update pv even in fail-high case
                     update_pv(ss->pv, move, (ss + 1)->pv);
@@ -1621,6 +1625,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 // much lower than alpha, we can prune this move.
                 if (futilityValue <= alpha)
                 {
+                    dbg_hit_on(true, 1);
                     bestValue = std::max(bestValue, futilityValue);
                     continue;
                 }
