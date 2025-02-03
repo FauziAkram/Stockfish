@@ -871,7 +871,7 @@ Value Search::Worker::search(
     // For PV nodes without a ttMove as well as for deep enough cutNodes, we decrease depth.
     // (* Scaler) Especially if they make IIR more aggressive.
     if (((PvNode || cutNode) && depth >= 7 - 3 * PvNode) && !ttData.move)
-        depth --;
+        depth--;
 
     // Step 11. ProbCut
     // If we have a good enough capture (or queen promotion) and a reduced search
@@ -1099,8 +1099,8 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int corrValAdj1   = std::abs(correctionValue) / 265083;
-                    int corrValAdj2   = std::abs(correctionValue) / 253680;
+                    int corrValAdj1  = std::abs(correctionValue) / 265083;
+                    int corrValAdj2  = std::abs(correctionValue) / 253680;
                     int doubleMargin = 267 * PvNode - 181 * !ttCapture - corrValAdj1;
                     int tripleMargin =
                       96 + 282 * PvNode - 250 * !ttCapture + 103 * ss->ttPv - corrValAdj2;
@@ -1242,9 +1242,8 @@ moves_loop:  // When in check, search starts here
                 r += 2117;
 
             // Note that if expected reduction is high, we reduce search depth here
-            value =
-              -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
-                            newDepth - (r > 3554) - (r > 5373 && newDepth > 2), !cutNode);
+            value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
+                                   newDepth - (r > 3554) - (r > 5373 && newDepth > 2), !cutNode);
         }
 
         // For PV nodes only, do a full PV search on the first move or after a fail high,
