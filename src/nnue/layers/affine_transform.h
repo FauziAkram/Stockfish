@@ -109,16 +109,22 @@ static void affine_transform_non_ssse3(std::int32_t*       output,
     #else
     std::memcpy(output, biases, sizeof(std::int32_t) * OutputDimensions);
 
-    // Traverse weights in transpose order to take advantage of input sparsity
-    for (IndexType i = 0; i < InputDimensions; ++i)
+     for (IndexType i = 0; i < InputDimensions; ++i)
+    {
+        dbg_hit_on(!input[i], 0); // Slot 0: input[i] == 0
+        dbg_hit_on(input[i], 1); // Slot 1: input[i] != 0
         if (input[i])
         {
             const std::int8_t* w  = &weights[i];
             const int          in = input[i];
-            for (IndexType j = 0; j < OutputDimensions; ++j)
+            for (IndexType j = 0; j < OutputDimensions; ++j) {
+                dbg_hit_on(w[j * PaddedInputDimensions] >= 0, 2); // slot 2: weight >= 0
+                dbg_hit_on(w[j * PaddedInputDimensions] < 0, 3); // slot 3: weight < 0
                 output[j] += w[j * PaddedInputDimensions] * in;
+            }
         }
-    #endif
+    }
+    
 }
 
 #endif  // !ENABLE_SEQ_OPT
@@ -223,12 +229,16 @@ class AffineTransform {
 
             for (IndexType i = 0; i < NumChunks; ++i)
             {
+                dbg_hit_on(!input32[i], 4); // Slot 4: input32 == 0
+                dbg_hit_on(input32[i], 5); // Slot 5: input32 != 0
                 const vec_t in0 = vec_set_32(input32[i]);
                 const auto  col0 =
                   reinterpret_cast<const vec_t*>(&weights[i * OutputDimensions * 4]);
 
-                for (IndexType k = 0; k < NumRegs; ++k)
+                for (IndexType k = 0; k < NumRegs; ++k) {
+                    dbg_hit_on(i == 0 && k == 0, 6); // Slot 6: first operation
                     vec_add_dpbusd_32(acc[k], in0, col0[k]);
+                }
             }
 
             vec_t* outptr = reinterpret_cast<vec_t*>(output);
