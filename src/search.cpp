@@ -657,6 +657,10 @@ Value Search::Worker::search(
     posKey                         = pos.key();
     auto [ttHit, ttData, ttWriter] = tt.probe(posKey);
     dbg_hit_on(ttHit, 0);
+    if (ttHit) {
+    dbg_hit_on(ttData.bound == BOUND_EXACT, 5); // Slot 5: Exact TT hit rate
+    dbg_hit_on(ttData.depth >= depth - 3, 6); // Slot 6: TT hit with sufficient depth
+}
     // Need further processing of the saved data
     ss->ttHit    = ttHit;
     ttData.move  = rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
@@ -1344,6 +1348,12 @@ moves_loop:  // When in check, search starts here
 
             if (value + inc > alpha)
             {
+                if (bestMove != Move::none())
+        {
+            // Log or store information about the previous best move
+            // and the current move when the best move changes
+            dbg_mean_of(moveCount, 7); // Slot 7: Move count when best move is not first
+        }
                 bestMove = move;
                 dbg_hit_on(moveCount == 1, 4);
 
