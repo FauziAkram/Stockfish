@@ -176,7 +176,7 @@ void MovePicker::score() {
                                                : 0;
 
             if (m.type_of() == PROMOTION && m.promotion_type() == KNIGHT)
-            m.value += 10000;
+            m.value += 8000;
 
             // malus for putting piece en prise
             m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * 49000
