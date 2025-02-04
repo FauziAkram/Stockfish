@@ -180,11 +180,11 @@ void MovePicker::score() {
             m.value += xx1;
               if (m.promotion_type() == KNIGHT) {
             m.value += xx2;
-              if (pos.gives_check(move))
+              if (pos.gives_check(m))
             m.value += xx3;
               else
             m.value += xx4; }
-              if (pos.gives_check(move))
+              if (pos.gives_check(m))
             m.value += xx5; }
 
             // malus for putting piece en prise
