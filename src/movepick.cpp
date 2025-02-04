@@ -26,7 +26,8 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0;
+TUNE(SetRange(-10000, 50000), xx1,xx2,xx3,xx4,xx5);
 namespace {
 
 enum Stages {
@@ -174,6 +175,17 @@ void MovePicker::score() {
                                                   : !(to & threatenedByPawn)                ? 14450
                                                                                             : 0)
                                                : 0;
+
+            if (m.type_of() == PROMOTION) {
+            m.value += xx1;
+              if (m.promotion_type() == KNIGHT) {
+            m.value += xx2;
+              if (pos.gives_check(move))
+            m.value += xx3;
+              else
+            m.value += xx4; }
+              if (pos.gives_check(move))
+            m.value += xx5; }
 
             // malus for putting piece en prise
             m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * 49000
