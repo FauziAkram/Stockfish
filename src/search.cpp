@@ -1399,7 +1399,8 @@ moves_loop:  // When in check, search starts here
         int bonusScale = (118 * (depth > 5) + 36 * !allNode + 161 * ((ss - 1)->moveCount > 8)
                           + 133 * (!ss->inCheck && bestValue <= ss->staticEval - 107)
                           + 120 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 84)
-                          + 81 * ((ss - 1)->isTTMove) + std::min(-(ss - 1)->statScore / 108, 320));
+                          + 81 * ((ss - 1)->isTTMove) + 100 * (ss->cutoffCnt <= 3)
+                          + std::min(-(ss - 1)->statScore / 108, 320));
 
         bonusScale = std::max(bonusScale, 0);
 
@@ -1490,7 +1491,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     Value bestValue, value, futilityBase;
     bool  pvHit, givesCheck, capture;
     int   moveCount;
-    Color us = pos.side_to_move();
 
     // Step 1. Initialize node
     if (PvNode)
@@ -1603,7 +1603,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         moveCount++;
 
         // Step 6. Pruning
-        if (!is_loss(bestValue) && pos.non_pawn_material(us))
+        if (!is_loss(bestValue))
         {
             // Futility pruning and moveCount pruning
             if (!givesCheck && move.to_sq() != prevSq && !is_loss(futilityBase)
