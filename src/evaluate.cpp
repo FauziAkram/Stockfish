@@ -83,9 +83,9 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     // Damp down the evaluation linearly when shuffling
   if (material > 12470)
-    v -= v * pos.rule50_count() / 210;
+    v -= v * pos.rule50_count() / 214;
   else
-    v -= v * pos.rule50_count() / 232;
+    v -= v * pos.rule50_count() / 184;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
