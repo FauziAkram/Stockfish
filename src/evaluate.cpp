@@ -82,7 +82,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
 
     // Damp down the evaluation linearly when shuffling
-  if (material > 12470)
+  if (material <= 12470)
     v -= v * pos.rule50_count() / 214;
   else
     v -= v * pos.rule50_count() / 184;
