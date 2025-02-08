@@ -1536,7 +1536,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     if (ss->inCheck)
     {
         bestValue = futilityBase = -VALUE_INFINITE;
-        improving = false; // Or some other suitable default when in check
+        improving = false;
     }
     else
     {
@@ -1551,10 +1551,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
             // ttValue can be used as a better position evaluation
             if (is_valid(ttData.value) && !is_decisive(ttData.value)
-                && (ttData.bound & (ttData.value > bestValue ? BOUND_LOWER : BOUND_UPPER))) {
-                //The original location of the "if (improving) {return ttData.value}" condition
+                && (ttData.bound & (ttData.value > bestValue ? BOUND_LOWER : BOUND_UPPER)))
                 bestValue = ttData.value;
-            }
         }
         else
         {
@@ -1565,7 +1563,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
               to_corrected_static_eval(unadjustedStaticEval, correctionValue);
         }
         
-        improving = ss->staticEval > (ss - 2)->staticEval; // Correct initialization
+        improving = ss->staticEval > (ss - 2)->staticEval;
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)
