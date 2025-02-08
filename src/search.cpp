@@ -65,47 +65,6 @@ xx153=83, 	xx154=100, 	xx155=3, 	xx156=105, 	xx157=308, 	xx158=421, 	xx159=220, 
 xx168=78, 	xx169=0, 	xx170=712, 	xx171=384, 	xx172=1088, 	xx173=301, 	xx174=32, 	xx175=0, 	xx176=0, 	xx177=1193, 	xx178=1142, 	xx179=1274, 	xx180=973, 	xx181=1241, 	xx182=1009,
 xx183=659, 	xx184=327, 	xx185=535, 	xx186=122, 	xx187=527, 	xx188=853, 	xx189=954, 	xx190=611, 	xx191=0, 	xx192=0, 	xx193=0;
 
-TUNE(xx1,xx2,xx3,xx4);
-TUNE(SetRange(-4, 6), xx5);
-TUNE(xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23,xx24,xx25,xx26,xx27,xx28,xx29,xx30);
-TUNE(SetRange(-90, 90), xx31,xx32,xx33);
-TUNE(xx35,xx36,xx37);
-TUNE(SetRange(1, 11), xx38);
-TUNE(SetRange(-6, 6), xx39);
-TUNE(xx40,xx41,xx42,xx43,xx44,xx45,xx46);
-TUNE(SetRange(1, 11), xx47);
-TUNE(SetRange(-4, 6), xx48);
-TUNE(SetRange(0, 10), xx49);
-TUNE(xx50,xx51,xx52,xx53,xx54,xx55,xx56);
-TUNE(SetRange(1, 11), xx57);
-TUNE(xx58,xx59,xx60,xx61,xx62,xx63,xx64);
-TUNE(SetRange(1, 11), xx65);
-TUNE(xx66,xx67);
-TUNE(SetRange(0, 10), xx68);
-TUNE(SetRange(-4, 6), xx69);
-TUNE(xx70,xx71,xx72,xx73,xx74,xx75,xx76,xx77,xx78,xx79,xx80,xx81,xx82,xx83,xx84,xx85,xx86,xx87,xx88,xx89,xx90);
-TUNE(SetRange(1, 11), xx91);
-TUNE(xx92);
-TUNE(SetRange(-2, 8), xx93);
-TUNE(xx94,xx95,xx96,xx97,xx98,xx99,xx100,xx101,xx102,xx103,xx104,xx105);
-TUNE(SetRange(-4, 6), xx106);
-TUNE(SetRange(-2, 8), xx107,xx108,xx109);
-TUNE(xx110,xx111,xx112,xx113,xx114,xx115,xx116,xx117,xx118,xx119,xx120,xx121,xx122,xx123,xx124,xx125,xx126,xx127,xx128,xx129,xx130,xx131);
-TUNE(SetRange(1, 11), xx132);
-TUNE(xx133,xx134,xx135,xx136,xx137,xx138);
-TUNE(SetRange(0, 10), xx139,xx140);
-TUNE(xx141);
-TUNE(SetRange(-6, 6),xx142,xx142a);
-TUNE(xx143,xx144,xx145,xx146,xx147,xx148,xx149,xx150,xx151,xx152,xx153,xx154);
-TUNE(SetRange(1, 11), xx155);
-TUNE(xx156,xx157,xx158,xx159,xx160,xx161);
-TUNE(SetRange(-150, 150), xx162);
-TUNE(xx163,xx164,xx165,xx166,xx167,xx168);
-TUNE(SetRange(-300, 300), xx169);
-TUNE(xx170,xx171,xx172,xx173,xx174);
-TUNE(SetRange(-6, 6),xx175,xx176);
-TUNE(xx177,xx178,	xx179,	xx180,	xx181,	xx182,	xx183,	xx184,	xx185,	xx186,	xx187,	xx188,	xx189,	xx190);
-TUNE(SetRange(-6, 6),xx191,xx192,xx193);
 
 namespace TB = Tablebases;
 
