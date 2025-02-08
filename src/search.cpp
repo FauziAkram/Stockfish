@@ -1563,7 +1563,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
               to_corrected_static_eval(unadjustedStaticEval, correctionValue);
         }
         
-        improving = ss->staticEval > ((ss - 2)->staticEval + 100);
+        improving = ss->staticEval > ((ss - 2)->staticEval + 200);
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)
