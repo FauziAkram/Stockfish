@@ -1491,6 +1491,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     Value bestValue, value, futilityBase;
     bool  pvHit, givesCheck, capture;
     int   moveCount;
+    bool  improving;
 
     // Step 1. Initialize node
     if (PvNode)
@@ -1533,7 +1534,10 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     Value      unadjustedStaticEval = VALUE_NONE;
     const auto correctionValue      = correction_value(*thisThread, pos, ss);
     if (ss->inCheck)
+    {
         bestValue = futilityBase = -VALUE_INFINITE;
+        improving = false; // Or some other suitable default when in check
+    }
     else
     {
         if (ss->ttHit)
@@ -1548,12 +1552,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             // ttValue can be used as a better position evaluation
             if (is_valid(ttData.value) && !is_decisive(ttData.value)
                 && (ttData.bound & (ttData.value > bestValue ? BOUND_LOWER : BOUND_UPPER))) {
-                if (improving) {
-                return ttData.value;
-                }
-                else {
+                //The original location of the "if (improving) {return ttData.value}" condition
                 bestValue = ttData.value;
-                }
             }
         }
         else
@@ -1564,6 +1564,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             ss->staticEval = bestValue =
               to_corrected_static_eval(unadjustedStaticEval, correctionValue);
         }
+        
+        improving = ss->staticEval > (ss - 2)->staticEval; // Correct initialization
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)
@@ -1582,6 +1584,27 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
         futilityBase = ss->staticEval + 325;
     }
+     if (ss->ttHit)
+        {
+            // Never assume anything about values stored in TT
+            unadjustedStaticEval = ttData.eval;
+            if (!is_valid(unadjustedStaticEval))
+                unadjustedStaticEval = evaluate(pos);
+            ss->staticEval = bestValue =
+              to_corrected_static_eval(unadjustedStaticEval, correctionValue);
+
+            // ttValue can be used as a better position evaluation
+            if (is_valid(ttData.value) && !is_decisive(ttData.value)
+                && (ttData.bound & (ttData.value > bestValue ? BOUND_LOWER : BOUND_UPPER))) {
+                if (improving) { //Moved condition here
+                    return ttData.value;
+                }
+                else
+                {
+                    bestValue = ttData.value;
+                }
+            }
+        }
 
     const PieceToHistory* contHist[] = {(ss - 1)->continuationHistory,
                                         (ss - 2)->continuationHistory};
