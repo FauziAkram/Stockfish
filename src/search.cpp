@@ -1554,6 +1554,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 else {
                 bestValue = ttData.value;
                 }
+            }
         }
         else
         {
