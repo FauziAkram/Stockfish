@@ -35,6 +35,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int th1=85, th2=14;
+TUNE(th1, th2);
 
 // Constructor launches the thread and waits until it goes to sleep
 // in idle_loop(). Note that 'searching' and 'exit' should be already set.
@@ -214,7 +216,7 @@ void ThreadPool::clear() {
 
     // These two affect the time taken on the first move of a game:
     main_manager()->bestPreviousAverageScore = VALUE_INFINITE;
-    main_manager()->previousTimeReduction    = 0.85;
+    main_manager()->previousTimeReduction    = (th1 / 100.0);
 
     main_manager()->callsCnt           = 0;
     main_manager()->bestPreviousScore  = VALUE_INFINITE;
@@ -312,7 +314,7 @@ Thread* ThreadPool::get_best_thread() const {
 
     // Vote according to score and depth, and select the best thread
     auto thread_voting_value = [minScore](Thread* th) {
-        return (th->worker->rootMoves[0].score - minScore + 14) * int(th->worker->completedDepth);
+        return (th->worker->rootMoves[0].score - minScore + th2) * int(th->worker->completedDepth);
     };
 
     for (auto&& th : threads)
