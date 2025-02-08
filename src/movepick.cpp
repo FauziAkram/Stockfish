@@ -27,7 +27,7 @@
 
 namespace Stockfish {
 int mv1=16384, mv2=51700, mv3=28600, mv4=14450, mv5=49000, mv6=24335, mv7=8, mv8=3560, mv9=7998;
-TUNE(mv1,mv2,mv3,mv4,mv5,mv6,mv7,mv8,mv9);
+
 namespace {
 
 enum Stages {
