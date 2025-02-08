@@ -36,7 +36,6 @@
 
 namespace Stockfish {
 int th1=85, th2=14;
-TUNE(th1, th2);
 
 // Constructor launches the thread and waits until it goes to sleep
 // in idle_loop(). Note that 'searching' and 'exit' should be already set.
