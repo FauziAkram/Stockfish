@@ -90,9 +90,9 @@ TUNE(SetRange(-2, 8), xx93);
 TUNE(xx94,xx95,xx96,xx97,xx98,xx99,xx100,xx101,xx102,xx103,xx104,xx105);
 TUNE(SetRange(-4, 6), xx106);
 TUNE(SetRange(-2, 8), xx107,xx108,xx109);
-TUNE(xx110,xx111,xx112,xx113,xx114,xx115,xx116,xx117,xx118,xx119,xx120,xx121,xx122,xx123,xx124,xx125,xx126,xx127,xx128,xx129,xx130);
-TUNE(SetRange(1, 11), xx131);
-TUNE(xx132,xx133,xx134,xx135,xx136,xx137,xx138);
+TUNE(xx110,xx111,xx112,xx113,xx114,xx115,xx116,xx117,xx118,xx119,xx120,xx121,xx122,xx123,xx124,xx125,xx126,xx127,xx128,xx129,xx130,xx131);
+TUNE(SetRange(1, 11), xx132);
+TUNE(xx133,xx134,xx135,xx136,xx137,xx138);
 TUNE(SetRange(0, 10), xx139,xx140);
 TUNE(xx141);
 TUNE(SetRange(-6, 6),xx142,xx142a);
@@ -1251,13 +1251,13 @@ moves_loop:  // When in check, search starts here
         else
             ss->statScore = xx127 * thisThread->mainHistory[us][move.from_to()] / 32
                           + xx128 * (*contHist[0])[movedPiece][move.to_sq()] / 32
-                          + xx129 * (*contHist[1])[movedPiece][move.to_sq()] / 32 - 3591;
+                          + xx129 * (*contHist[1])[movedPiece][move.to_sq()] / 32 - xx130;
 
         // Decrease/increase reduction for moves with a good/bad history
-        r -= ss->statScore * xx130 / 16384;
+        r -= ss->statScore * xx131 / 16384;
 
         // Step 17. Late moves reduction / extension (LMR)
-        if (depth >= xx131 && moveCount > 1)
+        if (depth >= xx132 && moveCount > 1)
         {
             // In general we want to cap the LMR depth search at newDepth, but when
             // reduction is negative, we allow this move a limited search extension
