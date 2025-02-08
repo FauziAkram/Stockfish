@@ -51,6 +51,19 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=116, 	xx2=27, 	xx3=256, 	xx4=43, 	xx5=3, 	xx6=2, 	xx7=7011, 	xx8=6749, 	xx9=7832, 	xx10=6069, 	xx11=167, 	xx12=112, 	xx13=143, 	xx14=140, 	xx15=162,
+xx16=97, 	xx17=1579, 	xx18=827, 	xx19=238, 	xx20=2764, 	xx21=94, 	xx22=5, 	xx23=12810, 	xx24=139, 	xx25=82, 	xx26=45, 	xx27=64, 	xx28=105, 	xx29=653, 	xx30=1246,
+xx31=6, 	xx32=-3, 	xx33=-2, 	xx34=483, 	xx35=2945, 	xx36=9, 	xx37=745, 	xx38=3, 	xx39=1, 	xx40=1021, 	xx41=11, 	xx42=1874, 	xx43=1434, 	xx44=625, 	xx45=1159, 	xx46=1150,
+xx47=3, 	xx48=2, 	xx49=1, 	xx50=200, 	xx51=456, 	xx52=299, 	xx53=14, 	xx54=320, 	xx55=37, 	xx56=132614, 	xx57=3, 	xx58=21, 	xx59=456, 	xx60=58, 	xx61=240, 	xx62=6,
+xx63=40, 	xx64=5, 	xx65=4, 	xx66=96, 	xx67=7, 	xx68=3, 	xx69=1, 	xx70=189, 	xx71=56, 	xx72=416, 	xx73=32, 	xx74=1068, 	xx75=7, 	xx76=233, 	xx77=239, 	xx78=136,
+xx79=36, 	xx80=157, 	xx81=132, 	xx82=152, 	xx83=4142, 	xx84=64, 	xx85=3657, 	xx86=50, 	xx87=135, 	xx88=147, 	xx89=13, 	xx90=26, 	xx91=5, 	xx92=31, 	xx93=3, 	xx94=56,
+xx95=80, 	xx96=57, 	xx97=264674, 	xx98=253052, 	xx99=0, 	xx100=265, 	xx101=185, 	xx102=100, 	xx103=283, 	xx104=249, 	xx105=101, 	xx106=1, 	xx107=4, 	xx108=3, 	xx109=2,
+xx110=2201, 	xx111=900, 	xx112=975, 	xx113=1057, 	xx114=313, 	xx115=32, 	xx116=31118, 	xx117=2676, 	xx118=1135, 	xx119=1130, 	xx120=8, 	xx121=963, 	xx122=1001,
+xx123=812, 	xx124=1908, 	xx125=883, 	xx126=4548, 	xx127=64, 	xx128=32, 	xx129=32, 	xx130=3603, 	xx131=1418, 	xx132=2, 	xx133=41, 	xx134=9, 	xx135=2018, 	xx136=1111,
+xx137=3572, 	xx138=5226, 	xx139=3, 	xx140=2, 	xx141=15, 	xx142=0, 	xx143=0, 	xx144=119, 	xx145=5, 	xx146=35, 	xx147=159, 	xx148=8, 	xx149=133, 	xx150=109, 	xx151=121, 	xx152=84,
+xx153=83, 	xx154=100, 	xx155=3, 	xx156=106, 	xx157=308, 	xx158=421, 	xx159=220, 	xx160=1110, 	xx161=2032, 	xx162=0, 	xx163=321, 	xx164=32, 	xx165=32, 	xx166=32, 	xx167=5309,
+xx168=78, 	xx169=0, 	xx170=712, 	xx171=384, 	xx172=1088, 	xx173=301, 	xx174=32, 	xx175=0, 	xx176=0, 	xx177=1193, 	xx178=1142, 	xx179=1274, 	xx180=973, 	xx181=1241, 	xx182=1009,
+xx183=659, 	xx184=327, 	xx185=535, 	xx186=122, 	xx187=527, 	xx188=853, 	xx189=954, 	xx190=611, 	xx191=0, 	xx192=0, 	xx193=0;
 
 namespace TB = Tablebases;
 
@@ -1711,7 +1724,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return reductionScale - delta * xx170 / rootDelta + !i * reductionScale * xx171 / 512 + xx172;
+    return reductionScale - delta * xx170 / rootDelta + !i * reductionScale * xx171 / 1024 + xx172;
 }
 
 // elapsed() returns the time elapsed since the search started. If the
