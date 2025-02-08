@@ -37,9 +37,7 @@
 
 namespace Stockfish {
 int ev1=962, ev2=0, ev3=236, ev4=0, ev5=467, ev6=20232, ev7=17878, ev8=535, ev9=77777, ev10=7777, ev11=77776, ev12=211;
-TUNE(ev1);
-TUNE(SetRange(-5, 5), ev2,ev4);
-TUNE(ev3,ev5,ev6,ev7,ev8,ev9,ev10,ev11,ev12);
+
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
