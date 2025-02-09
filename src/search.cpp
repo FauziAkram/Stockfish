@@ -679,12 +679,12 @@ Value Search::Worker::search(
         {
             // Bonus for a quiet ttMove that fails high
             if (!ttCapture)
-                update_quiet_histories(pos, ss, *this, ttData.move, stat_bonus(depth) * 784 / 1024);
+                update_quiet_histories(pos, ss, *this, ttData.move, stat_bonus(depth - 1) * 784 / 1024);
 
             // Extra penalty for early quiet moves of the previous ply
-            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 && !priorCapture)
+            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 5 && !priorCapture)
                 update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                              -stat_malus(depth + 1) * 1018 / 1024);
+                                              -stat_malus(depth + 4) * 1145 / 1024);
         }
 
         // Partial workaround for the graph history interaction problem
@@ -1404,17 +1404,17 @@ moves_loop:  // When in check, search starts here
 
         bonusScale = std::max(bonusScale, 0);
 
-        const int scaledBonus = stat_bonus(depth) * bonusScale;
+        const int scaledBonus = stat_bonus(depth - 1) * bonusScale;
 
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                      scaledBonus * 416 / 32768);
+                                      scaledBonus * 516 / 32768);
 
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()]
-          << scaledBonus * 219 / 32768;
+          << scaledBonus * 425 / 32768;
 
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << scaledBonus * 1103 / 32768;
+              << scaledBonus * 1373 / 32768;
     }
 
     else if (priorCapture && prevSq != SQ_NONE)
@@ -1423,7 +1423,7 @@ moves_loop:  // When in check, search starts here
         Piece capturedPiece = pos.captured_piece();
         assert(capturedPiece != NO_PIECE);
         thisThread->captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)]
-          << stat_bonus(depth) * 2;
+          << stat_bonus(depth - 1) * 1717 / 1024;
     }
 
     if (PvNode)
