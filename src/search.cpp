@@ -1400,7 +1400,7 @@ moves_loop:  // When in check, search starts here
                           + 133 * (!ss->inCheck && bestValue <= ss->staticEval - 107)
                           + 120 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 84)
                           + 81 * ((ss - 1)->isTTMove)
-      + 36 * (ss->cutoffCnt <= 1) + 36 * (ss->cutoffCnt <= 2) + 36 * (ss->cutoffCnt <= 3)
+      + 34 * (ss->cutoffCnt <= 4) + 72 * (ss->cutoffCnt <= 3)
                           + std::min(-(ss - 1)->statScore / 108, 320));
 
         bonusScale = std::max(bonusScale, 0);
