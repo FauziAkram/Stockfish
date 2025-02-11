@@ -848,7 +848,7 @@ Value Search::Worker::search(
         if (nullValue >= beta && !is_win(nullValue))
         {
             if (thisThread->nmpMinPly || depth < 16)
-                return nullValue;
+                return nullValue + (beta - nullValue) / 4;
 
             assert(!thisThread->nmpMinPly);  // Recursive verification is not allowed
 
@@ -861,7 +861,7 @@ Value Search::Worker::search(
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
-                return nullValue;
+                return nullValue + (beta - nullValue) / 4;
         }
     }
 
