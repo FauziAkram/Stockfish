@@ -51,7 +51,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=49, xx2=135, xx3=150, xx4=150, xx5=8, xx6=100;
+TUNE(SetRange(0, 135), xx1);
+TUNE(xx2,xx3,xx4);
+TUNE(SetRange(1, 21), xx5);
+TUNE(xx6);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1053,7 +1057,10 @@ moves_loop:  // When in check, search starts here
 
                 lmrDepth += history / 3576;
 
-                Value futilityValue = ss->staticEval + (bestMove ? 49 : 135) + 150 * lmrDepth;
+                Value futilityValue = ss->staticEval + (bestMove ? xx1 : xx2) + xx3 * lmrDepth;
+
+                if (bestValue < ss->staticEval - xx4 && lmrDepth < xx5)
+                   futilityValue += xx6;
 
                 // Futility pruning: parent node
                 if (!ss->inCheck && lmrDepth < 12 && futilityValue <= alpha)
