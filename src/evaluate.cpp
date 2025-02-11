@@ -36,7 +36,7 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
-int ev1=962, ev2=0, ev3=236, ev4=0, ev5=468, ev6=20233, ev7=17879, ev8=535, ev9=77777, ev10=7777, ev11=77777, ev12=212;
+int ev1=962, ev2=0, ev3=236, ev4=0, ev5=469, ev6=20233, ev7=17879, ev8=535, ev9=77777, ev10=7777, ev11=77777, ev12=212;
 TUNE(ev1);
 TUNE(SetRange(-5, 5), ev2,ev4);
 TUNE(SetRange(1, 937), ev5);
@@ -81,7 +81,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / (1+ ev5);
+    optimism += optimism * nnueComplexity / ev5;
     nnue -= nnue * nnueComplexity / (smallNet ? ev6 : ev7);
 
     int material = ev8 * pos.count<PAWN>() + pos.non_pawn_material();
