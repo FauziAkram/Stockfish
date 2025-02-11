@@ -53,7 +53,7 @@
 namespace Stockfish {
 int xx1=116, xx2=27, xx3=256, xx4=43, xx7=7011, xx8=6749, xx9=7832, xx10=6069, xx11=167, xx12=112, xx13=143, xx14=140, xx15=162,
 xx16=97, xx17=1579, xx18=827, xx19=238, xx20=2764, xx21=94, xx22=5, xx23=12810, xx24=139, xx25=82, xx26=45, xx27=64, xx28=105, xx29=653, xx30=1246,
-xx31=6, xx32=-3, xx33=-2, xx34=483, xx35=2945, xx36=9, xx37=745, xx40=1021, xx41=11, xx42=1874, xx43=1434, xx44=625, xx45=1159, xx46=1150,
+xx31=6, xx32=-3, xx33=-2, xx34=483, xx35=2945, xx36=9, xx36a=10, xx36b=5, xx37=745, xx40=1021, xx41=11, xx42=1874, xx43=1434, xx44=625, xx45=1159, xx46=1150,
 xx47=3, xx48=2, xx49=1, xx50=200, xx51=456, xx52=299, xx53=14, xx54=320, xx55=37, xx56=132614, xx57=3, xx58=21, xx59=456, xx60=58, xx61=240, xx62=6,
 xx63=40, xx64=5, xx66=96, xx67=7, xx68=3, xx69=1, xx70=189, xx71=56, xx72=416, xx73=32, xx74=1068, xx75=7, xx76=233, xx77=239, xx78=136,
 xx79=35, xx80=157, xx81=132, xx82=152, xx83=4142, xx84=64, xx85=3657, xx86=50, xx87=135, xx88=147, xx89=13, xx90=26, xx91=5, xx92=31, xx94=56,
@@ -70,7 +70,10 @@ TUNE(xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx2
 TUNE(SetRange(1, 26001), xx23);
 TUNE(xx24,xx25,xx26,xx27,xx28,xx29,xx30);
 TUNE(SetRange(-90, 90), xx31,xx32,xx33);
-TUNE(xx35,xx36,xx37);
+TUNE(xx35,xx36);
+TUNE(SetRange(1, 21), xx36a);
+TUNE(SetRange(1, 11), xx36b);
+TUN(xx37);
 TUNE(xx40,xx41,xx42,xx43,xx44,xx45,xx46);
 TUNE(SetRange(1, 11), xx47);
 TUNE(SetRange(-4, 6), xx48);
@@ -730,7 +733,7 @@ Value Search::Worker::search(
     if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
         && is_valid(ttData.value)  // Can happen when !ttHit or when access race in probe()
         && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER))
-        && (cutNode == (ttData.value >= beta) || depth > xx36))
+        && (cutNode == (ttData.value >= beta) || (depth > xx36 || (rootDepth > xx36a && depth > xx36b))))
     {
         // If ttMove is quiet, update move sorting heuristics on TT hit
         if (ttData.move && ttData.value >= beta)
