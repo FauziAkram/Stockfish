@@ -51,62 +51,64 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=116, 	xx2=27, 	xx3=256, 	xx4=43, 	xx5=3, 	xx7=7011, 	xx8=6749, 	xx9=7832, 	xx10=6069, 	xx11=167, 	xx12=112, 	xx13=143, 	xx14=140, 	xx15=162,
-xx16=97, 	xx17=1579, 	xx18=827, 	xx19=238, 	xx20=2764, 	xx21=94, 	xx22=5, 	xx23=12809, 	xx24=139, 	xx25=82, 	xx26=45, 	xx27=64, 	xx28=105, 	xx29=653, 	xx30=1246,
-xx31=6, 	xx32=-3, 	xx33=-2, 	xx34=483, 	xx35=2945, 	xx36=9, 	xx37=745, 	xx38=3, 	xx39=1, 	xx40=1021, 	xx41=11, 	xx42=1874, 	xx43=1434, 	xx44=625, 	xx45=1159, 	xx46=1150,
-xx47=3, 	xx48=2, 	xx49=1, 	xx50=200, 	xx51=456, 	xx52=299, 	xx53=14, 	xx54=319, 	xx55=37, 	xx56=132613, 	xx57=3, 	xx58=21, 	xx59=456, 	xx60=58, 	xx61=239, 	xx62=6,
-xx63=40, 	xx64=5, 	xx65=4, 	xx66=96, 	xx67=7, 	xx68=3, 	xx69=1, 	xx70=189, 	xx71=56, 	xx72=416, 	xx73=32, 	xx74=1068, 	xx75=7, 	xx76=233, 	xx77=239, 	xx78=136,
-xx79=35, 	xx80=157, 	xx81=132, 	xx82=152, 	xx83=4142, 	xx84=64, 	xx85=3656, 	xx86=50, 	xx87=135, 	xx88=147, 	xx89=13, 	xx90=26, 	xx91=5, 	xx92=31, 	xx93=3, 	xx94=56,
-xx95=80, 	xx96=56, 	xx97=264674, 	xx98=253052, 	xx99=0, 	xx100=265, 	xx101=185, 	xx102=100, 	xx103=283, 	xx104=249, 	xx105=101, 	xx106=1, 	xx107=3, 	xx108=3, 	xx109=2,
-xx110=2201, 	xx111=900, 	xx112=975, 	xx113=1057, 	xx114=313, 	xx115=32, 	xx116=31118, 	xx117=2676, 	xx118=1135, 	xx119=1130, 	xx120=8, 	xx121=963, 	xx122=1001,
-xx123=812, 	xx124=1908, 	xx125=883, 	xx126=4548, 	xx127=64, 	xx128=32, 	xx129=32, 	xx130=3603, 	xx131=1418, 	xx132=2, 	xx133=41, 	xx134=9, 	xx135=2018, 	xx136=1111,
-xx137=3572, 	xx138=5226, 	xx139=3, 	xx140=2, 	xx141=15, xx142=0, xx142a=0,	xx143=0, 	xx144=119, 	xx145=5, 	xx146=35, 	xx147=159, 	xx148=8, 	xx149=133, 	xx150=109, 	xx151=121, 	xx152=84,
-xx153=83, 	xx154=100, 	xx155=3, 	xx156=105, 	xx157=308, 	xx158=421, 	xx159=220, 	xx160=1110, 	xx161=2032, 	xx162=0, 	xx163=321, 	xx164=32, 	xx165=32, 	xx166=32, 	xx167=5309,
-xx168=78, 	xx169=0, 	xx170=712, 	xx171=384, 	xx172=1088, 	xx173=301, 	xx174=32, 	xx175=0, 	xx176=0, 	xx177=1193, 	xx178=1142, 	xx179=1274, 	xx180=973, 	xx181=1241, 	xx182=1009,
-xx183=659, 	xx184=327, 	xx185=535, 	xx186=122, 	xx187=527, 	xx188=853, 	xx189=954, 	xx190=611, 	xx191=0, 	xx192=0, 	xx193=0;
+int xx1=116, xx2=27, xx3=256, xx4=43, xx7=7011, xx8=6749, xx9=7832, xx10=6069, xx11=167, xx12=112, xx13=143, xx14=140, xx15=162,
+xx16=97, xx17=1579, xx18=827, xx19=238, xx20=2764, xx21=94, xx22=5, xx23=12810, xx24=139, xx25=82, xx26=45, xx27=64, xx28=105, xx29=653, xx30=1246,
+xx31=6, xx32=-3, xx33=-2, xx34=483, xx35=2945, xx36=9, xx37=745, xx40=1021, xx41=11, xx42=1874, xx43=1434, xx44=625, xx45=1159, xx46=1150,
+xx47=3, xx48=2, xx49=1, xx50=200, xx51=456, xx52=299, xx53=14, xx54=320, xx55=37, xx56=132614, xx57=3, xx58=21, xx59=456, xx60=58, xx61=240, xx62=6,
+xx63=40, xx64=5, xx66=96, xx67=7, xx68=3, xx69=1, xx70=189, xx71=56, xx72=416, xx73=32, xx74=1068, xx75=7, xx76=233, xx77=239, xx78=136,
+xx79=35, xx80=157, xx81=132, xx82=152, xx83=4142, xx84=64, xx85=3657, xx86=50, xx87=135, xx88=147, xx89=13, xx90=26, xx91=5, xx92=31, xx94=56,
+xx95=80, xx96=57, xx97=264674, xx98=253052, xx99=0, xx100=265, xx101=185, xx102=100, xx103=283, xx104=249, xx105=101, xx106=1, xx107=3, xx108=3, xx109=2,
+xx110=2201, xx111=900, xx112=975, xx113=1057, xx114=313, xx115=32, xx116=31118, xx117=2676, xx118=1135, xx119=1130, xx120=8, xx121=963, xx122=1001,
+xx123=812, xx124=1908, xx125=883, xx126=4548, xx127=64, xx128=32, xx129=32, xx130=3603, xx131=1418, xx133=41, xx134=9, xx135=2018, xx136=1111,
+xx137=3572, xx138=5226, xx139=3, xx140=2, xx141=15, xx143=0, xx144=119, xx145=5, xx146=35, xx147=159, xx148=8, xx149=133, xx150=109, xx151=121, xx152=84,
+xx153=83, xx154=100, xx155=3, xx156=106, xx157=308, xx158=421, xx159=220, xx160=1110, xx161=2032, xx162=0, xx163=321, xx164=32, xx165=32, xx166=32, xx167=5309,
+xx168=78, xx169=0, xx170=712, xx171=384, xx172=1088, xx173=301, xx174=32, xx177=1193, xx178=1142, xx179=1274, xx180=973, xx181=1241, xx182=1009,
+xx183=659, xx184=327, xx185=535, xx186=122, xx187=527, xx188=853, xx189=954, xx190=611;
 
 TUNE(xx1,xx2,xx3,xx4);
-TUNE(SetRange(-4, 6), xx5);
-TUNE(xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23,xx24,xx25,xx26,xx27,xx28,xx29,xx30);
+TUNE(xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22);
+TUNE(SetRange(1, 26001), xx23);
+TUNE(xx24,xx25,xx26,xx27,xx28,xx29,xx30);
 TUNE(SetRange(-90, 90), xx31,xx32,xx33);
 TUNE(xx35,xx36,xx37);
-TUNE(SetRange(1, 11), xx38);
-TUNE(SetRange(-6, 6), xx39);
 TUNE(xx40,xx41,xx42,xx43,xx44,xx45,xx46);
 TUNE(SetRange(1, 11), xx47);
 TUNE(SetRange(-4, 6), xx48);
 TUNE(SetRange(0, 10), xx49);
-TUNE(xx50,xx51,xx52,xx53,xx54,xx55,xx56);
+TUNE(xx50,xx51,xx52,xx53);
+TUNE(SetRange(1, 641), xx54);
+TUNE(xx55);
+TUNE(SetRange(1, 265229), xx56);
 TUNE(SetRange(1, 11), xx57);
-TUNE(xx58,xx59,xx60,xx61,xx62,xx63,xx64);
-TUNE(SetRange(1, 11), xx65);
-TUNE(xx66,xx67);
+TUNE(xx58,xx59,xx60);
+TUNE(SetRange(1, 481), xx61);
+TUNE(xx62,xx63,xx64,xx66,xx67);
 TUNE(SetRange(0, 10), xx68);
 TUNE(SetRange(-4, 6), xx69);
-TUNE(xx70,xx71,xx72,xx73,xx74,xx75,xx76,xx77,xx78,xx79,xx80,xx81,xx82,xx83,xx84,xx85,xx86,xx87,xx88,xx89,xx90);
+TUNE(xx70,xx71,xx72,xx73,xx74,xx75,xx76,xx77,xx78,xx79,xx80,xx81,xx82,xx83,xx84);
+TUNE(SetRange(1, 7315), xx85);
+TUNE(xx86,xx87,xx88,xx89,xx90);
 TUNE(SetRange(1, 11), xx91);
 TUNE(xx92);
-TUNE(SetRange(-2, 8), xx93);
-TUNE(xx94,xx95,xx96,xx97,xx98,xx99,xx100,xx101,xx102,xx103,xx104,xx105);
+TUNE(xx94,xx95);
+TUNE(SetRange(1, 115), xx96);
+TUNE(xx97,xx98,xx99,xx100,xx101,xx102,xx103,xx104,xx105);
 TUNE(SetRange(-4, 6), xx106);
 TUNE(SetRange(-2, 8), xx107,xx108,xx109);
 TUNE(xx110,xx111,xx112,xx113,xx114,xx115,xx116,xx117,xx118,xx119,xx120,xx121,xx122,xx123,xx124,xx125,xx126,xx127,xx128,xx129,xx130,xx131);
-TUNE(SetRange(1, 11), xx132);
 TUNE(xx133,xx134,xx135,xx136,xx137,xx138);
 TUNE(SetRange(0, 10), xx139,xx140);
 TUNE(xx141);
-TUNE(SetRange(-6, 6),xx142,xx142a);
 TUNE(SetRange(-240, 240), xx143);
 TUNE(xx144,xx145,xx146,xx147,xx148,xx149,xx150,xx151,xx152,xx153,xx154);
 TUNE(SetRange(1, 11), xx155);
-TUNE(xx156,xx157,xx158,xx159,xx160,xx161);
+TUNE(SetRange(1, 213), xx156);
+TUNE(xx157,xx158,xx159,xx160,xx161);
 TUNE(SetRange(-150, 150), xx162);
 TUNE(xx163,xx164,xx165,xx166,xx167,xx168);
 TUNE(SetRange(-300, 300), xx169);
 TUNE(xx170,xx171,xx172,xx173,xx174);
-TUNE(SetRange(-6, 6),xx175,xx176);
 TUNE(xx177,xx178,	xx179,	xx180,	xx181,	xx182,	xx183,	xx184,	xx185,	xx186,	xx187,	xx188,	xx189,	xx190);
-TUNE(SetRange(-6, 6),xx191,xx192,xx193);
 
 namespace TB = Tablebases;
 
@@ -135,8 +137,8 @@ Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorseni
     return futilityMult * d - improvingDeduction - worseningDeduction;
 }
 
-const int futility_move_count(bool improving, Depth depth) {
-    return (xx5 + depth * depth) / (2 - improving);
+constexpr int futility_move_count(bool improving, Depth depth) {
+    return (3 + depth * depth) / (2 - improving);
 }
 
 int correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
@@ -399,7 +401,7 @@ void Search::Worker::iterative_deepening() {
             selDepth = 0;
 
             // Reset aspiration window starting size
-            delta     = xx22 + std::abs(rootMoves[pvIdx].meanSquaredScore) / (1 + xx23);
+            delta     = xx22 + std::abs(rootMoves[pvIdx].meanSquaredScore) / xx23;
             Value avg = rootMoves[pvIdx].averageScore;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
@@ -735,12 +737,12 @@ Value Search::Worker::search(
         {
             // Bonus for a quiet ttMove that fails high
             if (!ttCapture)
-                update_quiet_histories(pos, ss, *this, ttData.move, stat_bonus(depth +xx191) * xx37 / 1024);
+                update_quiet_histories(pos, ss, *this, ttData.move, stat_bonus(depth) * xx37 / 1024);
 
             // Extra penalty for early quiet moves of the previous ply
-            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= xx38 && !priorCapture)
+            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 && !priorCapture)
                 update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                              -stat_malus(depth + xx39) * xx40 / 1024);
+                                              -stat_malus(depth + 1) * xx40 / 1024);
         }
 
         // Partial workaround for the graph history interaction problem
@@ -878,7 +880,7 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < xx53
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
-               - (ss - 1)->statScore / (1 + xx54) + xx55 - std::abs(correctionValue) / (1 + xx56)
+               - (ss - 1)->statScore / xx54 + xx55 - std::abs(correctionValue) / xx56
              >= beta
         && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
         return beta + (eval - beta) / xx57;
@@ -891,7 +893,7 @@ Value Search::Worker::search(
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / (1 + xx61), xx62) + xx63 * depth / 128 + xx64;
+        Depth R = std::min(int(eval - beta) / xx61, xx62) + xx63 * depth / 128 + xx64;
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -913,7 +915,7 @@ Value Search::Worker::search(
 
             // Do verification search at high depths, with null move pruning disabled
             // until ply exceeds nmpMinPly.
-            thisThread->nmpMinPly = ss->ply + (xx65-1) * (depth - R) / xx65;
+            thisThread->nmpMinPly = ss->ply + 3 * (depth - R) / 4;
 
             Value v = search<NonPV>(pos, ss, beta - 1, beta, depth - R, false);
 
@@ -1110,7 +1112,7 @@ moves_loop:  // When in check, search starts here
 
                 history += xx84 * thisThread->mainHistory[us][move.from_to()] / 32;
 
-                lmrDepth += history / (1+xx85);
+                lmrDepth += history / xx85;
 
                 Value futilityValue = ss->staticEval + (bestMove ? xx86 : xx87) + xx88 * lmrDepth;
 
@@ -1148,9 +1150,9 @@ moves_loop:  // When in check, search starts here
             if (!rootNode && move == ttData.move && !excludedMove
                 && depth >= xx91 - (thisThread->completedDepth > xx92) + ss->ttPv
                 && is_valid(ttData.value) && !is_decisive(ttData.value)
-                && (ttData.bound & BOUND_LOWER) && ttData.depth >= depth - xx93)
+                && (ttData.bound & BOUND_LOWER) && ttData.depth >= depth - 3)
             {
-                Value singularBeta  = ttData.value - (xx94 + xx95 * (ss->ttPv && !PvNode)) * depth / (1+xx96);
+                Value singularBeta  = ttData.value - (xx94 + xx95 * (ss->ttPv && !PvNode)) * depth / xx96;
                 Depth singularDepth = newDepth / 2;
 
                 ss->excludedMove = move;
@@ -1252,13 +1254,13 @@ moves_loop:  // When in check, search starts here
         else
             ss->statScore = xx127 * thisThread->mainHistory[us][move.from_to()] / 32
                           + xx128 * (*contHist[0])[movedPiece][move.to_sq()] / 32
-                          + xx129 * (*contHist[1])[movedPiece][move.to_sq()] / 32 - xx130;
+                          + (xx129 * (*contHist[1])[movedPiece][move.to_sq()] / 32) - xx130;
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * xx131 / 16384;
 
         // Step 17. Late moves reduction / extension (LMR)
-        if (depth >= xx132 && moveCount > 1)
+        if (depth >= 2 && moveCount > 1)
         {
             // In general we want to cap the LMR depth search at newDepth, but when
             // reduction is negative, we allow this move a limited search extension
@@ -1441,7 +1443,7 @@ moves_loop:  // When in check, search starts here
     // Adjust best value for fail high cases at non-pv nodes
     if (!PvNode && bestValue >= beta && !is_decisive(bestValue) && !is_decisive(beta)
         && !is_decisive(alpha))
-        bestValue = (bestValue * (depth + xx142) + beta) / std::max((depth + xx142a + 1), 1);
+        bestValue = (bestValue * depth + beta) / (depth + 1);
 
     if (!moveCount)
         bestValue = excludedMove ? alpha : ss->inCheck ? mated_in(ss->ply) : VALUE_DRAW;
@@ -1459,11 +1461,11 @@ moves_loop:  // When in check, search starts here
                           + xx149 * (!ss->inCheck && bestValue <= ss->staticEval - xx150)
                           + xx151 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - xx152)
                           + xx153 * ((ss - 1)->isTTMove) + xx154 * (ss->cutoffCnt <= xx155)
-                          + std::min(-(ss - 1)->statScore / (1+xx156), xx157));
+                          + std::min(-(ss - 1)->statScore / xx156, xx157));
 
         bonusScale = std::max(bonusScale, 0);
 
-        const int scaledBonus = stat_bonus(depth + xx192) * bonusScale;
+        const int scaledBonus = stat_bonus(depth) * bonusScale;
 
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       scaledBonus * xx158 / 32768);
@@ -1482,7 +1484,7 @@ moves_loop:  // When in check, search starts here
         Piece capturedPiece = pos.captured_piece();
         assert(capturedPiece != NO_PIECE);
         thisThread->captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)]
-          << stat_bonus(depth + xx193) * xx161 / 1024;
+          << stat_bonus(depth) * xx161 / 1024;
     }
 
     if (PvNode)
@@ -1692,10 +1694,10 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
             // Continuation history based pruning
             if (!capture
-                && xx164 * (*contHist[0])[pos.moved_piece(move)][move.to_sq()] / 32
+                && (xx164 * (*contHist[0])[pos.moved_piece(move)][move.to_sq()] / 32
                        + xx165 * (*contHist[1])[pos.moved_piece(move)][move.to_sq()] / 32
                        + xx166 * thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
-                                                [move.to_sq()] / 32
+                                                [move.to_sq()] / 32)
                      <= xx167)
                 continue;
 
@@ -1863,8 +1865,8 @@ void update_all_stats(const Position&      pos,
     Piece                  moved_piece    = pos.moved_piece(bestMove);
     PieceType              captured;
 
-    int bonus = stat_bonus(depth + xx175) + xx173 * isTTMove;
-    int malus = stat_malus(depth + xx176) - xx174 * (moveCount - 1);
+    int bonus = stat_bonus(depth) + xx173 * isTTMove;
+    int malus = stat_malus(depth) - xx174 * (moveCount - 1);
 
     if (!pos.capture_stage(bestMove))
     {
