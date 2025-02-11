@@ -96,7 +96,8 @@ TUNE(xx133,xx134,xx135,xx136,xx137,xx138);
 TUNE(SetRange(0, 10), xx139,xx140);
 TUNE(xx141);
 TUNE(SetRange(-6, 6),xx142,xx142a);
-TUNE(xx143,xx144,xx145,xx146,xx147,xx148,xx149,xx150,xx151,xx152,xx153,xx154);
+TUNE(SetRange(-240, 240), xx143);
+TUNE(xx144,xx145,xx146,xx147,xx148,xx149,xx150,xx151,xx152,xx153,xx154);
 TUNE(SetRange(1, 11), xx155);
 TUNE(xx156,xx157,xx158,xx159,xx160,xx161);
 TUNE(SetRange(-150, 150), xx162);
@@ -864,7 +865,7 @@ Value Search::Worker::search(
     if (priorReduction >= xx47 && !opponentWorsening)
         depth += xx48;
 
-    if (priorReduction >= 1 && depth >= (xx49+1) && !(ss - 1)->inCheck && ss->staticEval + (ss - 1)->staticEval > xx50 && pos.non_pawn_material(~us))
+    if (priorReduction >= 1 && depth > xx49 && ss->staticEval + (ss - 1)->staticEval > xx50)
         depth -= xx49;
 
     // Step 7. Razoring
