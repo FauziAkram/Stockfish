@@ -1056,6 +1056,9 @@ moves_loop:  // When in check, search starts here
                 int diff = ss->staticEval - bestValue;
 
                 Value futilityValue = ss->staticEval + std::clamp(diff - 50, 50, 135) + std::clamp(diff - 150, 150, 200) * lmrDepth;
+              dbg_mean_of(futilityValue);
+dbg_extremes_of(futilityValue);
+
 
                 // Futility pruning: parent node
                 if (!ss->inCheck && lmrDepth < 12 && futilityValue <= alpha)
