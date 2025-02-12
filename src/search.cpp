@@ -1571,9 +1571,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             return bestValue;
         }
 
-        if (bestValue > alpha)
-            alpha = bestValue;
-
         futilityBase = ss->staticEval + 325;
     }
 
