@@ -212,6 +212,7 @@ class MultiArray {
 
     template<typename U>
     void fill(const U& v) {
+        template<typename To, typename From>
         constexpr bool is_strictly_assignable_v =
             std::is_assignable<To&, From>::value &&
             (std::is_same_v<To, From> || !std::is_convertible<From, To>::value);
