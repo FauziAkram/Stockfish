@@ -1182,6 +1182,10 @@ moves_loop:  // When in check, search starts here
 
         if ((ss + 2)->cutoffCnt >= 34)
             r += 512;
+dbg_mean_of((ss + 2)->cutoffCnt,0);
+      dbg_mean_of((ss + 1)->cutoffCnt,1);
+dbg_extremes_of((ss + 2)->cutoffCnt,0);
+      dbg_extremes_of((ss + 1)->cutoffCnt,1);
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 3)
