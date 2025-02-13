@@ -211,9 +211,7 @@ class MultiArray {
 
     template<typename U>
     void fill(const U& v) {
-        //static_assert(std::is_assignable_v<T, U>, "Cannot assign fill value to entry type");
         
-        //Maintainer request
         template<typename To, typename From>
         constexpr bool is_strictly_assignable_v =
             std::is_assignable<To&, From>::value &&
