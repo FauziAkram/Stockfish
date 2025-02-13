@@ -16,9 +16,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MISC_H_INCLUDED
-#define MISC_H_INCLUDED
-
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -31,6 +28,8 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <type_traits>
+
 
 #define stringify2(x) #x
 #define stringify(x) stringify2(x)
@@ -212,7 +211,16 @@ class MultiArray {
 
     template<typename U>
     void fill(const U& v) {
-        static_assert(std::is_assignable_v<T, U>, "Cannot assign fill value to entry type");
+        //static_assert(std::is_assignable_v<T, U>, "Cannot assign fill value to entry type");
+        
+        //Maintainer request
+        template<typename To, typename From>
+        constexpr bool is_strictly_assignable_v =
+            std::is_assignable<To&, From>::value &&
+            (std::is_same_v<To, From> || !std::is_convertible<From, To>::value);
+        
+        static_assert(is_strictly_assignable_v<T, U>, "Cannot assign fill value to entry type");
+
         for (auto& ele : data_)
         {
             if constexpr (sizeof...(Sizes) == 0)
