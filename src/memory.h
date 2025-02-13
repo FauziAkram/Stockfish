@@ -58,26 +58,26 @@ void memory_deleter(T* ptr, FREE_FUNC free_func) {
 // Frees memory which was placed there with placement new.
 // Works for both single objects and arrays of unknown bound.
 template<typename T, typename FREE_FUNC>
-void memory_deleter_array(T* ptr, FREE_FUNC free_func) {
-    if (!ptr)
-        return;
+    void memory_deleter_array(T* ptr, FREE_FUNC free_func) {
+        if (!ptr)
+            return;
 
 
-    // Move back on the pointer to where the size is allocated
-    const size_t array_offset = std::max(sizeof(size_t), alignof(T));
-    char*        raw_memory   = reinterpret_cast<char*>(ptr) - array_offset;
+        // Move back on the pointer to where the size is allocated
+        const size_t array_offset = std::max(sizeof(size_t), alignof(T));
+        char*        raw_memory   = reinterpret_cast<char*>(ptr) - array_offset;
 
-    if constexpr (!std::is_trivially_destructible_v<T>)
-    {
-        const size_t size = *reinterpret_cast<size_t*>(raw_memory);
+        if constexpr (!std::is_trivially_destructible_v<T>)
+        {
+            const size_t size = *reinterpret_cast<size_t*>(raw_memory);
 
-        // Explicitly call the destructor for each element in reverse order
-        for (size_t i = size; i-- > 0;)
-            ptr[i].~T();
+            // Explicitly call the destructor for each element in reverse order
+            for (size_t i = size; i-- > 0;)
+                ptr[i].~T();
+        }
+
+        free_func(raw_memory);
     }
-
-    free_func(raw_memory);
-}
 
 // Allocates memory for a single object and places it there with placement new
 template<typename T, typename ALLOC_FUNC, typename... Args>
