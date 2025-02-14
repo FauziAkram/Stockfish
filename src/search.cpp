@@ -51,7 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=0, xx2=1982;
+TUNE(SetRange(-1000, 5000), xx1);
+TUNE(SetRange(-20, 5000), xx2);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1185,8 +1187,8 @@ moves_loop:  // When in check, search starts here
             r += 981 + allNode * 833;
 
         // For first picked move (ttMove) reduce reduction
-        else if (move == ttData.move)
-            r -= 1982;
+        else
+            r -= xx1 + (move == ttData.move) * xx2;
 
         if (capture)
             ss->statScore =
