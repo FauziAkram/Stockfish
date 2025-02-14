@@ -164,10 +164,10 @@ void MovePicker::score() {
               value += (*continuationHistory[i])[pc][to];
             }
 
-            value = value -  (*continuationHistory[4])[pc][to] / 3; //Dividing by 3 only once
+            value = value -  (*continuationHistory[4])[pc][to] / 3;
 
             // bonus for checks
-            value += (pos.check_squares(pt) & to) ? 16384 : 0; // Use direct boolean conversion
+            value += (pos.check_squares(pt) & to) ? 16384 : 0;
 
             // bonus for escaping from capture
             if(threatenedPieces & from)
