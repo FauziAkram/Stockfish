@@ -1186,21 +1186,21 @@ moves_loop:  // When in check, search starts here
             r += 1123 + (depth < 8) * 982;
 
         if ((ss + 1)->cutoffCnt == 0)
-            r + xx0;
+            r += xx0;
         if ((ss + 1)->cutoffCnt == 1)
-            r + xx1;
+            r += xx1;
         if ((ss + 1)->cutoffCnt == 2)
-            r + xx2;
+            r += xx2;
         if ((ss + 1)->cutoffCnt == 3)
-            r + xx3;
+            r += xx3;
         if ((ss + 2)->cutoffCnt == 0)
-            r + zz0;
+            r += zz0;
         if ((ss + 2)->cutoffCnt == 1)
-            r + zz1;
+            r += zz1;
         if ((ss + 2)->cutoffCnt == 2)
-            r + zz2;
+            r += zz2;
         if ((ss + 2)->cutoffCnt >= 3)
-            r + zz3;
+            r += zz3;
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 3)
