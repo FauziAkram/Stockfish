@@ -51,7 +51,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx0=0, xx1=0, xx2=0, xx3=0;
+int  zz0=0,  zz1=0,  zz2=0,  zz3=0;
+int yy1=981, yy2=833, yy3=1982;
+TUNE(SetRange(-4500, 4500), xx0,xx1,xx2,xx3);
+TUNE(SetRange(-4500, 4500), zz0,zz1,zz2,zz3);
+TUNE(yy1,yy2,yy3);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1180,13 +1185,30 @@ moves_loop:  // When in check, search starts here
         if (ttCapture && !capture)
             r += 1123 + (depth < 8) * 982;
 
+        if ((ss + 1)->cutoffCnt == 0)
+            r + xx0;
+        if ((ss + 1)->cutoffCnt == 1)
+            r + xx1;
+        if ((ss + 1)->cutoffCnt == 2)
+            r + xx2;
+        if ((ss + 1)->cutoffCnt == 3)
+            r + xx3;
+        if ((ss + 2)->cutoffCnt == 0)
+            r + zz0;
+        if ((ss + 2)->cutoffCnt == 1)
+            r + zz1;
+        if ((ss + 2)->cutoffCnt == 2)
+            r + zz2;
+        if ((ss + 2)->cutoffCnt >= 3)
+            r + zz3;
+
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 3)
-            r += 981 + allNode * 833;
+            r += yy1 + allNode * yy2;
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
-            r -= 1982;
+            r -= yy3;
 
         if (capture)
             ss->statScore =
