@@ -1180,6 +1180,9 @@ moves_loop:  // When in check, search starts here
         if (ttCapture && !capture)
             r += 1123 + (depth < 8) * 982;
 
+        if ((ss + 1)->cutoffCnt == 2)
+            r += 613;
+
         if ((ss + 2)->cutoffCnt >= 3)
             r += 742;
 
