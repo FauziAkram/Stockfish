@@ -1186,6 +1186,9 @@ moves_loop:  // When in check, search starts here
         if ((ss + 1)->cutoffCnt == 2)
             r += 613;
 
+        if ((ss + 2)->cutoffCnt == 0)
+            r += 400;
+
         if ((ss + 2)->cutoffCnt >= 3)
             r += 742;
 
