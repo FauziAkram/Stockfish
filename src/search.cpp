@@ -850,7 +850,7 @@ Value Search::Worker::search(
         if (nullValue >= beta && !is_win(nullValue))
         {
             if (thisThread->nmpMinPly || depth < 16)
-                return nullValue;
+                return nullValue + (beta - nullValue) / 2;
 
             assert(!thisThread->nmpMinPly);  // Recursive verification is not allowed
 
@@ -863,7 +863,7 @@ Value Search::Worker::search(
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
-                return nullValue;
+                return nullValue + (beta - nullValue) / 2;
         }
     }
 
@@ -1696,7 +1696,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     }
 
     if (!is_decisive(bestValue) && bestValue >= beta)
-        bestValue = (3 * bestValue + beta) / 4;
+        bestValue + (beta - bestValue) / 4;
+  
 
     // Save gathered info in transposition table. The static evaluation
     // is saved as it was before adjustment by correction history.
