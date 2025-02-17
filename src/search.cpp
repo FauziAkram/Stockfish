@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=200, 	xx2=100, 	xx3=100, 	xx4=100, 	xx5=100, 	xx6=100, 	xx7=100, 	xx8=100, 	xx9=100, 	xx10=100, 	xx11=300, 	xx12=100;
+TUNE(SetRange(0, 550), xx1,	xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -390,7 +391,7 @@ void Search::Worker::iterative_deepening() {
                 // otherwise exit the loop.
                 if (bestValue <= alpha)
                 {
-                    beta  = (alpha + beta) / 2;
+                    beta  = (xx9 * alpha + xx10 * beta) / 200;
                     alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
                     failedHighCnt = 0;
@@ -824,7 +825,7 @@ Value Search::Worker::search(
                - (ss - 1)->statScore / 326 + 37 - std::abs(correctionValue) / 132821
              >= beta
         && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
-        return beta + (eval - beta) / 3;
+        return (xx1 * beta + xx2 * eval) / 300;
 
     // Step 9. Null move search with verification search
     if (cutNode && (ss - 1)->currentMove != Move::null() && eval >= beta
@@ -850,7 +851,7 @@ Value Search::Worker::search(
         if (nullValue >= beta && !is_win(nullValue))
         {
             if (thisThread->nmpMinPly || depth < 16)
-                return nullValue;
+                return (xx3 * nullValue + xx4 * beta) / 200;
 
             assert(!thisThread->nmpMinPly);  // Recursive verification is not allowed
 
@@ -863,7 +864,7 @@ Value Search::Worker::search(
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
-                return nullValue;
+                return (xx5 * nullValue + xx6 * beta) / 200;
         }
     }
 
@@ -1566,7 +1567,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         if (bestValue >= beta)
         {
             if (!is_decisive(bestValue))
-                bestValue = (bestValue + beta) / 2;
+                bestValue = (xx7 * bestValue + xx8 * beta) / 200;
             if (!ss->ttHit)
                 ttWriter.write(posKey, value_to_tt(bestValue, ss->ply), false, BOUND_LOWER,
                                DEPTH_UNSEARCHED, Move::none(), unadjustedStaticEval,
@@ -1696,7 +1697,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     }
 
     if (!is_decisive(bestValue) && bestValue >= beta)
-        bestValue = (3 * bestValue + beta) / 4;
+        bestValue = (xx11 * bestValue + xx12 * beta) / 400;
 
     // Save gathered info in transposition table. The static evaluation
     // is saved as it was before adjustment by correction history.
