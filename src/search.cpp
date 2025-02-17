@@ -1696,7 +1696,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     }
 
     if (!is_decisive(bestValue) && bestValue >= beta)
-        bestValue + (beta - bestValue) / 4;
+        bestValue = bestValue + (beta - bestValue) / 4;
   
 
     // Save gathered info in transposition table. The static evaluation
