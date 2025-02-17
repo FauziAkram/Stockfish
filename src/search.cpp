@@ -51,8 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=200, 	xx2=100, 	xx3=100, 	xx4=100, 	xx5=100, 	xx6=100, 	xx7=100, 	xx8=100, 	xx9=100, 	xx10=100, 	xx11=300, 	xx12=100;
-TUNE(SetRange(0, 550), xx1,	xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12);
+int xx1=200, 	xx2=100, 	xx3=100, 	xx4=100, 	xx5=100, 	xx6=100, 	xx7=100, 	xx8=100, 	xx9=300, 	xx10=100;
+TUNE(SetRange(0, 550), xx1,	xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -391,7 +391,7 @@ void Search::Worker::iterative_deepening() {
                 // otherwise exit the loop.
                 if (bestValue <= alpha)
                 {
-                    beta  = (xx9 * alpha + xx10 * beta) / 200;
+                    beta  = (alpha + beta) / 2;
                     alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
                     failedHighCnt = 0;
@@ -1697,7 +1697,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     }
 
     if (!is_decisive(bestValue) && bestValue >= beta)
-        bestValue = (xx11 * bestValue + xx12 * beta) / 400;
+        bestValue = (xx9 * bestValue + xx10 * beta) / 400;
 
     // Save gathered info in transposition table. The static evaluation
     // is saved as it was before adjustment by correction history.
