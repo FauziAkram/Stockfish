@@ -51,6 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=298, xx2=32, xx3=256, xx4=128;
+TUNE(xx1);
+TUNE(SetRange(0, 80), xx2);
+TUNE(SetRange(0, 620), xx3,xx4);
 
 namespace TB = Tablebases;
 
@@ -1809,11 +1813,13 @@ void update_all_stats(const Position&      pos,
     Piece                  moved_piece    = pos.moved_piece(bestMove);
     PieceType              captured;
 
-    int bonus = stat_bonus(depth) + 298 * isTTMove;
-    int malus = stat_malus(depth) - 32 * (moveCount - 1);
+    int bonus = stat_bonus(depth) + xx1 * isTTMove;
+    int malus = stat_malus(depth) - xx2 * (moveCount - 1);
 
-    if (cutNode)
-    malus = malus / 2;
+    if (cutNode) {
+    bonus = xx3 * bonus / 256;
+    malus = xx4 * malus / 256;
+    }
 
     if (!pos.capture_stage(bestMove))
     {
