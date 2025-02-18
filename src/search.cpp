@@ -148,6 +148,7 @@ void update_all_stats(const Position&      pos,
                       ValueList<Move, 32>& capturesSearched,
                       Depth                depth,
                       bool                 isTTMove,
+                      bool                 cutNode,
                       int                  moveCount);
 
 }  // namespace
@@ -1394,7 +1395,7 @@ moves_loop:  // When in check, search starts here
     // we update the stats of searched moves.
     else if (bestMove)
         update_all_stats(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth,
-                         bestMove == ttData.move, moveCount);
+                         bestMove == ttData.move, cutNode, moveCount);
 
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
@@ -1801,6 +1802,7 @@ void update_all_stats(const Position&      pos,
                       ValueList<Move, 32>& capturesSearched,
                       Depth                depth,
                       bool                 isTTMove,
+                      bool                 cutNode,
                       int                  moveCount) {
 
     CapturePieceToHistory& captureHistory = workerThread.captureHistory;
@@ -1809,6 +1811,9 @@ void update_all_stats(const Position&      pos,
 
     int bonus = stat_bonus(depth) + 298 * isTTMove;
     int malus = stat_malus(depth) - 32 * (moveCount - 1);
+
+    if (cutNode)
+    malus = malus / 2;
 
     if (!pos.capture_stage(bestMove))
     {
