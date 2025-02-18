@@ -1695,7 +1695,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         return mated_in(ss->ply);  // Plies to mate from the root
     }
 
-    if (!is_decisive(bestValue) && bestValue >= beta)
+    if (!is_decisive(bestValue) && bestValue > beta)
         bestValue = (3 * bestValue + beta) / 4;
 
     // Save gathered info in transposition table. The static evaluation
