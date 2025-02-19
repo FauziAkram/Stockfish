@@ -1812,7 +1812,7 @@ void update_all_stats(const Position&      pos,
     int bonus = stat_bonus(depth) + 298 * isTTMove;
     int malus = stat_malus(depth) - 32 * (moveCount - 1);
 
-    if (cutNode && (depth < 10))
+    if (cutNode && (depth < 12))
     malus = malus / 2;
 
     if (!pos.capture_stage(bestMove))
