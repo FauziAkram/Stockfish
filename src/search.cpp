@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=350 xx2=613 xx3=742 xx4=995 xx5=920 xx6=1892;
+TUNE(SetRange(-4000, 4000),xx1,xx2,xx3);
+TUNE(xx4,xx5,xx6);
 
 namespace TB = Tablebases;
 
@@ -1180,13 +1183,22 @@ moves_loop:  // When in check, search starts here
         if (ttCapture && !capture)
             r += 1123 + (depth < 8) * 982;
 
+        if ((ss + 1)->cutoffCnt == 1)
+            r -= xx1;
+
+        if ((ss + 1)->cutoffCnt == 2)
+            r += xx2;
+
+        if ((ss + 2)->cutoffCnt >= 3)
+            r += xx3;
+
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 3)
-            r += 981 + allNode * 833;
+            r += xx4 + allNode * xx5;
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
-            r -= 1982;
+            r -= xx6;
 
         if (capture)
             ss->statScore =
