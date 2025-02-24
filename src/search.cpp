@@ -1170,8 +1170,6 @@ moves_loop:  // When in check, search starts here
 
         r += 316 - moveCount * 32;
 
-        r -= std::abs(correctionValue) / 31568;
-
         // Increase reduction for cut nodes
         if (cutNode)
             r += 2608 + 1024 * !ttData.move;
