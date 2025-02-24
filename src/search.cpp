@@ -1203,13 +1203,22 @@ moves_loop:  // When in check, search starts here
         if (ttCapture && !capture)
             r += 1123 + (depth < 8) * 982;
 
+        if ((ss + 1)->cutoffCnt == 1)
+            r -= 421;
+
+        if ((ss + 1)->cutoffCnt == 2)
+            r += 775;
+
+        if ((ss + 2)->cutoffCnt >= 3)
+            r += 573;
+
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 3)
-            r += 981 + allNode * 833;
+            r += 929 + allNode * 876;
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
-            r -= 1982;
+            r -= 1942;
 
         if (capture)
             ss->statScore =
