@@ -36,7 +36,10 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
-
+int xx1=962, xx2=0, xx3=236, xx4=468, xx5=18000, xx6=535, xx7=77777, xx8=7777,xx9=77777, xx10=212;
+TUNE(xx1);
+TUNE(SetRange(-200, 200), xx2);
+TUNE(xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
