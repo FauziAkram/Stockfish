@@ -61,6 +61,49 @@ xx144=5, xx145=36, xx146=161, xx147=8, xx148=133, xx149=107, xx150=120, xx151=84
 xx164=198, xx165=3320, xx166=325, xx167=5389, xx168=735, xx169=191, xx170=1132, xx171=162, xx172=92, xx173=1587, xx174=298, xx175=694, xx176=230, xx177=2503, xx178=32, xx179=1202, xx180=1152, xx181=1236, xx182=976,
 xx183=1224, xx184=1029, xx185=656, xx186=326, xx187=536, xx188=120, xx189=537, xx190=844, xx191=964, xx192=615;
 
+TUNE(xx1,	xx2,	xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14,	xx15,	xx16,	xx17,	xx18,	xx19,	xx20,	xx21);
+TUNE(SetRange(0, 400), xx22);
+TUNE(xx23,	xx24,	xx25,	xx26,	xx27,	xx28);
+TUNE(SetRange(1, 11), xx29);
+TUNE(SetRange(1, 26001), xx30);
+TUNE(xx31,	xx32,	xx33,	xx34,	xx35,	xx36);
+TUNE(SetRange(-90, 90), xx37,xx38,xx39);
+TUNE(xx40,xx41);
+TUNE(SetRange(1, 21), xx42);
+TUNE(xx43,	xx44,	xx45,	xx46,	xx47,	xx48,	xx49,	xx50,	xx51,	xx52,	xx53);
+TUNE(SetRange(1, 11), xx54);
+TUNE(SetRange(0, 10), xx55, xx56);
+TUNE(xx57,xx58,xx59,xx60);
+TUNE(SetRange(1, 651), xx61);
+TUNE(xx62,	xx63,	xx64,	xx65,	xx66,	xx67,	xx68, xx69);
+TUNE(SetRange(4, 20), xx70);
+TUNE(SetRange(0, 10), xx71);
+TUNE(xx72,	xx73,	xx74,	xx75,	xx76,	xx77);
+TUNE(SetRange(2, 16), xx78);
+TUNE(xx79, xx80,	xx81);
+TUNE(SetRange(1, 73), xx82);
+TUNE(xx83,	xx84,	xx85,	xx86,	xx87);
+TUNE(SetRange(1, 7153), xx88);
+TUNE(xx89,	xx90,	xx91,	xx92);
+TUNE(SetRange(2, 20), xx93);
+TUNE(xx94,	xx95,	xx96);
+TUNE(SetRange(2, 12), xx97);
+TUNE(xx98);
+TUNE(SetRange(0, 10), xx99);
+TUNE(xx100, xx101);
+TUNE(SetRange(0, 121), xx102);
+TUNE(xx103,	xx104,	xx105,	xx106,	xx107,	xx108,	xx109,	xx110,	xx111);
+TUNE(SetRange(0, 10), xx112);
+TUNE(xx113,	xx114,	xx115,	xx116,	xx117,	xx118,	xx119,	xx120,	xx121,	xx122,	xx123);
+TUNE(xx124,	xx125,	xx126,	xx127,	xx128,	xx129,	xx130,	xx131,	xx132,	xx133,	xx134,	xx135,	xx136,	xx137,	xx138,	xx139);
+TUNE(SetRange(0, 10), xx140,xx141);
+TUNE(xx142,	xx143,	xx144,	xx145,	xx146,	xx147,	xx148,	xx149,	xx150,	xx151,	xx152,	xx153);
+TUNE(SetRange(1, 221), xx154);
+TUNE(xx155);
+TUNE(SetRange(-250, 150), xx156);
+TUNE(xx157,	xx158,	xx159,	xx160,	xx161,	xx162,	xx163,	xx164,	xx165,	xx166,	xx167,	xx168,	xx169,	xx170,	xx171,	xx172);
+TUNE(xx173,	xx174,	xx175,	xx176,	xx177,	xx178,	xx179,	xx180,	xx181,	xx182,	xx183,	xx184,	xx185,	xx186,	xx187,	xx188,	xx189,	xx190,	xx191,	xx192);
+
 
 namespace TB = Tablebases;
 
