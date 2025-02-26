@@ -26,7 +26,7 @@
 #include "position.h"
 
 namespace Stockfish {
-int mm1=64, mm2=64, mm3=32, mm4=32, mm5=32, mm6=32, mm7=10, mm8=32, mm9=16384, mm10=51700, mm11=25600, mm12=14450, mm13=4900, mm14=24335, mm15=8, mm16=32, mm17=32, mm18=32, mm19=3560, mm20=7998;
+int mm1=64, mm2=64, mm3=32, mm4=32, mm5=32, mm6=32, mm7=10, mm8=32, mm9=16384, mm10=51700, mm11=25600, mm12=14450, mm13=49000, mm14=24335, mm15=8, mm16=32, mm17=32, mm18=32, mm19=3560, mm20=7998;
 TUNE(mm1, mm2, mm3, mm4, mm5, mm6, mm7, mm8, mm9, mm10, mm11, mm12, mm13, mm14, mm15, mm16, mm17, mm18, mm19, mm20);
 namespace {
 
