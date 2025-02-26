@@ -35,7 +35,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int th1=85;
+TUNE(th1);
 // Constructor launches the thread and waits until it goes to sleep
 // in idle_loop(). Note that 'searching' and 'exit' should be already set.
 Thread::Thread(Search::SharedState&                    sharedState,
@@ -214,7 +215,7 @@ void ThreadPool::clear() {
 
     // These two affect the time taken on the first move of a game:
     main_manager()->bestPreviousAverageScore = VALUE_INFINITE;
-    main_manager()->previousTimeReduction    = 0.85;
+    main_manager()->previousTimeReduction    = (th1 / 100.0);
 
     main_manager()->callsCnt           = 0;
     main_manager()->bestPreviousScore  = VALUE_INFINITE;
