@@ -50,16 +50,17 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=110, xx2=25, xx3=7664, xx4=7502, xx5=9142, xx6=6487, xx7=355639, xx8=33, xx9=91, xx10=91, xx11=169, xx12=278, xx13=17, xx15=3032, xx16=2263, xx17=637, xx18=411, xx19=7944,
+int xx1=110, xx2=25, xx3=7664, xx4=7502, xx5=9142, xx6=6487, xx7=355639, xx8=66, xx9=182, xx10=182, xx11=338, xx12=556, xx13=17, xx15=3032, xx16=2263, xx17=637, xx18=411, xx19=7944,
 xx20=2274, xx21=317, xx22=83, xx23=59, xx24=163, xx25=111, xx26=146, xx27=144, xx28=92, xx29=5, xx30=11847, xx31=138, xx32=84, xx33=66, xx34=105, xx35=644, xx36=1254, xx37=7, xx38=-2, xx39=5,
-xx40=467, xx41=2947, xx42=4, xx43=121, xx44=75, xx45=1239, xx46=812, xx47=249, xx48=3043, xx49=1951, xx50=1409, xx51=656, xx52=1135, xx53=1191, xx54=3, xx55=1, xx56=1, xx57=188, xx58=460, xx59=316,
+xx40=467, xx41=2947, xx42=4, xx43=121, xx44=75, xx45=1239, xx46=812, xx47=249, xx48=3043, xx49=1906, xx50=1450, xx51=638, xx52=1136, xx53=1195, xx54=3, xx55=1, xx56=1, xx57=188, xx58=460, xx59=316,
 xx60=14, xx61=299, xx62=37, xx63=139743, xx64=19, xx65=420, xx66=231, xx67=6, xx68=5, xx69=93, xx70=7, xx71=3, xx72=1, xx73=184, xx74=58, xx75=414, xx76=32, xx77=980, xx78=7, xx79=242, xx80=229,
 xx81=132, xx82=32, xx83=139, xx84=134, xx85=154, xx86=4341, xx87=68, xx88=3582, xx89=48, xx90=146, xx91=115, xx92=129, xx93=8, xx94=103, xx95=12, xx96=27, xx97=6, xx98=29, xx99=3, xx100=59, xx101=77,
 xx102=53, xx103=249496, xx104=258825, xx105=0, xx106=261, xx107=189, xx108=88, xx109=266, xx110=257, xx111=93, xx112=1, xx113=2388, xx114=1007, xx115=882, xx116=1026, xx117=1137, xx118=305, xx119=34,
 xx120=29622, xx121=2796, xx122=1034, xx123=1173, xx124=8, xx125=987, xx126=1034, xx127=862, xx128=1935, xx129=843, xx130=4798, xx131=3287, xx132=1569, xx133=43, xx134=9, xx135=1788, xx136=9, xx137=1157,
 xx138=3487, xx139=5540, xx140=2, xx141=2, xx142=16, xx143=111, xx144=5, xx145=34, xx146=163, xx147=8, xx148=141, xx149=100, xx150=121, xx151=76, xx152=86, xx153=86, xx154=112, xx155=304, xx156=0, xx157=159,
 xx158=99, xx159=1489, xx160=392, xx161=213, xx162=1061, xx163=300, xx164=182, xx165=3021, xx166=356, xx167=5935, xx168=761, xx169=192, xx170=1094, xx171=139, xx172=89, xx173=1623, xx174=310, xx175=698,
-xx176=214, xx177=2801, xx178=31, xx179=1125, xx180=1252, xx181=1193, xx182=981, xx183=1383, xx184=1099, xx185=661, xx186=322, xx187=536, xx188=121, xx189=472, xx190=833, xx191=1008, xx192=591, xx193=75, xx194=128;
+xx176=214, xx177=2801, xx178=31, xx179=1125, xx180=1252, xx181=1193, xx182=981, xx183=1383, xx184=1099, xx185=661, xx186=322, xx187=536, xx188=121, xx189=472, xx190=833, xx191=1008, xx192=591,
+xx193=75, xx194=128, xx195=10;
 
 TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx15, xx16, xx17, xx18, xx19, xx20, xx21);
 TUNE(SetRange(0, 400), xx22);
@@ -103,8 +104,8 @@ TUNE(xx142, xx143, xx144, xx145, xx146, xx147, xx148, xx149, xx150, xx151, xx152
 TUNE(SetRange(1, 221), xx154);
 TUNE(xx155);
 TUNE(SetRange(-250, 150), xx156);
-TUNE(xx157, xx158, xx159, xx160, xx161, xx162, xx163, xx164, xx165, xx166, xx167, xx168, xx169, xx170, xx171, xx172, xx173, xx174);
-TUNE(xx175, xx176, xx177, xx178, xx179, xx180, xx181, xx182, xx183, xx184, xx185, xx186, xx187, xx188, xx189, xx190, xx191, xx192, xx193, xx194);
+TUNE(xx157, xx158, xx159, xx160, xx161, xx162, xx163, xx164, xx165, xx166, xx167, xx168, xx169, xx170, xx171, xx172, xx173, xx174, xx175);
+TUNE(xx176, xx177, xx178, xx179, xx180, xx181, xx182, xx183, xx184, xx185, xx186, xx187, xx188, xx189, xx190, xx191, xx192, xx193, xx194, xx195);
 
 
 namespace TB = Tablebases;
@@ -159,7 +160,7 @@ int risk_tolerance(const Position& pos, Value v) {
     };
 
     int material = ( xx8 * pos.count<PAWN>() + xx9 * pos.count<KNIGHT>() + xx10 * pos.count<BISHOP>()
-                 + xx11 * pos.count<ROOK>() + xx12 * pos.count<QUEEN>()) / 32;
+                 + xx11 * pos.count<ROOK>() + xx12 * pos.count<QUEEN>()) / 64;
 
     int m = std::max(material, xx13);
 
@@ -864,11 +865,11 @@ Value Search::Worker::search(
     // Use static evaluation difference to improve quiet move ordering
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
-        int bonus = std::clamp(-10 * int((ss - 1)->staticEval + ss->staticEval), -1906, 1450) + 638;
-        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * 1136 / 1024;
+        int bonus = std::clamp(-xx195 * int((ss - 1)->staticEval + ss->staticEval), -xx49, xx50) + xx51;
+        thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * xx52 / 1024;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             thisThread->pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus * 1195 / 1024;
+              << bonus * xx53 / 1024;
     }
 
     // Set up the improving flag, which is true if current static evaluation is
