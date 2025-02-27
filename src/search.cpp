@@ -105,6 +105,8 @@ int risk_tolerance(const Position& pos, Value v) {
     int material = (67 * pos.count<PAWN>() + 182 * pos.count<KNIGHT>() + 182 * pos.count<BISHOP>()
                     + 337 * pos.count<ROOK>() + 553 * pos.count<QUEEN>())
                  / 64;
+dbg_mean_of(material);
+dbg_extremes_of(material);
 
     int m = std::max(material, 17);
 
