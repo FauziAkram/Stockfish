@@ -60,7 +60,7 @@ xx120=29622, xx121=2796, xx122=1034, xx123=1173, xx124=8, xx125=987, xx126=1034,
 xx138=3487, xx139=5540, xx140=2, xx141=2, xx142=16, xx143=111, xx144=5, xx145=34, xx146=163, xx147=8, xx148=141, xx149=100, xx150=121, xx151=76, xx152=86, xx153=86, xx154=112, xx155=304, xx156=0, xx157=159,
 xx158=99, xx159=1489, xx160=392, xx161=213, xx162=1061, xx163=300, xx164=182, xx165=3021, xx166=356, xx167=5935, xx168=761, xx169=192, xx170=1094, xx171=139, xx172=89, xx173=1623, xx174=310, xx175=698,
 xx176=214, xx177=2801, xx178=31, xx179=1125, xx180=1252, xx181=1193, xx182=981, xx183=1383, xx184=1099, xx185=661, xx186=322, xx187=536, xx188=121, xx189=472, xx190=833, xx191=1008, xx192=591,
-xx193=75, xx194=128, xx195=10;
+xx193=75, xx194=128, xx195=10, xx196=1, xx197=3;
 
 TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx15, xx16, xx17, xx18, xx19, xx20, xx21);
 TUNE(SetRange(0, 400), xx22);
@@ -106,7 +106,7 @@ TUNE(xx155);
 TUNE(SetRange(-250, 150), xx156);
 TUNE(xx157, xx158, xx159, xx160, xx161, xx162, xx163, xx164, xx165, xx166, xx167, xx168, xx169, xx170, xx171, xx172, xx173, xx174, xx175);
 TUNE(xx176, xx177, xx178, xx179, xx180, xx181, xx182, xx183, xx184, xx185, xx186, xx187, xx188, xx189, xx190, xx191, xx192, xx193, xx194, xx195);
-
+TUNE(SetRange(-0, 10), xx196, xx197);
 
 namespace TB = Tablebases;
 
@@ -1260,7 +1260,7 @@ moves_loop:  // When in check, search starts here
             r += xx123 + (depth < xx124) * xx125;
 
         // Increase reduction if next ply has a lot of fail high
-        if ((ss + 1)->cutoffCnt > 3)
+        if ((ss + 1)->cutoffCnt > (allNode? xx196: xx197))
             r += xx126 + allNode * xx127;
 
         // For first picked move (ttMove) reduce reduction
