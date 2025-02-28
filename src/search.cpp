@@ -1045,7 +1045,7 @@ moves_loop:  // When in check, search starts here
                   thisThread->captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)];
 
                 // Futility pruning for captures
-                if (!givesCheck && lmrDepth < 7 && !ss->inCheck)
+                if (!givesCheck && lmrDepth < 13 && !ss->inCheck)
                 {
                     Value futilityValue = ss->staticEval + 242 + 230 * lmrDepth
                                         + PieceValue[capturedPiece] + 133 * captHist / 1024;
