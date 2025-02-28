@@ -1649,14 +1649,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                     bestValue = std::max(bestValue, futilityValue);
                     continue;
                 }
-
-                // If static exchange evaluation is low enough
-                // we can prune this move.
-                if (!pos.see_ge(move, alpha - futilityBase))
-                {
-                    bestValue = std::min(alpha, futilityBase);
-                    continue;
-                }
             }
 
             // Continuation history based pruning
