@@ -1667,10 +1667,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                                                 [move.to_sq()]
                      <= 5923)
                 continue;
-
-            // Do not search moves with bad enough SEE values
-            if (!pos.see_ge(move, -75))
-                continue;
         }
 
         // Step 7. Make and search the move
