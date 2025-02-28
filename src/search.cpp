@@ -1736,7 +1736,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return reductionScale - delta * 764 / rootDelta + !i * reductionScale * 191 / 512 + 1087;
+    return reductionScale - delta * 908 / rootDelta + !i * reductionScale / 2 + 876;
 }
 
 // elapsed() returns the time elapsed since the search started. If the
