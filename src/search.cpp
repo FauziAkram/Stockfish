@@ -556,7 +556,7 @@ void Search::Worker::clear() {
     mainHistory.fill(66);
     lowPlyHistory.fill(105);
     captureHistory.fill(-646);
-    pawnHistory.fill(-1262);
+    pawnHistory.fill(0);
     pawnCorrectionHistory.fill(6);
     minorPieceCorrectionHistory.fill(0);
     nonPawnCorrectionHistory[WHITE].fill(0);
@@ -570,7 +570,7 @@ void Search::Worker::clear() {
         for (StatsType c : {NoCaptures, Captures})
             for (auto& to : continuationHistory[inCheck][c])
                 for (auto& h : to)
-                    h.fill(-468);
+                    h.fill(0);
 
     for (size_t i = 1; i < reductions.size(); ++i)
         reductions[i] = int(2954 / 128.0 * std::log(i));
