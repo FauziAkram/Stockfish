@@ -1677,9 +1677,6 @@ dbg_extremes_of((*contHist[0])[pos.moved_piece(move)][move.to_sq()]
                        + (*contHist[1])[pos.moved_piece(move)][move.to_sq()]
                        + thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
                                                 [move.to_sq()], 3);
-
-              dbg_mean_of((*contHist[3])[pos.moved_piece(move)][move.to_sq()], 4);
-dbg_extremes_of((*contHist[3])[pos.moved_piece(move)][move.to_sq()], 4);
             }
 
 
