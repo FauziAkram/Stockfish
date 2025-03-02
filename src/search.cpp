@@ -99,7 +99,7 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
 int risk_tolerance(const Position& pos, Value v) {
     // Returns (some constant of) second derivative of sigmoid.
     static constexpr auto sigmoid_d2 = [](int x, int y) {
-        return -36577 * x / (x * x + 3 * y * y);
+        return -365577 * x / (x * x + 3 * y * y);
     };
 
     int material = (64 * pos.count<PAWN>() + 180 * pos.count<KNIGHT>() + 186 * pos.count<BISHOP>()
