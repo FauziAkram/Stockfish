@@ -1660,6 +1660,33 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             }
 
             // Continuation history based pruning
+            if (!capture) {
+dbg_mean_of((*contHist[0])[pos.moved_piece(move)][move.to_sq()], 0);
+dbg_extremes_of((*contHist[0])[pos.moved_piece(move)][move.to_sq()], 0);
+dbg_mean_of((*contHist[1])[pos.moved_piece(move)][move.to_sq()], 1);
+dbg_extremes_of((*contHist[1])[pos.moved_piece(move)][move.to_sq()], 1);
+dbg_mean_of(thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
+                                                [move.to_sq()], 2);
+dbg_extremes_of(thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
+                                                [move.to_sq()], 2);
+dbg_mean_of((*contHist[0])[pos.moved_piece(move)][move.to_sq()]
+                       + (*contHist[1])[pos.moved_piece(move)][move.to_sq()]
+                       + thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
+                                                [move.to_sq()], 3);
+dbg_extremes_of((*contHist[0])[pos.moved_piece(move)][move.to_sq()]
+                       + (*contHist[1])[pos.moved_piece(move)][move.to_sq()]
+                       + thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
+                                                [move.to_sq()], 3);
+
+dbg_mean_of((*contHist[2])[pos.moved_piece(move)][move.to_sq()], 4);
+dbg_extremes_of((*contHist[2])[pos.moved_piece(move)][move.to_sq()], 4);
+dbg_mean_of((*contHist[3])[pos.moved_piece(move)][move.to_sq()], 5);
+dbg_extremes_of((*contHist[3])[pos.moved_piece(move)][move.to_sq()], 5); 
+dbg_mean_of((*contHist[4])[pos.moved_piece(move)][move.to_sq()], 6);
+dbg_extremes_of((*contHist[4])[pos.moved_piece(move)][move.to_sq()], 6); 
+
+
+              
             if (!capture
                 && (*contHist[0])[pos.moved_piece(move)][move.to_sq()]
                        + (*contHist[1])[pos.moved_piece(move)][move.to_sq()]
