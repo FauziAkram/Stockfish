@@ -1660,7 +1660,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             }
 
             // Continuation history based pruning
-            if (!capture) {
+            if (capture) {
 dbg_mean_of((*contHist[0])[pos.moved_piece(move)][move.to_sq()], 0);
 dbg_extremes_of((*contHist[0])[pos.moved_piece(move)][move.to_sq()], 0);
 dbg_mean_of((*contHist[1])[pos.moved_piece(move)][move.to_sq()], 1);
