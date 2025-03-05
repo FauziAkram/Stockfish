@@ -1211,18 +1211,22 @@ moves_loop:  // When in check, search starts here
         else if (move == ttData.move)
             r -= 1937;
 
-        if (capture)
+        // Decrease/increase reduction for moves with a good/bad history
+        if (capture) {
             ss->statScore =
-              846 * int(PieceValue[pos.captured_piece()]) / 128
+              825 * int(PieceValue[pos.captured_piece()]) / 128
               + thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())]
-              - 4822;
-        else
+              - 4807;
+
+        r -= ss->statScore * 1510 / 16384;
+        }
+        else {
             ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
                           + (*contHist[0])[movedPiece][move.to_sq()]
-                          + (*contHist[1])[movedPiece][move.to_sq()] - 3271;
+                          + (*contHist[1])[movedPiece][move.to_sq()] - 3345;
 
-        // Decrease/increase reduction for moves with a good/bad history
-        r -= ss->statScore * 1582 / 16384;
+        r -= ss->statScore * 1405 / 16384;
+        }
 
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
