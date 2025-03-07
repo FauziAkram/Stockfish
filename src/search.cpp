@@ -1075,8 +1075,12 @@ moves_loop:  // When in check, search starts here
 
                 Value futilityValue = ss->staticEval + (bestMove ? 48 : 146) + 116 * lmrDepth;
 
-                if (bestValue < ss->staticEval - 128 && lmrDepth < 8)
-                    futilityValue += 103;
+                if (bestValue < ss->staticEval - 128){
+dbg_mean_of(lmrDepth);
+dbg_extremes_of(lmrDepth);
+dbg_hit_on(lmrDepth < 8);
+
+                    futilityValue += 103;}
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
