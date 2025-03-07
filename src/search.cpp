@@ -1635,7 +1635,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         {
             // Futility pruning and moveCount pruning
             if (!givesCheck && move.to_sq() != prevSq && !is_loss(futilityBase)
-                && move.type_of() != PROMOTION)
+                && move.type_of() != PROMOTION && moveCount > 2)
             {
                 Value futilityValue = futilityBase + PieceValue[pos.piece_on(move.to_sq())];
 
