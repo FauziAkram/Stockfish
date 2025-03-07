@@ -1646,6 +1646,11 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 // much lower than alpha, we can prune this move.
                 if (futilityValue <= alpha)
                 {
+dbg_mean_of(bestValue,0);
+dbg_extremes_of(bestValue,0);
+dbg_mean_of(futilityValue,1);
+dbg_extremes_of(futilityValue,1);
+
                     bestValue = std::max(bestValue, futilityValue);
                     continue;
                 }
@@ -1654,6 +1659,12 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 // we can prune this move.
                 if (!pos.see_ge(move, alpha - futilityBase))
                 {
+dbg_mean_of(bestValue,2);
+dbg_extremes_of(bestValue,2);                  
+dbg_mean_of(alpha,3);
+dbg_extremes_of(alpha,3);
+dbg_mean_of(futilityBase,4);
+dbg_extremes_of(futilityBase,4); 
                     bestValue = std::min(alpha, futilityBase);
                     continue;
                 }
