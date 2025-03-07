@@ -1646,6 +1646,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 // much lower than alpha, we can prune this move.
                 if (futilityValue <= alpha)
                 {
+                  dbg_hit_on(moveCount > 2, 0);
                     bestValue = std::max(bestValue, futilityValue);
                     continue;
                 }
@@ -1654,6 +1655,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 // we can prune this move.
                 if (!pos.see_ge(move, alpha - futilityBase))
                 {
+                   dbg_hit_on(futilityValue <= alpha, 1);
                     bestValue = std::min(alpha, futilityBase);
                     continue;
                 }
@@ -1665,12 +1667,20 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                        + (*contHist[1])[pos.moved_piece(move)][move.to_sq()]
                        + thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
                                                 [move.to_sq()]
-                     <= 5923)
-                continue;
+                     <= 5923){
+              dbg_hit_on(!givesCheck && move.to_sq() != prevSq && !is_loss(futilityBase)
+                && move.type_of() != PROMOTION, 2);
+                continue;}
 
             // Do not search moves with bad enough SEE values
-            if (!pos.see_ge(move, -75))
-                continue;
+            if (!pos.see_ge(move, -75)){
+            dbg_hit_on(!capture
+                && (*contHist[0])[pos.moved_piece(move)][move.to_sq()]
+                       + (*contHist[1])[pos.moved_piece(move)][move.to_sq()]
+                       + thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
+                                                [move.to_sq()]
+                     <= 5923, 3);
+                continue;}
         }
 
         // Step 7. Make and search the move
