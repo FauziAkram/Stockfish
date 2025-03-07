@@ -1670,20 +1670,9 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
             // Do not search moves with bad enough SEE values
             if (!pos.see_ge(move, -75)){
-dbg_hit_on(noTtCutNode, 0);
-dbg_hit_on(improving, 1);
-dbg_hit_on(oppWorsening, 2);
-dbg_hit_on(inCheck, 3);
-dbg_hit_on(cutNode, 4);
 dbg_hit_on(PvNode, 5);
-dbg_hit_on(rootNode, 6);
-dbg_hit_on(allNode, 7);
 dbg_hit_on(givesCheck, 8);
-dbg_hit_on(priorCapture, 9);
 dbg_hit_on(capture, 10);
-dbg_hit_on(ttCapture, 11);
-dbg_hit_on(doDeeperSearch, 12);    
-dbg_hit_on(doShallowerSearch, 13);
 dbg_hit_on(pvHit, 14);
                 continue;}
         }
