@@ -1641,10 +1641,11 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                     continue;
 
                 Value futilityValue = futilityBase + PieceValue[pos.piece_on(move.to_sq())];
+                Value dynamicFutilityThreshold = futilityBase + (bestValue / 4);
 
                 // If static eval + value of piece we are going to capture is
                 // much lower than alpha, we can prune this move.
-                if (futilityValue <= alpha)
+                if (futilityValue <= alpha - dynamicFutilityThreshold)
                 {
                     bestValue = std::max(bestValue, futilityValue);
                     continue;
