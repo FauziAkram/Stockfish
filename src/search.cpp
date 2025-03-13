@@ -50,7 +50,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx0=75, xx1=0, xx2=0, xx3=0;
+TUNE(SetRange(0, 140), xx0);
+TUNE(SetRange(-70, 70), xx1, xx2, xx3);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1669,7 +1671,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 continue;
 
             // Do not search moves with bad enough SEE values
-            if (!pos.see_ge(move, -75))
+            if (!pos.see_ge(move, -xx0 + xx1*PvNode + xx2*givesCheck + xx3*pvHit))
                 continue;
         }
 
