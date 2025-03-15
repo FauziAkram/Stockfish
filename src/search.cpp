@@ -1258,6 +1258,14 @@ moves_loop:  // When in check, search starts here
 
                 // Post LMR continuation history updates
                 int bonus = (value >= beta) * 1800;
+
+dbg_hit_on(doDeeperSearch, 0);
+dbg_hit_on(doShallowerSearch, 1);
+              if (doDeeperSearch){
+    dbg_hit_on(doShallowerSearch, 3);}
+              if (doShallowerSearch){
+    dbg_hit_on(doDeeperSearch, 4);}
+
                 update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
             }
             else if (value > alpha && value < bestValue + 9)
