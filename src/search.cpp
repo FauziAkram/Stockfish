@@ -1255,6 +1255,11 @@ moves_loop:  // When in check, search starts here
 
                 if (newDepth > d)
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
+dbg_mean_of(value, 0);
+dbg_extremes_of(value, 0);
+dbg_mean_of(beta, 1);
+dbg_extremes_of(beta, 1);
+
 
                 // Post LMR continuation history updates
                 int bonus = (value >= beta) * 1800;
