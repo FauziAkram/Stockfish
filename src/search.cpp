@@ -1258,9 +1258,16 @@ moves_loop:  // When in check, search starts here
 
                 // Post LMR continuation history updates
                 int bonus = (value >= beta) * 1800;
-dbg_mean_of(r);
-dbg_extremes_of(r);
-
+dbg_hit_on((value >= beta + 10), 0);
+dbg_hit_on((value >= beta + 20), 1);
+dbg_hit_on((value >= beta + 30), 2);
+dbg_hit_on((value >= beta + 40), 3);
+dbg_hit_on((value >= beta + 50), 4);
+dbg_hit_on((value >= beta + 60), 5);
+dbg_hit_on((value >= beta + 70), 6);
+dbg_hit_on((value >= beta + 80), 7);
+dbg_hit_on((value >= beta + 90), 8);
+dbg_hit_on((value >= beta + 100), 9);
 
                 update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
             }
