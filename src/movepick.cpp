@@ -26,6 +26,8 @@
 #include "position.h"
 
 namespace Stockfish {
+int mm0=64, mm1=64, mm2=10, mm3=10;
+TUNE(SetRange(0, 200), mm0,mm1,mm2,mm3);
 
 namespace {
 
@@ -162,9 +164,10 @@ void MovePicker::score() {
             m.value += (*continuationHistory[1])[pc][to];
             m.value += (*continuationHistory[2])[pc][to];
             m.value += (*continuationHistory[3])[pc][to];
-            m.value += (*continuationHistory[4])[pc][to] / 3;
-            m.value += (*continuationHistory[5])[pc][to];
-            m.value += (*continuationHistory[7])[pc][to] / 2;
+            m.value += mm0 * (*continuationHistory[4])[pc][to] / 64;
+            m.value += mm1 * (*continuationHistory[5])[pc][to] / 64;
+            m.value += mm2 * (*continuationHistory[6])[pc][to] / 64;
+            m.value += mm3 * (*continuationHistory[7])[pc][to] / 64;
 
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
