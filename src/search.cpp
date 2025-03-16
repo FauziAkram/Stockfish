@@ -287,10 +287,10 @@ void Search::Worker::iterative_deepening() {
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
     // (ss - 7) is needed for update_continuation_histories(ss - 1) which accesses (ss - 6),
     // (ss + 2) is needed for initialization of cutOffCnt.
-    Stack  stack[MAX_PLY + 12] = {};
-    Stack* ss                  = stack + 9;
+    Stack  stack[MAX_PLY + 11] = {};
+    Stack* ss                  = stack + 8;
 
-    for (int i = 9; i > 0; --i)
+    for (int i = 8; i > 0; --i)
     {
         (ss - i)->continuationHistory =
           &this->continuationHistory[0][0][NO_PIECE][0];  // Use as a sentinel
@@ -967,7 +967,7 @@ moves_loop:  // When in check, search starts here
     const PieceToHistory* contHist[] = {
       (ss - 1)->continuationHistory, (ss - 2)->continuationHistory, (ss - 3)->continuationHistory,
       (ss - 4)->continuationHistory, (ss - 5)->continuationHistory, (ss - 6)->continuationHistory,
-      (ss - 7)->continuationHistory, (ss - 8)->continuationHistory};
+      (ss - 7)->continuationHistory};
 
 
     MovePicker mp(pos, ttData.move, depth, &thisThread->mainHistory, &thisThread->lowPlyHistory,
@@ -1870,7 +1870,7 @@ void update_all_stats(const Position&      pos,
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
     static constexpr std::array<ConthistBonus, 8> conthist_bonuses = {
-      {{1, 1103}, {2, 659}, {3, 323}, {4, 533}, {5, 121}, {6, 474}, {7, 134}, {8, 55}}};
+      {{1, 1103}, {2, 659}, {3, 323}, {4, 533}, {5, 121}, {6, 474}, {7, 134}}};
 
     for (const auto [i, weight] : conthist_bonuses)
     {
