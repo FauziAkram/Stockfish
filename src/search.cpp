@@ -50,8 +50,6 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=64, xx2=128;
-TUNE(SetRange(0, 1500), xx1, xx2);
 
 namespace TB = Tablebases;
 
@@ -1871,8 +1869,8 @@ void update_all_stats(const Position&      pos,
 // Updates histories of the move pairs formed by moves
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
-    static const std::array<ConthistBonus, 8> conthist_bonuses = {
-      {{1, 1103}, {2, 659}, {3, 323}, {4, 533}, {5, 121}, {6, 474}, {7, xx1}, {8, xx2}}};
+    static constexpr std::array<ConthistBonus, 8> conthist_bonuses = {
+      {{1, 1103}, {2, 659}, {3, 323}, {4, 533}, {5, 121}, {6, 474}, {7, 134}, {8, 55}}};
 
     for (const auto [i, weight] : conthist_bonuses)
     {
