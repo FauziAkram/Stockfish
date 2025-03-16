@@ -51,7 +51,7 @@
 
 namespace Stockfish {
 int xx1=1100, xx2=1100;
-TUNE(SetRange(0, 3200), xx1);
+TUNE(SetRange(0, 3200), xx1,xx2);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
