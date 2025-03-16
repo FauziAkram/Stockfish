@@ -50,7 +50,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=1100, xx2=1100;
+TUNE(SetRange(0, 3200), xx1);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1450,8 +1451,7 @@ moves_loop:  // When in check, search starts here
         // bonus for prior countermoves that caused the fail low
         Piece capturedPiece = pos.captured_piece();
         assert(capturedPiece != NO_PIECE);
-        thisThread->captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)]
-          << std::min(300 * depth - 182, 2995);
+        thisThread->captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)] << ((ss->cutoffCnt > 3)? xx1: xx2);
     }
 
     if (PvNode)
