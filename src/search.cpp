@@ -1557,7 +1557,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER)))
         return ttData.value;
 
-        // Step 4. Static evaluation of the position
+    // Step 4. Static evaluation of the position
     Value      unadjustedStaticEval = VALUE_NONE;
     const auto correctionValue      = correction_value(*thisThread, pos, ss);
     if (ss->inCheck)
@@ -1594,7 +1594,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = ss->staticEval + 359; //Possibly needs tuning
+        futilityBase = ss->staticEval + 359;
     }
     const PieceToHistory* contHist[2] = {(ss - 1)->continuationHistory,
                                         (ss - 2)->continuationHistory};
