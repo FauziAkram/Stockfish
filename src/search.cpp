@@ -1284,8 +1284,16 @@ moves_loop:  // When in check, search starts here
             (ss + 1)->pv[0] = Move::none();
 
             // Extend move from transposition table if we are about to dive into qsearch.
-            if (move == ttData.move && thisThread->rootDepth > 8)
-                newDepth = std::max(newDepth, 1);
+
+dbg_hit_on(move == ttData.move, 0);
+dbg_hit_on(thisThread->rootDepth > 8, 1);
+dbg_mean_of(thisThread->rootDepth, 0);
+dbg_extremes_of(thisThread->rootDepth, 0);
+            if (move == ttData.move && thisThread->rootDepth > 8){
+dbg_mean_of(newDepth,1);
+dbg_extremes_of(newDepth,1);
+
+                newDepth = std::max(newDepth, 1);}
 
             value = -search<PV>(pos, ss + 1, -beta, -alpha, newDepth, false);
         }
