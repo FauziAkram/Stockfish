@@ -1430,8 +1430,12 @@ moves_loop:  // When in check, search starts here
                           + 86 * ((ss - 1)->isTTMove) + 86 * (ss->cutoffCnt <= 3)
                           + std::min(-(ss - 1)->statScore / 112, 303));
 
-        if (bonusScale <= 37 && !allNode)
+        if (bonusScale <= 37) {
+          if (!allNode)
           bonusScale = (bonusScale + 555) / 16;
+          else
+          bonusScale = std::max(bonusScale, 0);
+        }
 
         const int scaledBonus = std::min(160 * depth - 99, 1492) * bonusScale;
 
