@@ -50,10 +50,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=80, 	xx2=4, 	xx3=200, 	xx4=34, 	xx5=164, 	xx6=141, 	xx7=121, 	xx8=86, 	xx9=86, 	xx10=112, 	xx11=642, 	xx12=303, 	xx13=37, 	xx14=554;
+int xx1=80, 	xx2=4, 	xx3=200, 	xx4=34, 	xx5=164, 	xx6=141, 	xx7=121, 	xx8=86, 	xx9=86, 	xx10=112, 	xx11=642, 	xx12=303, 	xx13=37, 	xx14=554, zz1=1600;
 TUNE(xx1);
 TUNE(SetRange(-2, 12), xx2);
-TUNE(xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14);
+TUNE(xx3,	xx4,	xx5,	xx6,	xx7,	xx8,	xx9,	xx10,	xx11,	xx12,	xx13,	xx14, zz1);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1076,10 +1076,7 @@ moves_loop:  // When in check, search starts here
 
                 lmrDepth += history / 3593;
 
-                Value futilityValue = ss->staticEval + (bestMove ? 48 : 146) + 116 * lmrDepth;
-
-                if (bestValue < ss->staticEval - 128 && lmrDepth < 8)
-                    futilityValue += 103;
+                Value futilityValue = ss->staticEval + (bestMove ? 48 : 146) + 116 * lmrDepth + 103 * (bestValue < ss->staticEval - 128);
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
@@ -1219,6 +1216,9 @@ moves_loop:  // When in check, search starts here
               846 * int(PieceValue[pos.captured_piece()]) / 128
               + thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())]
               - 4822;
+        else if (ss->inCheck)
+              ss->statScore = thisThread->mainHistory[us][move.from_to()]
+                            + (*contHist[0])[movedPiece][move.to_sq()] - 2771;
         else
             ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
                           + (*contHist[0])[movedPiece][move.to_sq()]
@@ -1260,7 +1260,7 @@ moves_loop:  // When in check, search starts here
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates
-                int bonus = (value >= beta) * 1800;
+                int bonus = zz1;
                 update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
             }
             else if (value > alpha && value < bestValue + 9)
@@ -1411,8 +1411,7 @@ moves_loop:  // When in check, search starts here
     assert(moveCount || !ss->inCheck || excludedMove || !MoveList<LEGAL>(pos).size());
 
     // Adjust best value for fail high cases at non-pv nodes
-    if (!PvNode && bestValue >= beta && !is_decisive(bestValue) && !is_decisive(beta)
-        && !is_decisive(alpha))
+    if (bestValue >= beta && !is_decisive(bestValue) && !is_decisive(beta) && !is_decisive(alpha))
         bestValue = (bestValue * depth + beta) / (depth + 1);
 
     if (!moveCount)
@@ -1456,8 +1455,7 @@ moves_loop:  // When in check, search starts here
         // bonus for prior countermoves that caused the fail low
         Piece capturedPiece = pos.captured_piece();
         assert(capturedPiece != NO_PIECE);
-        thisThread->captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)]
-          << std::min(300 * depth - 182, 2995);
+        thisThread->captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)] << 1100;
     }
 
     if (PvNode)
@@ -1668,10 +1666,9 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
             // Continuation history based pruning
             if (!capture
                 && (*contHist[0])[pos.moved_piece(move)][move.to_sq()]
-                       + (*contHist[1])[pos.moved_piece(move)][move.to_sq()]
                        + thisThread->pawnHistory[pawn_structure_index(pos)][pos.moved_piece(move)]
                                                 [move.to_sq()]
-                     <= 5923)
+                     <= 6290)
                 continue;
 
             // Do not search moves with bad enough SEE values
