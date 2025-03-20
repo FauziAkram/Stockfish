@@ -1424,6 +1424,9 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
+      dbg_mean_of(-(ss - 1)->statScore);
+dbg_extremes_of(-(ss - 1)->statScore);
+
         int bonusScale = (112 * (depth > 5) + 34 * !allNode + 164 * ((ss - 1)->moveCount > 8)
                           + 141 * (!ss->inCheck && bestValue <= ss->staticEval - 100)
                           + 121 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 75)
