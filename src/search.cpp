@@ -50,7 +50,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx=110;
+TUNE(xx1);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -71,7 +72,7 @@ namespace {
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
-    Value futilityMult       = 110 - 25 * noTtCutNode;
+    Value futilityMult       = xx1 - 25 * noTtCutNode;
     Value improvingDeduction = improving * futilityMult * 2;
     Value worseningDeduction = oppWorsening * futilityMult / 3;
 
