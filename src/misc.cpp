@@ -282,29 +282,9 @@ std::string compiler_info() {
 
 
 // Debug functions used mainly to collect run-time statistics
-// Original: Fixed-size array
-// constexpr int MaxDebugSlots = 32;
-
 namespace {
 
-// Original: Fixed-size array
-// template<size_t N>
-// struct DebugInfo {
-//     std::array<std::atomic<int64_t>, N> data = {0};
-//
-//     [[nodiscard]] constexpr std::atomic<int64_t>& operator[](size_t index) {
-//         assert(index < N);
-//         return data[index];
-//     }
-//
-//     constexpr DebugInfo& operator=(const DebugInfo& other) {
-//         for (size_t i = 0; i < N; i++)
-//             data[i].store(other.data[i].load());
-//         return *this;
-//     }
-// };
-
-// Updated: Dynamically sized vector
+// Dynamically sized vector
 template<size_t N>
 struct DebugInfo {
     std::vector<std::atomic<int64_t>> data;
@@ -326,14 +306,6 @@ struct DebugInfo {
     }
 };
 
-
-// Original: Fixed size based on MaxDebugSlots
-// struct DebugExtremes: public DebugInfo<3> {
-//     DebugExtremes() {
-//         data[1] = std::numeric_limits<int64_t>::min();
-//         data[2] = std::numeric_limits<int64_t>::max();
-//     }
-// };
 struct DebugExtremes : public DebugInfo<3> {
     DebugExtremes(size_t size) : DebugInfo<3>(size) {
         for (size_t i = 0; i < size; ++i) { // Initialize for each slot
@@ -342,14 +314,7 @@ struct DebugExtremes : public DebugInfo<3> {
         }
     }
 };
-// Original: Fixed-size arrays
-// std::array<DebugInfo<2>, MaxDebugSlots>  hit;
-// std::array<DebugInfo<2>, MaxDebugSlots>  mean;
-// std::array<DebugInfo<3>, MaxDebugSlots>  stdev;
-// std::array<DebugInfo<6>, MaxDebugSlots>  correl;
-// std::array<DebugExtremes, MaxDebugSlots> extremes;
-
-// Updated:  Use dynamic allocation for debug info.
+// Use dynamic allocation for debug info.
 DebugInfo<2>* hit;
 DebugInfo<2>* mean;
 DebugInfo<3>* stdev;
