@@ -18,7 +18,6 @@
 
 #include "misc.h"
 
-#include <array>
 #include <atomic>
 #include <cassert>
 #include <cctype>
@@ -29,6 +28,7 @@
 #include <iostream>
 #include <iterator>
 #include <limits>
+#include <map> // Use std::map
 #include <mutex>
 #include <sstream>
 #include <string_view>
@@ -42,68 +42,41 @@ namespace {
 // Version number or dev.
 constexpr std::string_view version = "dev";
 
-// Our fancy logging facility. The trick here is to replace cin.rdbuf() and
-// cout.rdbuf() with two Tie objects that tie cin and cout to a file stream. We
-// can toggle the logging of std::cout and std:cin at runtime whilst preserving
-// usual I/O functionality, all without changing a single line of code!
-// Idea from http://groups.google.com/group/comp.lang.c++/msg/1d941c0f26ea0d81
-
-struct Tie: public std::streambuf {  // MSVC requires split streambuf for cin and cout
-
-    Tie(std::streambuf* b, std::streambuf* l) :
-        buf(b),
-        logBuf(l) {}
-
+// Our fancy logging facility... (same as before, unchanged)
+struct Tie: public std::streambuf {
+    Tie(std::streambuf* b, std::streambuf* l) : buf(b), logBuf(l) {}
     int sync() override { return logBuf->pubsync(), buf->pubsync(); }
     int overflow(int c) override { return log(buf->sputc(char(c)), "<< "); }
     int underflow() override { return buf->sgetc(); }
     int uflow() override { return log(buf->sbumpc(), ">> "); }
-
     std::streambuf *buf, *logBuf;
-
     int log(int c, const char* prefix) {
-
-        static int last = '\n';  // Single log file
-
+        static int last = '\n';
         if (last == '\n')
             logBuf->sputn(prefix, 3);
-
         return last = logBuf->sputc(char(c));
     }
 };
 
 class Logger {
-
-    Logger() :
-        in(std::cin.rdbuf(), file.rdbuf()),
-        out(std::cout.rdbuf(), file.rdbuf()) {}
+    Logger() : in(std::cin.rdbuf(), file.rdbuf()), out(std::cout.rdbuf(), file.rdbuf()) {}
     ~Logger() { start(""); }
-
     std::ofstream file;
     Tie           in, out;
-
    public:
     static void start(const std::string& fname) {
-
         static Logger l;
-
-        if (l.file.is_open())
-        {
+        if (l.file.is_open()) {
             std::cout.rdbuf(l.out.buf);
             std::cin.rdbuf(l.in.buf);
             l.file.close();
         }
-
-        if (!fname.empty())
-        {
+        if (!fname.empty()) {
             l.file.open(fname, std::ifstream::out);
-
-            if (!l.file.is_open())
-            {
+            if (!l.file.is_open()) {
                 std::cerr << "Unable to open debug log file " << fname << std::endl;
                 exit(EXIT_FAILURE);
             }
-
             std::cin.rdbuf(&l.in);
             std::cout.rdbuf(&l.out);
         }
@@ -112,18 +85,7 @@ class Logger {
 
 }  // namespace
 
-
-// Returns the full name of the current Stockfish version.
-//
-// For local dev compiles we try to append the commit SHA and
-// commit date from git. If that fails only the local compilation
-// date is set and "nogit" is specified:
-//      Stockfish dev-YYYYMMDD-SHA
-//      or
-//      Stockfish dev-YYYYMMDD-nogit
-//
-// For releases (non-dev builds) we only include the version number:
-//      Stockfish version
+// engine_version_info() and compiler_info() are the same (unchanged)
 std::string engine_version_info() {
     std::stringstream ss;
     ss << "Stockfish " << version << std::setfill('0');
@@ -155,27 +117,15 @@ std::string engine_version_info() {
 
     return ss.str();
 }
-
 std::string engine_info(bool to_uci) {
     return engine_version_info() + (to_uci ? "\nid author " : " by ")
          + "the Stockfish developers (see AUTHORS file)";
 }
 
-
-// Returns a string trying to describe the compiler we use
 std::string compiler_info() {
 
 #define make_version_string(major, minor, patch) \
     stringify(major) "." stringify(minor) "." stringify(patch)
-
-    // Predefined macros hell:
-    //
-    // __GNUC__                Compiler is GCC, Clang or ICX
-    // __clang__               Compiler is Clang or ICX
-    // __INTEL_LLVM_COMPILER   Compiler is ICX
-    // _MSC_VER                Compiler is MSVC
-    // _WIN32                  Building on Windows (any)
-    // _WIN64                  Building on Windows 64 bit
 
     std::string compiler = "\nCompiled by                : ";
 
@@ -279,171 +229,110 @@ std::string compiler_info() {
     return compiler;
 }
 
-
-// Debug functions used mainly to collect run-time statistics
-constexpr int MaxDebugSlots = 32;
-
+// Debug functions - SIMPLIFIED VERSION with std::map
 namespace {
 
-template<size_t N>
 struct DebugInfo {
-    std::array<std::atomic<int64_t>, N> data = {0};
-
-    [[nodiscard]] constexpr std::atomic<int64_t>& operator[](size_t index) {
-        assert(index < N);
-        return data[index];
-    }
-
-    constexpr DebugInfo& operator=(const DebugInfo& other) {
-        for (size_t i = 0; i < N; i++)
-            data[i].store(other.data[i].load());
-        return *this;
-    }
+    std::array<std::atomic<int64_t>, 6> data = {0}; //Largest size needed.
 };
 
-struct DebugExtremes: public DebugInfo<3> {
-    DebugExtremes() {
-        data[1] = std::numeric_limits<int64_t>::min();
-        data[2] = std::numeric_limits<int64_t>::max();
-    }
-};
-
-std::array<DebugInfo<2>, MaxDebugSlots>  hit;
-std::array<DebugInfo<2>, MaxDebugSlots>  mean;
-std::array<DebugInfo<3>, MaxDebugSlots>  stdev;
-std::array<DebugInfo<6>, MaxDebugSlots>  correl;
-std::array<DebugExtremes, MaxDebugSlots> extremes;
+std::map<int, DebugInfo> debugData; // Use a map to store debug info
 
 }  // namespace
 
 void dbg_hit_on(bool cond, int slot) {
-
-    ++hit.at(slot)[0];
+    ++debugData[slot].data[0];
     if (cond)
-        ++hit.at(slot)[1];
+        ++debugData[slot].data[1];
 }
 
 void dbg_mean_of(int64_t value, int slot) {
-
-    ++mean.at(slot)[0];
-    mean.at(slot)[1] += value;
+    ++debugData[slot].data[0];
+    debugData[slot].data[1] += value;
 }
 
 void dbg_stdev_of(int64_t value, int slot) {
-
-    ++stdev.at(slot)[0];
-    stdev.at(slot)[1] += value;
-    stdev.at(slot)[2] += value * value;
+    ++debugData[slot].data[0];
+    debugData[slot].data[1] += value;
+    debugData[slot].data[2] += value * value;
 }
 
 void dbg_extremes_of(int64_t value, int slot) {
-    ++extremes.at(slot)[0];
+    DebugInfo& info = debugData[slot]; //Get reference, for easier update.
+    ++info.data[0];
 
-    int64_t current_max = extremes.at(slot)[1].load();
-    while (current_max < value && !extremes.at(slot)[1].compare_exchange_weak(current_max, value))
-    {}
-
-    int64_t current_min = extremes.at(slot)[2].load();
-    while (current_min > value && !extremes.at(slot)[2].compare_exchange_weak(current_min, value))
-    {}
+    // Initialize min/max if this is the first time accessing this slot
+    if (info.data[0] == 1) {
+        info.data[1] = value; // Max
+        info.data[2] = value; // Min
+    } else {
+        if(value > info.data[1]) info.data[1] = value; //Max
+        if(value < info.data[2]) info.data[2] = value; //Min
+    }
 }
 
 void dbg_correl_of(int64_t value1, int64_t value2, int slot) {
-
-    ++correl.at(slot)[0];
-    correl.at(slot)[1] += value1;
-    correl.at(slot)[2] += value1 * value1;
-    correl.at(slot)[3] += value2;
-    correl.at(slot)[4] += value2 * value2;
-    correl.at(slot)[5] += value1 * value2;
+    ++debugData[slot].data[0];
+    debugData[slot].data[1] += value1;
+    debugData[slot].data[2] += value1 * value1;
+    debugData[slot].data[3] += value2;
+    debugData[slot].data[4] += value2 * value2;
+    debugData[slot].data[5] += value1 * value2;
 }
 
 void dbg_print() {
-
     int64_t n;
     auto    E   = [&n](int64_t x) { return double(x) / n; };
     auto    sqr = [](double x) { return x * x; };
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = hit[i][0]))
-            std::cerr << "Hit #" << i << ": Total " << n << " Hits " << hit[i][1]
-                      << " Hit Rate (%) " << 100.0 * E(hit[i][1]) << std::endl;
+    for (auto const& [slot, info] : debugData) { //Iterate the map
+        if ((n = info.data[0])) {
+            std::cerr << "Hit #" << slot << ": Total " << n << " Hits " << info.data[1]
+                      << " Hit Rate (%) " << 100.0 * E(info.data[1]) << std::endl;
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = mean[i][0]))
-        {
-            std::cerr << "Mean #" << i << ": Total " << n << " Mean " << E(mean[i][1]) << std::endl;
-        }
+            std::cerr << "Mean #" << slot << ": Total " << n << " Mean " << E(info.data[1]) << std::endl; // Reuse data[1]
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = stdev[i][0]))
-        {
-            double r = sqrt(E(stdev[i][2]) - sqr(E(stdev[i][1])));
-            std::cerr << "Stdev #" << i << ": Total " << n << " Stdev " << r << std::endl;
-        }
+            double r = sqrt(E(info.data[2]) - sqr(E(info.data[1])));
+            std::cerr << "Stdev #" << slot << ": Total " << n << " Stdev " << r << std::endl;
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = extremes[i][0]))
-        {
-            std::cerr << "Extremity #" << i << ": Total " << n << " Min " << extremes[i][2]
-                      << " Max " << extremes[i][1] << std::endl;
-        }
+            std::cerr << "Extremity #" << slot << ": Total " << n << " Min " << info.data[2]
+                      << " Max " << info.data[1] << std::endl;
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = correl[i][0]))
-        {
-            double r = (E(correl[i][5]) - E(correl[i][1]) * E(correl[i][3]))
-                     / (sqrt(E(correl[i][2]) - sqr(E(correl[i][1])))
-                        * sqrt(E(correl[i][4]) - sqr(E(correl[i][3]))));
-            std::cerr << "Correl. #" << i << ": Total " << n << " Coefficient " << r << std::endl;
+            r = (E(info.data[5]) - E(info.data[1]) * E(info.data[3]))
+                     / (sqrt(E(info.data[2]) - sqr(E(info.data[1])))
+                        * sqrt(E(info.data[4]) - sqr(E(info.data[3]))));
+            std::cerr << "Correl. #" << slot << ": Total " << n << " Coefficient " << r << std::endl;
         }
+    }
 }
-
 void dbg_clear() {
-    hit.fill({});
-    mean.fill({});
-    stdev.fill({});
-    correl.fill({});
-    extremes.fill({});
+    debugData.clear(); // Simply clear the map
 }
 
-// Used to serialize access to std::cout
-// to avoid multiple threads writing at the same time.
+// Remaining functions (operator<<, sync_cout_*, start_logger, etc.) are unchanged
 std::ostream& operator<<(std::ostream& os, SyncCout sc) {
-
     static std::mutex m;
-
     if (sc == IO_LOCK)
         m.lock();
-
     if (sc == IO_UNLOCK)
         m.unlock();
-
     return os;
 }
 
 void sync_cout_start() { std::cout << IO_LOCK; }
 void sync_cout_end() { std::cout << IO_UNLOCK; }
-
-// Trampoline helper to avoid moving Logger to misc.h
 void start_logger(const std::string& fname) { Logger::start(fname); }
 
-
 #ifdef NO_PREFETCH
-
 void prefetch(const void*) {}
-
 #else
-
 void prefetch(const void* addr) {
-
     #if defined(_MSC_VER)
     _mm_prefetch((char const*) addr, _MM_HINT_T0);
     #else
     __builtin_prefetch(addr);
     #endif
 }
-
 #endif
 
 #ifdef _WIN32
@@ -482,8 +371,6 @@ std::string CommandLine::get_binary_directory(std::string argv0) {
 #ifdef _WIN32
     pathSeparator = "\\";
     #ifdef _MSC_VER
-    // Under windows argv[0] may not have the extension. Also _get_pgmptr() had
-    // issues in some Windows 10 versions, so check returned values carefully.
     char* pgmptr = nullptr;
     if (!_get_pgmptr(&pgmptr) && pgmptr != nullptr && *pgmptr)
         argv0 = pgmptr;
@@ -491,11 +378,7 @@ std::string CommandLine::get_binary_directory(std::string argv0) {
 #else
     pathSeparator = "/";
 #endif
-
-    // Extract the working directory
     auto workingDirectory = CommandLine::get_working_directory();
-
-    // Extract the binary directory path from argv0
     auto   binaryDirectory = argv0;
     size_t pos             = binaryDirectory.find_last_of("\\/");
     if (pos == std::string::npos)
@@ -503,7 +386,6 @@ std::string CommandLine::get_binary_directory(std::string argv0) {
     else
         binaryDirectory.resize(pos + 1);
 
-    // Pattern replacement: "./" at the start of path is replaced by the working directory
     if (binaryDirectory.find("." + pathSeparator) == 0)
         binaryDirectory.replace(0, 1, workingDirectory);
 
@@ -519,6 +401,5 @@ std::string CommandLine::get_working_directory() {
 
     return workingDirectory;
 }
-
 
 }  // namespace Stockfish
