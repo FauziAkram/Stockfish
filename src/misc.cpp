@@ -32,6 +32,7 @@
 #include <mutex>
 #include <sstream>
 #include <string_view>
+#include <vector>  // Include for std::vector
 
 #include "types.h"
 
@@ -281,81 +282,139 @@ std::string compiler_info() {
 
 
 // Debug functions used mainly to collect run-time statistics
-constexpr int MaxDebugSlots = 32;
+// Original: Fixed-size array
+// constexpr int MaxDebugSlots = 32;
 
 namespace {
 
+// Original: Fixed-size array
+// template<size_t N>
+// struct DebugInfo {
+//     std::array<std::atomic<int64_t>, N> data = {0};
+//
+//     [[nodiscard]] constexpr std::atomic<int64_t>& operator[](size_t index) {
+//         assert(index < N);
+//         return data[index];
+//     }
+//
+//     constexpr DebugInfo& operator=(const DebugInfo& other) {
+//         for (size_t i = 0; i < N; i++)
+//             data[i].store(other.data[i].load());
+//         return *this;
+//     }
+// };
+
+// Updated: Dynamically sized vector
 template<size_t N>
 struct DebugInfo {
-    std::array<std::atomic<int64_t>, N> data = {0};
+    std::vector<std::atomic<int64_t>> data;
 
-    [[nodiscard]] constexpr std::atomic<int64_t>& operator[](size_t index) {
-        assert(index < N);
+    DebugInfo(size_t size) : data(size * N) {}  // Initialize with size*N elements
+
+     [[nodiscard]] std::atomic<int64_t>& operator[](size_t index) {
+        assert(index < data.size()); //check for the number of elements and not N.
         return data[index];
     }
 
-    constexpr DebugInfo& operator=(const DebugInfo& other) {
-        for (size_t i = 0; i < N; i++)
-            data[i].store(other.data[i].load());
+    DebugInfo& operator=(const DebugInfo& other) {
+         // Ensure 'other' has enough elements before copying
+        if (other.data.size() >= data.size()) {
+            for (size_t i = 0; i < data.size(); i++)
+                data[i].store(other.data[i].load());
+        }
         return *this;
     }
 };
 
-struct DebugExtremes: public DebugInfo<3> {
-    DebugExtremes() {
-        data[1] = std::numeric_limits<int64_t>::min();
-        data[2] = std::numeric_limits<int64_t>::max();
+
+// Original: Fixed size based on MaxDebugSlots
+// struct DebugExtremes: public DebugInfo<3> {
+//     DebugExtremes() {
+//         data[1] = std::numeric_limits<int64_t>::min();
+//         data[2] = std::numeric_limits<int64_t>::max();
+//     }
+// };
+struct DebugExtremes : public DebugInfo<3> {
+    DebugExtremes(size_t size) : DebugInfo<3>(size) {
+        for (size_t i = 0; i < size; ++i) { // Initialize for each slot
+            data[i * 3 + 1] = std::numeric_limits<int64_t>::min();
+            data[i * 3 + 2] = std::numeric_limits<int64_t>::max();
+        }
     }
 };
+// Original: Fixed-size arrays
+// std::array<DebugInfo<2>, MaxDebugSlots>  hit;
+// std::array<DebugInfo<2>, MaxDebugSlots>  mean;
+// std::array<DebugInfo<3>, MaxDebugSlots>  stdev;
+// std::array<DebugInfo<6>, MaxDebugSlots>  correl;
+// std::array<DebugExtremes, MaxDebugSlots> extremes;
 
-std::array<DebugInfo<2>, MaxDebugSlots>  hit;
-std::array<DebugInfo<2>, MaxDebugSlots>  mean;
-std::array<DebugInfo<3>, MaxDebugSlots>  stdev;
-std::array<DebugInfo<6>, MaxDebugSlots>  correl;
-std::array<DebugExtremes, MaxDebugSlots> extremes;
+// Updated:  Use dynamic allocation for debug info.
+DebugInfo<2>* hit;
+DebugInfo<2>* mean;
+DebugInfo<3>* stdev;
+DebugInfo<6>* correl;
+DebugExtremes* extremes;
+size_t numDebugSlots = 0; // Keep track of allocated slots
+
+// Initialization function to allocate memory
+void init_debug_info(size_t slots) {
+    numDebugSlots = slots;
+    hit = new DebugInfo<2>(slots);
+    mean = new DebugInfo<2>(slots);
+    stdev = new DebugInfo<3>(slots);
+    correl = new DebugInfo<6>(slots);
+    extremes = new DebugExtremes(slots);
+}
+
+// Cleanup function to free allocated memory
+void cleanup_debug_info() {
+     delete hit;
+     delete mean;
+     delete stdev;
+     delete correl;
+     delete extremes;
+}
 
 }  // namespace
 
+//No change, using .at() with size check inside functions
 void dbg_hit_on(bool cond, int slot) {
-
-    ++hit.at(slot)[0];
+    ++(*hit)[slot * 2 + 0]; // Access the correct element for the slot
     if (cond)
-        ++hit.at(slot)[1];
+        ++(*hit)[slot * 2 + 1];
 }
 
 void dbg_mean_of(int64_t value, int slot) {
-
-    ++mean.at(slot)[0];
-    mean.at(slot)[1] += value;
+    ++(*mean)[slot * 2 + 0];
+    (*mean)[slot * 2 + 1] += value;
 }
 
 void dbg_stdev_of(int64_t value, int slot) {
-
-    ++stdev.at(slot)[0];
-    stdev.at(slot)[1] += value;
-    stdev.at(slot)[2] += value * value;
+    ++(*stdev)[slot * 3 + 0];
+    (*stdev)[slot * 3 + 1] += value;
+    (*stdev)[slot * 3 + 2] += value * value;
 }
 
 void dbg_extremes_of(int64_t value, int slot) {
-    ++extremes.at(slot)[0];
+      ++(*extremes)[slot * 3 + 0];
 
-    int64_t current_max = extremes.at(slot)[1].load();
-    while (current_max < value && !extremes.at(slot)[1].compare_exchange_weak(current_max, value))
+    int64_t current_max = (*extremes)[slot * 3 + 1].load();
+    while (current_max < value && !(*extremes)[slot * 3 + 1].compare_exchange_weak(current_max, value))
     {}
 
-    int64_t current_min = extremes.at(slot)[2].load();
-    while (current_min > value && !extremes.at(slot)[2].compare_exchange_weak(current_min, value))
+    int64_t current_min = (*extremes)[slot * 3 + 2].load();
+    while (current_min > value && !(*extremes)[slot * 3 + 2].compare_exchange_weak(current_min, value))
     {}
 }
 
 void dbg_correl_of(int64_t value1, int64_t value2, int slot) {
-
-    ++correl.at(slot)[0];
-    correl.at(slot)[1] += value1;
-    correl.at(slot)[2] += value1 * value1;
-    correl.at(slot)[3] += value2;
-    correl.at(slot)[4] += value2 * value2;
-    correl.at(slot)[5] += value1 * value2;
+     ++(*correl)[slot * 6 + 0];
+    (*correl)[slot * 6 + 1] += value1;
+    (*correl)[slot * 6 + 2] += value1 * value1;
+    (*correl)[slot * 6 + 3] += value2;
+    (*correl)[slot * 6 + 4] += value2 * value2;
+    (*correl)[slot * 6 + 5] += value1 * value2;
 }
 
 void dbg_print() {
@@ -364,47 +423,59 @@ void dbg_print() {
     auto    E   = [&n](int64_t x) { return double(x) / n; };
     auto    sqr = [](double x) { return x * x; };
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = hit[i][0]))
-            std::cerr << "Hit #" << i << ": Total " << n << " Hits " << hit[i][1]
-                      << " Hit Rate (%) " << 100.0 * E(hit[i][1]) << std::endl;
+    for (int i = 0; i < numDebugSlots; ++i) // Use numDebugSlots
+        if ((n = (*hit)[i*2]))
+            std::cerr << "Hit #" << i << ": Total " << n << " Hits " << (*hit)[i*2 + 1]
+                      << " Hit Rate (%) " << 100.0 * E((*hit)[i*2 + 1]) << std::endl;
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = mean[i][0]))
+    for (int i = 0; i < numDebugSlots; ++i) // Use numDebugSlots
+        if ((n = (*mean)[i*2]))
         {
-            std::cerr << "Mean #" << i << ": Total " << n << " Mean " << E(mean[i][1]) << std::endl;
+            std::cerr << "Mean #" << i << ": Total " << n << " Mean " << E((*mean)[i*2 + 1]) << std::endl;
         }
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = stdev[i][0]))
+    for (int i = 0; i < numDebugSlots; ++i) // Use numDebugSlots
+        if ((n = (*stdev)[i*3]))
         {
-            double r = sqrt(E(stdev[i][2]) - sqr(E(stdev[i][1])));
+            double r = sqrt(E((*stdev)[i*3 + 2]) - sqr(E((*stdev)[i*3 + 1])));
             std::cerr << "Stdev #" << i << ": Total " << n << " Stdev " << r << std::endl;
         }
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = extremes[i][0]))
+    for (int i = 0; i < numDebugSlots; ++i) // Use numDebugSlots
+        if ((n = (*extremes)[i*3]))
         {
-            std::cerr << "Extremity #" << i << ": Total " << n << " Min " << extremes[i][2]
-                      << " Max " << extremes[i][1] << std::endl;
+            std::cerr << "Extremity #" << i << ": Total " << n << " Min " << (*extremes)[i*3 + 2]
+                      << " Max " << (*extremes)[i*3 + 1] << std::endl;
         }
 
-    for (int i = 0; i < MaxDebugSlots; ++i)
-        if ((n = correl[i][0]))
+    for (int i = 0; i < numDebugSlots; ++i) // Use numDebugSlots
+        if ((n = (*correl)[i*6]))
         {
-            double r = (E(correl[i][5]) - E(correl[i][1]) * E(correl[i][3]))
-                     / (sqrt(E(correl[i][2]) - sqr(E(correl[i][1])))
-                        * sqrt(E(correl[i][4]) - sqr(E(correl[i][3]))));
+            double r = (E((*correl)[i*6 + 5]) - E((*correl)[i*6 + 1]) * E((*correl)[i*6 + 3]))
+                     / (sqrt(E((*correl)[i*6 + 2]) - sqr(E((*correl)[i*6 + 1])))
+                        * sqrt(E((*correl)[i*6 + 4]) - sqr(E((*correl)[i*6 + 3]))));
             std::cerr << "Correl. #" << i << ": Total " << n << " Coefficient " << r << std::endl;
         }
 }
-
 void dbg_clear() {
-    hit.fill({});
-    mean.fill({});
-    stdev.fill({});
-    correl.fill({});
-    extremes.fill({});
+    //Original Fixed size array
+    // hit.fill({});
+    // mean.fill({});
+    // stdev.fill({});
+    // correl.fill({});
+    // extremes.fill({});
+
+    // Reset all atomic values to 0 using a loop.  More efficient than recreating the objects.
+    for (size_t i = 0; i < hit->data.size(); i++)
+        (*hit)[i] = 0;
+    for (size_t i = 0; i < mean->data.size(); i++)
+         (*mean)[i] = 0;
+    for (size_t i = 0; i < stdev->data.size(); i++)
+        (*stdev)[i] = 0;
+    for (size_t i = 0; i < correl->data.size(); i++)
+        (*correl)[i] = 0;
+     for (size_t i = 0; i < extremes->data.size(); i++)
+        (*extremes)[i] = 0;
 }
 
 // Used to serialize access to std::cout
@@ -519,6 +590,5 @@ std::string CommandLine::get_working_directory() {
 
     return workingDirectory;
 }
-
 
 }  // namespace Stockfish
