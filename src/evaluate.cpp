@@ -82,6 +82,12 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     dbg_extremes_of(nnueComplexity, 0);
     dbg_mean_of(fauzi, 1);
     dbg_extremes_of(fauzi, 1);
+    dbg_mean_of(psqt, 2);
+    dbg_extremes_of(psqt, 2);
+    dbg_mean_of(positional, 3);
+    dbg_extremes_of(positional, 3);
+    dbg_mean_of(simpleEval, 4);
+    dbg_extremes_of(simpleEval, 4);
 
     optimism += optimism * nnueComplexity / 468;
     nnue -= nnue * nnueComplexity / 18000;
