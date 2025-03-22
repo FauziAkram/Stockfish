@@ -1444,7 +1444,7 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior quiet countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonusScale = (std::clamp(160 * (depth - 4) / 2, 0, 200) + 34 * !allNode
+        int bonusScale = (std::min(78 * (depth - 3), 194) + 34 * !allNode
                           + 164 * ((ss - 1)->moveCount > 8)
                           + 141 * (!ss->inCheck && bestValue <= ss->staticEval - 100)
                           + 121 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 75)
