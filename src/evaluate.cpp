@@ -80,7 +80,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 dbg_extremes_of(psqt, 0);
   dbg_mean_of(positional, 1);
 dbg_extremes_of(positional, 1);
-  dbg_mean_of(nnueComplexit, 2);
+  dbg_mean_of(nnueComplexity, 2);
 dbg_extremes_of(nnueComplexity, 2);
   dbg_mean_of(optimism, 3);
 dbg_extremes_of(optimism, 3);
