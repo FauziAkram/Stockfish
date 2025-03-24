@@ -76,6 +76,17 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
+  dbg_mean_of(psqt, 0);
+dbg_extremes_of(psqt, 0);
+  dbg_mean_of(positional, 1);
+dbg_extremes_of(positional, 1);
+  dbg_mean_of(nnueComplexit, 2y);
+dbg_extremes_of(nnueComplexity, 2);
+  dbg_mean_of(optimism, 3);
+dbg_extremes_of(optimism, 3);
+  dbg_mean_of(nnue, 4);
+dbg_extremes_of(nnue, 4);
+
     optimism += optimism * nnueComplexity / 468;
     nnue -= nnue * nnueComplexity / 18000;
 
