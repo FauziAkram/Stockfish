@@ -36,7 +36,9 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
-
+int xx1= 40000, xx2=40000, xx3=468;
+TUNE(SetRange(0, 140000), xx1,xx2);
+TUNE(xx3);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -76,7 +78,10 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / 468;
+    int fauzi = optimism * nnueComplexity;
+    if ((fauzi > xx1) || (fauzi < -xx2))
+    optimism += optimism * nnueComplexity / xx3;
+  
     nnue -= nnue * nnueComplexity / 18000;
 
     int material = 535 * pos.count<PAWN>() + pos.non_pawn_material();
