@@ -133,8 +133,8 @@ void MovePicker::score() {
 
         threatenedByPawn = pos.attacks_by<PAWN>(~us);
         threatenedByMinor =
-          pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatenedByPawn;
-        threatenedByRook = pos.attacks_by<ROOK>(~us) | threatenedByMinor;
+          threatenedByPawn | pos.attacks_by<BISHOP>(~us) | pos.attacks_by<KNIGHT>(~us);
+        threatenedByRook = threatenedByMinor | pos.attacks_by<ROOK>(~us);
 
         // Pieces threatened by pieces of lesser material value
         threatenedPieces = (pos.pieces(us, QUEEN) & threatenedByRook)
