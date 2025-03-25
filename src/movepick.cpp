@@ -102,6 +102,9 @@ MovePicker::MovePicker(const Position&              p,
 
     else
         stage = (depth > 0 ? MAIN_TT : QSEARCH_TT) + !(ttm && pos.pseudo_legal(ttm));
+    dbg_hit_on(stage == EVASION_TT, 0);
+    dbg_hit_on(stage == MAIN_TT, 1);
+    dbg_hit_on(stage == QSEARCH_TT, 2);
 }
 
 // MovePicker constructor for ProbCut: we generate captures with Static Exchange
@@ -135,11 +138,25 @@ void MovePicker::score() {
         threatenedByMinor =
           pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatenedByPawn;
         threatenedByRook = pos.attacks_by<ROOK>(~us) | threatenedByMinor;
+      if (threatenedByMinor) {
+        dbg_hit_on(pos.attacks_by<KNIGHT>(~us), 3);
+        dbg_hit_on(pos.attacks_by<BISHOP>(~us), 4);
+        dbg_hit_on(threatenedByPawn, 5);
+      }
+      if (threatenedByRook) {
+        dbg_hit_on(pos.attacks_by<ROOK>(~us), 6);
+        dbg_hit_on(threatenedByMinor, 7);
+      }
 
         // Pieces threatened by pieces of lesser material value
         threatenedPieces = (pos.pieces(us, QUEEN) & threatenedByRook)
                          | (pos.pieces(us, ROOK) & threatenedByMinor)
                          | (pos.pieces(us, KNIGHT, BISHOP) & threatenedByPawn);
+      if (threatenedPieces) {
+        dbg_hit_on(pos.pieces(us, QUEEN) & threatenedByRook, 8);
+        dbg_hit_on(pos.pieces(us, ROOK) & threatenedByMinor, 9);
+        dbg_hit_on((pos.pieces(us, KNIGHT, BISHOP) & threatenedByPawn), 10);
+      }
     }
 
     for (auto& m : *this)
