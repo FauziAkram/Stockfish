@@ -151,8 +151,8 @@ constexpr Bitboard shift(Bitboard b) {
 // from the squares in the given bitboard.
 template<Color C>
 constexpr Bitboard pawn_attacks_bb(Bitboard b) {
-    return C == WHITE ? shift<NORTH_WEST>(b) | shift<NORTH_EAST>(b)
-                      : shift<SOUTH_WEST>(b) | shift<SOUTH_EAST>(b);
+    return C == WHITE ? shift<NORTH_EAST>(b) | shift<NORTH_WEST>(b)
+                      : shift<SOUTH_EAST>(b) | shift<SOUTH_WEST>(b);
 }
 
 inline Bitboard pawn_attacks_bb(Color c, Square s) {
