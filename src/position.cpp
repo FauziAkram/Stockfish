@@ -493,7 +493,13 @@ Bitboard Position::attackers_to(Square s, Bitboard occupied) const {
 }
 
 bool Position::attackers_to_exist(Square s, Bitboard occupied, Color c) const {
-
+dbg_hit_on(((attacks_bb<ROOK>(s) & pieces(c, ROOK, QUEEN))
+            && (attacks_bb<ROOK>(s, occupied) & pieces(c, ROOK, QUEEN))), 4);
+dbg_hit_on(((attacks_bb<BISHOP>(s) & pieces(c, BISHOP, QUEEN))
+            && (attacks_bb<BISHOP>(s, occupied) & pieces(c, BISHOP, QUEEN))), 5);
+dbg_hit_on((((pawn_attacks_bb(~c, s) & pieces(PAWN)) | (attacks_bb<KNIGHT>(s) & pieces(KNIGHT))
+             | (attacks_bb<KING>(s) & pieces(KING)))
+            & pieces(c)), 6);
     return ((attacks_bb<ROOK>(s) & pieces(c, ROOK, QUEEN))
             && (attacks_bb<ROOK>(s, occupied) & pieces(c, ROOK, QUEEN)))
         || ((attacks_bb<BISHOP>(s) & pieces(c, BISHOP, QUEEN))
@@ -558,6 +564,9 @@ bool Position::legal(Move m) const {
 
     // A non-king move is legal if and only if it is not pinned or it
     // is moving along the ray towards or away from the king.
+  dbg_hit_on(!(blockers_for_king(us) & from), 7);
+  dbg_hit_on(line_bb(from, to) & pieces(us, KING), 8);
+
     return !(blockers_for_king(us) & from) || line_bb(from, to) & pieces(us, KING);
 }
 
@@ -645,8 +654,11 @@ bool Position::gives_check(Move m) const {
         return true;
 
     // Is there a discovered check?
-    if (blockers_for_king(~sideToMove) & from)
-        return !(line_bb(from, to) & pieces(~sideToMove, KING)) || m.type_of() == CASTLING;
+    if (blockers_for_king(~sideToMove) & from){
+      dbg_hit_on(!(line_bb(from, to) & pieces(~sideToMove, KING)), 9);
+      dbg_hit_on(m.type_of() == CASTLING, 10);
+
+        return !(line_bb(from, to) & pieces(~sideToMove, KING)) || m.type_of() == CASTLING;}
 
     switch (m.type_of())
     {
@@ -1155,8 +1167,12 @@ bool Position::see_ge(Move m, int threshold) const {
 // or by repetition. It does not detect stalemates.
 bool Position::is_draw(int ply) const {
 
-    if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size()))
-        return true;
+    if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size())) {
+      dbg_hit_on(!checkers(), 11);
+      dbg_hit_on(MoveList<LEGAL>(*this).size(), 12);
+
+      
+        return true;}
 
     return is_repetition(ply);
 }
@@ -1209,6 +1225,9 @@ bool Position::upcoming_repetition(int ply) const {
         Key moveKey = originalKey ^ stp->key;
         if ((j = H1(moveKey), cuckoo[j] == moveKey) || (j = H2(moveKey), cuckoo[j] == moveKey))
         {
+          dbg_hit_on((j = H1(moveKey), cuckoo[j] == moveKey), 13);
+          dbg_hit_on((j = H2(moveKey), cuckoo[j] == moveKey), 14);
+
             Move   move = cuckooMove[j];
             Square s1   = move.from_sq();
             Square s2   = move.to_sq();
