@@ -2007,22 +2007,22 @@ void SearchManager::check_time(Search::Worker& worker) {
     if (ponder)
         return;
 
+    if (worker.completedDepth >= 1){
+      dbg_hit_on(worker.limits.use_time_management() && (elapsed > tm.maximum()), 39);
+      dbg_hit_on(stopOnPonderhit, 40);
+      dbg_hit_on((worker.limits.use_time_management() && (elapsed > tm.maximum() || stopOnPonderhit)), 41);
+      dbg_hit_on((worker.limits.movetime && elapsed >= worker.limits.movetime), 42);
+      dbg_hit_on((worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes), 43);}
+
     if (
       // Later we rely on the fact that we can at least use the mainthread previous
       // root-search score and PV in a multithreaded environment to prove mated-in scores.
       worker.completedDepth >= 1
       && ((worker.limits.use_time_management() && (elapsed > tm.maximum() || stopOnPonderhit))
           || (worker.limits.movetime && elapsed >= worker.limits.movetime)
-          || (worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes))) {
-      dbg_hit_on((worker.limits.use_time_management() && (elapsed > tm.maximum()), 39);
-      dbg_hit_on(stopOnPonderhit, 40);
-        
-      dbg_hit_on((worker.limits.use_time_management() && (elapsed > tm.maximum() || stopOnPonderhit)), 41);
-      dbg_hit_on((worker.limits.movetime && elapsed >= worker.limits.movetime), 42);
-      dbg_hit_on((worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes), 43);
-
-        worker.threads.stop = worker.threads.abortedSearch = true; }
-}}
+          || (worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes)))
+        worker.threads.stop = worker.threads.abortedSearch = true;
+}
 
 // Used to correct and extend PVs for moves that have a TB (but not a mate) score.
 // Keeps the search based PV for as long as it is verified to maintain the game
