@@ -494,13 +494,32 @@ Bitboard Position::attackers_to(Square s, Bitboard occupied) const {
 
 bool Position::attackers_to_exist(Square s, Bitboard occupied, Color c) const {
 
-    return ((attacks_bb<ROOK>(s) & pieces(c, ROOK, QUEEN))
-            && (attacks_bb<ROOK>(s, occupied) & pieces(c, ROOK, QUEEN)))
-        || ((attacks_bb<BISHOP>(s) & pieces(c, BISHOP, QUEEN))
-            && (attacks_bb<BISHOP>(s, occupied) & pieces(c, BISHOP, QUEEN)))
-        || (((pawn_attacks_bb(~c, s) & pieces(PAWN)) | (attacks_bb<KNIGHT>(s) & pieces(KNIGHT))
-             | (attacks_bb<KING>(s) & pieces(KING)))
-            & pieces(c));
+    bool rook_exists = ((attacks_bb<ROOK>(s) & pieces(c, ROOK, QUEEN))
+                   && (attacks_bb<ROOK>(s, occupied) & pieces(c, ROOK, QUEEN)));
+bool bishop_exists = false; // Initialize
+bool minor_king_pawn_exists = false; // Initialize
+
+dbg_hit_on(rook_exists, 16); // Index 16
+
+if (!rook_exists) {
+    bishop_exists = ((attacks_bb<BISHOP>(s) & pieces(c, BISHOP, QUEEN))
+                        && (attacks_bb<BISHOP>(s, occupied) & pieces(c, BISHOP, QUEEN)));
+    dbg_hit_on(bishop_exists, 17); // Index 17
+
+    if (!bishop_exists) {
+        // NOTE: Bitwise ORs are NOT instrumented here
+        minor_king_pawn_exists = (((pawn_attacks_bb(~c, s) & pieces(PAWN)) | (attacks_bb<KNIGHT>(s) & pieces(KNIGHT)) | (attacks_bb<KING>(s) & pieces(KING)))
+                                 & pieces(c));
+        dbg_hit_on(minor_king_pawn_exists, 18); // Index 18
+    } else {
+         // Keep index sequence consistent for minor_king_pawn_exists (skip 18)
+    }
+} else {
+     // Keep index sequence consistent for bishop_exists (skip 17)
+     // Keep index sequence consistent for minor_king_pawn_exists (skip 18)
+}
+
+return rook_exists || bishop_exists || minor_king_pawn_exists;
 }
 
 // Tests whether a pseudo-legal move is legal
@@ -558,7 +577,18 @@ bool Position::legal(Move m) const {
 
     // A non-king move is legal if and only if it is not pinned or it
     // is moving along the ray towards or away from the king.
-    return !(blockers_for_king(us) & from) || line_bb(from, to) & pieces(us, KING);
+    bool not_pinned = !(blockers_for_king(us) & from);
+bool moves_along_ray = false; // Initialize
+
+dbg_hit_on(not_pinned, 19); // Index 19
+if (!not_pinned) {
+    moves_along_ray = bool(line_bb(from, to) & pieces(us, KING)); // Ensure bool conversion
+    dbg_hit_on(moves_along_ray, 20); // Index 20
+} else {
+    // Keep index sequence consistent (skip 20)
+}
+
+return not_pinned || moves_along_ray;
 }
 
 
@@ -645,8 +675,19 @@ bool Position::gives_check(Move m) const {
         return true;
 
     // Is there a discovered check?
-    if (blockers_for_king(~sideToMove) & from)
-        return !(line_bb(from, to) & pieces(~sideToMove, KING)) || m.type_of() == CASTLING;
+    if (blockers_for_king(~sideToMove) & from) {
+    bool not_along_pin_ray = !(line_bb(from, to) & pieces(~sideToMove, KING));
+    bool is_castling = (m.type_of() == CASTLING);
+
+    dbg_hit_on(not_along_pin_ray, 21); // Index 21
+    if (!not_along_pin_ray) {
+        dbg_hit_on(is_castling, 22); // Index 22
+    } else {
+        // Keep index sequence consistent (skip 22)
+    }
+
+    return not_along_pin_ray || is_castling;
+}
 
     switch (m.type_of())
     {
@@ -1155,8 +1196,21 @@ bool Position::see_ge(Move m, int threshold) const {
 // or by repetition. It does not detect stalemates.
 bool Position::is_draw(int ply) const {
 
-    if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size()))
-        return true;
+    bool no_checkers = !checkers();
+bool has_legal_moves = false; // Initialize
+
+// Instrument the OR part
+dbg_hit_on(no_checkers, 23); // Index 23
+if (!no_checkers) {
+    // Calculate potentially expensive part only if needed
+    has_legal_moves = MoveList<LEGAL>(*this).size();
+    dbg_hit_on(has_legal_moves, 24); // Index 24
+} else {
+     // Keep index sequence consistent (skip 24)
+}
+
+if (st->rule50 > 99 && (no_checkers || has_legal_moves))
+    return true;
 
     return is_repetition(ply);
 }
@@ -1207,7 +1261,19 @@ bool Position::upcoming_repetition(int ply) const {
             continue;
 
         Key moveKey = originalKey ^ stp->key;
-        if ((j = H1(moveKey), cuckoo[j] == moveKey) || (j = H2(moveKey), cuckoo[j] == moveKey))
+        int j_val; // Need separate variable for j
+bool check1 = (j_val = H1(moveKey), cuckoo[j_val] == moveKey);
+bool check2 = false; // Initialize
+
+dbg_hit_on(check1, 25); // Index 25
+if (!check1) {
+    check2 = (j_val = H2(moveKey), cuckoo[j_val] == moveKey); // Use j_val
+    dbg_hit_on(check2, 26); // Index 26
+} else {
+    // Keep index sequence consistent (skip 26)
+}
+
+if (check1 || check2)
         {
             Move   move = cuckooMove[j];
             Square s1   = move.from_sq();
@@ -1270,24 +1336,82 @@ bool Position::pos_is_ok() const {
 
     constexpr bool Fast = true;  // Quick (default) or full check?
 
-    if ((sideToMove != WHITE && sideToMove != BLACK) || piece_on(square<KING>(WHITE)) != W_KING
-        || piece_on(square<KING>(BLACK)) != B_KING
-        || (ep_square() != SQ_NONE && relative_rank(sideToMove, ep_square()) != RANK_6))
-        assert(0 && "pos_is_ok: Default");
+    bool cond1 = (sideToMove != WHITE && sideToMove != BLACK);
+bool cond2 = false, cond3 = false, cond4 = false; // Initialize
+
+dbg_hit_on(cond1, 27); // Index 27
+if (!cond1) {
+    cond2 = (piece_on(square<KING>(WHITE)) != W_KING);
+    dbg_hit_on(cond2, 28); // Index 28
+    if (!cond2) {
+        cond3 = (piece_on(square<KING>(BLACK)) != B_KING);
+        dbg_hit_on(cond3, 29); // Index 29
+        if (!cond3) {
+             cond4 = (ep_square() != SQ_NONE && relative_rank(sideToMove, ep_square()) != RANK_6);
+             dbg_hit_on(cond4, 30); // Index 30
+        } else { /* Skip 30 */ } // cond4
+    } else { /* Skip 29, 30 */ } // cond3, cond4
+} else { /* Skip 28, 29, 30 */ } // cond2, cond3, cond4
+
+if (cond1 || cond2 || cond3 || cond4)
+     assert(0 && "pos_is_ok: Default");
 
     if (Fast)
         return true;
 
-    if (pieceCount[W_KING] != 1 || pieceCount[B_KING] != 1
-        || attackers_to_exist(square<KING>(~sideToMove), pieces(), sideToMove))
-        assert(0 && "pos_is_ok: Kings");
+    bool cond1 = (pieceCount[W_KING] != 1);
+bool cond2 = false, cond3 = false; // Initialize
 
-    if ((pieces(PAWN) & (Rank1BB | Rank8BB)) || pieceCount[W_PAWN] > 8 || pieceCount[B_PAWN] > 8)
-        assert(0 && "pos_is_ok: Pawns");
+dbg_hit_on(cond1, 31); // Index 31
+if (!cond1) {
+    cond2 = (pieceCount[B_KING] != 1);
+    dbg_hit_on(cond2, 32); // Index 32
+    if (!cond2) {
+         cond3 = attackers_to_exist(square<KING>(~sideToMove), pieces(), sideToMove);
+         dbg_hit_on(cond3, 33); // Index 33
+    } else { /* Skip 33 */ } // cond3
+} else { /* Skip 32, 33 */ } // cond2, cond3
 
-    if ((pieces(WHITE) & pieces(BLACK)) || (pieces(WHITE) | pieces(BLACK)) != pieces()
-        || popcount(pieces(WHITE)) > 16 || popcount(pieces(BLACK)) > 16)
-        assert(0 && "pos_is_ok: Bitboards");
+if (cond1 || cond2 || cond3)
+     assert(0 && "pos_is_ok: Kings");
+
+    // Rank1BB | Rank8BB is constant
+bool cond1 = bool(pieces(PAWN) & (Rank1BB | Rank8BB));
+bool cond2 = false, cond3 = false; // Initialize
+
+dbg_hit_on(cond1, 34); // Index 34
+if (!cond1) {
+    cond2 = (pieceCount[W_PAWN] > 8);
+    dbg_hit_on(cond2, 35); // Index 35
+    if (!cond2) {
+        cond3 = (pieceCount[B_PAWN] > 8);
+        dbg_hit_on(cond3, 36); // Index 36
+    } else { /* Skip 36 */ } // cond3
+} else { /* Skip 35, 36 */ } // cond2, cond3
+
+if (cond1 || cond2 || cond3)
+     assert(0 && "pos_is_ok: Pawns");
+
+    bool cond1 = bool(pieces(WHITE) & pieces(BLACK));
+bool cond2 = false, cond3 = false, cond4 = false; // Initialize
+
+dbg_hit_on(cond1, 37); // Index 37
+if (!cond1) {
+     // NOTE: Bitwise OR is NOT instrumented
+     cond2 = ((pieces(WHITE) | pieces(BLACK)) != pieces());
+     dbg_hit_on(cond2, 38); // Index 38
+     if (!cond2) {
+         cond3 = (popcount(pieces(WHITE)) > 16);
+         dbg_hit_on(cond3, 39); // Index 39
+         if (!cond3) {
+             cond4 = (popcount(pieces(BLACK)) > 16);
+             dbg_hit_on(cond4, 40); // Index 40
+         } else { /* Skip 40 */ } // cond4
+    } else { /* Skip 39, 40 */ } // cond3, cond4
+} else { /* Skip 38, 39, 40 */ } // cond2, cond3, cond4
+
+if (cond1 || cond2 || cond3 || cond4)
+     assert(0 && "pos_is_ok: Bitboards");
 
     for (PieceType p1 = PAWN; p1 <= KING; ++p1)
         for (PieceType p2 = PAWN; p2 <= KING; ++p2)
@@ -1296,9 +1420,19 @@ bool Position::pos_is_ok() const {
 
 
     for (Piece pc : Pieces)
-        if (pieceCount[pc] != popcount(pieces(color_of(pc), type_of(pc)))
-            || pieceCount[pc] != std::count(board, board + SQUARE_NB, pc))
-            assert(0 && "pos_is_ok: Pieces");
+        bool cond1 = (pieceCount[pc] != popcount(pieces(color_of(pc), type_of(pc))));
+bool cond2 = false; // Initialize
+
+dbg_hit_on(cond1, 41); // Index 41
+if (!cond1) {
+    cond2 = (pieceCount[pc] != std::count(board, board + SQUARE_NB, pc));
+    dbg_hit_on(cond2, 42); // Index 42
+} else {
+    // Keep index sequence consistent (skip 42)
+}
+
+if (cond1 || cond2)
+    assert(0 && "pos_is_ok: Pieces");
 
     for (Color c : {WHITE, BLACK})
         for (CastlingRights cr : {c & KING_SIDE, c & QUEEN_SIDE})
@@ -1306,10 +1440,21 @@ bool Position::pos_is_ok() const {
             if (!can_castle(cr))
                 continue;
 
-            if (piece_on(castlingRookSquare[cr]) != make_piece(c, ROOK)
-                || castlingRightsMask[castlingRookSquare[cr]] != cr
-                || (castlingRightsMask[square<KING>(c)] & cr) != cr)
-                assert(0 && "pos_is_ok: Castling");
+            bool cond1 = (piece_on(castlingRookSquare[cr]) != make_piece(c, ROOK));
+    bool cond2 = false, cond3 = false; // Initialize
+
+    dbg_hit_on(cond1, 43); // Index 43
+    if (!cond1) {
+         cond2 = (castlingRightsMask[castlingRookSquare[cr]] != cr);
+         dbg_hit_on(cond2, 44); // Index 44
+         if (!cond2) {
+              cond3 = ((castlingRightsMask[square<KING>(c)] & cr) != cr);
+              dbg_hit_on(cond3, 45); // Index 45
+         } else { /* Skip 45 */ } // cond3
+    } else { /* Skip 44, 45 */ } // cond2, cond3
+
+    if (cond1 || cond2 || cond3)
+         assert(0 && "pos_is_ok: Castling");
         }
 
     return true;
