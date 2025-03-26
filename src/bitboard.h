@@ -104,7 +104,14 @@ constexpr Bitboard square_bb(Square s) {
 // whether a given bit is set in a bitboard, and for setting and clearing bits.
 
 inline Bitboard  operator&(Bitboard b, Square s) { return b & square_bb(s); }
-inline Bitboard  operator|(Bitboard b, Square s) { return b | square_bb(s); }
+inline Bitboard  operator|(Bitboard b, Square s) {
+    Bitboard result = b | square_bb(s);
+    if (result) {
+        dbg_hit_on(b, 1);           // Index 1
+        dbg_hit_on(square_bb(s), 2); // Index 2
+    }
+    return result;
+}
 inline Bitboard  operator^(Bitboard b, Square s) { return b ^ square_bb(s); }
 inline Bitboard& operator|=(Bitboard& b, Square s) { return b |= square_bb(s); }
 inline Bitboard& operator^=(Bitboard& b, Square s) { return b ^= square_bb(s); }
@@ -150,9 +157,19 @@ constexpr Bitboard shift(Bitboard b) {
 // Returns the squares attacked by pawns of the given color
 // from the squares in the given bitboard.
 template<Color C>
-constexpr Bitboard pawn_attacks_bb(Bitboard b) {
-    return C == WHITE ? shift<NORTH_WEST>(b) | shift<NORTH_EAST>(b)
-                      : shift<SOUTH_WEST>(b) | shift<SOUTH_EAST>(b);
+/*constexpr*/ Bitboard pawn_attacks_bb(Bitboard b) { // Removed constexpr for dbg_hit_on
+    Bitboard result = C == WHITE ? shift<NORTH_WEST>(b) | shift<NORTH_EAST>(b)
+                                 : shift<SOUTH_WEST>(b) | shift<SOUTH_EAST>(b);
+    if (result) {
+        if constexpr (C == WHITE) {
+            dbg_hit_on(shift<NORTH_WEST>(b), 3); // Index 3 (or 5)
+            dbg_hit_on(shift<NORTH_EAST>(b), 4); // Index 4 (or 6)
+        } else {
+            dbg_hit_on(shift<SOUTH_WEST>(b), 5); // Index 3 (or 5)
+            dbg_hit_on(shift<SOUTH_EAST>(b), 6); // Index 4 (or 6)
+        }
+    }
+    return result;
 }
 
 inline Bitboard pawn_attacks_bb(Color c, Square s) {
@@ -236,8 +253,16 @@ inline Bitboard attacks_bb(Square s, Bitboard occupied) {
     case BISHOP :
     case ROOK :
         return Magics[s][Pt - BISHOP].attacks_bb(occupied);
-    case QUEEN :
-        return attacks_bb<BISHOP>(s, occupied) | attacks_bb<ROOK>(s, occupied);
+    case QUEEN : {
+        Bitboard bishop_attacks = attacks_bb<BISHOP>(s, occupied);
+        Bitboard rook_attacks = attacks_bb<ROOK>(s, occupied);
+        Bitboard result = bishop_attacks | rook_attacks;
+        if (result) {
+            dbg_hit_on(bishop_attacks, 7); // Index 7
+            dbg_hit_on(rook_attacks, 8);   // Index 8
+        }
+        return result;
+    }
     default :
         return PseudoAttacks[Pt][s];
     }
@@ -256,8 +281,10 @@ inline Bitboard attacks_bb(PieceType pt, Square s, Bitboard occupied) {
         return attacks_bb<BISHOP>(s, occupied);
     case ROOK :
         return attacks_bb<ROOK>(s, occupied);
-    case QUEEN :
-        return attacks_bb<BISHOP>(s, occupied) | attacks_bb<ROOK>(s, occupied);
+    case QUEEN : {
+        // Relies on the instrumented template version
+        return attacks_bb<QUEEN>(s, occupied);
+    }
     default :
         return PseudoAttacks[pt][s];
     }
