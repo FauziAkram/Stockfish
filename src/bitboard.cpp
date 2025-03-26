@@ -172,7 +172,7 @@ void init_magics(PieceType pt, Bitboard table[], Magic magics[][2]) {
           dbg_hit_on(FileABB, 6);
           dbg_hit_on(FileHBB, 7);
           dbg_hit_on(((Rank1BB | Rank8BB) & ~rank_bb(s)), 8);
-          dbg_hit_on(((FileABB | FileHBB) & ~file_bb(s)), 9);
+          dbg_hit_on(((FileABB | FileHBB) & ~file_bb(s)), 9);}
 
         // Given a square 's', the mask is the bitboard of sliding attacks from
         // 's' computed on an empty board. The index must be big enough to contain
