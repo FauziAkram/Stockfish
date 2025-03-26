@@ -607,7 +607,7 @@ Value Search::Worker::search(
 
     constexpr bool PvNode   = nodeType != NonPV;
     constexpr bool rootNode = nodeType == Root;
-    const bool     allNode  = !(PvNode || cutNode);
+    const bool     allNode  = !(cutNode || PvNode);
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
@@ -668,7 +668,7 @@ Value Search::Worker::search(
     if (!rootNode)
     {
         // Step 2. Check for aborted search and immediate draw
-        if (threads.stop.load(std::memory_order_relaxed) || pos.is_draw(ss->ply)
+        if (pos.is_draw(ss->ply) || threads.stop.load(std::memory_order_relaxed)
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos)
                                                         : value_draw(thisThread->nodes);
@@ -702,7 +702,7 @@ Value Search::Worker::search(
                  : ttHit    ? ttData.move
                             : Move::none();
     ttData.value = ttHit ? value_from_tt(ttData.value, ss->ply, pos.rule50_count()) : VALUE_NONE;
-    ss->ttPv     = excludedMove ? ss->ttPv : PvNode || (ttHit && ttData.is_pv);
+    ss->ttPv     = excludedMove ? ss->ttPv : (ttHit && ttData.is_pv) || PvNode;
     ttCapture    = ttData.move && pos.capture_stage(ttData.move);
 
     // At this point, if excluded, skip straight to step 6, static eval. However,
@@ -1480,7 +1480,7 @@ moves_loop:  // When in check, search starts here
     // If no good move is found and the previous position was ttPv, then the previous
     // opponent move is probably good and the new position is added to the search tree.
     if (bestValue <= alpha)
-        ss->ttPv = ss->ttPv || (ss - 1)->ttPv;
+        ss->ttPv = (ss - 1)->ttPv || ss->ttPv;
 
     // Write gathered information in transposition table. Note that the
     // static evaluation is saved as it was before correction history.
