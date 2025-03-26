@@ -28,6 +28,7 @@
 #include <string>
 
 #include "types.h"
+#include "misc.h"
 
 namespace Stockfish {
 
