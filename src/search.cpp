@@ -672,7 +672,7 @@ Value Search::Worker::search(
         // Step 2. Check for aborted search and immediate draw
         if (threads.stop.load(std::memory_order_relaxed) || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY) {
-          dbg_hit_on((threads.stop.load(std::memory_order_relaxed), 19);
+          dbg_hit_on(threads.stop.load(std::memory_order_relaxed), 19);
           dbg_hit_on(pos.is_draw(ss->ply), 20);
 
             return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos)
@@ -2014,7 +2014,7 @@ void SearchManager::check_time(Search::Worker& worker) {
       && ((worker.limits.use_time_management() && (elapsed > tm.maximum() || stopOnPonderhit))
           || (worker.limits.movetime && elapsed >= worker.limits.movetime)
           || (worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes))) {
-      dbg_hit_on(worker.limits.use_time_management() && (elapsed > tm.maximum(), 39);
+      dbg_hit_on((worker.limits.use_time_management() && (elapsed > tm.maximum()), 39);
       dbg_hit_on(stopOnPonderhit, 40);
         
       dbg_hit_on((worker.limits.use_time_management() && (elapsed > tm.maximum() || stopOnPonderhit)), 41);
@@ -2196,7 +2196,7 @@ void SearchManager::pv(Search::Worker&           worker,
         // Potentially correct and extend the PV, and in exceptional cases v
         if (is_decisive(v) && std::abs(v) < VALUE_MATE_IN_MAX_PLY
             && ((!rootMoves[i].scoreLowerbound && !rootMoves[i].scoreUpperbound) || isExact)) {
-          dbg_hit_on((!rootMoves[i].scoreLowerbound && !rootMoves[i].scoreUpperbound, 46);
+          dbg_hit_on(!rootMoves[i].scoreLowerbound && !rootMoves[i].scoreUpperbound, 46);
           dbg_hit_on(isExact, 47);
           
             syzygy_extend_pv(worker.options, worker.limits, pos, rootMoves[i], v);}
