@@ -103,7 +103,15 @@ void Bitboards::init() {
             {
                 if (PseudoAttacks[pt][s1] & s2)
                 {
-                    LineBB[s1][s2] = (attacks_bb(pt, s1, 0) & attacks_bb(pt, s2, 0)) | s1 | s2;
+                    Bitboard intersection = (attacks_bb(pt, s1, 0) & attacks_bb(pt, s2, 0));
+Bitboard s1_bb = square_bb(s1);
+Bitboard s2_bb = square_bb(s2);
+LineBB[s1][s2] = intersection | s1_bb | s2_bb;
+if (LineBB[s1][s2]) {
+    dbg_hit_on(intersection, 1);
+    dbg_hit_on(s1_bb, 2);
+    dbg_hit_on(s2_bb, 3);
+}
                     BetweenBB[s1][s2] =
                       (attacks_bb(pt, s1, square_bb(s2)) & attacks_bb(pt, s2, square_bb(s1)));
                 }
@@ -158,6 +166,13 @@ void init_magics(PieceType pt, Bitboard table[], Magic magics[][2]) {
     {
         // Board edges are not considered in the relevant occupancies
         Bitboard edges = ((Rank1BB | Rank8BB) & ~rank_bb(s)) | ((FileABB | FileHBB) & ~file_bb(s));
+        if (edges) {
+          dbg_hit_on(Rank1BB, 4);
+          dbg_hit_on(Rank8BB, 5);
+          dbg_hit_on(FileABB, 6);
+          dbg_hit_on(FileHBB, 7);
+          dbg_hit_on(((Rank1BB | Rank8BB) & ~rank_bb(s)), 8);
+          dbg_hit_on(((FileABB | FileHBB) & ~file_bb(s)), 9);
 
         // Given a square 's', the mask is the bitboard of sliding attacks from
         // 's' computed on an empty board. The index must be big enough to contain
