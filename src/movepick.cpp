@@ -264,8 +264,8 @@ top:
         if (!skipQuiets && select([]() { return true; }))
         {
             if ((cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth)){
-              dbg_hit_on((cur - 1)->value > -7998, 2);
-              dbg_hit_on((cur - 1)->value <= quiet_threshold(depth), 3);
+              dbg_hit_on((cur - 1)->value > -7998, 15);
+              dbg_hit_on((cur - 1)->value <= quiet_threshold(depth), 16);
 
                 return *(cur - 1);}
 
