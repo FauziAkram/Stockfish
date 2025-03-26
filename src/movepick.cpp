@@ -263,8 +263,19 @@ top:
     case GOOD_QUIET :
         if (!skipQuiets && select([]() { return true; }))
         {
-            if ((cur - 1)->value > -7998 || (cur - 1)->value <= quiet_threshold(depth))
-                return *(cur - 1);
+            bool high_val_cond = ((cur - 1)->value > -7998);
+bool low_val_cond = ((cur - 1)->value <= quiet_threshold(depth));
+
+dbg_hit_on(high_val_cond, 4); // Index 4
+// Only call dbg_hit_on for low_val_cond if high_val_cond is false
+if (!high_val_cond) {
+    dbg_hit_on(low_val_cond, 5); // Index 5
+} else {
+    // Keep index sequence consistent (skip 5)
+}
+
+if (high_val_cond || low_val_cond)
+    return *(cur - 1);
 
             // Remaining quiets are bad
             beginBadQuiets = cur - 1;
