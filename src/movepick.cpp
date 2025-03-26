@@ -125,7 +125,7 @@ void MovePicker::score() {
 
     static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
 
-    [[maybe_unused]] Bitboard threatenedByPawn, threatenedByMinor, threatenedByRook,
+    [[maybe_unused]] Bitboard threatenedByPawn, threatenedByMinor,
       threatenedPieces;
     if constexpr (Type == QUIETS)
     {
@@ -133,11 +133,10 @@ void MovePicker::score() {
 
         threatenedByPawn = pos.attacks_by<PAWN>(~us);
         threatenedByMinor =
-          pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatenedByPawn;
-        threatenedByRook = pos.attacks_by<ROOK>(~us) | threatenedByMinor;
+          pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatenedByPawn | pos.attacks_by<ROOK>(~us);
 
         // Pieces threatened by pieces of lesser material value
-        threatenedPieces = (pos.pieces(us, QUEEN) & threatenedByRook)
+        threatenedPieces = (pos.pieces(us, QUEEN) & threatenedByMinor)
                          | (pos.pieces(us, ROOK) & threatenedByMinor)
                          | (pos.pieces(us, KNIGHT, BISHOP) & threatenedByPawn);
     }
@@ -169,14 +168,14 @@ void MovePicker::score() {
             m.value += bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
-            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
+            m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByMinor)   ? 51700
                                                   : pt == ROOK && !(to & threatenedByMinor) ? 25600
                                                   : !(to & threatenedByPawn)                ? 14450
                                                                                             : 0)
                                                : 0;
 
             // malus for putting piece en prise
-            m.value -= (pt == QUEEN ? bool(to & threatenedByRook) * 49000
+            m.value -= (pt == QUEEN ? bool(to & threatenedByMinor) * 49000
                         : pt == ROOK && bool(to & threatenedByMinor) ? 24335
                                                                      : 0);
 
