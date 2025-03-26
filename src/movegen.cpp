@@ -23,6 +23,7 @@
 
 #include "bitboard.h"
 #include "position.h"
+#include "misc.h"
 
 namespace Stockfish {
 
@@ -244,11 +245,34 @@ ExtMove* generate<LEGAL>(const Position& pos, ExtMove* moveList) {
     moveList =
       pos.checkers() ? generate<EVASIONS>(pos, moveList) : generate<NON_EVASIONS>(pos, moveList);
     while (cur != moveList)
-        if (((pinned & cur->from_sq()) || cur->from_sq() == ksq || cur->type_of() == EN_PASSANT)
-            && !pos.legal(*cur))
-            *cur = *(--moveList);
-        else
-            ++cur;
+        bool condition1 = (pinned & cur->from_sq());
+bool condition2 = (cur->from_sq() == ksq);
+bool condition3 = (cur->type_of() == EN_PASSANT);
+
+// Instrument the boolean OR conditions, respecting short-circuiting for debug hits
+bool needs_legal_check = false;
+dbg_hit_on(condition1, 1); // Index 1
+if (condition1) {
+    needs_legal_check = true;
+    // Skip index for condition2 (2)
+    // Skip index for condition3 (3)
+} else {
+    dbg_hit_on(condition2, 2); // Index 2
+    if (condition2) {
+        needs_legal_check = true;
+        // Skip index for condition3 (3)
+    } else {
+        dbg_hit_on(condition3, 3); // Index 3
+        if (condition3) {
+            needs_legal_check = true;
+        }
+    }
+}
+
+if (needs_legal_check && !pos.legal(*cur))
+    *cur = *(--moveList);
+else
+    ++cur;
 
     return moveList;
 }
