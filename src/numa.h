@@ -38,6 +38,7 @@
 #include <cstring>
 
 #include "memory.h"
+#include "misc.h"
 
 // We support linux very well, but we explicitly do NOT support Android,
 // because there is no affected systems, not worth maintaining.
@@ -127,7 +128,19 @@ struct WindowsAffinity {
     // limitations of the old API we cannot detect its use reliably. There will be
     // cases where we detect not use but it has actually been used and vice versa.
 
-    bool likely_used_old_api() const { return oldApi.has_value() || !isOldDeterminate; }
+    bool likely_used_old_api() const {
+    bool has_old_api = oldApi.has_value();
+    bool not_determinate = !isOldDeterminate;
+
+    dbg_hit_on(has_old_api, 6); // Index 6
+    if (!has_old_api) {
+        dbg_hit_on(not_determinate, 7); // Index 7
+    } else {
+        // Keep index sequence consistent (skip 7)
+    }
+
+    return has_old_api || not_determinate;
+}
 };
 
 inline std::pair<BOOL, std::vector<USHORT>> get_process_group_affinity() {
@@ -244,7 +257,17 @@ inline WindowsAffinity get_process_affinity() {
     //     > as the process' primary group) in order to set the
     //     > lpProcessAffinityMask and lpSystemAffinityMask.
     // So it will never be indeterminate here. We can only make assumptions later.
-    if (status == 0 || proc == 0)
+    bool status_zero = (status == 0);
+bool proc_zero = (proc == 0);
+
+dbg_hit_on(status_zero, 8); // Index 8
+if (!status_zero) {
+    dbg_hit_on(proc_zero, 9); // Index 9
+} else {
+    // Keep index sequence consistent (skip 9)
+}
+
+if (status_zero || proc_zero)
     {
         affinity.isOldDeterminate = false;
         return affinity;
@@ -500,7 +523,20 @@ class NumaConfig {
 
         // /sys/devices/system/node/online contains information about active NUMA nodes
         auto nodeIdsStr = read_file_to_string("/sys/devices/system/node/online");
-        if (!nodeIdsStr.has_value() || nodeIdsStr->empty())
+        bool no_val = !nodeIdsStr.has_value();
+bool is_empty = false; // Initialize
+if (nodeIdsStr.has_value()) { // Check before accessing
+    is_empty = nodeIdsStr->empty();
+}
+
+dbg_hit_on(no_val, 10); // Index 10
+if (!no_val) {
+    dbg_hit_on(is_empty, 11); // Index 11
+} else {
+    // Keep index sequence consistent (skip 11)
+}
+
+if (no_val || is_empty)
         {
             fallback();
         }
@@ -770,8 +806,18 @@ class NumaConfig {
             if (!is_node_small(cpus))
                 numNotSmallNodes += 1;
 
-        return (numThreads > largestNodeSize / 2 || numThreads >= numNotSmallNodes * 4)
-            && nodes.size() > 1;
+        bool cond1 = (numThreads > largestNodeSize / 2);
+bool cond2 = (numThreads >= numNotSmallNodes * 4);
+
+dbg_hit_on(cond1, 12); // Index 12
+if (!cond1) {
+    dbg_hit_on(cond2, 13); // Index 13
+} else {
+    // Keep index sequence consistent (skip 13)
+}
+
+return (cond1 || cond2)
+    && nodes.size() > 1;
     }
 
     std::vector<NumaIndex> distribute_threads_among_numa_nodes(CpuIndex numThreads) const {
@@ -883,7 +929,17 @@ class NumaConfig {
         }
 
         // Sometimes we need to force the old API, but do not use it unless necessary.
-        if (SetThreadSelectedCpuSetMasks_f == nullptr || STARTUP_USE_OLD_AFFINITY_API)
+        bool is_null = (SetThreadSelectedCpuSetMasks_f == nullptr);
+bool use_old = STARTUP_USE_OLD_AFFINITY_API;
+
+dbg_hit_on(is_null, 14); // Index 14
+if (!is_null) {
+    dbg_hit_on(use_old, 15); // Index 15
+} else {
+    // Keep index sequence consistent (skip 15)
+}
+
+if (is_null || use_old)
         {
             // On earlier windows version (since windows 7) we cannot run a single thread
             // on multiple processor groups, so we need to restrict the group.
