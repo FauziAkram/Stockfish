@@ -608,6 +608,8 @@ Value Search::Worker::search(
     constexpr bool PvNode   = nodeType != NonPV;
     constexpr bool rootNode = nodeType == Root;
     const bool     allNode  = !(PvNode || cutNode);
+    dbg_hit_on(PvNode, 17);
+    dbg_hit_on(cutNode, 18);
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
@@ -669,9 +671,12 @@ Value Search::Worker::search(
     {
         // Step 2. Check for aborted search and immediate draw
         if (threads.stop.load(std::memory_order_relaxed) || pos.is_draw(ss->ply)
-            || ss->ply >= MAX_PLY)
+            || ss->ply >= MAX_PLY) {
+          dbg_hit_on((threads.stop.load(std::memory_order_relaxed), 19);
+          dbg_hit_on(pos.is_draw(ss->ply), 20);
+
             return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos)
-                                                        : value_draw(thisThread->nodes);
+                                                        : value_draw(thisThread->nodes);}
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply + 1), but if alpha is already bigger because
@@ -703,6 +708,10 @@ Value Search::Worker::search(
                             : Move::none();
     ttData.value = ttHit ? value_from_tt(ttData.value, ss->ply, pos.rule50_count()) : VALUE_NONE;
     ss->ttPv     = excludedMove ? ss->ttPv : PvNode || (ttHit && ttData.is_pv);
+    if (!excludedMove) {
+    dbg_hit_on(PvNode, 21);
+    dbg_hit_on(ttHit && ttData.is_pv, 22);}
+
     ttCapture    = ttData.move && pos.capture_stage(ttData.move);
 
     // At this point, if excluded, skip straight to step 6, static eval. However,
@@ -714,6 +723,9 @@ Value Search::Worker::search(
         && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER))
         && (cutNode == (ttData.value >= beta) || depth > 5))
     {
+      dbg_hit_on(cutNode == (ttData.value >= beta), 23);
+      dbg_hit_on(depth > 5, 24);
+
         // If ttMove is quiet, update move sorting heuristics on TT hit
         if (ttData.move && ttData.value >= beta)
         {
@@ -861,8 +873,11 @@ Value Search::Worker::search(
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
                - (ss - 1)->statScore / 301 + 37 - std::abs(correctionValue) / 139878
              >= beta
-        && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
-        return beta + (eval - beta) / 3;
+        && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval)) {
+        dbg_hit_on(!ttData.move, 25);
+        dbg_hit_on(ttCapture, 26);
+
+        return beta + (eval - beta) / 3;}
 
     // Step 9. Null move search with verification search
     if (cutNode && (ss - 1)->currentMove != Move::null() && eval >= beta
@@ -1288,6 +1303,9 @@ moves_loop:  // When in check, search starts here
         // Step 18. Full-depth search when LMR is skipped
         else if (!PvNode || moveCount > 1)
         {
+          dbg_hit_on(!PvNode, 27);
+          dbg_hit_on(moveCount > 1, 28);
+
             // Increase reduction if ttMove is not present
             if (!ttData.move)
                 r += 1156;
@@ -1301,6 +1319,9 @@ moves_loop:  // When in check, search starts here
         // otherwise let the parent node fail low with value <= alpha and try another move.
         if (PvNode && (moveCount == 1 || value > alpha))
         {
+          dbg_hit_on(moveCount == 1, 29);
+          dbg_hit_on(value > alpha, 30);
+
             (ss + 1)->pv    = pv;
             (ss + 1)->pv[0] = Move::none();
 
@@ -1394,6 +1415,9 @@ moves_loop:  // When in check, search starts here
                 if (value >= beta)
                 {
                     // (* Scaler) Especially if they make cutoffCnt increment more often.
+                    dbg_hit_on((extension < 2), 31);
+                    dbg_hit_on(PvNode, 32);
+
                     ss->cutoffCnt += (extension < 2) || PvNode;
                     assert(value >= beta);  // Fail high
                     break;
@@ -1479,8 +1503,11 @@ moves_loop:  // When in check, search starts here
 
     // If no good move is found and the previous position was ttPv, then the previous
     // opponent move is probably good and the new position is added to the search tree.
-    if (bestValue <= alpha)
-        ss->ttPv = ss->ttPv || (ss - 1)->ttPv;
+    if (bestValue <= alpha) {
+      dbg_hit_on(ss->ttPv, 33);
+      dbg_hit_on((ss - 1)->ttPv, 34);
+
+        ss->ttPv = ss->ttPv || (ss - 1)->ttPv;}
 
     // Write gathered information in transposition table. Note that the
     // static evaluation is saved as it was before correction history.
@@ -1496,6 +1523,9 @@ moves_loop:  // When in check, search starts here
         && ((bestValue < ss->staticEval && bestValue < beta)  // negative correction & no fail high
             || (bestValue > ss->staticEval && bestMove)))     // positive correction & no fail low
     {
+      dbg_hit_on((bestValue < ss->staticEval && bestValue < beta), 35);
+      dbg_hit_on((bestValue > ss->staticEval && bestMove), 36);
+      
         auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
                                 -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
         update_correction_history(pos, ss, *thisThread, bonus);
@@ -1556,8 +1586,11 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         thisThread->selDepth = ss->ply + 1;
 
     // Step 2. Check for an immediate draw or maximum ply reached
-    if (pos.is_draw(ss->ply) || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos) : VALUE_DRAW;
+    if (pos.is_draw(ss->ply) || ss->ply >= MAX_PLY) {
+      dbg_hit_on(pos.is_draw(ss->ply), 37);
+      dbg_hit_on(ss->ply >= MAX_PLY, 38);
+
+        return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos) : VALUE_DRAW;}
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -1980,8 +2013,15 @@ void SearchManager::check_time(Search::Worker& worker) {
       worker.completedDepth >= 1
       && ((worker.limits.use_time_management() && (elapsed > tm.maximum() || stopOnPonderhit))
           || (worker.limits.movetime && elapsed >= worker.limits.movetime)
-          || (worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes)))
-        worker.threads.stop = worker.threads.abortedSearch = true;
+          || (worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes))) {
+      dbg_hit_on(worker.limits.use_time_management() && (elapsed > tm.maximum(), 39);
+      dbg_hit_on(stopOnPonderhit, 40);
+        
+      dbg_hit_on((worker.limits.use_time_management() && (elapsed > tm.maximum() || stopOnPonderhit)), 41);
+      dbg_hit_on((worker.limits.movetime && elapsed >= worker.limits.movetime), 42);
+      dbg_hit_on((worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes), 43);
+
+        worker.threads.stop = worker.threads.abortedSearch = true;}
 }
 
 // Used to correct and extend PVs for moves that have a TB (but not a mate) score.
@@ -2032,6 +2072,9 @@ void syzygy_extend_pv(const OptionsMap&         options,
 
         auto& st = sts.emplace_back();
         pos.do_move(pvMove, st);
+
+      dbg_hit_on((rule50 && pos.is_draw(ply)), 44);
+      dbg_hit_on(pos.is_repetition(ply), 45);
 
         // Do not allow for repetitions or drawing moves along the PV in TB regime
         if (config.rootInTB && ((rule50 && pos.is_draw(ply)) || pos.is_repetition(ply)))
@@ -2152,8 +2195,11 @@ void SearchManager::pv(Search::Worker&           worker,
 
         // Potentially correct and extend the PV, and in exceptional cases v
         if (is_decisive(v) && std::abs(v) < VALUE_MATE_IN_MAX_PLY
-            && ((!rootMoves[i].scoreLowerbound && !rootMoves[i].scoreUpperbound) || isExact))
-            syzygy_extend_pv(worker.options, worker.limits, pos, rootMoves[i], v);
+            && ((!rootMoves[i].scoreLowerbound && !rootMoves[i].scoreUpperbound) || isExact)) {
+          dbg_hit_on((!rootMoves[i].scoreLowerbound && !rootMoves[i].scoreUpperbound, 46);
+          dbg_hit_on(isExact, 47);
+          
+            syzygy_extend_pv(worker.options, worker.limits, pos, rootMoves[i], v);}
 
         std::string pv;
         for (Move m : rootMoves[i].pv)
