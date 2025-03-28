@@ -46,7 +46,7 @@ static constexpr int lsb_index64[64] = {
 constexpr int constexpr_lsb(uint64_t bb) {
     assert(bb != 0);
     constexpr uint64_t debruijn64 = 0x03F79D71B4CB0A89ULL;
-    return lsb_index64[((bb ^ (bb - 1)) * debruijn64) >> 58];
+    return lsb_index64[((bb & -bb) * debruijn64) >> 58];
 }
 
 alignas(CacheLineSize) static constexpr struct OffsetIndices {
