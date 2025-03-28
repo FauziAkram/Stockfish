@@ -182,6 +182,15 @@ void MovePicker::score() {
 
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
+          
+            if (pt == PAWN && !pos.capture_stage(m))
+            {
+                Rank r = relative_rank(pos.side_to_move(), to);
+                if (r == RANK_6)
+                    m.value += 3000;
+                else if (r == RANK_7)
+                    m.value += 6000;
+            }
         }
 
         else  // Type == EVASIONS
