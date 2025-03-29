@@ -860,8 +860,8 @@ Value Search::Worker::search(
     if (!ss->ttPv && depth < 14
         && [&]() -> bool {
                Value baseMargin = futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening);
-               Value evalBetaDiffMargin = (eval > beta) ? std::max(0, (eval - beta) / 8) : 0;
-               return eval - (baseMargin - evalBetaDiffMargin)
+               Value evalBetaDiffMargin = (eval - beta) / 8;
+               return eval - baseMargin + evalBetaDiffMargin
                       - (ss - 1)->statScore / 301 + 37 - std::abs(correctionValue) / 139878
                       >= beta;
            }()
