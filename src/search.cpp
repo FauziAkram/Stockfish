@@ -1110,6 +1110,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE
+                dbg_hit_on(!pos.see_ge(move, -27 * lmrDepth * lmrDepth));
                 if (!pos.see_ge(move, -27 * lmrDepth * lmrDepth))
                     continue;
             }
