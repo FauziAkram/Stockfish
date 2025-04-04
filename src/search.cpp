@@ -52,7 +52,7 @@
 namespace Stockfish {
 int xx1=32, xx2=300, xx3=300, xx4=27, xx5=0, xx6=256, xx7=301, xx8=37, xx9=139878, xx10=256, xx11=1800, xx12=1600;
 TUNE(xx1,xx2,xx3,xx4);
-TUNE(SetRange(-20, 20), xx5);
+TUNE(SetRange(-300, 300), xx5);
 TUNE(xx6);
 TUNE(SetRange(1, 603), xx7);
 TUNE(xx8,xx9,xx10,xx11,xx12);
@@ -1112,10 +1112,6 @@ moves_loop:  // When in check, search starts here
 
                 // Prune moves with negative SEE
                 int seeThreshold = -xx4 * lmrDepth * lmrDepth;
-
-              dbg_mean_of(ss->staticEval);
-dbg_extremes_of(ss->staticEval);
-
                 seeThreshold -= std::max(xx5, xx6 * int(ss->staticEval) / 2048);
                 if (!pos.see_ge(move, seeThreshold))
                     continue;
