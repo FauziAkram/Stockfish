@@ -26,7 +26,8 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int zz1=3000, zz2=6000;
+TUNE(SetRange(-2000, 30000), zz1,zz2);
 namespace {
 
 enum Stages {
@@ -182,6 +183,15 @@ void MovePicker::score() {
 
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
+
+            if (pt == PAWN && !pos.capture_stage(m))
+            {
+                Rank r = relative_rank(pos.side_to_move(), to);
+                if (r == RANK_6)
+                    m.value += zz1;
+                else if (r == RANK_7)
+                    m.value += zz2;
+            }
         }
 
         else  // Type == EVASIONS
