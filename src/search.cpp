@@ -50,7 +50,13 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+xx1=32, 	xx2=300, 	xx3=300, 	xx4=27, 	xx5=0, 	xx6=256, 	xx7=301, 	xx8=37, 	xx9=139878, 	xx10=256;
+TUNE(xx1,xx2,xx3,xx4);
+TUNE(SetRange(-20, 20), xx5);
+TUNE(xx6);
+TUNE(SetRange(1, 603), xx7);
+TUNE(xx8,xx9,xx10);
+  
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -857,7 +863,7 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 14
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
-               - (ss - 1)->statScore / 301 + 37 - std::abs(correctionValue) / 139878
+               - (ss - 1)->statScore / xx7 + xx8 + (xx10 * (eval - beta) / 2048) - std::abs(correctionValue) / xx9
              >= beta
         && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
         return beta + (eval - beta) / 3;
@@ -1105,7 +1111,13 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE
-                if (!pos.see_ge(move, -27 * lmrDepth * lmrDepth))
+                int seeThreshold = -xx4 * lmrDepth * lmrDepth;
+
+              dbg_mean_of(seeThreshold);
+dbg_extremes_of(seeThreshold);
+
+                seeThreshold -= std::max(xx5, xx6 * int(ss->staticEval) / 2048);
+                if (!pos.see_ge(move, seeThreshold))
                     continue;
             }
         }
@@ -1240,6 +1252,8 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * 1582 / 16384;
+
+        r -= std::clamp(xx1 * int(ss->staticEval) / 2048, -xx2, xx3);
 
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
