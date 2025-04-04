@@ -1113,8 +1113,8 @@ moves_loop:  // When in check, search starts here
                 // Prune moves with negative SEE
                 int seeThreshold = -xx4 * lmrDepth * lmrDepth;
 
-              dbg_mean_of(seeThreshold);
-dbg_extremes_of(seeThreshold);
+              dbg_mean_of(ss->staticEval);
+dbg_extremes_of(ss->staticEval);
 
                 seeThreshold -= std::max(xx5, xx6 * int(ss->staticEval) / 2048);
                 if (!pos.see_ge(move, seeThreshold))
