@@ -50,12 +50,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-xx1=32, 	xx2=300, 	xx3=300, 	xx4=27, 	xx5=0, 	xx6=256, 	xx7=301, 	xx8=37, 	xx9=139878, 	xx10=256;
+int xx1=32, xx2=300, xx3=300, xx4=27, xx5=0, xx6=256, xx7=301, xx8=37, xx9=139878, xx10=256, xx11=1800, xx12=1600;
 TUNE(xx1,xx2,xx3,xx4);
 TUNE(SetRange(-20, 20), xx5);
 TUNE(xx6);
 TUNE(SetRange(1, 603), xx7);
-TUNE(xx8,xx9,xx10);
+TUNE(xx8,xx9,xx10,xx11,xx12);
   
 namespace TB = Tablebases;
 
@@ -1288,7 +1288,8 @@ dbg_extremes_of(seeThreshold);
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates
-                update_continuation_histories(ss, movedPiece, move.to_sq(), 1600);
+                int bonus = (value >= beta)? xx11: xx12;
+                update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
             }
             else if (value > alpha && value < bestValue + 9)
                 newDepth--;
