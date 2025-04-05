@@ -1142,7 +1142,7 @@ moves_loop:  // When in check, search starts here
                     int corrValAdj1  = std::abs(correctionValue) / 248873;
                     int corrValAdj2  = std::abs(correctionValue) / 255331;
 
-                  int olddouble = 262 * PvNode - 188 * !ttCapture - corrValAdj1
+                  int olddouble = 262 * PvNode - 188 * !ttCapture - corrValAdj1;
                     int doubleMargin = 262 * PvNode - 188 * !ttCapture - corrValAdj1
                                      - ttMoveHistory[pawn_structure_index(pos)][us] / 128;
                     int tripleMargin =
