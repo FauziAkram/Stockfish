@@ -1141,11 +1141,30 @@ moves_loop:  // When in check, search starts here
                 {
                     int corrValAdj1  = std::abs(correctionValue) / 248873;
                     int corrValAdj2  = std::abs(correctionValue) / 255331;
+
+                  int olddouble = 262 * PvNode - 188 * !ttCapture - corrValAdj1
                     int doubleMargin = 262 * PvNode - 188 * !ttCapture - corrValAdj1
                                      - ttMoveHistory[pawn_structure_index(pos)][us] / 128;
                     int tripleMargin =
                       88 + 265 * PvNode - 256 * !ttCapture + 93 * ss->ttPv - corrValAdj2;
-
+                  
+dbg_hit_on((value < singularBeta - olddouble), 0);
+dbg_hit_on((value < singularBeta - doubleMargin), 1);
+dbg_hit_on((value < singularBeta - tripleMargin), 2);
+                  
+                  dbg_mean_of(ttMoveHistory[pawn_structure_index(pos)][us], 3);
+dbg_extremes_of(ttMoveHistory[pawn_structure_index(pos)][us], 3);
+                  dbg_mean_of(value, 4);
+dbg_extremes_of(value, 4);
+                  dbg_mean_of(singularBeta, 5);
+dbg_extremes_of(singularBeta, 5);
+                  dbg_mean_of(olddouble, 6);
+dbg_extremes_of(olddouble, 6);
+                  dbg_mean_of(doubleMargin, 7);
+dbg_extremes_of(doubleMargin, 7);
+                  dbg_mean_of(tripleMargin, 8);
+dbg_extremes_of(tripleMargin, 8);
+                  
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
 
