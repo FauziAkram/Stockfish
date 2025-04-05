@@ -46,8 +46,6 @@ int Eval::simple_eval(const Position& pos) {
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
-bool Eval::use_smallnet(const Position& pos) { return std::abs(simple_eval(pos)) > 962; }
-
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
 Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
