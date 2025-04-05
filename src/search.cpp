@@ -50,7 +50,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx0=979, xx1=0, xx2=0, xx3=0, xx4=0, xx5=2381, xx6=1008, xx7=880, xx8=1022, xx9=1140;
+TUNE(xx0);
+TUNE(SetRange(-2048, 2048), xx1,xx2,xx3,xx4);
+TUNE(xx5,xx6,xx7,xx8,xx9);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1040,7 +1043,8 @@ moves_loop:  // When in check, search starts here
         // Smaller or even negative value is better for short time controls
         // Bigger value is better for long time controls
         if (ss->ttPv)
-            r += 979;
+            r += xx0 + xx1 * PvNode + xx2 * (ttData.value > alpha)
+               + (ttData.depth >= depth) * (xx3 + cutNode * xx4);
 
         // Step 14. Pruning at shallow depth.
         // Depth conditions are important for mate finding.
@@ -1197,8 +1201,8 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 2381 + PvNode * 1008 + (ttData.value > alpha) * 880
-               + (ttData.depth >= depth) * (1022 + cutNode * 1140);
+            r -= xx5 + PvNode * xx6 + (ttData.value > alpha) * xx7
+               + (ttData.depth >= depth) * (xx8 + cutNode * xx9);
 
         // These reduction adjustments have no proven non-linear scaling
 
