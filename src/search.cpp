@@ -50,6 +50,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1152, xx2=301, xx3=37, xx4=139878, xx5=1024, xx6=59, xx7=77, xx8=54, xx9=248873, xx10=255331, xx11=262, xx12=188, xx13=64, xx14=88, xx15=265, xx16=256, xx17=93, xx18=0;
 
 namespace TB = Tablebases;
 
@@ -856,9 +857,9 @@ Value Search::Worker::search(
     // Step 8. Futility pruning: child node
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 14
-        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
-               - (ss - 1)->statScore / 301 + 37 - std::abs(correctionValue) / 139878
-             >= beta
+        && xx1 * eval / 1024 - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
+             - (ss - 1)->statScore / xx2 + xx3 - std::abs(correctionValue) / xx4
+             >= xx5 * beta / 1024
         && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
         return beta + (eval - beta) / 3;
 
@@ -1129,7 +1130,7 @@ moves_loop:  // When in check, search starts here
                 && is_valid(ttData.value) && !is_decisive(ttData.value)
                 && (ttData.bound & BOUND_LOWER) && ttData.depth >= depth - 3)
             {
-                Value singularBeta  = ttData.value - (59 + 77 * (ss->ttPv && !PvNode)) * depth / 54;
+                Value singularBeta  = ttData.value - (xx6 + xx7 * (ss->ttPv && !PvNode)) * depth / xx8;
                 Depth singularDepth = newDepth / 2;
 
                 ss->excludedMove = move;
@@ -1139,12 +1140,13 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int corrValAdj1  = std::abs(correctionValue) / 248873;
-                    int corrValAdj2  = std::abs(correctionValue) / 255331;
-                    int doubleMargin = 262 * PvNode - 188 * !ttCapture - corrValAdj1
-                                     - ttMoveHistory[pawn_structure_index(pos)][us] / 128;
+                    int corrValAdj1  = std::abs(correctionValue) / xx9;
+                    int corrValAdj2  = std::abs(correctionValue) / xx10;
+                    int doubleMargin = xx11 * PvNode - xx12 * !ttCapture - corrValAdj1
+                                     - xx13 * ttMoveHistory[pawn_structure_index(pos)][us] / 8192;
                     int tripleMargin =
-                      88 + 265 * PvNode - 256 * !ttCapture + 93 * ss->ttPv - corrValAdj2;
+                      xx14 + xx15 * PvNode - xx16 * !ttCapture + xx17 * ss->ttPv - corrValAdj2
+                                     - xx18 * ttMoveHistory[pawn_structure_index(pos)][us] / 8192;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
@@ -1447,7 +1449,7 @@ moves_loop:  // When in check, search starts here
     else if (!priorCapture && prevSq != SQ_NONE)
     {
         int bonusScale =
-          (std::clamp(80 * depth - 320, 0, 200) + 34 * !allNode + 164 * ((ss - 1)->moveCount > 8)
+           (std::min(78 * depth - 312, 194) + 34 * !allNode + 164 * ((ss - 1)->moveCount > 8)
            + 141 * (!ss->inCheck && bestValue <= ss->staticEval - 100)
            + 121 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 75)
            + 86 * ((ss - 1)->isTTMove) + 86 * (ss->cutoffCnt <= 3)
