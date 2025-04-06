@@ -51,6 +51,16 @@
 
 namespace Stockfish {
 int xx1=1152, xx2=301, xx3=37, xx4=139878, xx5=1024, xx6=59, xx7=77, xx8=54, xx9=248873, xx10=255331, xx11=262, xx12=188, xx13=64, xx14=88, xx15=265, xx16=256, xx17=93, xx18=0;
+int zz1=800, zz2=870, zz3=1600;
+
+TUNE(SetRange(0, 1500), xx1);
+TUNE(SetRange(1, 603), xx2);
+TUNE(SetRange(-37, 100), xx3);
+TUNE(xx4);
+TUNE(SetRange(0, 1500), xx5);
+TUNE(xx6,xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16, xx17);
+TUNE(SetRange(0, 128), xx18);
+TUNE(zz1,zz2,zz3);
 
 namespace TB = Tablebases;
 
@@ -1143,10 +1153,10 @@ moves_loop:  // When in check, search starts here
                     int corrValAdj1  = std::abs(correctionValue) / xx9;
                     int corrValAdj2  = std::abs(correctionValue) / xx10;
                     int doubleMargin = xx11 * PvNode - xx12 * !ttCapture - corrValAdj1
-                                     - xx13 * ttMoveHistory[pawn_structure_index(pos)][us] / 8192;
+                                     - xx13 * ttMoveHistory / 8192;
                     int tripleMargin =
                       xx14 + xx15 * PvNode - xx16 * !ttCapture + xx17 * ss->ttPv - corrValAdj2
-                                     - xx18 * ttMoveHistory[pawn_structure_index(pos)][us] / 8192;
+                                     - xx18 * ttMoveHistory / 8192;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
@@ -1276,7 +1286,7 @@ moves_loop:  // When in check, search starts here
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates
-                update_continuation_histories(ss, movedPiece, move.to_sq(), 1600);
+                update_continuation_histories(ss, movedPiece, move.to_sq(), zz3);
             }
             else if (value > alpha && value < bestValue + 9)
                 newDepth--;
@@ -1440,8 +1450,8 @@ moves_loop:  // When in check, search starts here
                          bestMove == ttData.move, moveCount);
         if (!PvNode)
         {
-            int bonus = (ttData.move == move) ? 800 : -600 * moveCount;
-            ttMoveHistory[pawn_structure_index(pos)][us] << bonus;
+            int bonus = (ttData.move == move) ? zz1 : -zz2;
+            ttMoveHistory << bonus;
         }
     }
 
