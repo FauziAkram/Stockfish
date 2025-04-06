@@ -1075,6 +1075,19 @@ moves_loop:  // When in check, search starts here
             }
             else
             {
+                constexpr int futilityPruningAggressionMargin = 200;
+            if (!PvNode
+                && !ss->inCheck
+                && depth < 6
+                && moveCount > (3 + depth)
+                && ss->staticEval + futilityPruningAggressionMargin <= alpha
+                && !is_decisive(alpha))
+            {
+                if (ss->staticEval + futilityPruningAggressionMargin > bestValue)
+                   bestValue = ss->staticEval + futilityPruningAggressionMargin;
+                continue;
+            }
+              
                 int history =
                   (*contHist[0])[movedPiece][move.to_sq()]
                   + (*contHist[1])[movedPiece][move.to_sq()]
