@@ -93,7 +93,7 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
       m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
                  : 0;
 
-    return 7685 * pcv + 7495 * micv + 9144 * (wnpcv + bnpcv) + 6469 * cntcv;
+    return 9185 * pcv + 8995 * micv + 10644 * (wnpcv + bnpcv);
 }
 
 int risk_tolerance(const Position& pos, Value v) {
