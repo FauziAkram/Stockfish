@@ -27,12 +27,6 @@ namespace Stockfish {
 
 class Position;
 
-// The MovePicker class is used to pick one pseudo-legal move at a time from the
-// current position. The most important method is next_move(), which emits one
-// new pseudo-legal move on every call, until there are no moves left, when
-// Move::none() is returned. In order to improve the efficiency of the alpha-beta
-// algorithm, MovePicker attempts to return the moves which are most likely to get
-// a cut-off first.
 class MovePicker {
 
    public:
@@ -40,16 +34,18 @@ class MovePicker {
     MovePicker& operator=(const MovePicker&) = delete;
     MovePicker(const Position&,
                Move,
-               Depth,
+               Depth, // Depth helps determine if it's a QSearch call initially
                const ButterflyHistory*,
                const LowPlyHistory*,
                const CapturePieceToHistory*,
                const PieceToHistory**,
                const PawnHistory*,
                int);
+    // Constructor for ProbCut (remains unchanged)
     MovePicker(const Position&, Move, int, const CapturePieceToHistory*);
+
     Move next_move();
-    void skip_quiet_moves();
+    void skip_quiet_moves(); // This might become less relevant for qsearch but keep for main search
 
    private:
     template<typename Pred>
@@ -68,10 +64,12 @@ class MovePicker {
     Move                         ttMove;
     ExtMove *                    cur, *endMoves, *endBadCaptures, *beginBadQuiets, *endBadQuiets;
     int                          stage;
-    int                          threshold;
-    Depth                        depth;
+    int                          threshold; // Used by ProbCut constructor
+    Depth                        depth;     // Keep depth info if needed elsewhere, e.g., futility
     int                          ply;
     bool                         skipQuiets = false;
+    // Flag to indicate if we should only return captures (QSearch behavior)
+    bool                         qSearchOnlyCaptures = false; // <-- ADDED
     ExtMove                      moves[MAX_MOVES];
 };
 
