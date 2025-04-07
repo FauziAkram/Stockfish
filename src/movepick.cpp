@@ -27,7 +27,7 @@
 
 namespace Stockfish {
 int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0, xx9=0, xx10=0, xx11=0, xx12=0, xx13=0;
-TUNE(SetRange(0, 20), xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13);
+TUNE(SetRange(-5, 20), xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13);
 namespace {
 
 enum Stages {
