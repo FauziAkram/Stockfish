@@ -26,8 +26,8 @@
 #include "position.h"
 
 namespace Stockfish {
-int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0, xx9=0, xx10=0, xx11=0, xx12=0, xx13=0;
-TUNE(SetRange(-5, 20), xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13);
+int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=4, xx8=4, xx9=4, xx10=4, xx11=0, xx12=0, xx13=0, xx14=0;
+TUNE(SetRange(-6, 40), xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14);
 namespace {
 
 enum Stages {
@@ -169,7 +169,7 @@ void MovePicker::score() {
             m.value += (depth >= xx10) * (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += (depth >= xx1) * bool(pos.check_squares(pt) & to) * 16384;
+            m.value += (depth >= xx14) * bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
