@@ -109,7 +109,7 @@ MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceTo
     captureHistory(cph),
     ttMove(ttm),
     threshold(th),
-    depth(DEPTH_NONE), // Indicate not a normal search depth
+    depth(DEPTH_UNSEARCHED), // Indicate not a normal search depth
     ply(0)             // Ply is not relevant here, set to 0
 { // Added opening brace
     assert(!pos.checkers());
