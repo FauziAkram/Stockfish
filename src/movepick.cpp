@@ -157,19 +157,19 @@ void MovePicker::score() {
             Square    to   = m.to_sq();
 
             // histories
-            m.value  = (depth > xx1) * (*mainHistory)[pos.side_to_move()][m.from_to()];
-            m.value += (depth > xx2) * (*mainHistory)[pos.side_to_move()][m.from_to()];
-            m.value += (depth > xx3) * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
-            m.value += (depth > xx4) * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
-            m.value += (depth > xx5) * (*continuationHistory[0])[pc][to];
-            m.value += (depth > xx6) * (*continuationHistory[1])[pc][to];
-            m.value += (depth > xx7) * (*continuationHistory[2])[pc][to];
-            m.value += (depth > xx8) * (*continuationHistory[3])[pc][to];
-            m.value += (depth > xx9) * (*continuationHistory[4])[pc][to] / 3;
-            m.value += (depth > xx10) * (*continuationHistory[5])[pc][to];
+            m.value  = (depth >= xx1) * (*mainHistory)[pos.side_to_move()][m.from_to()];
+            m.value += (depth >= xx2) * (*mainHistory)[pos.side_to_move()][m.from_to()];
+            m.value += (depth >= xx3) * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
+            m.value += (depth >= xx4) * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
+            m.value += (depth >= xx5) * (*continuationHistory[0])[pc][to];
+            m.value += (depth >= xx6) * (*continuationHistory[1])[pc][to];
+            m.value += (depth >= xx7) * (*continuationHistory[2])[pc][to];
+            m.value += (depth >= xx8) * (*continuationHistory[3])[pc][to];
+            m.value += (depth >= xx9) * (*continuationHistory[4])[pc][to] / 3;
+            m.value += (depth >= xx10) * (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += (depth > xx1) * bool(pos.check_squares(pt) & to) * 16384;
+            m.value += (depth >= xx1) * bool(pos.check_squares(pt) & to) * 16384;
 
             // bonus for escaping from capture
             m.value += threatenedPieces & from ? (pt == QUEEN && !(to & threatenedByRook)   ? 51700
@@ -192,9 +192,9 @@ void MovePicker::score() {
             if (pos.capture_stage(m))
                 m.value = PieceValue[pos.piece_on(m.to_sq())] + (1 << 28);
             else
-                m.value = (depth > xx11) * (*mainHistory)[pos.side_to_move()][m.from_to()]
-                        + (depth > xx12) * (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
-                        + (depth > xx13) * (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
+                m.value = (depth >= xx11) * (*mainHistory)[pos.side_to_move()][m.from_to()]
+                        + (depth >= xx12) * (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
+                        + (depth >= xx13) * (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
         }
 }
 
