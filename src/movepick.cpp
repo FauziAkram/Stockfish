@@ -47,12 +47,7 @@ enum Stages {
     // generate probcut moves
     PROBCUT_TT,
     PROBCUT_INIT,
-    PROBCUT,
-
-    // generate qsearch moves
-    QSEARCH_TT,
-    QCAPTURE_INIT,
-    QCAPTURE
+    PROBCUT
 };
 
 // Sort moves in descending order up to and including a given limit.
@@ -99,9 +94,11 @@ MovePicker::MovePicker(const Position&              p,
 
     if (pos.checkers())
         stage = EVASION_TT + !(ttm && pos.pseudo_legal(ttm));
-
-    else
-        stage = (depth > 0 ? MAIN_TT : QSEARCH_TT) + !(ttm && pos.pseudo_legal(ttm));
+    else {
+        stage = MAIN_TT + !(ttm && pos.pseudo_legal(ttm));
+        if (depth <= 0)
+            qSearchOnlyCaptures = true;
+    }
 }
 
 // MovePicker constructor for ProbCut: we generate captures with Static Exchange
@@ -110,7 +107,10 @@ MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceTo
     pos(p),
     captureHistory(cph),
     ttMove(ttm),
-    threshold(th) {
+    threshold(th),
+    depth(DEPTH_UNSEARCHED),
+    ply(0)
+{
     assert(!pos.checkers());
 
     stage = PROBCUT_TT
@@ -220,20 +220,18 @@ top:
 
     case MAIN_TT :
     case EVASION_TT :
-    case QSEARCH_TT :
     case PROBCUT_TT :
         ++stage;
         return ttMove;
 
     case CAPTURE_INIT :
     case PROBCUT_INIT :
-    case QCAPTURE_INIT :
         cur = endBadCaptures = moves;
         endMoves             = generate<CAPTURES>(pos, cur);
 
         score<CAPTURES>();
         partial_insertion_sort(cur, endMoves, std::numeric_limits<int>::min());
-        ++stage;
+        stage = (stage == PROBCUT_INIT) ? PROBCUT : GOOD_CAPTURE;
         goto top;
 
     case GOOD_CAPTURE :
@@ -244,8 +242,13 @@ top:
             }))
             return *(cur - 1);
 
-        ++stage;
-        [[fallthrough]];
+        if (qSearchOnlyCaptures) {
+            stage = BAD_CAPTURE;
+            cur = moves;
+            endMoves = endBadCaptures;
+        } else
+            stage = QUIET_INIT;
+        goto top;
 
     case QUIET_INIT :
         if (!skipQuiets)
@@ -257,7 +260,7 @@ top:
             partial_insertion_sort(cur, endMoves, quiet_threshold(depth));
         }
 
-        ++stage;
+        stage = GOOD_QUIET;
         [[fallthrough]];
 
     case GOOD_QUIET :
@@ -274,19 +277,21 @@ top:
         cur      = moves;
         endMoves = endBadCaptures;
 
-        ++stage;
+        stage = BAD_CAPTURE;
         [[fallthrough]];
 
     case BAD_CAPTURE :
         if (select([]() { return true; }))
             return *(cur - 1);
 
-        // Prepare the pointers to loop over the bad quiets
-        cur      = beginBadQuiets;
-        endMoves = endBadQuiets;
-
-        ++stage;
-        [[fallthrough]];
+        if (qSearchOnlyCaptures)
+            return Move::none();
+        else {
+            cur = beginBadQuiets;
+            endMoves = endBadQuiets;
+            stage = BAD_QUIET;
+            goto top;
+        }
 
     case BAD_QUIET :
         if (!skipQuiets)
@@ -300,11 +305,10 @@ top:
 
         score<EVASIONS>();
         partial_insertion_sort(cur, endMoves, std::numeric_limits<int>::min());
-        ++stage;
+        stage = EVASION;
         [[fallthrough]];
 
     case EVASION :
-    case QCAPTURE :
         return select([]() { return true; });
 
     case PROBCUT :
