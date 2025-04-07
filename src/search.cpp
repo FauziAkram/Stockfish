@@ -50,14 +50,13 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=1152, xx2=301, xx3=37, xx4=139878, xx5=1024, xx6=59, xx7=77, xx8=54, xx9=248873, xx10=255331, xx11=262, xx12=188, xx13=64, xx14=88, xx15=265, xx16=256, xx17=93, xx18=0;
+int xx1=1024, xx2=301, xx3=37, xx4=139878, xx6=59, xx7=77, xx8=54, xx9=248873, xx10=255331, xx11=262, xx12=188, xx13=64, xx14=88, xx15=265, xx16=256, xx17=93, xx18=0;
 int zz1=800, zz2=870, zz3=1600;
 
-TUNE(SetRange(0, 1500), xx1);
+TUNE(SetRange(0, 3200), xx1);
 TUNE(SetRange(1, 603), xx2);
 TUNE(SetRange(-37, 100), xx3);
 TUNE(xx4);
-TUNE(SetRange(0, 1500), xx5);
 TUNE(xx6,xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16, xx17);
 TUNE(SetRange(0, 128), xx18);
 TUNE(zz1,zz2,zz3);
@@ -867,9 +866,9 @@ Value Search::Worker::search(
     // Step 8. Futility pruning: child node
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 14
-        && xx1 * eval / 1024 - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
+        && eval - (xx1 * (eval - beta) / 8192) futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
              - (ss - 1)->statScore / xx2 + xx3 - std::abs(correctionValue) / xx4
-             >= xx5 * beta / 1024
+             >= beta
         && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
         return beta + (eval - beta) / 3;
 
