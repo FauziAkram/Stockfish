@@ -93,6 +93,15 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
       m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
                  : 0;
 
+  dbg_mean_of(pcv, 0);
+dbg_extremes_of(pcv, 0);
+  dbg_mean_of(micv, 1);
+dbg_extremes_of(micv, 1);
+  dbg_mean_of((wnpcv + bnpcv), 2);
+dbg_extremes_of((wnpcv + bnpcv), 2);
+  dbg_mean_of(cntcv, 3);
+dbg_extremes_of(cntcv, 3);
+
     return 7685 * pcv + 7495 * micv + 9144 * (wnpcv + bnpcv) + 6469 * cntcv;
 }
 
