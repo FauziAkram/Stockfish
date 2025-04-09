@@ -193,7 +193,7 @@ void MovePicker::score() {
             else
                 m.value = (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
                         + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
-            if (depth > 2)
+            if (depth > 1)
                 m.value += (*mainHistory)[pos.side_to_move()][m.from_to()];
         }
 }
