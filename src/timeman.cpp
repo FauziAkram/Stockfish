@@ -116,7 +116,7 @@ void TimeManagement::init(Search::LimitsType& limits,
         double optConstant  = std::min(0.0032116 + 0.000321123 * logTimeInSec, 0.00508017);
         double maxConstant  = std::max(3.3977 + 3.03950 * logTimeInSec, 2.94761);
 
-        optScale = std::min(0.0121431 + std::pow(ply + 2.94693, 0.461073) * optConstant,
+        optScale = std::min(0.0121431 + (2.6 + 0.06 * ply) * optConstant,
                             0.213035 * limits.time[us] / timeLeft)
                  * originalTimeAdjust;
 
