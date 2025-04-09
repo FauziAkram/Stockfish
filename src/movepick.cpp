@@ -163,11 +163,13 @@ void MovePicker::score() {
             m.value += (*continuationHistory[3])[pc][to];
             if (depth > 1) {
             m.value += (*mainHistory)[pos.side_to_move()][m.from_to()];
-            if (depth > 3) {
-            m.value += (*continuationHistory[2])[pc][to];
-            m.value += (*continuationHistory[4])[pc][to] / 3;
+            if (depth > 2) {
             m.value += (*continuationHistory[5])[pc][to];
-            }}
+            if (depth > 3) {
+            m.value += (*continuationHistory[4])[pc][to] / 3;
+            if (depth > 4) {
+            m.value += (*continuationHistory[2])[pc][to];
+            }}}}
 
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
@@ -193,9 +195,10 @@ void MovePicker::score() {
             if (pos.capture_stage(m))
                 m.value = PieceValue[pos.piece_on(m.to_sq())] + (1 << 28);
             else
-                m.value = (*mainHistory)[pos.side_to_move()][m.from_to()]
-                        + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
+                m.value = (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
                         + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
+            if (depth > 1)
+                m.value += (*mainHistory)[pos.side_to_move()][m.from_to()];
         }
 }
 
