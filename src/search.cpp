@@ -1195,10 +1195,23 @@ moves_loop:  // When in check, search starts here
           &thisThread->continuationCorrectionHistory[movedPiece][move.to_sq()];
         uint64_t nodeCount = rootNode ? uint64_t(nodes) : 0;
 
-        // Decrease reduction for PvNodes (*Scaler)
-        if (ss->ttPv)
-            r -= 2381 + PvNode * 1008 + (ttData.value > alpha) * 880
-               + (ttData.depth >= depth) * (1022 + cutNode * 1140);
+        namespace {
+        static constexpr int REDUCTION_ADJUST_TABLE[32] = {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        2381, 2381, 3403, 4543,
+        3261, 3261, 4283, 5423,
+        3389, 3389, 4411, 5551,
+        4269, 4269, 5291, 6431
+        };
+        }
+      
+        const int index = (int(ss->ttPv) << 4)
+                        | (PvNode << 3)
+                        | (int(ttData.value > alpha) << 2)
+                        | (int(ttData.depth >= depth) << 1)
+                        | int(cutNode);
+        r -= REDUCTION_ADJUST_TABLE[index];
 
         // These reduction adjustments have no proven non-linear scaling
 
