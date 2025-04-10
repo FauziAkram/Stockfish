@@ -27,6 +27,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=32116, xx2=321123, xx3=508017, xx4=12143, xx5=64265, xx6=27160, xx7=213035;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
@@ -113,11 +115,11 @@ void TimeManagement::init(Search::LimitsType& limits,
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
-        double optConstant  = std::min(0.0032116 + 0.000321123 * logTimeInSec, 0.00508017);
+        double optConstant  = std::min((xx1/10000000.0) + (xx2/1000000000.0) * logTimeInSec, (xx3/100000000.0));
         double maxConstant  = std::max(3.3977 + 3.03950 * logTimeInSec, 2.94761);
 
-        optScale = std::min(0.012143 + std::sqrt(0.64265 * ply + 2.716) * optConstant,
-                            0.213035 * limits.time[us] / timeLeft)
+        optScale = std::min((xx4/1000000.0) + std::sqrt((xx5/100000.0) * ply + (xx6/10000.0)) * optConstant,
+                            (xx7/1000000.0) * limits.time[us] / timeLeft)
                  * originalTimeAdjust;
 
         maxScale = std::min(6.67704, maxConstant + ply / 11.9847);
