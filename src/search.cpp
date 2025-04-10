@@ -63,12 +63,12 @@ using namespace Search;
 
 namespace {
         static constexpr int REDUCTION_ADJUST_TABLE[32] = {
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        2381, 2381, 3403, 4543,
-        3261, 3261, 4283, 5423,
-        3389, 3389, 4411, 5551,
-        4269, 4269, 5291, 6431
+        0, 2784, 0, 2784, 0, 2784, 0, 2784,
+        0, 2784, 0, 2784, 0, 2784, 0, 2784,
+        2381, 5165, 3403, 7327,
+        3261, 6045, 4283, 8207,
+        3389, 6173, 4411, 8335,
+        4269, 7053, 5291, 9215
         };
         }
 
@@ -1224,7 +1224,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 2784 + 1038 * !ttData.move;
+            r += 1038 * !ttData.move;
 
         // Increase reduction if ttMove is a capture but the current move is not a capture
         if (ttCapture && !capture)
