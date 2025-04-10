@@ -62,6 +62,17 @@ void syzygy_extend_pv(const OptionsMap&            options,
 using namespace Search;
 
 namespace {
+        static constexpr int REDUCTION_ADJUST_TABLE[32] = {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        2381, 2381, 3403, 4543,
+        3261, 3261, 4283, 5423,
+        3389, 3389, 4411, 5551,
+        4269, 4269, 5291, 6431
+        };
+        }
+
+namespace {
 
 // (*Scalers):
 // The values with Scaler asterisks have proven non-linear scaling.
@@ -1194,17 +1205,6 @@ moves_loop:  // When in check, search starts here
         ss->continuationCorrectionHistory =
           &thisThread->continuationCorrectionHistory[movedPiece][move.to_sq()];
         uint64_t nodeCount = rootNode ? uint64_t(nodes) : 0;
-
-        namespace {
-        static constexpr int REDUCTION_ADJUST_TABLE[32] = {
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        2381, 2381, 3403, 4543,
-        3261, 3261, 4283, 5423,
-        3389, 3389, 4411, 5551,
-        4269, 4269, 5291, 6431
-        };
-        }
       
         const int index = (int(ss->ttPv) << 4)
                         | (PvNode << 3)
