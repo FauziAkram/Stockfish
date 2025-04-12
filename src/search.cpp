@@ -1040,8 +1040,8 @@ moves_loop:  // When in check, search starts here
         // Smaller or even negative value is better for short time controls
         // Bigger value is better for long time controls
         if (ss->ttPv)
-            r += 912 - (90 * PvNode) - (229 * (ttData.value > alpha))
-               + ((ttData.depth >= depth && cutNode) * 145);
+            r += 912 - 90 * PvNode - (ttData.value > alpha) * 229
+                + (ttData.depth >= depth && cutNode) * 145;
 
         // Step 14. Pruning at shallow depth.
         // Depth conditions are important for mate finding.
