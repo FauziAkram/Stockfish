@@ -186,10 +186,8 @@ void MovePicker::score() {
             if (pt == PAWN && !pos.capture_stage(m))
             {
                 Rank r = relative_rank(pos.side_to_move(), to);
-                if (r == RANK_6)
-                    m.value += 4850;
-                else if (r == RANK_7)
-                    m.value += 6500;
+                if (r == RANK_6 || r == RANK_7)
+                    m.value += 6450;
             }
         }
 
