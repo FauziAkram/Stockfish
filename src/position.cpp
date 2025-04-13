@@ -199,8 +199,6 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
     size_t             idx;
     Square             sq = SQ_A8;
     std::istringstream ss(fenStr);
-
-    std::memset(this, 0, sizeof(Position));
     std::memset(si, 0, sizeof(StateInfo));
     st = si;
 
