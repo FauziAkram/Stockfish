@@ -1141,7 +1141,7 @@ moves_loop:  // When in check, search starts here
                 && is_valid(ttData.value) && !is_decisive(ttData.value)
                 && (ttData.bound & BOUND_LOWER) && ttData.depth >= depth - 3)
             {
-                Value singularBeta  = ttData.value - (59 + 77 * (ss->ttPv && !PvNode)) * depth / 54;
+                Value singularBeta  = ttData.value - (62 + 77 * (ss->ttPv && !PvNode)) * depth / 54;
                 Depth singularDepth = newDepth / 2;
 
                 ss->excludedMove = move;
@@ -1151,12 +1151,12 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int corrValAdj1 = std::abs(correctionValue) / 248873;
-                    int corrValAdj2 = std::abs(correctionValue) / 255331;
+                    int corrValAdj1 = std::abs(correctionValue) / 240643;
+                    int corrValAdj2 = std::abs(correctionValue) / 238917;
                     int doubleMargin =
-                      262 * PvNode - 188 * !ttCapture - corrValAdj1 - ttMoveHistory / 128;
+                      259 * PvNode - 191 * !ttCapture - corrValAdj1 - 33 * ttMoveHistory / 4096;
                     int tripleMargin =
-                      88 + 265 * PvNode - 256 * !ttCapture + 93 * ss->ttPv - corrValAdj2;
+                      84 + 271 * PvNode - 252 * !ttCapture + 93 * ss->ttPv - corrValAdj2;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
@@ -1285,7 +1285,7 @@ moves_loop:  // When in check, search starts here
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates
-                update_continuation_histories(ss, movedPiece, move.to_sq(), 1600);
+                update_continuation_histories(ss, movedPiece, move.to_sq(), 1651);
             }
             else if (value > alpha && value < bestValue + 9)
                 newDepth--;
@@ -1449,7 +1449,7 @@ moves_loop:  // When in check, search starts here
                          bestMove == ttData.move, moveCount);
         if (!PvNode)
         {
-            int bonus = (ttData.move == move) ? 800 : -870;
+            int bonus = (ttData.move == move) ? 828 : -882;
             ttMoveHistory << bonus;
         }
     }
