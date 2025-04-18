@@ -65,7 +65,7 @@ void syzygy_extend_pv(const OptionsMap&            options,
 using namespace Search;
 
 namespace {
-        static constexpr int REDUCTION_ADJUST_TABLE[32] = {
+        int REDUCTION_ADJUST_TABLE[32] = {
         xx1, xx2, xx3, xx4,
         xx5, xx6, xx7, xx8,
         xx9, xx10, xx11, xx12,
