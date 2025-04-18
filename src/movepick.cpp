@@ -166,6 +166,7 @@ void MovePicker::score() {
             m.value += (*mainHistory)[pos.side_to_move()][m.from_to()];
             if (depth > 3) {
             m.value += (*continuationHistory[2])[pc][to];
+            m.value += (*continuationHistory[4])[pc][to] / 3;
             m.value += (*continuationHistory[5])[pc][to];
             }}
 
