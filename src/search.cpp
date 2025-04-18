@@ -51,6 +51,18 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1024, xx2=139878, xx3=248873, xx4=255331, xx5=29696;
+int aa1=7685, aa2=7495, aa3=9144, aa4=6469;
+int bb1=7685, bb2=7495, bb3=9144, bb4=6469;
+int cc1=7685, cc2=7495, cc3=9144, cc4=6469;
+int dd1=7685, dd2=7495, dd3=9144, dd4=6469;
+int ee1=7685, ee2=7495, ee3=9144, ee4=6469;
+TUNE(xx1,xx2,xx3,xx4,xx5);
+TUNE(aa1,aa2,aa3,aa4);
+TUNE(bb1,bb2,bb3,bb4);
+TUNE(cc1,cc2,cc3,cc4);
+TUNE(dd1,dd2,dd3,dd4);
+TUNE(ee1,ee2,ee3,ee4);
 
 namespace TB = Tablebases;
 
@@ -94,8 +106,65 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
       m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
                  : 0;
 
-    return 7685 * pcv + 7495 * micv + 9144 * (wnpcv + bnpcv) + 6469 * cntcv;
+    return aa1 * pcv + aa2 * micv + aa3 * (wnpcv + bnpcv) + aa4 * cntcv;
 }
+
+inline int futility_correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
+    const Color us    = pos.side_to_move();
+    const auto  m     = (ss - 1)->currentMove;
+    const auto  pcv   = w.pawnCorrectionHistory[pawn_structure_index<Correction>(pos)][us];
+    const auto  micv  = w.minorPieceCorrectionHistory[minor_piece_index(pos)][us];
+    const auto  wnpcv = w.nonPawnCorrectionHistory[non_pawn_index<WHITE>(pos)][WHITE][us];
+    const auto  bnpcv = w.nonPawnCorrectionHistory[non_pawn_index<BLACK>(pos)][BLACK][us];
+    const auto  cntcv =
+      m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
+                 : 0;
+
+    return bb1 * pcv + bb2 * micv + bb3 * (wnpcv + bnpcv) + bb4 * cntcv;
+}
+
+inline int singular1_correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
+    const Color us    = pos.side_to_move();
+    const auto  m     = (ss - 1)->currentMove;
+    const auto  pcv   = w.pawnCorrectionHistory[pawn_structure_index<Correction>(pos)][us];
+    const auto  micv  = w.minorPieceCorrectionHistory[minor_piece_index(pos)][us];
+    const auto  wnpcv = w.nonPawnCorrectionHistory[non_pawn_index<WHITE>(pos)][WHITE][us];
+    const auto  bnpcv = w.nonPawnCorrectionHistory[non_pawn_index<BLACK>(pos)][BLACK][us];
+    const auto  cntcv =
+      m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
+                 : 0;
+
+    return cc1 * pcv + cc2 * micv + cc3 * (wnpcv + bnpcv) + cc4 * cntcv;
+}
+
+inline int singular2_correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
+    const Color us    = pos.side_to_move();
+    const auto  m     = (ss - 1)->currentMove;
+    const auto  pcv   = w.pawnCorrectionHistory[pawn_structure_index<Correction>(pos)][us];
+    const auto  micv  = w.minorPieceCorrectionHistory[minor_piece_index(pos)][us];
+    const auto  wnpcv = w.nonPawnCorrectionHistory[non_pawn_index<WHITE>(pos)][WHITE][us];
+    const auto  bnpcv = w.nonPawnCorrectionHistory[non_pawn_index<BLACK>(pos)][BLACK][us];
+    const auto  cntcv =
+      m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
+                 : 0;
+
+    return dd1 * pcv + dd2 * micv + dd3 * (wnpcv + bnpcv) + dd4 * cntcv;
+}
+
+inline int lmr_correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
+    const Color us    = pos.side_to_move();
+    const auto  m     = (ss - 1)->currentMove;
+    const auto  pcv   = w.pawnCorrectionHistory[pawn_structure_index<Correction>(pos)][us];
+    const auto  micv  = w.minorPieceCorrectionHistory[minor_piece_index(pos)][us];
+    const auto  wnpcv = w.nonPawnCorrectionHistory[non_pawn_index<WHITE>(pos)][WHITE][us];
+    const auto  bnpcv = w.nonPawnCorrectionHistory[non_pawn_index<BLACK>(pos)][BLACK][us];
+    const auto  cntcv =
+      m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
+                 : 0;
+
+    return ee1 * pcv + ee2 * micv + ee3 * (wnpcv + bnpcv) + ee4 * cntcv;
+}
+
 
 int risk_tolerance(const Position& pos, Value v) {
     // Returns (some constant of) second derivative of sigmoid.
@@ -857,8 +926,8 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 14
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
-               - (ss - 1)->statScore / 301 + 37 + ((eval - beta) / 8)
-               - std::abs(correctionValue) / 139878
+               - (ss - 1)->statScore / 301 + 37 + (xx1 * (eval - beta) / 8192)
+               - std::abs(futility_correction_value(*thisThread, pos, ss)) / xx2
              >= beta
         && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
         return beta + (eval - beta) / 3;
@@ -1151,8 +1220,8 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int corrValAdj1 = std::abs(correctionValue) / 248873;
-                    int corrValAdj2 = std::abs(correctionValue) / 255331;
+                    int corrValAdj1  = std::abs(singular1_correction_value(*thisThread, pos, ss)) / xx3;
+                    int corrValAdj2  = std::abs(singular2_correction_value(*thisThread, pos, ss)) / xx4;
                     int doubleMargin =
                       262 * PvNode - 188 * !ttCapture - corrValAdj1 - ttMoveHistory / 128;
                     int tripleMargin =
@@ -1215,7 +1284,7 @@ moves_loop:  // When in check, search starts here
 
         r += 306 - moveCount * 34;
 
-        r -= std::abs(correctionValue) / 29696;
+        r -= std::abs(lmr_correction_value(*thisThread, pos, ss)) / xx5;
 
         if (PvNode && std::abs(bestValue) <= 2000)
             r -= risk_tolerance(pos, bestValue);
