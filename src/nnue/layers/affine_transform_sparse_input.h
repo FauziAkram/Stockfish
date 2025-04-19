@@ -273,7 +273,7 @@ class AffineTransformSparseInput {
         find_nnz<NumChunks>(input32, nnz, count);
 
         // Sparsity check - if count is very low, skip the loop
-        constexpr IndexType SparsityThreshold = 2;
+        constexpr IndexType SparsityThreshold = 16;
         if (count < SparsityThreshold)
         {
             // Skip the main computation loop as the contribution is likely negligible.
