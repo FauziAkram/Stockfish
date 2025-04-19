@@ -274,6 +274,10 @@ class AffineTransformSparseInput {
 
         // Sparsity check - if count is very low, skip the loop
         constexpr IndexType SparsityThreshold = 2;
+        dbg_mean_of(count);
+dbg_extremes_of(count);
+      dbg_hit_on(count < SparsityThreshold);
+
         if (count < SparsityThreshold)
         {
             // Skip the main computation loop as the contribution is likely negligible.
