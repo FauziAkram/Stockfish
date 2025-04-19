@@ -116,8 +116,8 @@ namespace {
 Bitboard sliding_attack(PieceType pt, Square sq, Bitboard occupied) {
 
     Bitboard  attacks             = 0;
-    Direction RookDirections[4]   = {NORTH, SOUTH, EAST, WEST};
-    Direction BishopDirections[4] = {NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST};
+    static constexpr Direction RookDirections[4]   = {NORTH, SOUTH, EAST, WEST};
+    static constexpr Direction BishopDirections[4] = {NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST};
 
     for (Direction d : (pt == ROOK ? RookDirections : BishopDirections))
     {
