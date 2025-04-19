@@ -272,8 +272,7 @@ class AffineTransformSparseInput {
         // Find indices of nonzero 32-bit blocks
         find_nnz<NumChunks>(input32, nnz, count);
 
-        // ADDED: Sparsity check - if count is very low, skip the loop
-        // Threshold set to 2 (i.e., skip if count is 0 or 1)
+        // Sparsity check - if count is very low, skip the loop
         constexpr IndexType SparsityThreshold = 2;
         if (count < SparsityThreshold)
         {
@@ -299,7 +298,6 @@ class AffineTransformSparseInput {
         outvec_t* outptr = reinterpret_cast<outvec_t*>(output);
         for (IndexType k = 0; k < NumRegs; ++k)
             outptr[k] = acc[k];
-
     #undef vec_set_32
     #undef vec_add_dpbusd_32
 #else
