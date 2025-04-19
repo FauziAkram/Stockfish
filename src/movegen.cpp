@@ -239,18 +239,22 @@ ExtMove* generate<LEGAL>(const Position& pos, ExtMove* moveList) {
     Color    us     = pos.side_to_move();
     Bitboard pinned = pos.blockers_for_king(us) & pos.pieces(us);
     Square   ksq    = pos.square<KING>(us);
-    ExtMove* cur    = moveList;
 
-    moveList =
+    // Generate pseudo-legal moves into moveList, get the end pointer
+    ExtMove* endMoves =
       pos.checkers() ? generate<EVASIONS>(pos, moveList) : generate<NON_EVASIONS>(pos, moveList);
-    while (cur != moveList)
-        if (((pinned & cur->from_sq()) || cur->from_sq() == ksq || cur->type_of() == EN_PASSANT)
-            && !pos.legal(*cur))
-            *cur = *(--moveList);
-        else
-            ++cur;
 
-    return moveList;
+    // Define the predicate for illegal moves
+    auto is_illegal = [&](const ExtMove& m) {
+        // Check if the move needs full legality check (pinned piece, king move, EP)
+        bool needs_check = (pinned & m.from_sq()) || m.from_sq() == ksq || m.type_of() == EN_PASSANT;
+        // Return true if it needs check AND it's not legal
+        return needs_check && !pos.legal(m);
+    };
+
+    ExtMove* newEnd = std::remove_if(moveList, endMoves, is_illegal);
+
+    return newEnd;
 }
 
 }  // namespace Stockfish
