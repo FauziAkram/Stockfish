@@ -280,9 +280,9 @@ class AffineTransformSparseInput {
             // Skip the main computation loop as the contribution is likely negligible.
             // The accumulator 'acc' already holds the bias values.
         }
-        else // MODIFIED: Added else block to contain the original loop
+        else
         {
-            // Original computation loop: Iterate over non-zero blocks
+            // Iterate over non-zero blocks
             for (IndexType j = 0; j < count; ++j)
             {
                 const auto    i  = nnz[j];
@@ -293,15 +293,15 @@ class AffineTransformSparseInput {
                 for (IndexType k = 0; k < NumRegs; ++k)
                     vec_add_dpbusd_32(acc[k], in, col[k]);
             }
-        } // ADDED: End of else block
+        }
 
         // Copy final accumulated values (biases + weighted inputs OR just biases if loop skipped) to output
         outvec_t* outptr = reinterpret_cast<outvec_t*>(output);
         for (IndexType k = 0; k < NumRegs; ++k)
             outptr[k] = acc[k];
 
-    #undef vec_set_32 // ADDED: Cleanup macro definitions
-    #undef vec_add_dpbusd_32 // ADDED: Cleanup macro definitions
+    #undef vec_set_32
+    #undef vec_add_dpbusd_32
 #else
         // Use dense implementation for the other architectures.
         affine_transform_non_ssse3<InputDimensions, PaddedInputDimensions, OutputDimensions>(
