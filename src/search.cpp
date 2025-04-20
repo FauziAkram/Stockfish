@@ -1141,10 +1141,6 @@ moves_loop:  // When in check, search starts here
                 && is_valid(ttData.value) && !is_decisive(ttData.value)
                 && (ttData.bound & BOUND_LOWER) && ttData.depth >= depth - 3)
             {
-
-dbg_mean_of(correctionValue);
-dbg_extremes_of(correctionValue);
-
                 Value singularBeta  = ttData.value - (59 + 77 * (ss->ttPv && !PvNode)) * depth / 54;
                 Depth singularDepth = newDepth / 2;
 
@@ -1164,6 +1160,9 @@ dbg_extremes_of(correctionValue);
 
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
+
+                    if (std::abs(correctionValue) > 8000000)
+                      extension++
 
                     depth++;
                 }
