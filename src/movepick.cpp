@@ -27,7 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int xx1=3, xx2=3;
+TUNE(SetRange(-6, 40), xx1, xx2);
 namespace {
 
 enum Stages {
@@ -161,9 +162,9 @@ void MovePicker::score() {
             m.value += 2 * (*pawnHistory)[pawn_structure_index(pos)][pc][to];
             m.value += (*continuationHistory[0])[pc][to];
             m.value += (*continuationHistory[1])[pc][to];
-            m.value += (*continuationHistory[2])[pc][to];
+            m.value += (depth > xx1) * (*continuationHistory[2])[pc][to];
             m.value += (*continuationHistory[3])[pc][to];
-            m.value += (*continuationHistory[5])[pc][to];
+            m.value += (depth > xx2) * (*continuationHistory[5])[pc][to];
 
             // bonus for checks
             m.value += bool(pos.check_squares(pt) & to) * 16384;
