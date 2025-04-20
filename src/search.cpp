@@ -1936,8 +1936,11 @@ void update_quiet_histories(
 
     Color us = pos.side_to_move();
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
-  dbg_mean_of(ss->ply);
-dbg_extremes_of(ss->ply);
+  dbg_mean_of(ss->ply, 0);
+dbg_extremes_of(ss->ply, 0);
+  dbg_mean_of(LOW_PLY_HISTORY_SIZE, 1);
+dbg_extremes_of(LOW_PLY_HISTORY_SIZE, 1);
+  dbg_hit_on(ss->ply < LOW_PLY_HISTORY_SIZE);
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
         workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * 829 / 1024;
