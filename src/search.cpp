@@ -853,6 +853,15 @@ Value Search::Worker::search(
     if (!PvNode && eval < alpha - 461 - 315 * depth * depth)
         return qsearch<NonPV>(pos, ss, alpha, beta);
 
+    Value threatPenalty = VALUE_ZERO;
+    if (!ss->inCheck && depth < 8)
+    {
+        Square ksq = pos.square<KING>(us);
+        Bitboard kingRing = attacks_bb<KING>(ksq) | ksq;
+        Bitboard enemyAttackers = pos.attackers_to(ksq, pos.pieces() ^ ksq) & pos.pieces(~us);
+        threatPenalty = popcount(enemyAttackers) * 32;
+    }
+
     // Step 8. Futility pruning: child node
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 14
