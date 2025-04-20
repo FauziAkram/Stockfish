@@ -1161,11 +1161,8 @@ moves_loop:  // When in check, search starts here
                     extension = 1 + (value < singularBeta - doubleMargin)
                               + (value < singularBeta - tripleMargin);
 
-                    if (std::abs(correctionValue) > 8000000)
+                    if (std::abs(correctionValue) > 20000000)
                       extension++;
-dbg_mean_of(correctionValue/100000);
-dbg_extremes_of(correctionValue/100000);
-dbg_hit_on(std::abs(correctionValue) > 8000000);
 
                     depth++;
                 }
