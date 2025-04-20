@@ -1270,7 +1270,7 @@ moves_loop:  // When in check, search starts here
             if (ttSuggestsFailLow && !capture && !givesCheck)
             {
                 if (ttData.depth >= depth - 4)
-                   reduction_penalty_for_fail_low_hint = 600 + (depth * 16);
+                   reduction_penalty_for_fail_low_hint = 600 + (depth * 4);
             }
 
             Depth d = std::max(
