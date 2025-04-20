@@ -51,8 +51,6 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=0, xx2=-2784, xx3=0, xx4=-2784, xx5=0, xx6=-2784, xx7=0, xx8=-2784, xx9=0, xx10=-2784, xx11=0, xx12=-2784, xx13=0, xx14=-2784, xx15=0, xx16=-2784, xx17=2381, xx18=-403, xx19=3403, xx20=1759, xx21=3261, xx22=477, xx23=4283, xx24=2639, xx25=3389, xx26=605, xx27=4411, xx28=2767, xx29=4269, xx30=1485, xx31=5291, xx32=3647;
-TUNE(SetRange(-3500, 6000), xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16, xx17, xx18, xx19, xx20, xx21, xx22, xx23, xx24, xx25, xx26, xx27, xx28, xx29, xx30, xx31, xx32);
 
 namespace TB = Tablebases;
 
@@ -65,15 +63,15 @@ void syzygy_extend_pv(const OptionsMap&            options,
 using namespace Search;
 
 namespace {
-        int REDUCTION_ADJUST_TABLE[32] = {
-        xx1, xx2, xx3, xx4,
-        xx5, xx6, xx7, xx8,
-        xx9, xx10, xx11, xx12,
-        xx13, xx14, xx15, xx16,
-        xx17, xx18, xx19, xx20,
-        xx21, xx22, xx23, xx24,
-        xx25, xx26, xx27, xx28,
-        xx29, xx30, xx31, xx32
+        static constexpr int REDUCTION_ADJUST_TABLE[32] = {
+        -381, -2616, -52, -2487,
+        -86, -2803, 386, -2972,
+        50, -2935, 31, -3090,
+        50, -2914, 38, -2401,
+        2655, -13, 3333, 1450,
+        3505, 652, 4449, 2389,
+        3401, 339, 4278, 3011,
+        4126, 1677, 5287, 3494
         };
         }
 
