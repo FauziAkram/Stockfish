@@ -707,6 +707,8 @@ Value Search::Worker::search(
     // At this point, if excluded, skip straight to step 6, static eval. However,
     // to save indentation, we list the condition in all code between here and there.
 
+    bool ttSuggestsFailLow = false;
+
     // At non-PV nodes we check for an early TT cutoff
     if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
         && is_valid(ttData.value)  // Can happen when !ttHit or when access race in probe()
@@ -731,6 +733,9 @@ Value Search::Worker::search(
         if (pos.rule50_count() < 90)
             return ttData.value;
     }
+
+    else if (!excludedMove && ttHit && (ttData.bound & BOUND_UPPER) && ttData.value <= alpha)
+        ttSuggestsFailLow = true;
 
     // Step 5. Tablebases probe
     if (!rootNode && !excludedMove && tbConfig.cardinality)
@@ -1261,9 +1266,16 @@ moves_loop:  // When in check, search starts here
             // To prevent problems when the max value is less than the min value,
             // std::clamp has been replaced by a more robust implementation.
 
+            int reduction_penalty_for_fail_low_hint = 0;
+            if (ttSuggestsFailLow && !capture && !givesCheck)
+            {
+                if (ttData.depth >= depth - 4)
+                   reduction_penalty_for_fail_low_hint = 600 + (depth * 16);
+            }
 
             Depth d = std::max(
-              1, std::min(newDepth - r / 1024, newDepth + !allNode + (PvNode && !bestMove)));
+              1, std::min(newDepth - (r + reduction_penalty_for_fail_low_hint) / 1024,
+                          newDepth + !allNode + (PvNode && !bestMove)));
 
             ss->reduction = newDepth - d;
 
