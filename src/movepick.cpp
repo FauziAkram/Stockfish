@@ -180,6 +180,16 @@ void MovePicker::score() {
                         : pt == ROOK && bool(to & threatenedByMinor) ? 24335
                                                                      : 0);
 
+            Square squareInFront = to - pawn_push(us);
+            if (is_ok(squareInFront) && type_of(pos.piece_on(squareInFront)) == PAWN && color_of(pos.piece_on(squareInFront)) == us)
+            {
+                if (relative_rank(us, squareInFront) >= RANK_5) {
+                     Bitboard frontAndAdjacentMask = (file_bb(squareInFront) | adjacent_files_bb(file_of(squareInFront))) & forward_bb(us, squareInFront);
+                     if (!(frontAndAdjacentMask & pos.pieces(~us, PAWN)))
+                         m.value -= 6000; // Apply a penalty
+                }
+            }
+
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
         }
