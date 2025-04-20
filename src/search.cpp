@@ -51,7 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=4, xx2=600, xx3=4;
+TUNE(SetRange(-10, 20), xx1);
+TUNE(SetRange(-200, 2000), xx2);
+TUNE(SetRange(-10, 20), xx3);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1269,8 +1272,8 @@ moves_loop:  // When in check, search starts here
             int reduction_penalty_for_fail_low_hint = 0;
             if (ttSuggestsFailLow && !capture && !givesCheck)
             {
-                if (ttData.depth >= depth - 4)
-                   reduction_penalty_for_fail_low_hint = 600 + (depth * 4);
+                if (ttData.depth >= depth - xx1)
+                   reduction_penalty_for_fail_low_hint = xx2 + (depth * xx3);
             }
 
             Depth d = std::max(
