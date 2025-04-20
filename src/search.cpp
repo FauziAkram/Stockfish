@@ -914,7 +914,7 @@ Value Search::Worker::search(
     if (!ss->ttPv && depth < 14
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
                - (ss - 1)->statScore / 301 + 37 + ((eval - beta) / 8)
-               - std::abs(futility_correction_value(*thisThread, pos, ss)) / 127667
+               - std::abs(futility_correction_value) / 127667
              >= beta
         && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
         return beta + (eval - beta) / 3;
@@ -1207,8 +1207,8 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int corrValAdj1  = std::abs(singular1_correction_value(*thisThread, pos, ss)) / 261232;
-                    int corrValAdj2  = std::abs(singular2_correction_value(*thisThread, pos, ss)) / 282745;
+                    int corrValAdj1  = std::abs(singular1_correction_value) / 261232;
+                    int corrValAdj2  = std::abs(singular2_correction_value) / 282745;
                     int doubleMargin =
                       262 * PvNode - 188 * !ttCapture - corrValAdj1 - ttMoveHistory / 128;
                     int tripleMargin =
@@ -1271,7 +1271,7 @@ moves_loop:  // When in check, search starts here
 
         r += 306 - moveCount * 34;
 
-        r -= std::abs(lmr_correction_value(*thisThread, pos, ss)) / 30927;
+        r -= std::abs(lmr_correction_value) / 30927;
 
         if (PvNode && std::abs(bestValue) <= 2000)
             r -= risk_tolerance(pos, bestValue);
