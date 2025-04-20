@@ -18,6 +18,7 @@
 
 #include "movepick.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <limits>
@@ -321,25 +322,20 @@ bool MovePicker::otherPieceTypesMobile(PieceType pt, ValueList<Move, 32>& captur
     if (stage != GOOD_QUIET && stage != BAD_QUIET)
         return true;
 
-    // verify good captures
-    for (std::size_t i = 0; i < capturesSearched.size(); i++)
-        if (type_of(pos.moved_piece(capturesSearched[i])) != pt)
-        {
-            if (type_of(pos.moved_piece(capturesSearched[i])) != KING)
-                return true;
-            if (pos.legal(capturesSearched[i]))
-                return true;
-        }
+    auto check_move = [&](const Move& m) {
+        PieceType moved_pt = type_of(pos.moved_piece(m));
+        if (moved_pt != pt)
+            return moved_pt != KING || pos.legal(m);
 
-    // now verify bad captures and quiets
-    for (ExtMove* c = moves; c < endBadQuiets; ++c)
-        if (type_of(pos.moved_piece(*c)) != pt)
-        {
-            if (type_of(pos.moved_piece(*c)) != KING)
-                return true;
-            if (pos.legal(*c))
-                return true;
-        }
+        return false;
+    };
+
+    if (std::any_of(capturesSearched.begin(), capturesSearched.end(), check_move))
+        return true;
+
+    if (std::any_of(moves, endBadQuiets, check_move))
+        return true;
+
     return false;
 }
 
