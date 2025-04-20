@@ -859,7 +859,7 @@ Value Search::Worker::search(
         Square ksq = pos.square<KING>(us);
         Bitboard kingRing = attacks_bb<KING>(ksq) | ksq;
         Bitboard enemyAttackers = pos.attackers_to(ksq, pos.pieces() ^ ksq) & pos.pieces(~us);
-        threatPenalty = popcount(enemyAttackers) * 32;
+        threatPenalty = popcount(enemyAttackers) * 64;
     }
 
     // Step 8. Futility pruning: child node
