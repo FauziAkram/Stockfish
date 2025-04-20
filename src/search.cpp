@@ -51,18 +51,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=1024, xx2=139878, xx3=248873, xx4=255331, xx5=29696;
-int aa1=7685, aa2=7495, aa3=9144, aa4=6469;
-int bb1=7685, bb2=7495, bb3=9144, bb4=6469;
-int cc1=7685, cc2=7495, cc3=9144, cc4=6469;
-int dd1=7685, dd2=7495, dd3=9144, dd4=6469;
-int ee1=7685, ee2=7495, ee3=9144, ee4=6469;
-TUNE(xx1,xx2,xx3,xx4,xx5);
-TUNE(aa1,aa2,aa3,aa4);
-TUNE(bb1,bb2,bb3,bb4);
-TUNE(cc1,cc2,cc3,cc4);
-TUNE(dd1,dd2,dd3,dd4);
-TUNE(ee1,ee2,ee3,ee4);
+int xx1=1102, xx2=127587, xx3=250993, xx4=271760, xx5=29885;
+int aa1=7849, aa2=7684, aa3=10355, aa4=7577;
+int bb1=7691, bb2=7029, bb3=8471, bb4=5650;
+int cc1=6945, cc2=7168, cc3=8498, cc4=6869;
+int dd1=7753, dd2=7488, dd3=8896, dd4=6798;
+int ee1=7912, ee2=7403, ee3=9851, ee4=6548;
 
 namespace TB = Tablebases;
 
