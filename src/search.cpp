@@ -34,6 +34,7 @@
 #include <string>
 #include <utility>
 
+#include "bitboard.h"
 #include "evaluate.h"
 #include "history.h"
 #include "misc.h"
@@ -102,9 +103,7 @@ int risk_tolerance(const Position& pos, Value v) {
         return 644800 * x / ((x * x + 3 * y * y) * y);
     };
 
-    int m = (67 * pos.count<PAWN>() + 182 * pos.count<KNIGHT>() + 182 * pos.count<BISHOP>()
-             + 337 * pos.count<ROOK>() + 553 * pos.count<QUEEN>())
-          / 64;
+    int m = pos.count<PAWN>() + pos.non_pawn_material() / 300;
 
     // a and b are the crude approximation of the wdl model.
     // The win rate is: 1/(1+exp((a-v)/b))
@@ -557,6 +556,7 @@ void Search::Worker::do_move(Position& pos, const Move move, StateInfo& st) {
 
 void Search::Worker::do_move(Position& pos, const Move move, StateInfo& st, const bool givesCheck) {
     DirtyPiece dp = pos.do_move(move, st, givesCheck, &tt);
+    nodes.fetch_add(1, std::memory_order_relaxed);
     accumulatorStack.push(dp);
 }
 
@@ -580,7 +580,7 @@ void Search::Worker::clear() {
     minorPieceCorrectionHistory.fill(0);
     nonPawnCorrectionHistory.fill(0);
 
-    ttMoveHistory.fill(0);
+    ttMoveHistory = 0;
 
     for (auto& to : continuationCorrectionHistory)
         for (auto& h : to)
@@ -857,7 +857,8 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 14
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
-               - (ss - 1)->statScore / 301 + 37 - std::abs(correctionValue) / 139878
+               - (ss - 1)->statScore / 301 + 37 + ((eval - beta) / 8)
+               - std::abs(correctionValue) / 139878
              >= beta
         && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
         return beta + (eval - beta) / 3;
@@ -940,7 +941,6 @@ Value Search::Worker::search(
             movedPiece = pos.moved_piece(move);
 
             do_move(pos, move, st);
-            thisThread->nodes.fetch_add(1, std::memory_order_relaxed);
 
             ss->currentMove = move;
             ss->isTTMove    = (move == ttData.move);
@@ -1072,7 +1072,19 @@ moves_loop:  // When in check, search starts here
                 // SEE based pruning for captures and checks
                 int seeHist = std::clamp(captHist / 32, -138 * depth, 135 * depth);
                 if (!pos.see_ge(move, -154 * depth - seeHist))
-                    continue;
+                {
+                    bool skip = true;
+                    if (depth > 2 && !capture && givesCheck && alpha < 0
+                        && pos.non_pawn_material(us) == PieceValue[movedPiece]
+                        && PieceValue[movedPiece] >= RookValue
+                        && !(PseudoAttacks[KING][pos.square<KING>(us)] & move.from_sq()))
+                        skip = mp.otherPieceTypesMobile(
+                          type_of(movedPiece),
+                          capturesSearched);  // if the opponent captures last mobile piece it might be stalemate
+
+                    if (skip)
+                        continue;
+                }
             }
             else
             {
@@ -1140,10 +1152,10 @@ moves_loop:  // When in check, search starts here
 
                 if (value < singularBeta)
                 {
-                    int corrValAdj1  = std::abs(correctionValue) / 248873;
-                    int corrValAdj2  = std::abs(correctionValue) / 255331;
-                    int doubleMargin = 262 * PvNode - 188 * !ttCapture - corrValAdj1
-                                     - ttMoveHistory[pawn_structure_index(pos)][us] / 128;
+                    int corrValAdj1 = std::abs(correctionValue) / 248873;
+                    int corrValAdj2 = std::abs(correctionValue) / 255331;
+                    int doubleMargin =
+                      262 * PvNode - 188 * !ttCapture - corrValAdj1 - ttMoveHistory / 128;
                     int tripleMargin =
                       88 + 265 * PvNode - 256 * !ttCapture + 93 * ss->ttPv - corrValAdj2;
 
@@ -1182,7 +1194,6 @@ moves_loop:  // When in check, search starts here
 
         // Step 16. Make the move
         do_move(pos, move, st, givesCheck);
-        thisThread->nodes.fetch_add(1, std::memory_order_relaxed);
 
         // Add extension to new depth
         newDepth += extension;
@@ -1439,8 +1450,8 @@ moves_loop:  // When in check, search starts here
                          bestMove == ttData.move, moveCount);
         if (!PvNode)
         {
-            int bonus = (ttData.move == move) ? 800 : -600 * moveCount;
-            ttMoveHistory[pawn_structure_index(pos)][us] << bonus;
+            int bonus = (ttData.move == move) ? 800 : -870;
+            ttMoveHistory << bonus;
         }
     }
 
@@ -1448,7 +1459,7 @@ moves_loop:  // When in check, search starts here
     else if (!priorCapture && prevSq != SQ_NONE)
     {
         int bonusScale =
-          (std::clamp(80 * depth - 320, 0, 200) + 34 * !allNode + 164 * ((ss - 1)->moveCount > 8)
+          (std::min(78 * depth - 312, 194) + 34 * !allNode + 164 * ((ss - 1)->moveCount > 8)
            + 141 * (!ss->inCheck && bestValue <= ss->staticEval - 100)
            + 121 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 75)
            + 86 * ((ss - 1)->isTTMove) + 86 * (ss->cutoffCnt <= 3)
@@ -1492,7 +1503,8 @@ moves_loop:  // When in check, search starts here
                        bestValue >= beta    ? BOUND_LOWER
                        : PvNode && bestMove ? BOUND_EXACT
                                             : BOUND_UPPER,
-                       depth, bestMove, unadjustedStaticEval, tt.generation());
+                       moveCount != 0 ? depth : std::min(MAX_PLY - 1, depth + 6), bestMove,
+                       unadjustedStaticEval, tt.generation());
 
     // Adjust correction history
     if (!ss->inCheck && !(bestMove && pos.capture(bestMove))
@@ -1699,7 +1711,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         Piece movedPiece = pos.moved_piece(move);
 
         do_move(pos, move, st, givesCheck);
-        thisThread->nodes.fetch_add(1, std::memory_order_relaxed);
 
         // Update the current move
         ss->currentMove = move;
@@ -1744,6 +1755,22 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
     if (!is_decisive(bestValue) && bestValue > beta)
         bestValue = (bestValue + beta) / 2;
+
+
+    Color us = pos.side_to_move();
+    if (!ss->inCheck && !moveCount && !pos.non_pawn_material(us)
+        && type_of(pos.captured_piece()) >= ROOK)
+    {
+        if (!((us == WHITE ? shift<NORTH>(pos.pieces(us, PAWN))
+                           : shift<SOUTH>(pos.pieces(us, PAWN)))
+              & ~pos.pieces()))  // no pawn pushes available
+        {
+            pos.state()->checkersBB = Rank1BB;  // search for legal king-moves only
+            if (!MoveList<LEGAL>(pos).size())   // stalemate
+                bestValue = VALUE_DRAW;
+            pos.state()->checkersBB = 0;
+        }
+    }
 
     // Save gathered info in transposition table. The static evaluation
     // is saved as it was before adjustment by correction history.
@@ -1891,7 +1918,7 @@ void update_all_stats(const Position&      pos,
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
     static constexpr std::array<ConthistBonus, 6> conthist_bonuses = {
-      {{1, 1103}, {2, 659}, {3, 323}, {4, 533}, {5, 121}, {6, 474}}};
+      {{1, 1103}, {2, 659}, {3, 323}, {4, 533}, {6, 474}}};
 
     for (const auto [i, weight] : conthist_bonuses)
     {
