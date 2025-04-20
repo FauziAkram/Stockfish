@@ -200,10 +200,19 @@ void MovePicker::score() {
 template<typename Pred>
 Move MovePicker::select(Pred filter) {
 
-    for (; cur < endMoves; ++cur)
-        if (*cur != ttMove && filter())
-            return *cur++;
+    auto it = std::find_if(cur, endMoves,
+                           [&](const ExtMove& m) {
+                               return m != ttMove && filter();
+                           });
 
+    if (it != endMoves)
+    {
+        Move foundMove = *it;
+        cur = it + 1;
+        return foundMove;
+    }
+
+    cur = endMoves;
     return Move::none();
 }
 
