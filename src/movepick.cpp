@@ -180,6 +180,15 @@ void MovePicker::score() {
                         : pt == ROOK && bool(to & threatenedByMinor) ? 24335
                                                                      : 0);
 
+            Square squareInFront = to - pawn_push(us);
+            if (is_ok(squareInFront) && type_of(pos.piece_on(squareInFront)) == PAWN && color_of(pos.piece_on(squareInFront)) == us)
+            {
+                Bitboard frontSpan = pawn_passed_span(us, squareInFront);
+                Bitboard opposingPawns = pos.pieces(~us, PAWN);
+                if (!(frontSpan & opposingPawns))
+                    m.value -= 6000;
+            }
+
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + 2 * ply);
         }
