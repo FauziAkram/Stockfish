@@ -80,6 +80,19 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int material = 535 * pos.count<PAWN>() + pos.non_pawn_material();
     int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
 
+    Value mobilityScore = VALUE_ZERO;
+    Color us = pos.side_to_move();
+    Bitboard mobilePieces = pos.pieces(us, KNIGHT, BISHOP, ROOK, QUEEN);
+    Bitboard mobilityArea = ~pos.pieces(us);
+
+    while (mobilePieces) {
+        Square s = pop_lsb(mobilePieces);
+        PieceType pt = type_of(pos.piece_on(s));
+        Bitboard attacks = attacks_bb(pt, s, pos.pieces()) & mobilityArea;
+        mobilityScore += popcount(attacks);
+    }
+    v += (pos.side_to_move() == WHITE ? mobilityScore : -mobilityScore) / 4;
+
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 212;
 
