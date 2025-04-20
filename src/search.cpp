@@ -1159,10 +1159,7 @@ moves_loop:  // When in check, search starts here
                       88 + 265 * PvNode - 256 * !ttCapture + 93 * ss->ttPv - corrValAdj2;
 
                     extension = 1 + (value < singularBeta - doubleMargin)
-                              + (value < singularBeta - tripleMargin);
-
-                    if (std::abs(correctionValue) > 20000000)
-                      extension++;
+                              + (value < singularBeta - tripleMargin) + (std::abs(correctionValue) > 30000000);
 
                     depth++;
                 }
