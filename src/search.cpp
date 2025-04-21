@@ -699,7 +699,7 @@ Value Search::Worker::search(
                  : ttHit    ? ttData.move
                             : Move::none();
     ttData.value = ttHit ? value_from_tt(ttData.value, ss->ply, pos.rule50_count()) : VALUE_NONE;
-    ss->ttPv     = excludedMove ? ss->ttPv : PvNode || (ttHit && ttData.is_pv);
+    ss->ttPv     = PvNode || (ttHit && ttData.is_pv);
     ttCapture    = ttData.move && pos.capture_stage(ttData.move);
 
     // At this point, if excluded, skip straight to step 6, static eval. However,
@@ -1099,7 +1099,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth += history / 3593;
 
                 Value futilityValue = ss->staticEval + (bestMove ? 48 : 146) + 116 * lmrDepth
-                                    + 103 * (bestValue < ss->staticEval - 128);
+                                    + 103 * (bestValue < ss->staticEval - 128 && ss->staticEval > alpha - 50);
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
@@ -1286,7 +1286,11 @@ moves_loop:  // When in check, search starts here
                 update_continuation_histories(ss, movedPiece, move.to_sq(), 1600);
             }
             else if (value > alpha && value < bestValue + 9)
+            {
                 newDepth--;
+                if (value < bestValue + 3)
+                    newDepth--;
+            }
         }
 
         // Step 18. Full-depth search when LMR is skipped
@@ -1295,6 +1299,8 @@ moves_loop:  // When in check, search starts here
             // Increase reduction if ttMove is not present
             if (!ttData.move)
                 r += 1156;
+
+            r -= 1024 * ttMoveHistory / 8192;
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
@@ -1915,7 +1921,7 @@ void update_all_stats(const Position&      pos,
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
     static constexpr std::array<ConthistBonus, 6> conthist_bonuses = {
-      {{1, 1103}, {2, 659}, {3, 323}, {4, 533}, {6, 474}}};
+      {{1, 1103}, {2, 659}, {3, 323}, {4, 533}, {5, 121}, {6, 474}}};
 
     for (const auto [i, weight] : conthist_bonuses)
     {
