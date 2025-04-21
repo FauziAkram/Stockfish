@@ -51,6 +51,41 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=110, xx2=25, xx3=7685, xx4=7495, xx5=9144, xx6=6469, xx7=162, xx8=111, xx9=146, xx10=143, xx11=644800, xx12=356, xx13=123, xx14=92, xx15=11834, xx16=138, xx17=84,
+  xx18=66, xx19=105, xx20=646, xx21=1262, xx22=6, xx23=5, xx24=468, xx25=2954, xx26=120, xx27=75, xx28=1241, xx29=2200, xx30=1950, xx31=1416, xx32=655, xx33=1124,
+  xx34=1196, xx35=188, xx36=461, xx37=315, xx38=301, xx39=37, xx40=139878, xx41=19, xx42=418, xx43=232, xx44=94, xx45=4, xx46=7, xx47=185, xx48=58, xx49=415, xx50=32,
+  xx51=979, xx52=242, xx53=230, xx54=133, xx55=32, xx56=138, xx57=135, xx58=154, xx59=4348, xx60=68, xx61=3593, xx62=48, xx63=146, xx64=116, xx65=103, xx66=128, xx67=50,
+  xx68=27, xx69=29, xx70=59, xx71=77, xx72=54, xx73=248873, xx74=255331, xx75=0, xx76=262, xx77=188, xx78=1024, xx79=50, xx80=88, xx81=265, xx82=256, xx83=93, xx84=50,
+  xx85=2381, xx86=1008, xx87=880, xx88=1022, xx89=1140, xx90=306, xx91=34, xx92=29696, xx93=2000, xx94=2784, xx95=1038, xx96=1171, xx97=985, xx98=1042, xx99=864,
+  xx100=1937, xx101=846, xx102=4822, xx103=2771, xx104=3271, xx105=1582, xx106=43, xx107=9, xx108=1600, xx109=9, xx110=3, xx111=1156, xx112=1024, xx113=3495,
+  xx114=5510, xx115=800, xx116=870, xx117=78, xx118=312, xx119=194, xx120=34, xx121=164, xx122=141, xx123=100, xx124=121, xx125=75, xx126=86, xx127=86, xx128=112, xx129=303,
+  xx130=160, xx131=99, xx132=1492, xx133=388, xx134=212, xx135=1055, xx136=1100, xx137=6, xx138=359, xx139=6290, xx140=75, xx141=764, xx142=191, xx143=1087, xx144=141,
+  xx145=89, xx146=1613, xx147=311, xx148=695, xx149=215, xx150=2808, xx151=31, xx152=1129, xx153=1246, xx154=1187, xx155=987, xx156=1377, xx157=1103, xx158=659, xx159=323,
+  xx160=533, xx161=121, xx162=474, xx163=800, xx164=1094, xx165=790, xx166=725, xx167=460, xx168=2;
+
+TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16, xx17, xx18, xx19, xx20, xx21);
+TUNE(SetRange(-96, 96),xx22,xx23);
+TUNE(xx24, xx25, xx26, xx27, xx28, xx29, xx30, xx31, xx32, xx33, xx34, xx35, xx36, xx37, xx38);
+TUNE(SetRange(0, 100),xx39);
+TUNE(xx40,xx41,xx42,xx43,xx44);
+TUNE(SetRange(1, 16), xx45,xx46);
+TUNE(xx47, xx48, xx49, xx50, xx51, xx52, xx53, xx54);
+TUNE(SetRange(1, 61), xx55);
+TUNE(xx56, xx57, xx58, xx59, xx60, xx61, xx62, xx63, xx64, xx65, xx66, xx67, xx68, xx69, xx70, xx71);
+TUNE(SetRange(1, 97), xx72);
+TUNE(xx73,xx74);
+TUNE(SetRange(-100, 100), xx75);
+TUNE(xx76,xx77,xx78);
+TUNE(SetRange(0, 150), xx79);
+TUNE(xx80,xx81,xx82,xx83);
+TUNE(SetRange(0, 150), xx84);
+TUNE(xx85, xx86, xx87, xx88, xx89, xx90, xx91, xx92, xx93, xx94, xx95, xx96, xx97, xx98, xx99, xx100, xx101, xx102, xx103, xx104, xx105, xx106, xx107, xx108, xx109);
+TUNE(SetRange(0, 18), xx110);
+TUNE(xx111, xx112, xx113, xx114, xx115, xx116, xx117, xx118, xx119, xx120, xx121, xx122, xx123, xx124, xx125, xx126, xx127);
+TUNE(SetRange(1, 217), xx128);
+TUNE(xx129, xx130, xx131, xx132, xx133, xx134, xx135, xx136, xx137, xx138, xx139, xx140, xx141, xx142, xx143, xx144, xx145, xx146, xx147, xx148, xx149, xx150);
+TUNE(xx151, xx152, xx153, xx154, xx155, xx156, xx157, xx158, xx159, xx160, xx161, xx162, xx163, xx164, xx165, xx166, xx167);
+TUNE(SetRange(0, 10), xx168);
 
 namespace TB = Tablebases;
 
@@ -110,7 +145,7 @@ void update_correction_history(const Position& pos,
     const Move  m  = (ss - 1)->currentMove;
     const Color us = pos.side_to_move();
 
-    static constexpr int nonPawnWeight = xx7;
+    const int nonPawnWeight = xx7;
 
     workerThread.pawnCorrectionHistory[pawn_structure_index<Correction>(pos)][us]
       << bonus * xx8 / 128;
@@ -1134,8 +1169,7 @@ moves_loop:  // When in check, search starts here
             // and lower extension margins scale well.
 
             if (!rootNode && move == ttData.move && !excludedMove
-                && depth >= 6 - (thisThread->completedDepth > xx69
-              ) + ss->ttPv
+                && depth >= 6 - (thisThread->completedDepth > xx69) + ss->ttPv
                 && is_valid(ttData.value) && !is_decisive(ttData.value)
                 && (ttData.bound & BOUND_LOWER) && ttData.depth >= depth - 3)
             {
@@ -1921,7 +1955,7 @@ void update_all_stats(const Position&      pos,
 // Updates histories of the move pairs formed by moves
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
-    static constexpr std::array<ConthistBonus, 6> conthist_bonuses = {
+    static const std::array<ConthistBonus, 6> conthist_bonuses = {
       {{1, xx157}, {2, xx158}, {3, xx159}, {4, xx160}, {5, xx161}, {6, xx162}}};
 
     for (const auto [i, weight] : conthist_bonuses)
