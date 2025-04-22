@@ -1211,6 +1211,13 @@ moves_loop:  // When in check, search starts here
             r -= 2381 + PvNode * 1008 + (ttData.value > alpha) * 880
                + (ttData.depth >= depth) * (1022 + cutNode * 1140);
 
+        else {
+          if (PvNode && ttData.value > alpha && ttData.depth >= depth && cutnode)
+          r += 1024;
+          else
+          r -= 1024;
+        }
+
         // These reduction adjustments have no proven non-linear scaling
 
         r += 306 - moveCount * 34;
@@ -1222,10 +1229,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 2784 + 1038 * !ttData.move;
-
-        else if(!PvNode && (ttData.value < alpha) && (ttData.depth >= depth))
-            r -= 1024;
+            r += 2800 + 1038 * !ttData.move;
 
         // Increase reduction if ttMove is a capture but the current move is not a capture
         if (ttCapture && !capture)
