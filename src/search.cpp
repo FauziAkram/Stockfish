@@ -1212,7 +1212,7 @@ moves_loop:  // When in check, search starts here
                + (ttData.depth >= depth) * (1022 + cutNode * 1140);
 
         else {
-          if (PvNode && ttData.value > alpha && ttData.depth >= depth && cutnode)
+          if (PvNode && cutNode && ttData.value > alpha && ttData.depth >= depth)
           r += 1024;
           else
           r -= 1024;
