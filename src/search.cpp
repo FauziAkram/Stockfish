@@ -1213,9 +1213,9 @@ moves_loop:  // When in check, search starts here
 
         else {
           if (PvNode && cutNode && ttData.value > alpha && ttData.depth >= depth)
-          r += 1024;
-          else
           r -= 1024;
+          else
+          r += 1024;
         }
 
         // These reduction adjustments have no proven non-linear scaling
