@@ -1214,7 +1214,7 @@ moves_loop:  // When in check, search starts here
         else {
           if (PvNode && cutNode && ttData.value > alpha && ttData.depth >= depth)
           r -= 1024;
-          else
+          else if (allNode && ttData.value <= alpha && ttData.depth < depth)
           r += 1024;
         }
 
