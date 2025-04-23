@@ -400,27 +400,26 @@ class FeatureTransformer {
                            int                                       bucket) const {
 
         accumulatorStack.evaluate(pos, *this, *cache);
-        const auto& accumulatorState = accumulatorStack.latest();
 
-    Color us = pos.side_to_move();
-    Color them = ~us;
-    const auto& accState = accumulatorStack.latest().acc<HalfDimensions>();
+        Color us = pos.side_to_move();
+        Color them = ~us;
+        const auto& accState = accumulatorStack.latest().acc<HalfDimensions>();
 
-    const auto psqt = (accState.psqtAccumulation[us][bucket] - accState.psqtAccumulation[them][bucket]) / 2;
+        const auto psqt = (accState.psqtAccumulation[us][bucket] - accState.psqtAccumulation[them][bucket]) / 2;
 
-    for (IndexType p = 0; p < 2; ++p)
-    {
-        const Color     c      = (p == 0) ? us : them;
-        const IndexType offset = (HalfDimensions / 2) * p;
-        const auto&     acc    = accState.accumulation[c];
+        for (IndexType p = 0; p < 2; ++p)
+        {
+            const Color     c      = (p == 0) ? us : them;
+            const IndexType offset = (HalfDimensions / 2) * p;
+            const auto&     acc    = accState.accumulation[c];
 
 #if defined(VECTOR)
 
-        const vec_t Zero = vec_zero();
-        const vec_t One  = vec_set_16(127 * 2);
-        const vec_t* in0 = reinterpret_cast<const vec_t*>(&acc[0]);
-        const vec_t* in1 = reinterpret_cast<const vec_t*>(&acc[HalfDimensions / 2]);
-        vec_t* out = reinterpret_cast<vec_t*>(output + offset);
+            const vec_t Zero = vec_zero();
+            const vec_t One  = vec_set_16(127 * 2);
+            const vec_t* in0 = reinterpret_cast<const vec_t*>(&acc[0]);
+            const vec_t* in1 = reinterpret_cast<const vec_t*>(&acc[HalfDimensions / 2]);
+            vec_t* out = reinterpret_cast<vec_t*>(output + offset);
 
             // Per the NNUE architecture, here we want to multiply pairs of
             // clipped elements and divide the product by 128. To do this,
@@ -483,8 +482,8 @@ class FeatureTransformer {
     #endif
 
             constexpr IndexType OutputChunkSize = MaxChunkSize;
-        static_assert((HalfDimensions / 2) % OutputChunkSize == 0);
-        constexpr IndexType NumOutputChunks = HalfDimensions / 2 / OutputChunkSize;
+            static_assert((HalfDimensions / 2) % OutputChunkSize == 0);
+            constexpr IndexType NumOutputChunks = HalfDimensions / 2 / OutputChunkSize;
             for (IndexType j = 0; j < NumOutputChunks; ++j)
             {
                 const vec_t sum0a =
