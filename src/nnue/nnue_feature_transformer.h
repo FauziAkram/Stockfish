@@ -485,17 +485,20 @@ class FeatureTransformer {
             constexpr IndexType OutputChunkSize = MaxChunkSize;
         static_assert((HalfDimensions / 2) % OutputChunkSize == 0);
         constexpr IndexType NumOutputChunks = HalfDimensions / 2 / OutputChunkSize;
-        for (IndexType j = 0; j < NumOutputChunks; ++j)
-        {
-            // vector logic remains the same
-            const vec_t sum0a = vec_slli_16(vec_max_16(vec_min_16(in0[j * 2 + 0], One), Zero), shift);
-            const vec_t sum0b = vec_slli_16(vec_max_16(vec_min_16(in0[j * 2 + 1], One), Zero), shift);
-            const vec_t sum1a = vec_min_16(in1[j * 2 + 0], One);
-            const vec_t sum1b = vec_min_16(in1[j * 2 + 1], One);
-            const vec_t pa = vec_mulhi_16(sum0a, sum1a);
-            const vec_t pb = vec_mulhi_16(sum0b, sum1b);
-            out[j] = vec_packus_16(pa, pb);
-        }
+            for (IndexType j = 0; j < NumOutputChunks; ++j)
+            {
+                const vec_t sum0a =
+                  vec_slli_16(vec_max_16(vec_min_16(in0[j * 2 + 0], One), Zero), shift);
+                const vec_t sum0b =
+                  vec_slli_16(vec_max_16(vec_min_16(in0[j * 2 + 1], One), Zero), shift);
+                const vec_t sum1a = vec_min_16(in1[j * 2 + 0], One);
+                const vec_t sum1b = vec_min_16(in1[j * 2 + 1], One);
+
+                const vec_t pa = vec_mulhi_16(sum0a, sum1a);
+                const vec_t pb = vec_mulhi_16(sum0b, sum1b);
+
+                out[j] = vec_packus_16(pa, pb);
+            }
 
 #else
 
