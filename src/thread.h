@@ -26,6 +26,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <numeric>
 #include <vector>
 
 #include "numa.h"
@@ -166,10 +167,10 @@ class ThreadPool {
 
     uint64_t accumulate(std::atomic<uint64_t> Search::Worker::*member) const {
 
-        uint64_t sum = 0;
-        for (auto&& th : threads)
-            sum += (th->worker.get()->*member).load(std::memory_order_relaxed);
-        return sum;
+        return std::accumulate(threads.cbegin(), threads.cend(), uint64_t(0),
+        [member](uint64_t current_sum, const std::unique_ptr<Thread>& th) {
+            return current_sum + (th->worker.get()->*member).load(std::memory_order_relaxed);
+        });
     }
 };
 
