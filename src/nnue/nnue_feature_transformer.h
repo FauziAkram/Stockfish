@@ -402,31 +402,25 @@ class FeatureTransformer {
         accumulatorStack.evaluate(pos, *this, *cache);
         const auto& accumulatorState = accumulatorStack.latest();
 
-        const Color perspectives[2]  = {pos.side_to_move(), ~pos.side_to_move()};
-        const auto& psqtAccumulation = (accumulatorState.acc<HalfDimensions>()).psqtAccumulation;
-        const auto  psqt =
-          (psqtAccumulation[perspectives[0]][bucket] - psqtAccumulation[perspectives[1]][bucket])
-          / 2;
+    Color us = pos.side_to_move();
+    Color them = ~us;
+    const auto& accState = accumulatorStack.latest().acc<HalfDimensions>();
 
-        const auto& accumulation = (accumulatorState.acc<HalfDimensions>()).accumulation;
+    const auto psqt = (accState.psqtAccumulation[us][bucket] - accState.psqtAccumulation[them][bucket]) / 2;
 
-        for (IndexType p = 0; p < 2; ++p)
-        {
-            const IndexType offset = (HalfDimensions / 2) * p;
+    for (IndexType p = 0; p < 2; ++p)
+    {
+        const Color     c      = (p == 0) ? us : them;
+        const IndexType offset = (HalfDimensions / 2) * p;
+        const auto&     acc    = accState.accumulation[c];
 
 #if defined(VECTOR)
 
-            constexpr IndexType OutputChunkSize = MaxChunkSize;
-            static_assert((HalfDimensions / 2) % OutputChunkSize == 0);
-            constexpr IndexType NumOutputChunks = HalfDimensions / 2 / OutputChunkSize;
-
-            const vec_t Zero = vec_zero();
-            const vec_t One  = vec_set_16(127 * 2);
-
-            const vec_t* in0 = reinterpret_cast<const vec_t*>(&(accumulation[perspectives[p]][0]));
-            const vec_t* in1 =
-              reinterpret_cast<const vec_t*>(&(accumulation[perspectives[p]][HalfDimensions / 2]));
-            vec_t* out = reinterpret_cast<vec_t*>(output + offset);
+        const vec_t Zero = vec_zero();
+        const vec_t One  = vec_set_16(127 * 2);
+        const vec_t* in0 = reinterpret_cast<const vec_t*>(&acc[0]);
+        const vec_t* in1 = reinterpret_cast<const vec_t*>(&acc[HalfDimensions / 2]);
+        vec_t* out = reinterpret_cast<vec_t*>(output + offset);
 
             // Per the NNUE architecture, here we want to multiply pairs of
             // clipped elements and divide the product by 128. To do this,
@@ -488,30 +482,29 @@ class FeatureTransformer {
               6;
     #endif
 
-            for (IndexType j = 0; j < NumOutputChunks; ++j)
-            {
-                const vec_t sum0a =
-                  vec_slli_16(vec_max_16(vec_min_16(in0[j * 2 + 0], One), Zero), shift);
-                const vec_t sum0b =
-                  vec_slli_16(vec_max_16(vec_min_16(in0[j * 2 + 1], One), Zero), shift);
-                const vec_t sum1a = vec_min_16(in1[j * 2 + 0], One);
-                const vec_t sum1b = vec_min_16(in1[j * 2 + 1], One);
-
-                const vec_t pa = vec_mulhi_16(sum0a, sum1a);
-                const vec_t pb = vec_mulhi_16(sum0b, sum1b);
-
-                out[j] = vec_packus_16(pa, pb);
-            }
+            constexpr IndexType OutputChunkSize = MaxChunkSize;
+        static_assert((HalfDimensions / 2) % OutputChunkSize == 0);
+        constexpr IndexType NumOutputChunks = HalfDimensions / 2 / OutputChunkSize;
+        for (IndexType j = 0; j < NumOutputChunks; ++j)
+        {
+            // vector logic remains the same
+            const vec_t sum0a = vec_slli_16(vec_max_16(vec_min_16(in0[j * 2 + 0], One), Zero), shift);
+            const vec_t sum0b = vec_slli_16(vec_max_16(vec_min_16(in0[j * 2 + 1], One), Zero), shift);
+            const vec_t sum1a = vec_min_16(in1[j * 2 + 0], One);
+            const vec_t sum1b = vec_min_16(in1[j * 2 + 1], One);
+            const vec_t pa = vec_mulhi_16(sum0a, sum1a);
+            const vec_t pb = vec_mulhi_16(sum0b, sum1b);
+            out[j] = vec_packus_16(pa, pb);
+        }
 
 #else
 
             for (IndexType j = 0; j < HalfDimensions / 2; ++j)
             {
-                BiasType sum0 = accumulation[static_cast<int>(perspectives[p])][j + 0];
-                BiasType sum1 =
-                  accumulation[static_cast<int>(perspectives[p])][j + HalfDimensions / 2];
-                sum0               = std::clamp<BiasType>(sum0, 0, 127 * 2);
-                sum1               = std::clamp<BiasType>(sum1, 0, 127 * 2);
+                BiasType sum0 = acc[j + 0];
+                BiasType sum1 = acc[j + HalfDimensions / 2];
+                sum0          = std::clamp<BiasType>(sum0, 0, 127 * 2);
+                sum1          = std::clamp<BiasType>(sum1, 0, 127 * 2);
                 output[offset + j] = static_cast<OutputType>(unsigned(sum0 * sum1) / 512);
             }
 
