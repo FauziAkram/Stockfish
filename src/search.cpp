@@ -1208,7 +1208,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 2381 + PvNode * 1008 + (ttData.value > alpha) * 880
+            r -= 2381 + PvNode * 880 + (ttData.value > alpha) * (PvNode? 880: 1024)
                + (ttData.depth >= depth) * (1022 + cutNode * 1140);
 
         // These reduction adjustments have no proven non-linear scaling
