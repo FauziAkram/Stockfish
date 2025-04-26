@@ -186,11 +186,21 @@ void MovePicker::score() {
 
         else  // Type == EVASIONS
         {
-            if (pos.capture_stage(m))
+            if (pos.capture_stage(m)) {
                 m.value = PieceValue[pos.piece_on(m.to_sq())] + 40000
                   + (*mainHistory)[pos.side_to_move()][m.from_to()]
                   + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
                   + (*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()];
+dbg_mean_of(PieceValue[pos.piece_on(m.to_sq())], 0);
+dbg_extremes_of(PieceValue[pos.piece_on(m.to_sq())], 0);
+dbg_mean_of((*mainHistory)[pos.side_to_move()][m.from_to()], 1);
+dbg_extremes_of((*mainHistory)[pos.side_to_move()][m.from_to()], 1);
+dbg_mean_of((*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()], 2);
+dbg_extremes_of((*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()], 2);
+dbg_mean_of((*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()], 3);
+dbg_extremes_of((*pawnHistory)[pawn_structure_index(pos)][pos.moved_piece(m)][m.to_sq()], 3);
+
+            }
             else
                 m.value = (*mainHistory)[pos.side_to_move()][m.from_to()]
                         + (*continuationHistory[0])[pos.moved_piece(m)][m.to_sq()]
