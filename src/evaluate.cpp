@@ -46,7 +46,7 @@ int Eval::simple_eval(const Position& pos) {
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
-bool Eval::use_smallnet(const Position& pos) { return std::abs(simple_eval(pos)) > 962; }
+bool Eval::use_smallnet(const Position& pos) { return std::abs(simple_eval(pos)) > 966; }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
@@ -73,12 +73,12 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Blend optimism and eval with nnue complexity
-    int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / 468;
-    nnue -= nnue * nnueComplexity / 18000;
+    int nnueComplexity = std::abs(psqt - positional) + std::abs(psqt - simpleEval);
+    optimism += optimism * nnueComplexity / 528;
+    nnue -= nnue * nnueComplexity / 20500;
 
-    int material = 535 * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
+    int material = 540 * pos.count<PAWN>() + pos.non_pawn_material();
+    int v        = (nnue * (77777 + material) + optimism * (7700 + material)) / 77777;
 
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 212;
