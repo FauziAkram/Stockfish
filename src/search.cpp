@@ -1887,7 +1887,6 @@ void update_all_stats(const Position&      pos,
                       Move                 bestMove,
                       Square               prevSq,
                       ValueList<Move, 32>& quietsSearched,
-                      ValueList<Move, 32>& capturesSearched,
                       Depth                depth,
                       Move                 ttMove,
                       int                  moveCount) {
