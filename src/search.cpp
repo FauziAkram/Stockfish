@@ -1949,6 +1949,9 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
 void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
+dbg_mean_of(bonus,0);
+dbg_extremes_of(bonus,0);
+
 
     Color us = pos.side_to_move();
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
@@ -1962,6 +1965,8 @@ void update_quiet_histories(
     int pIndex = pawn_structure_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
       << bonus * (bonus > 0 ? 705 : 450) / 1024;
+  dbg_mean_of(bonus,1);
+dbg_extremes_of(bonus,1);
 }
 
 }
