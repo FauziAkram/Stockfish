@@ -1914,11 +1914,6 @@ void update_all_stats(const Position&      pos,
         captureHistory[moved_piece][bestMove.to_sq()][captured] << bonus * 1213 / 1024;
     }
 
-    // Extra penalty for a quiet early move that was not a TT move in
-    // previous ply when it gets refuted.
-    if (prevSq != SQ_NONE && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit) && !pos.captured_piece())
-        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -malus * 980 / 1024);
-
     // Decrease stats for all non-best capture moves
     for (Move move : capturesSearched)
     {
