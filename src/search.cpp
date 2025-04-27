@@ -51,7 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=792,  xx2=792,  xx3=1082,  xx4=784,  xx5=784,  xx6=705,  xx7=450,  xx8=450;
+TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1949,24 +1950,19 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
 void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
-dbg_mean_of(bonus,0);
-dbg_extremes_of(bonus,0);
-
 
     Color us = pos.side_to_move();
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * 792 / 1024;
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * (bonus > -136 ? xx1: xx2) / 1024;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(),
-                                  bonus * (bonus > 0 ? 1082 : 784) / 1024);
+                                  bonus * (bonus > 0 ? xx3 : bonus > -136 ? xx4 : xx5) / 1024);
 
     int pIndex = pawn_structure_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
-      << bonus * (bonus > 0 ? 705 : 450) / 1024;
-  dbg_mean_of(bonus,1);
-dbg_extremes_of(bonus,1);
+      << bonus * (bonus > 0 ? xx6: bonus > -136 ? xx7 : xx8) / 1024;
 }
 
 }
