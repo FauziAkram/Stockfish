@@ -132,24 +132,24 @@ void Position::init() {
 
     // Prepare the cuckoo tables
     cuckoo.fill(0);
-cuckooMove.fill(Move::none());
-[[maybe_unused]] int count = 0;
-for (Piece pc : Pieces) {
-    if (type_of(pc) == PAWN) continue; // Skip pawns early
+    cuckooMove.fill(Move::none());
+    [[maybe_unused]] int count = 0;
+    for (Piece pc : Pieces) {
+        if (type_of(pc) == PAWN) continue; // Skip pawns early
     
-    for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1) {
-        Bitboard attacks = attacks_bb(type_of(pc), s1, 0);
-        for (Square s2 = Square(s1 + 1); s2 <= SQ_H8; ++s2) {
-            if (attacks & s2) {
-                Move move = Move(s1, s2);
-                Key  key  = Zobrist::psq[pc][s1] ^ Zobrist::psq[pc][s2] ^ Zobrist::side;
-                int  i    = H1(key);
+        for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1) {
+            Bitboard attacks = attacks_bb(type_of(pc), s1, 0);
+            for (Square s2 = Square(s1 + 1); s2 <= SQ_H8; ++s2) {
+                if (attacks & s2) {
+                    Move move = Move(s1, s2);
+                    Key  key  = Zobrist::psq[pc][s1] ^ Zobrist::psq[pc][s2] ^ Zobrist::side;
+                    int  i    = H1(key);
                 
-                while (true) {
-                    std::swap(cuckoo[i], key);
-                    std::swap(cuckooMove[i], move);
-                    if (move == Move::none()) break; // Empty slot found
-                    i = (i == H1(key)) ? H2(key) : H1(key);
+                    while (true) {
+                        std::swap(cuckoo[i], key);
+                        std::swap(cuckooMove[i], move);
+                        if (move == Move::none()) break; // Empty slot found
+                        i = (i == H1(key)) ? H2(key) : H1(key);
                 }
                 count++;  
             }
