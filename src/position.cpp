@@ -144,7 +144,6 @@ void Position::init() {
                     Move move = Move(s1, s2);
                     Key  key  = Zobrist::psq[pc][s1] ^ Zobrist::psq[pc][s2] ^ Zobrist::side;
                     int  i    = H1(key);
-                
                     while (true)
                     {
                         std::swap(cuckoo[i], key);
