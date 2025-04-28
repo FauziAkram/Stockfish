@@ -145,11 +145,13 @@ void Position::init() {
                     Key  key  = Zobrist::psq[pc][s1] ^ Zobrist::psq[pc][s2] ^ Zobrist::side;
                     int  i    = H1(key);
                 
-                    while (true) {
+                    while (true)
+                    {
                         std::swap(cuckoo[i], key);
                         std::swap(cuckooMove[i], move);
-                        if (move == Move::none()) break; // Empty slot found
-                        i = (i == H1(key)) ? H2(key) : H1(key);
+                        if (move == Move::none())  // Arrived at empty slot?
+                            break;
+                        i = (i == H1(key)) ? H2(key) : H1(key);  // Push victim to alternative slot
                 }
                 count++;  
             }
