@@ -380,7 +380,7 @@ void ThreadPool::wait_for_search_finished() const {
 
     for (auto&& th : threads)
         if (th != threads.front())
-            th->wait_for_search_finished();
+            th->worker->manager->check_time(*th->worker);
 }
 
 std::vector<size_t> ThreadPool::get_bound_thread_count_by_numa_node() const {
