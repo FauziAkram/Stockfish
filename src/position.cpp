@@ -430,10 +430,14 @@ string Position::fen() const {
     ss << (sideToMove == WHITE ? " w " : " b ");
 
     std::string castleStr;
-    if (can_castle(WHITE_OO))  castleStr += (chess960 ? char('A' + file_of(castling_rook_square(WHITE_OO))) : 'K');
-    if (can_castle(WHITE_OOO)) castleStr += (chess960 ? char('A' + file_of(castling_rook_square(WHITE_OOO))) : 'Q');
-    if (can_castle(BLACK_OO))  castleStr += (chess960 ? char('a' + file_of(castling_rook_square(BLACK_OO))) : 'k');
-    if (can_castle(BLACK_OOO)) castleStr += (chess960 ? char('a' + file_of(castling_rook_square(BLACK_OOO))) : 'q');
+    if (can_castle(WHITE_OO))
+        castleStr += (chess960 ? char('A' + file_of(castling_rook_square(WHITE_OO))) : 'K');
+    if (can_castle(WHITE_OOO))
+        castleStr += (chess960 ? char('A' + file_of(castling_rook_square(WHITE_OOO))) : 'Q');
+    if (can_castle(BLACK_OO))
+        castleStr += (chess960 ? char('a' + file_of(castling_rook_square(BLACK_OO))) : 'k');
+    if (can_castle(BLACK_OOO))
+        castleStr += (chess960 ? char('a' + file_of(castling_rook_square(BLACK_OOO))) : 'q');
 
     ss << (castleStr.empty() ? "-" : castleStr);
 
