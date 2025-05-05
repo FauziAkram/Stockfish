@@ -796,25 +796,54 @@ Value Search::Worker::search(
 
     // Check for KPK endgame (White Pawn vs Black King) *before* static eval / pruning
     // This check should only happen if Syzygy TBs are not used or didn't provide a result.
-    // (For simplicity here, we add it unconditionally for the specific piece count,
-    // assuming it might override or supplement TB results if desired, or be controlled
-    // by an option later).
-    // NOTE: This assumes the pawn belongs to WHITE.
+    // NOTE: The KpkBitbase module itself assumes a WHITE pawn. We flip the board if BLACK has the pawn.
     // NOTE: Place this check carefully. After TT lookup and before static eval/pruning seems reasonable.
     if (!rootNode // Don't probe at root, rely on normal search/TB there
         && !excludedMove // Don't probe if we are excluding a move (singular search)
         && pos.count<ALL_PIECES>() == 3
-        && pos.count<PAWN>(WHITE) == 1
-        && pos.count<KING>(WHITE) == 1
-        && pos.count<KING>(BLACK) == 1)
+        && pos.count<PAWN>() == 1)
     {
-        // Probe returns true if it's a win for White
-        bool isWin = KpkBitbase::probe(pos.square<KING>(WHITE), pos.square<PAWN>(WHITE), pos.square<KING>(BLACK), us);
-        // Use a high value like VALUE_TB or slightly less to indicate win/draw
-        Value kpk_value = isWin ? VALUE_TB : VALUE_DRAW;
-        // Store in TT? Maybe not, relies on specific piece config. Just return the value.
-        return (us == WHITE) ? kpk_value : -kpk_value; // Return score from side-to-move perspective
-    }
+        Color pawnColor = NO_COLOR; // Use NO_COLOR as placeholder
+        Square psq = SQ_NONE;
+
+        if (pos.count<PAWN>(WHITE) == 1) {
+            pawnColor = WHITE;
+            psq = pos.square<PAWN>(WHITE);
+        } else if (pos.count<PAWN>(BLACK) == 1) {
+            pawnColor = BLACK;
+            psq = pos.square<PAWN>(BLACK);
+        }
+
+        assert(pawnColor != NO_COLOR && psq != SQ_NONE); // Should always find the pawn
+
+       // Ensure pawn is on a valid rank for probing (bitbase doesn't store rank 1/8)
+        if (rank_of(psq) >= RANK_2 && rank_of(psq) <= RANK_7)
+        {
+            bool isWhitePawnWin; // Result from the bitbase (perspective of White having the pawn)
+
+            if (pawnColor == WHITE) {
+                // Probe directly (KPK)
+                isWhitePawnWin = KpkBitbase::probe(pos.square<KING>(WHITE), psq, pos.square<KING>(BLACK), us);
+            } else { // pawnColor == BLACK (kPK)
+                // Flip the board before probing
+                Square flipped_wksq = flip_rank(pos.square<KING>(BLACK)); // Black king becomes White king
+                Square flipped_bpsq = flip_rank(psq);                   // Black pawn becomes White pawn
+                Square flipped_bksq = flip_rank(pos.square<KING>(WHITE)); // White king becomes Black king
+                Color  flipped_stm  = ~us;
+
+                isWhitePawnWin = KpkBitbase::probe(flipped_wksq, flipped_bpsq, flipped_bksq, flipped_stm);
+            }
+
+            // Determine the actual score based on the probe result and original pawn color
+            Value score = (pawnColor == WHITE) ? (isWhitePawnWin ? VALUE_TB : VALUE_DRAW) // KPK result
+                                             : (isWhitePawnWin ? -VALUE_TB : VALUE_DRAW); // kPK result (win for White on flipped means loss for White on original)
+
+            return score; // Return absolute score (search function will handle side-to-move perspective if needed, but TB scores are absolute)
+                          // Correction: Search expects score from side-to-move. Let's adjust.
+            // return (us == pawnColor) == isWhitePawnWin ? VALUE_TB : (us != pawnColor) == !isWhitePawnWin ? -VALUE_TB : VALUE_DRAW; // This is complex, let's simplify
+            return (us == WHITE) ? score : -score; // Convert absolute score to side-to-move perspective
+        }
+     }
 
     // Step 6. Static evaluation of the position
     Value      unadjustedStaticEval = VALUE_NONE;
