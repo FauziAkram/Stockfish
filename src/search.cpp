@@ -37,6 +37,7 @@
 #include "bitboard.h"
 #include "evaluate.h"
 #include "history.h"
+#include "kpk_bitbase.h"
 #include "misc.h"
 #include "movegen.h"
 #include "movepick.h"
@@ -791,6 +792,28 @@ Value Search::Worker::search(
                 }
             }
         }
+    }
+
+    // Check for KPK endgame (White Pawn vs Black King) *before* static eval / pruning
+    // This check should only happen if Syzygy TBs are not used or didn't provide a result.
+    // (For simplicity here, we add it unconditionally for the specific piece count,
+    // assuming it might override or supplement TB results if desired, or be controlled
+    // by an option later).
+    // NOTE: This assumes the pawn belongs to WHITE.
+    // NOTE: Place this check carefully. After TT lookup and before static eval/pruning seems reasonable.
+    if (!rootNode // Don't probe at root, rely on normal search/TB there
+        && !excludedMove // Don't probe if we are excluding a move (singular search)
+        && pos.count<ALL_PIECES>() == 3
+        && pos.count<PAWN>(WHITE) == 1
+        && pos.count<KING>(WHITE) == 1
+        && pos.count<KING>(BLACK) == 1)
+    {
+        // Probe returns true if it's a win for White
+        bool isWin = KpkBitbase::probe(pos.square<KING>(WHITE), pos.square<PAWN>(WHITE), pos.square<KING>(BLACK), us);
+        // Use a high value like VALUE_TB or slightly less to indicate win/draw
+        Value kpk_value = isWin ? VALUE_TB : VALUE_DRAW;
+        // Store in TT? Maybe not, relies on specific piece config. Just return the value.
+        return (us == WHITE) ? kpk_value : -kpk_value; // Return score from side-to-move perspective
     }
 
     // Step 6. Static evaluation of the position
