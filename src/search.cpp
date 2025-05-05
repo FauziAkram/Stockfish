@@ -913,6 +913,9 @@ Value Search::Worker::search(
         }
     }
 
+    dbg_hit_on(ss->staticEval >= beta + 94, 0);
+    dbg_hit_on(ss->staticEval >= beta * beta, 1);
+  
     improving |= ss->staticEval >= beta + 94;
 
     // Step 10. Internal iterative reductions
