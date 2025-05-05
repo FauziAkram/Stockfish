@@ -800,7 +800,7 @@ Value Search::Worker::search(
     // NOTE: Place this check carefully. After TT lookup and before static eval/pruning seems reasonable.
     if (!rootNode // Don't probe at root, rely on normal search/TB there
         && !excludedMove // Don't probe if we are excluding a move (singular search)
-        && pos.count<ALL_PIECES>() == 3
+        && pos.non_pawn_material() == 0
         && pos.count<PAWN>() == 1)
     {
        // Check pawn rank and color, then probe
