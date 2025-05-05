@@ -137,12 +137,16 @@ namespace { // Anonymous namespace for internal details
 
     // Draw if it's Black to move and it's stalemate or Black king captures the pawn
     if (stm == BLACK)
-    {
-        Bitboard bk_moves = attacks_bb<KING>(ksq[BLACK]);
-        Bitboard safe_sq = ~(attacks_bb<KING>(ksq[WHITE]) | pawn_attacks_bb<WHITE>(psq) | pieces(WHITE)); // Squares not attacked by White King or Pawn, or occupied by White
+{
+    Bitboard bk_moves = attacks_bb<KING>(ksq[BLACK]);
+    // Squares occupied by White pieces (only King and Pawn in KPK)
+    Bitboard white_occupied = square_bb(ksq[WHITE]) | square_bb(psq);
+    // Squares attacked by White or occupied by White
+    Bitboard unsafe_for_black = attacks_bb<KING>(ksq[WHITE]) | pawn_attacks_bb<WHITE>(psq) | white_occupied;
+    Bitboard safe_sq = ~unsafe_for_black; // Squares not attacked by White King or Pawn, or occupied by White
 
-        // Stalemate check: No legal moves for Black King
-        if (!(bk_moves & safe_sq))
+    // Stalemate check: No legal moves for Black King
+    if (!(bk_moves & safe_sq))
         {
             result = DRAW;
             return;
@@ -172,10 +176,9 @@ namespace { // Anonymous namespace for internal details
     bool hasUnknown = false; // Track if any successor state is still UNKNOWN
 
     // 1. Generate King Moves
-    Bitboard b = attacks_bb<KING>(ksq[stm]);
-    while (b) {
-        Square to_sq = pop_lsb(&b);
-        Square from_sq = ksq[stm];
+Bitboard b = attacks_bb<KING>(ksq[stm]);
+while (b) {
+    Square to_sq = pop_lsb(b);
 
         // Check basic legality (destination square valid and not occupied by friendly piece)
         if (!is_ok(to_sq) || to_sq == ksq[~stm] || to_sq == psq)
