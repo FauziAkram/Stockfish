@@ -800,7 +800,6 @@ Value Search::Worker::search(
     // assuming it might override or supplement TB results if desired, or be controlled
     // by an option later).
     // NOTE: This assumes the pawn belongs to WHITE.
-    // NOTE: Place this check carefully. After TT lookup and before static eval/pruning seems reasonable.
     if (!rootNode // Don't probe at root, rely on normal search/TB there
         && !excludedMove // Don't probe if we are excluding a move (singular search)
         && pos.count<ALL_PIECES>() == 3
