@@ -803,45 +803,33 @@ Value Search::Worker::search(
         && pos.count<ALL_PIECES>() == 3
         && pos.count<PAWN>() == 1)
     {
-        Color pawnColor = NO_COLOR; // Use NO_COLOR as placeholder
-        Square psq = SQ_NONE;
-
-        if (pos.count<PAWN>(WHITE) == 1) {
-            pawnColor = WHITE;
-            psq = pos.square<PAWN>(WHITE);
-        } else if (pos.count<PAWN>(BLACK) == 1) {
-            pawnColor = BLACK;
-            psq = pos.square<PAWN>(BLACK);
-        }
-
-        assert(pawnColor != NO_COLOR && psq != SQ_NONE); // Should always find the pawn
-
-       // Ensure pawn is on a valid rank for probing (bitbase doesn't store rank 1/8)
-        if (rank_of(psq) >= RANK_2 && rank_of(psq) <= RANK_7)
+       // Check pawn rank and color, then probe
+        if (pos.count<PAWN>(WHITE) == 1)
         {
-            bool isWhitePawnWin; // Result from the bitbase (perspective of White having the pawn)
-
-            if (pawnColor == WHITE) {
-                // Probe directly (KPK)
-                isWhitePawnWin = KpkBitbase::probe(pos.square<KING>(WHITE), psq, pos.square<KING>(BLACK), us);
-            } else { // pawnColor == BLACK (kPK)
-                // Flip the board before probing
+            Square psq = pos.square<PAWN>(WHITE);
+            // Ensure pawn is on a valid rank for probing (bitbase doesn't store rank 1/8)
+            if (rank_of(psq) >= RANK_2 && rank_of(psq) <= RANK_7)
+            {
+                bool isWhitePawnWin = KpkBitbase::probe(pos.square<KING>(WHITE), psq, pos.square<KING>(BLACK), us);
+                Value score = isWhitePawnWin ? VALUE_TB : VALUE_DRAW; // Absolute score
+                return (us == WHITE) ? score : -score; // Return score from side-to-move perspective
+            }
+        } else if (pos.count<PAWN>(BLACK) == 1) {
+            Square psq = pos.square<PAWN>(BLACK);
+            // Ensure pawn is on a valid rank for probing (bitbase doesn't store rank 1/8)
+            if (rank_of(psq) >= RANK_2 && rank_of(psq) <= RANK_7)
+            {
+                // Flip the board before probing for kPK
                 Square flipped_wksq = flip_rank(pos.square<KING>(BLACK)); // Black king becomes White king
                 Square flipped_bpsq = flip_rank(psq);                   // Black pawn becomes White pawn
                 Square flipped_bksq = flip_rank(pos.square<KING>(WHITE)); // White king becomes Black king
                 Color  flipped_stm  = ~us;
 
-                isWhitePawnWin = KpkBitbase::probe(flipped_wksq, flipped_bpsq, flipped_bksq, flipped_stm);
+                bool isWhitePawnWin = KpkBitbase::probe(flipped_wksq, flipped_bpsq, flipped_bksq, flipped_stm);
+                // Determine the actual score based on the probe result (win for White on flipped means loss for original White)
+                Value score = isWhitePawnWin ? -VALUE_TB : VALUE_DRAW; // Absolute score
+                return (us == WHITE) ? score : -score; // Return score from side-to-move perspective
             }
-
-            // Determine the actual score based on the probe result and original pawn color
-            Value score = (pawnColor == WHITE) ? (isWhitePawnWin ? VALUE_TB : VALUE_DRAW) // KPK result
-                                             : (isWhitePawnWin ? -VALUE_TB : VALUE_DRAW); // kPK result (win for White on flipped means loss for White on original)
-
-            return score; // Return absolute score (search function will handle side-to-move perspective if needed, but TB scores are absolute)
-                          // Correction: Search expects score from side-to-move. Let's adjust.
-            // return (us == pawnColor) == isWhitePawnWin ? VALUE_TB : (us != pawnColor) == !isWhitePawnWin ? -VALUE_TB : VALUE_DRAW; // This is complex, let's simplify
-            return (us == WHITE) ? score : -score; // Convert absolute score to side-to-move perspective
         }
      }
 
