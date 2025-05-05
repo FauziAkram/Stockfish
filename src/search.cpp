@@ -803,9 +803,7 @@ Value Search::Worker::search(
     if (!rootNode // Don't probe at root, rely on normal search/TB there
         && !excludedMove // Don't probe if we are excluding a move (singular search)
         && pos.count<ALL_PIECES>() == 3
-        && pos.count<PAWN>(WHITE) == 1
-        && pos.count<KING>(WHITE) == 1
-        && pos.count<KING>(BLACK) == 1)
+        && pos.count<PAWN>(WHITE) == 1)
     {
         // Probe returns true if it's a win for White
         bool isWin = KpkBitbase::probe(pos.square<KING>(WHITE), pos.square<PAWN>(WHITE), pos.square<KING>(BLACK), us);
