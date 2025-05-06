@@ -1969,7 +1969,6 @@ void update_quiet_histories(
 // When playing with strength handicap, choose the best move among a set of
 // RootMoves using a statistical rule dependent on 'level'. Idea by Heinz van Saanen.
 Move Skill::pick_best(const RootMoves& rootMoves, size_t multiPV) {
-    static PRNG rng(now());  // PRNG sequence should be non-deterministic
 
     // RootMoves are already sorted by score in descending order
     Value  topScore = rootMoves[0].score;
@@ -1980,6 +1979,8 @@ Move Skill::pick_best(const RootMoves& rootMoves, size_t multiPV) {
     // Choose best move. For each move score we add two terms, both dependent on
     // weakness. One is deterministic and bigger for weaker levels, and one is
     // random. Then we choose the move with the resulting highest score.
+    static PRNG rng(now());  // PRNG sequence should be non-deterministic
+  
     for (size_t i = 0; i < multiPV; ++i)
     {
         // This is our magic formula
