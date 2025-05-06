@@ -176,7 +176,7 @@ void init_magics(PieceType pt, Bitboard table[], Magic magics[][2]) {
 #endif
     }
 }
-}  // namespace Bitboards
+}  // namespace
 
 // Initializes various bitboard tables. It is called at
 // startup and relies on global objects to be already zero-initialized.
