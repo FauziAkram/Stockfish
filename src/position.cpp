@@ -102,8 +102,10 @@ std::ostream& operator<<(std::ostream& os, const Position& pos) {
 // http://web.archive.org/web/20201107002606/https://marcelk.net/2013-04-06/paper/upcoming-rep-v2.pdf
 
 // First and second hash functions for indexing the cuckoo tables
-inline int H1(Key h) { return h & 0x1fff; }
-inline int H2(Key h) { return (h >> 16) & 0x1fff; }
+namespace {
+    inline int H1(Key h) { return h & 0x1fff; }
+    inline int H2(Key h) { return (h >> 16) & 0x1fff; }
+}
 
 // Cuckoo tables with Zobrist hashes of valid reversible moves, and the moves themselves
 std::array<Key, 8192>  cuckoo;
