@@ -649,9 +649,6 @@ Value Search::Worker::search(
     int   priorReduction;
     Piece movedPiece;
 
-    ValueList<Move, 32> capturesSearched;
-    ValueList<Move, 32> quietsSearched;
-
     // Step 1. Initialize node
     Worker* thisThread = this;
     ss->inCheck        = pos.checkers();
@@ -996,6 +993,8 @@ moves_loop:  // When in check, search starts here
     MovePicker mp(pos, ttData.move, depth, &thisThread->mainHistory, &thisThread->lowPlyHistory,
                   &thisThread->captureHistory, contHist, &thisThread->pawnHistory, ss->ply);
 
+    ValueList<Move, 32> capturesSearched;
+    ValueList<Move, 32> quietsSearched;
     value = bestValue;
 
     int moveCount = 0;
