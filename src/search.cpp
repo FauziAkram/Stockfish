@@ -51,6 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=2048, xx2=64;
+TUNE(SetRange(0, 8192), xx1);
+TUNE(SetRange(0, 256), xx2);
+
 
 namespace TB = Tablebases;
 
@@ -1917,7 +1921,7 @@ void update_all_stats(const Position&      pos,
     // Extra penalty for a quiet early move that was not a TT move in
     // previous ply when it gets refuted.
     if (prevSq != SQ_NONE && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit) && !pos.captured_piece())
-        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -malus * 980 / 1024);
+        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -malus * (xx1 + depth * xx2) / 4096);
 
     // Decrease stats for all non-best capture moves
     for (Move move : capturesSearched)
