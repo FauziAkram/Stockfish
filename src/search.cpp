@@ -546,7 +546,7 @@ void Search::Worker::iterative_deepening() {
     if (!mainThread)
         return;
 
-    mainThread->previousTimeReduction = timeReduction;
+    mainThread->previousTimeReduction = 0.9 * timeReduction;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())
