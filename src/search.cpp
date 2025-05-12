@@ -507,9 +507,9 @@ void Search::Worker::iterative_deepening() {
             fallingEval = std::clamp(fallingEval, 0.5786, 1.6752);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction = lastBestMoveDepth + 8 < completedDepth ? 1.4857 : 0.7046;
+            timeReduction = lastBestMoveDepth + 8 < completedDepth ? 3.208 : 1.521;
             double reduction =
-              (1.4540 + mainThread->previousTimeReduction) / (2.1593 * timeReduction);
+              (1.4540 + mainThread->previousTimeReduction) / timeReduction;
             double bestMoveInstability = 0.9929 + 1.8519 * totBestMoveChanges / threads.size();
 
             double totalTime =
