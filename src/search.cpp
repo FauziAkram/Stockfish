@@ -514,7 +514,6 @@ void Search::Worker::iterative_deepening() {
             else
             timeReduction = 1;
           
-            timeReduction = completedDepth > lastBestMoveDepth + 8 ? 1.4857 : 0.7046;
             double reduction =
               (1.4540 + mainThread->previousTimeReduction) / (2.1593 * timeReduction);
             double bestMoveInstability = 0.9929 + 1.8519 * totBestMoveChanges / threads.size();
