@@ -1878,7 +1878,7 @@ void update_all_stats(const Position&      pos,
     // previous ply when it gets refuted.
     if (prevSq != SQ_NONE && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit) && !pos.captured_piece())
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                      -malus * (512 + depth * 16) / 1024);
+                                      -malus * (562 + depth * 16) / 1024);
 
     // Decrease stats for all non-best capture moves
     for (Move move : capturesSearched)
