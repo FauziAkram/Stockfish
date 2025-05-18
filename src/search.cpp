@@ -50,6 +50,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=520, xx2=2170, xx3=1100, xx4=0;
+TUNE(SetRange(-0, 2000), xx1);
+TUNE(xx2);
+TUNE(SetRange(0, 4000), xx3);
+TUNE(SetRange(-0, 2000), xx4);
 
 namespace TB = Tablebases;
 
@@ -1264,13 +1269,14 @@ moves_loop:  // When in check, search starts here
         else if (!PvNode || moveCount > 1)
         {
             // Increase reduction if ttMove is not present
-            if (!ttData.move)
-                r += 1128;
-
+          if (cutNode)
+                r += xx1 + xx2 * !ttData.move;
+          else if (!ttData.move)
+                r += xx3;
+          else
+                r -= xx4;
+          
             r -= ttMoveHistory / 8;
-
-            if (cutNode)
-                r += 520;
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
