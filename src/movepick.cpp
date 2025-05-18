@@ -166,7 +166,13 @@ void MovePicker::score() {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
+          if (pos.see_ge(m, -75)) {
+            if (pos.check_squares(pt) & to)
+              m.value += 16384;
+            else if (pos.blockers_for_king(~pos.side_to_move()) & from
++                          && !aligned(from, to, pos.square<KING>(~pos.side_to_move())))
+              m.value += 32768;
+            }
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
