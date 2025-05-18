@@ -50,7 +50,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=180, xx2=20;
+TUNE(SetRange(0, 520), xx1);
+TUNE(SetRange(0, 100), xx2);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -952,7 +954,7 @@ Value Search::Worker::search(
 moves_loop:  // When in check, search starts here
 
     // Step 12. A small Probcut idea
-    probCutBeta = beta + 400;
+    probCutBeta = beta + xx1 + depth * xx2;
     if ((ttData.bound & BOUND_LOWER) && ttData.depth >= depth - 4 && ttData.value >= probCutBeta
         && !is_decisive(beta) && is_valid(ttData.value) && !is_decisive(ttData.value))
         return probCutBeta;
