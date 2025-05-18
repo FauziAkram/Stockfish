@@ -170,7 +170,7 @@ void MovePicker::score() {
             if (pos.check_squares(pt) & to)
               m.value += 16384;
             else if (pos.blockers_for_king(~pos.side_to_move()) & from
-+                          && !aligned(from, to, pos.square<KING>(~pos.side_to_move())))
+                          && !aligned(from, to, pos.square<KING>(~pos.side_to_move())))
               m.value += 32768;
             }
 
