@@ -50,7 +50,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=136, xx2=885, xx3=821, xx4=0, xx5=136, xx6=680, xx7=694, xx8=0, xx9=731, xx10=475;
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1915,14 +1915,14 @@ void update_quiet_histories(
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * 792 / 1024;
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * (bonus > -xx1 ? xx2: xx3) / 1024;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(),
-                                  bonus * (bonus > 0 ? 1082 : 784) / 1024);
+                                  bonus * (bonus > xx4 ? xx5 : bonus > -xx6 ? xx7 : xx8) / 1024);
 
     int pIndex = pawn_structure_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
-      << bonus * (bonus > 0 ? 705 : 450) / 1024;
+      << bonus * (bonus > xx9 ? xx10 : xx11) / 1024;
 }
 
 }
