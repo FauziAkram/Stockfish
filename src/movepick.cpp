@@ -168,9 +168,9 @@ void MovePicker::score() {
             // bonus for checks
           if (pos.check_squares(pt) & to) {
             if (pos.see_ge(m, -75))
-              m.value += 32768;
-            else
               m.value += 16384;
+            else
+              m.value += 8192;
             }
 
             // penalty for moving to a square threatened by a lesser piece
