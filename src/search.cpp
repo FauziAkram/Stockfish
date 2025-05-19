@@ -50,6 +50,14 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx31=3, xx38=3, xx39=1, xx40=1, xx41=2, xx42=175, xx43=1, xx51=19, xx52=389, xx53=213, xx54=6, xx55=5, xx57=5, xx58=7, xx59=1, xx72=2, xx83=6, xx85=3,
+xx95=200, xx96=300, xx97=47, xx102=200, xx103=300, xx104=54, xx105=3, xx106=2, xx121=2, xx122=50, xx129=42, xx130=2, xx131=9, xx132=1, xx133=1, xx135=9,
+xx136=1, xx140=3564, xx141=4969, xx142=2, xx143=8, zz1=2, xx144=16, xx166=6, xx168=2;
+
+
+TUNE(SetRange(0, 10),xx31);
+TUNE(SetRange(0, 10), zz1,zz1);
+
 
 namespace TB = Tablebases;
 
@@ -818,7 +826,7 @@ Value Search::Worker::search(
 
     // Use static evaluation difference to improve quiet move ordering
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture
-        && (ttData.depth - 2) <= depth)
+        && (ttData.depth - xx31) < depth)
     {
         int bonus = std::clamp(-10 * int((ss - 1)->staticEval + ss->staticEval), -1858, 1492) + 661;
         thisThread->mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * 1057 / 1024;
