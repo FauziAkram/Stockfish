@@ -50,14 +50,41 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx31=3, xx38=3, xx39=1, xx40=1, xx41=2, xx42=175, xx43=1, xx53=213, xx54=6, xx55=5, xx57=5, xx58=7, xx59=1, xx72=2, xx73=0, xx83=6, xx85=3,
+int xx31=3, xx38=3, xx39=1, xx40=1, xx42=175, xx43=1, xx53=213, xx54=6, xx55=5, xx57=5, xx58=7, xx59=1, xx72=2, xx73=0, xx83=6, xx85=3,
 xx95=200, xx96=300, xx97=47, xx102=200, xx103=300, xx104=54, zz2=1, xx105=3, xx106=2, zz3=8, zz4=2, xx121=2, xx122=50, xx129=42, xx130=2, xx131=9, xx132=1, xx133=1,
 xx135=9, xx136=1, xx140=3564, xx141=4969, xx142=2, xx143=8, zz1=2, xx144=16, xx166=6, xx168=2, zz5=174 zz6=8, zz7=90, zz8=2;
 
 
-TUNE(SetRange(0, 10),xx31);
-TUNE(SetRange(0, 10), zz1,zz1);
-
+TUNE(SetRange(0, 10),xx31,xx38);
+TUNE(SetRange(-5, 5),xx31,xx39,xx40);
+TUNE(xx42);
+TUNE(SetRange(0, 10),xx43);
+TUNE(xx53,xx54,xx55);
+TUNE(SetRange(2, 18),xx57,xx58);
+TUNE(SetRange(0, 10),xx59);
+TUNE(SetRange(0, 10),xx72);
+TUNE(SetRange(-1024, 1024),xx73);
+TUNE(xx83);
+TUNE(SetRange(0, 10),xx85);
+TUNE(xx95,xx96,xx97,xx102,xx103,xx104);
+TUNE(SetRange(-5, 5),zz2);
+TUNE(SetRange(0, 10),xx105,xx106);
+TUNE(zz3);
+TUNE(SetRange(0, 10),zz4,xx121);
+TUNE(xx122,xx129);
+TUNE(SetRange(0, 10),xx130);
+TUNE(xx131);
+TUNE(SetRange(-5, 5),xx132,xx133);
+TUNE(xx135);
+TUNE(SetRange(-5, 5),xx136);
+TUNE(xx140,xx141);
+TUNE(SetRange(0, 10),xx142);
+TUNE(xx143);
+TUNE(SetRange(0, 10),zz1);
+TUNE(xx144,zz5,zz6,zz7);
+TUNE(SetRange(0, 10),zz8);
+TUNE(xx166);
+TUNE(SetRange(0, 10),xx168);
 
 namespace TB = Tablebases;
 
@@ -845,7 +872,7 @@ Value Search::Worker::search(
 
     if (priorReduction >= xx38 && !opponentWorsening)
         depth += xx39;
-    if (priorReduction >= xx40 && depth >= xx41 && ss->staticEval + (ss - 1)->staticEval > xx42)
+    if (priorReduction >= xx40 && depth >= (std::max(1, xx43+1)) && ss->staticEval + (ss - 1)->staticEval > xx42)
         depth -= xx43;
 
     // Step 7. Razoring
