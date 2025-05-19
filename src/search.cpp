@@ -2165,8 +2165,6 @@ void SearchManager::pv(Search::Worker&           worker,
 
    dbg_mean_of(worker.ttMoveHistory,0);
   dbg_extremes_of(worker.ttMoveHistory,0);
-     dbg_mean_of(ttMoveHistory,1);
-  dbg_extremes_of(ttMoveHistory,1);
 
     for (size_t i = 0; i < multiPV; ++i)
     {
