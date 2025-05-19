@@ -56,7 +56,7 @@ xx133=1, xx135=9, xx136=1, xx140=3564, xx141=4969, xx142=2, xx143=8, zz1=2, xx14
 
 
 TUNE(SetRange(0, 10),xx31,xx38);
-TUNE(SetRange(-5, 5),xx31,xx39,xx40);
+TUNE(SetRange(-5, 5),xx39,xx40);
 TUNE(xx42);
 TUNE(SetRange(0, 10),xx43);
 TUNE(xx53,xx54,xx55);
