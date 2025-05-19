@@ -61,8 +61,12 @@ xx165=1080, xx166=6, xx167=376, xx168=2, xx169=6218, xx170=74, xx171=794, xx172=
 xx186=1388, xx187=1092, xx188=631, xx189=294, xx190=517, xx191=126, xx192=445, xx193=792, xx194=0, xx195=1082, xx196=784, xx197=0, xx198=705, xx199=450;
 
 TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16, xx17);
-
-
+TUNE(SetRange(-100, 100),xx18,xx19,xx20,xx21);
+TUNE(SetRange(-500, 500),xx20);
+TUNE(SetRange(-100, 100),xx21);
+TUNE(xx22, xx23, xx24, xx25, xx26, xx27, xx28, xx29, xx30);
+TUNE(SetRange(0, 10),xx31);
+TUNE(xx32, xx33, xx34, xx35, xx36, xx37);
 
 
 
@@ -850,10 +854,10 @@ Value Search::Worker::search(
 
     opponentWorsening = ss->staticEval > -(ss - 1)->staticEval;
 
-    if (priorReduction >= xx38 && !opponentWorsening)
-        depth += xx39;
-    if (priorReduction >= xx40 && depth >= xx41 && ss->staticEval + (ss - 1)->staticEval > xx42)
-        depth -= xx43;
+    if (priorReduction >= 3 && !opponentWorsening)
+        depth++;
+    if (priorReduction >= 1 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > xx42)
+        depth--;
 
     // Step 7. Razoring
     // If eval is really low, skip search entirely and return the qsearch value.
