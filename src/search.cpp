@@ -2163,6 +2163,11 @@ void SearchManager::pv(Search::Worker&           worker,
     size_t     multiPV   = std::min(size_t(worker.options["MultiPV"]), rootMoves.size());
     uint64_t   tbHits    = threads.tb_hits() + (worker.tbConfig.rootInTB ? rootMoves.size() : 0);
 
+   dbg_mean_of(worker.ttMoveHistory,0);
+  dbg_extremes_of(worker.ttMoveHistory,0);
+     dbg_mean_of(ttMoveHistory,1);
+  dbg_extremes_of(ttMoveHistory,1);
+
     for (size_t i = 0; i < multiPV; ++i)
     {
         bool updated = rootMoves[i].score != -VALUE_INFINITE;
