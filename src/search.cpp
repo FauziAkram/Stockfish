@@ -1290,8 +1290,6 @@ moves_loop:  // When in check, search starts here
                 r += 509 + 1992 * !ttData.move;
           else if (!ttData.move)
                 r += 1022;
-          else
-                r -= 64;
 
             r -= ttMoveHistory / 8;
 
