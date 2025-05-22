@@ -1937,7 +1937,7 @@ void update_quiet_histories(
         workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * (bonus > -147 ? 855: 773) / 1024;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(),
-                                  bonus * (bonus > 7 ? 993 : bonus > -147 ? 711 : 694) / 1024);
+                                  bonus * (bonus > 7 ? 993 :702) / 1024);
 
     int pIndex = pawn_structure_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
