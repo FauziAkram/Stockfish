@@ -1101,8 +1101,45 @@ moves_loop:  // When in check, search starts here
 
                 lmrDepth += history / 3388;
 
-                Value futilityValue = ss->staticEval + (bestMove ? 46 : 138) + 117 * lmrDepth
-                                    + 102 * (ss->staticEval > alpha);
+                static constexpr int MIN_FUTILITY_MARGIN_ADJ = 46;
+                static constexpr int MAX_FUTILITY_MARGIN_ADJ = 138;
+                static constexpr int MOVECOUNT_THRESH_FUTILITY_LOW = 1;
+                static constexpr int MOVECOUNT_THRESH_FUTILITY_HIGH = 4;
+                
+                int baseMarginAdjustment;
+                if (moveCount <= MOVECOUNT_THRESH_FUTILITY_LOW) {
+                    baseMarginAdjustment = MAX_FUTILITY_MARGIN_ADJ;
+                } else if (moveCount >= MOVECOUNT_THRESH_FUTILITY_HIGH) {
+                    baseMarginAdjustment = MIN_FUTILITY_MARGIN_ADJ;
+                } else {
+                    int mc_interp_range = MOVECOUNT_THRESH_FUTILITY_HIGH - MOVECOUNT_THRESH_FUTILITY_LOW;
+                    int mc_progress = moveCount - MOVECOUNT_THRESH_FUTILITY_LOW;
+                    int margin_diff = MAX_FUTILITY_MARGIN_ADJ - MIN_FUTILITY_MARGIN_ADJ;
+                    baseMarginAdjustment = MAX_FUTILITY_MARGIN_ADJ - (margin_diff * mc_progress) / mc_interp_range;
+                    baseMarginAdjustment = std::clamp(baseMarginAdjustment, MIN_FUTILITY_MARGIN_ADJ, MAX_FUTILITY_MARGIN_ADJ);
+                }
+
+                static constexpr Value EVAL_ALPHA_BONUS_FUTILITY = Value(102);
+                static constexpr Value EVAL_ALPHA_THRESH_LOW_FUTILITY = Value(-50);
+                static constexpr Value EVAL_ALPHA_THRESH_HIGH_FUTILITY = Value(100);
+                
+                Value evalAlphaDiff = ss->staticEval - alpha;
+                int evalAlphaBonusAmount;
+
+                if (evalAlphaDiff <= EVAL_ALPHA_THRESH_LOW_FUTILITY) {
+                    evalAlphaBonusAmount = 0;
+                } else if (evalAlphaDiff >= EVAL_ALPHA_THRESH_HIGH_FUTILITY) {
+                    evalAlphaBonusAmount = EVAL_ALPHA_BONUS_FUTILITY;
+                } else {
+                    Value ea_interp_range = EVAL_ALPHA_THRESH_HIGH_FUTILITY - EVAL_ALPHA_THRESH_LOW_FUTILITY;
+                    Value ea_progress = evalAlphaDiff - EVAL_ALPHA_THRESH_LOW_FUTILITY;
+                    
+                    evalAlphaBonusAmount = (EVAL_ALPHA_BONUS_FUTILITY * ea_progress) / ea_interp_range;
+                    evalAlphaBonusAmount = std::clamp(evalAlphaBonusAmount, Value(0), EVAL_ALPHA_BONUS_FUTILITY);
+                }
+                
+                Value futilityValue = ss->staticEval + baseMarginAdjustment + 117 * lmrDepth
+                                    + evalAlphaBonusAmount;
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
