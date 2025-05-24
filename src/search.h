@@ -312,7 +312,7 @@ class Worker {
     template<NodeType nodeType>
     Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta);
 
-    Depth reduction(bool i_original_improving_flag, double eval_improvement_metric, Depth d, int mn, int delta) const;
+    Depth reduction(bool i_original_improving_flag, Value eval_improvement_diff, Depth d, int mn, int delta) const;
 
     // Pointer to the search manager, only allowed to be called by the main thread
     SearchManager* main_manager() const {
