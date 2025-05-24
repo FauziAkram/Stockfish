@@ -1150,11 +1150,20 @@ moves_loop:  // When in check, search starts here
             {
                 int corrValAdj1  = std::abs(correctionValue) / 248400;
                 int corrValAdj2  = std::abs(correctionValue) / 249757;
+                double k_sing_depth_progress = 5.0;
+                double center_sing_depth_progress = 0.0;
+                double relative_depth_progress = (thisThread->rootDepth > 0) ?
+                                                 (static_cast<double>(ss->ply) / thisThread->rootDepth) - (2.0/3.0)
+                                                 : 0.0;
+                double depthProgressFactor = 1.0 / (1.0 + std::exp(-k_sing_depth_progress * (relative_depth_progress - center_sing_depth_progress)));
+                double plyBasedPenaltyDouble = 47.0 * depthProgressFactor;
+                double plyBasedPenaltyTriple = 54.0 * depthProgressFactor;
+
                 int doubleMargin = -4 + 244 * PvNode - 206 * !ttCapture - corrValAdj1
                                  - 997 * ttMoveHistory / 131072
-                                 - (ss->ply * 2 > thisThread->rootDepth * 3) * 47;
+                                 - static_cast<int>(plyBasedPenaltyDouble);
                 int tripleMargin = 84 + 269 * PvNode - 253 * !ttCapture + 91 * ss->ttPv
-                                 - corrValAdj2 - (ss->ply * 2 > thisThread->rootDepth * 3) * 54;
+                                 - corrValAdj2 - static_cast<int>(plyBasedPenaltyTriple);
 
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
