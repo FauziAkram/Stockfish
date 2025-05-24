@@ -1777,9 +1777,19 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     return bestValue;
 }
 
-Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
+Depth Search::Worker::reduction(bool i_original_improving_flag, double eval_improvement_metric, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return reductionScale - delta * 794 / rootDelta + !i * reductionScale * 205 / 512 + 1086;
+    double basePenalty = static_cast<double>(reductionScale) * 205.0 / 512.0;
+    double actualPenalty = 0.0;
+
+    if (!i_original_improving_flag) {
+        double k_reduction_eval_diff = 0.025;
+        double center_reduction_eval_diff = 0;
+        double worseningScaleFactor = 1.0 / (1.0 + std::exp(k_reduction_eval_diff * (eval_improvement_metric - center_reduction_eval_diff)));
+
+        actualPenalty = worseningScaleFactor * basePenalty;
+    }
+    return reductionScale - delta * 794 / rootDelta + static_cast<int>(actualPenalty + 0.5) /* for rounding */ + 1086;
 }
 
 // elapsed() returns the time elapsed since the search started. If the
