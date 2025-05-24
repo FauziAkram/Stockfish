@@ -1038,8 +1038,8 @@ moves_loop:  // When in check, search starts here
         if ((ss - 2)->staticEval != VALUE_NONE && ss->staticEval != VALUE_NONE)
             eval_improvement_diff = ss->staticEval - (ss - 2)->staticEval;
 
-        Depth r = reduction(improving, eval_improvement_metric, depth, moveCount, delta);
-
+        Depth r = reduction(improving, eval_improvement_diff, depth, moveCount, delta);
+      
         // Increase reduction for ttPv nodes (*Scaler)
         // Smaller or even negative value is better for short time controls
         // Bigger value is better for long time controls
