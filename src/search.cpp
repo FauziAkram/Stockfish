@@ -1034,9 +1034,9 @@ moves_loop:  // When in check, search starts here
 
         int delta = beta - alpha;
 
-        double eval_improvement_metric = 0.0;
+        Value eval_improvement_diff = Value(0);
         if ((ss - 2)->staticEval != VALUE_NONE && ss->staticEval != VALUE_NONE)
-            eval_improvement_metric = static_cast<double>(ss->staticEval - (ss - 2)->staticEval);
+            eval_improvement_diff = ss->staticEval - (ss - 2)->staticEval;
 
         Depth r = reduction(improving, eval_improvement_metric, depth, moveCount, delta);
 
