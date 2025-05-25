@@ -833,7 +833,7 @@ Value Search::Worker::search(
 
     if (priorReduction >= 3 && !opponentWorsening)
         depth++;
-    if (priorReduction >= 1 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 175)
+    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173)
         depth--;
 
     // Step 7. Razoring
@@ -868,7 +868,7 @@ Value Search::Worker::search(
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and eval
-        Depth R = std::min(int(eval - beta) / 213, 6) + depth / 3 + 5;
+        Depth R = std::min(int(eval - beta) / 206, 6) + depth / 3 + 5;
 
         ss->currentMove                   = Move::null();
         ss->continuationHistory           = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -906,7 +906,7 @@ Value Search::Worker::search(
     // Step 10. Internal iterative reductions
     // For PV nodes without a ttMove as well as for deep enough cutNodes, we decrease depth.
     // (*Scaler) Especially if they make IIR less aggressive.
-    if (!allNode && depth >= (PvNode ? 5 : 7) && !ttData.move)
+    if (!allNode && depth >= (PvNode ? 5 : 6) && !ttData.move)
         depth--;
 
     // Step 11. ProbCut
@@ -1069,7 +1069,7 @@ moves_loop:  // When in check, search starts here
                 if (!pos.see_ge(move, -158 * depth - seeHist))
                 {
                     bool mayStalemateTrap =
-                      depth > 2 && alpha < 0 && pos.non_pawn_material(us) == PieceValue[movedPiece]
+                      depth > 2 && alpha < 8 && pos.non_pawn_material(us) == PieceValue[movedPiece]
                       && PieceValue[movedPiece] >= RookValue
                       // it can't be stalemate if we moved a piece adjacent to the king
                       && !(attacks_bb<KING>(pos.square<KING>(us)) & move.from_sq())
@@ -1147,9 +1147,9 @@ moves_loop:  // When in check, search starts here
                 int corrValAdj2  = std::abs(correctionValue) / 249757;
                 int doubleMargin = -4 + 244 * PvNode - 206 * !ttCapture - corrValAdj1
                                  - 997 * ttMoveHistory / 131072
-                                 - (ss->ply > thisThread->rootDepth) * 47;
+                                 - (ss->ply > thisThread->rootDepth) * 49;
                 int tripleMargin = 84 + 269 * PvNode - 253 * !ttCapture + 91 * ss->ttPv
-                                 - corrValAdj2 - (ss->ply * 2 > thisThread->rootDepth * 3) * 54;
+                                 - corrValAdj2 - (ss->ply * 2 > thisThread->rootDepth * 3) * 53;
 
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
@@ -1221,7 +1221,7 @@ moves_loop:  // When in check, search starts here
             r += 1036 + allNode * 848;
 
         if (!capture && !givesCheck && ss->quietMoveStreak >= 2)
-            r += (ss->quietMoveStreak - 1) * 50;
+            r += (ss->quietMoveStreak - 1) * 52;
 
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move)
@@ -1263,7 +1263,7 @@ moves_loop:  // When in check, search starts here
             {
                 // Adjust full-depth search based on LMR results - if the result was
                 // good enough search deeper, if it was bad enough search shallower.
-                const bool doDeeperSearch    = value > (bestValue + 42 + 2 * newDepth);
+                const bool doDeeperSearch    = value > (bestValue + 40 + 2 * newDepth);
                 const bool doShallowerSearch = value < bestValue + 9;
 
                 newDepth += doDeeperSearch - doShallowerSearch;
@@ -1289,7 +1289,7 @@ moves_loop:  // When in check, search starts here
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
-                                   newDepth - (r > 3564) - (r > 4969 && newDepth > 2), !cutNode);
+                                   newDepth - (r > 3741) - (r > 4863 && newDepth > 2), !cutNode);
         }
 
         // For PV nodes only, do a full PV search on the first move or after a fail high,
@@ -1446,7 +1446,7 @@ moves_loop:  // When in check, search starts here
         int bonusScale = -302;
         bonusScale += std::min(-(ss - 1)->statScore / 103, 323);
         bonusScale += std::min(73 * depth, 531);
-        bonusScale += 174 * ((ss - 1)->moveCount > 8);
+        bonusScale += 168 * ((ss - 1)->moveCount > 8);
         bonusScale += 90 * (ss->cutoffCnt <= 3);
         bonusScale += 144 * (!ss->inCheck && bestValue <= ss->staticEval - 104);
         bonusScale += 128 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 82);
