@@ -1791,9 +1791,9 @@ Depth Search::Worker::reduction(bool i_original_improving_flag, Value eval_impro
     int scaledLMRPenalty = 0;
 
     if (!i_original_improving_flag) {
-        static constexpr Value WORSE_THRESH_LMR = Value(-xx2);
-        static constexpr Value BETTER_THRESH_LMR = Value(xx3);
-        static constexpr int PENALTY_SCALE_DIVISOR = 256;
+        const int WORSE_THRESH_LMR = -xx2;
+        const int BETTER_THRESH_LMR = xx3;
+        const int PENALTY_SCALE_DIVISOR = 256;
 
         int penaltyScaleNumerator;
 
