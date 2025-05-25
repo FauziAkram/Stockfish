@@ -832,7 +832,7 @@ Value Search::Worker::search(
 
     opponentWorsening = ss->staticEval > -(ss - 1)->staticEval;
 
-    if (ttMoveGivesCheck && depth < 6)
+    if (ttMoveGivesCheck)
         goto moves_loop;
 
     if (priorReduction >= 3 && !opponentWorsening)
