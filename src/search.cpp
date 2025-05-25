@@ -50,7 +50,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+TUNE(SetRange(0, 512), xx1);
+TUNE(SetRange(-50, 250), xx2,xx3);
+TUNE(SetRange(0, 1800), xx4);
+TUNE(SetRange(0, 2400), xx5);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1783,12 +1786,12 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
 Depth Search::Worker::reduction(bool i_original_improving_flag, Value eval_improvement_diff, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    int originalBaseLMRPenalty = (reductionScale * 205) / 512;
+    int originalBaseLMRPenalty = (reductionScale * xx1) / 512;
     int scaledLMRPenalty = 0;
 
     if (!i_original_improving_flag) {
-        static constexpr Value WORSE_THRESH_LMR = Value(-75);
-        static constexpr Value BETTER_THRESH_LMR = Value(25);
+        static constexpr Value WORSE_THRESH_LMR = Value(-xx2);
+        static constexpr Value BETTER_THRESH_LMR = Value(xx3);
         static constexpr int PENALTY_SCALE_DIVISOR = 256;
 
         int penaltyScaleNumerator;
@@ -1811,7 +1814,7 @@ Depth Search::Worker::reduction(bool i_original_improving_flag, Value eval_impro
         
         scaledLMRPenalty = (originalBaseLMRPenalty * penaltyScaleNumerator) / PENALTY_SCALE_DIVISOR;
     }
-    return reductionScale - (delta * 794 / rootDelta) + scaledLMRPenalty + 1086;
+    return reductionScale - (delta * xx4 / rootDelta) + scaledLMRPenalty + xx5;
 }
 
 // elapsed() returns the time elapsed since the search started. If the
