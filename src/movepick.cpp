@@ -170,6 +170,9 @@ void MovePicker::score() {
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
+          dbg_hit_on(KNIGHT <= pt, 0);
+          dbg_hit_on(pt <= QUEEN, 1);
+
             if (KNIGHT <= pt && pt <= QUEEN)
             {
                 static constexpr int bonus[QUEEN + 1] = {0, 0, 144, 144, 256, 517};
