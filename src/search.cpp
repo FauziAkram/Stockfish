@@ -1623,7 +1623,15 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = ss->staticEval + 376 - depth;
+dbg_mean_of(ss->staticEval, 0);
+dbg_extremes_of(ss->staticEval, 0);
+dbg_mean_of(bestValue, 1);
+dbg_extremes_of(bestValue, 1);
+dbg_mean_of(alpha, 2);
+dbg_extremes_of(alpha, 2);
+
+
+        futilityBase = ss->staticEval + 376;
     }
 
     const PieceToHistory* contHist[] = {(ss - 1)->continuationHistory,
