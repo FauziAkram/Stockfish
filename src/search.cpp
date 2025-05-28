@@ -50,6 +50,13 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=527, xx2=800, xx3=840, xx4=1077, xx5=1000, xx6=14540, xx7=21593, xx8=5000;
+TUNE(SetRange(0, 2200), xx1);
+TUNE(SetRange(0, 2800), xx2);
+TUNE(SetRange(0, 3200), xx3);
+TUNE(SetRange(0, 4000), xx4);
+TUNE(SetRange(0, 5200), xx5);
+TUNE(xx6,xx7,xx8);
 
 namespace TB = Tablebases;
 
@@ -462,11 +469,11 @@ void Search::Worker::iterative_deepening() {
             fallingEval = std::clamp(fallingEval, 0.5786, 1.6752);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            double k      = 0.527;
-            double center = lastBestMoveDepth + 11;
-            timeReduction = 0.8 + 0.84 / (1.077 + std::exp(-k * (completedDepth - center)));
+            double k = (xx1 / 1000.0);
+            double center = lastBestMoveDepth + (xx5 / 100);
+            timeReduction = (xx2 / 1000.0) + (xx3 / 1000.0) / ((xx4 / 1000.0) + std::exp(-k * (completedDepth - center)));
             double reduction =
-              (1.4540 + mainThread->previousTimeReduction) / (2.1593 * timeReduction);
+              ((xx6 / 10000.0) + mainThread->previousTimeReduction) / ((xx7 / 10000.0) * timeReduction);
             double bestMoveInstability = 0.9929 + 1.8519 * totBestMoveChanges / threads.size();
 
             double totalTime =
@@ -474,7 +481,7 @@ void Search::Worker::iterative_deepening() {
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
-                totalTime = std::min(500.0, totalTime);
+                totalTime = std::min((xx8 / 10.0), totalTime);
 
             auto elapsedTime = elapsed();
 
