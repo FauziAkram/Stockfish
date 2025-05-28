@@ -50,7 +50,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=527, xx2=800, xx3=840, xx4=1077, xx5=1000, xx6=14540, xx7=21593, xx8=5000;
+int xx1=527, xx2=800, xx3=840, xx4=1077, xx5=1100, xx6=14540, xx7=21593, xx8=5000;
 TUNE(SetRange(0, 2200), xx1);
 TUNE(SetRange(0, 2800), xx2);
 TUNE(SetRange(0, 3200), xx3);
@@ -470,7 +470,7 @@ void Search::Worker::iterative_deepening() {
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             double k = (xx1 / 1000.0);
-            double center = lastBestMoveDepth + (xx5 / 100);
+            double center = lastBestMoveDepth + (xx5 / 100.0);
             timeReduction = (xx2 / 1000.0) + (xx3 / 1000.0) / ((xx4 / 1000.0) + std::exp(-k * (completedDepth - center)));
             double reduction =
               ((xx6 / 10000.0) + mainThread->previousTimeReduction) / ((xx7 / 10000.0) * timeReduction);
