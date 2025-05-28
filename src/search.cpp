@@ -53,12 +53,12 @@ namespace Stockfish {
 int xx1=7696, xx2=7689, xx3=9708, xx4=6978, xx5=172, xx6=111, xx7=151, xx8=141, xx9=86, xx10=11134, xx11=137, xx12=91, xx13=67, xx14=107, xx15=688, xx16=1287, xx17=5, xx18=0, xx19=0, xx20=0, xx21=8, xx22=473,
 xx23=2796, xx24=125, xx25=77, xx26=1157, xx27=2301, xx28=10, xx29=1858, xx30=1492, xx31=661, xx32=1057, xx33=1266, xx34=175, xx35=486, xx36=325, xx37=93, xx38=20, xx39=376, xx40=168639, xx41=14, xx42=19, xx43=389,
 xx44=213, xx45=6, xx46=5, xx47=94, xx48=5, xx49=7, xx50=201, xx51=58, xx52=400, xx53=968, xx54=7, xx55=232, xx56=224, xx57=131, xx58=31, xx59=137, xx60=125, xx61=158, xx62=0, xx63=4229, xx64=68, xx65=3388, xx66=46,
-xx67=138, xx68=300, xx69=117, xx70=102, xx71=12, xx72=27, xx73=6, xx74=27, xx75=58, xx76=76, xx77=57, xx78=248400, xx79=249757, xx80=4, xx81=244, xx82=206, xx83=997, xx84=47, xx85=84, xx86=269, xx87=253, xx88=91, xx89=53,
+xx67=138, xx68=300, xx69=117, xx70=102, xx71=12, xx72=27, xx73=6, xx74=27, xx75=58, xx76=76, xx77=57, xx78=248400, xx79=249757, xx80=4, xx81=244, xx82=206, xx83=997, xx84=47, xx85=84, xx86=269, xx87=253, xx88=91, xx89=54,
 xx90=2437, xx91=926, xx92=901, xx93=943, xx94=1180, xx95=316, xx96=66, xx97=28047, xx98=2864, xx99=966, xx100=1210, xx101=963, xx102=1036, xx103=848, xx104=50, xx105=2006, xx106=826, xx107=5030, xx108=1000, xx109=3206,
 xx110=826, xx111=42, xx112=9, xx113=1508, xx114=9, xx115=1128, xx116=1024, xx117=3564, xx118=4969, xx119=8, xx120=16, xx121=800, xx122=879, xx123=302, xx124=103, xx125=323, xx126=73, xx127=531, xx128=174, xx129=90, xx130=144,
 xx131=104, xx132=128, xx133=82, xx134=159, xx135=94, xx136=1501, xx137=412, xx138=203, xx139=1040, xx140=1080, xx141=6, xx142=376, xx143=6218, xx144=74, xx145=794, xx146=205, xx147=1086, xx148=143, xx149=89, xx150=1496,
 xx151=302, xx152=737, xx153=179, xx154=3141, xx155=30, xx156=1059, xx157=1310, xx158=1213, xx159=580, xx160=1388, xx161=1092, xx162=631, xx163=294, xx164=517, xx165=126, xx166=445, xx167=792, xx168=0, xx169=1082, xx170=784,
-xx171=0, xx172=705, xx173=450;
+xx171=0, xx172=705, xx173=450, zz1=256, zz2=384, zz3=5000;
 
 TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16);
 TUNE(SetRange(-96, 96), xx17, xx18, xx19, xx20, xx21);
@@ -74,7 +74,7 @@ TUNE(xx141, xx142, xx143, xx144, xx145, xx146, xx147, xx148, xx149, xx150, xx151
 TUNE(SetRange(-100, 100), xx168);
 TUNE(xx169,xx170);
 TUNE(SetRange(-136, 136), xx171);
-TUNE(xx172,xx173);
+TUNE(xx172,xx173,zz1,zz2,zz3);
 
 
 namespace TB = Tablebases;
@@ -500,7 +500,7 @@ void Search::Worker::iterative_deepening() {
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
-                totalTime = std::min(500.0, totalTime);
+                totalTime = std::min((zz3/10.0), totalTime);
 
             auto elapsedTime = elapsed();
 
@@ -1175,7 +1175,7 @@ moves_loop:  // When in check, search starts here
                                  - xx83 * ttMoveHistory / 131072
                                  - (ss->ply > thisThread->rootDepth) * xx84;
                 int tripleMargin = xx85 + xx86 * PvNode - xx87 * !ttCapture + xx88 * ss->ttPv
-                                 - corrValAdj2 - (ss->ply >= thisThread->rootDepth * 2) * xx89;
+                                 - corrValAdj2 - (ss->ply * zz1 / 128 > thisThread->rootDepth * zz2 / 128) * xx89;
 
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
