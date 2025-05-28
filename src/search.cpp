@@ -58,7 +58,7 @@ xx90=2437, xx91=926, xx92=901, xx93=943, xx94=1180, xx95=316, xx96=66, xx97=2804
 xx110=826, xx111=42, xx112=9, xx113=1508, xx114=9, xx115=1128, xx116=1024, xx117=3564, xx118=4969, xx119=8, xx120=16, xx121=800, xx122=879, xx123=302, xx124=103, xx125=323, xx126=73, xx127=531, xx128=174, xx129=90, xx130=144,
 xx131=104, xx132=128, xx133=82, xx134=159, xx135=94, xx136=1501, xx137=412, xx138=203, xx139=1040, xx140=1080, xx141=6, xx142=376, xx143=6218, xx144=74, xx145=794, xx146=205, xx147=1086, xx148=143, xx149=89, xx150=1496,
 xx151=302, xx152=737, xx153=179, xx154=3141, xx155=30, xx156=1059, xx157=1310, xx158=1213, xx159=580, xx160=1388, xx161=1092, xx162=631, xx163=294, xx164=517, xx165=126, xx166=445, xx167=792, xx168=0, xx169=1082, xx170=784,
-xx171=0, xx172=705, xx173=450, zz1=256, zz2=384, zz3=5000;
+xx171=0, xx172=705, xx173=450, yy1=256, yy2=384, yy3=5000;
 
 TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16);
 TUNE(SetRange(-96, 96), xx17, xx18, xx19, xx20, xx21);
@@ -74,7 +74,7 @@ TUNE(xx141, xx142, xx143, xx144, xx145, xx146, xx147, xx148, xx149, xx150, xx151
 TUNE(SetRange(-100, 100), xx168);
 TUNE(xx169,xx170);
 TUNE(SetRange(-136, 136), xx171);
-TUNE(xx172,xx173,zz1,zz2,zz3);
+TUNE(xx172,xx173,yy1,yy2,yy3);
 
 
 namespace TB = Tablebases;
@@ -500,7 +500,7 @@ void Search::Worker::iterative_deepening() {
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
-                totalTime = std::min((zz3/10.0), totalTime);
+                totalTime = std::min((yy3/10.0), totalTime);
 
             auto elapsedTime = elapsed();
 
@@ -1175,7 +1175,7 @@ moves_loop:  // When in check, search starts here
                                  - xx83 * ttMoveHistory / 131072
                                  - (ss->ply > thisThread->rootDepth) * xx84;
                 int tripleMargin = xx85 + xx86 * PvNode - xx87 * !ttCapture + xx88 * ss->ttPv
-                                 - corrValAdj2 - (ss->ply * zz1 / 128 > thisThread->rootDepth * zz2 / 128) * xx89;
+                                 - corrValAdj2 - (ss->ply * yy1 / 128 > thisThread->rootDepth * yy2 / 128) * xx89;
 
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
