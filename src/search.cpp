@@ -50,7 +50,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=128, 	xx2=128, 	xx3=800, 	xx4=840, 	xx5=1077, 	xx6=527, 	xx7=580, 	xx8=1454, 	xx9=21593;
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -462,10 +462,10 @@ void Search::Worker::iterative_deepening() {
             fallingEval = std::clamp(fallingEval, 0.5786, 1.6752);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            int d = completedDepth - lastBestMoveDepth - 11;  
-            timeReduction = 0.8 + 0.84 / (1.077 + std::exp(-0.527 * d));
+            int d = (xx1 * completedDepth - xx2 * lastBestMoveDepth) / 128;  
+            timeReduction = (xx3/1000.0) + (xx4/1000.0) / ((xx5/1000.0) + std::exp(-(xx6/1000.0) * d + (xx7/100.0)));
             double reduction =
-              (1.4540 + mainThread->previousTimeReduction) / (2.1593 * timeReduction);
+              ((xx8/1000.0) + mainThread->previousTimeReduction) / ((xx3/10000.0) * timeReduction);
             double bestMoveInstability = 0.9929 + 1.8519 * totBestMoveChanges / threads.size();
 
             double totalTime =
