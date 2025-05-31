@@ -50,7 +50,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=400, xx2=25, xx3=879, xx4=0;
+TUNE(SetRange(0, 2000), xx1);
+TUNE(SetRange(-50, 150), xx2);
+TUNE(SetRange(0, 2000), xx3);
+TUNE(SetRange(-100, 100), xx4);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1437,7 +1441,7 @@ moves_loop:  // When in check, search starts here
         update_all_stats(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth,
                          ttData.move, moveCount);
         if (!PvNode)
-            ttMoveHistory << (bestMove == ttData.move ? 800 : -879);
+            ttMoveHistory << (bestMove == ttData.move ? xx1 + xx2 * depth : -xx3 + xx4 * depth);
     }
 
     // Bonus for prior quiet countermove that caused the fail low
