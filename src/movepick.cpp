@@ -90,12 +90,12 @@ MovePicker::MovePicker(const Position&              p,
                        int                          pl) :
     pos(p),
     mainHistory(mh),
-    allGeneratedMovesEnd(moves),
     lowPlyHistory(lph),
     captureHistory(cph),
     continuationHistory(ch),
     pawnHistory(ph),
     ttMove(ttm),
+    allGeneratedMovesEnd(moves), // Initializer reordered
     depth(d),
     ply(pl) {
 
@@ -110,9 +110,9 @@ MovePicker::MovePicker(const Position&              p,
 // Evaluation (SEE) greater than or equal to the given threshold.
 MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceToHistory* cph) :
     pos(p),
-    allGeneratedMovesEnd(moves),
     captureHistory(cph),
     ttMove(ttm),
+    allGeneratedMovesEnd(moves), // Initializer reordered
     threshold(th) {
     assert(!pos.checkers());
 
@@ -226,7 +226,7 @@ top:
         cur = endBadCaptures = moves;
         endCur               = generate<CAPTURES>(pos, cur);
 
-        allGeneratedMovesEnd = endCur;
+        allGeneratedMovesEnd = endCur; // All captures generated, update allGeneratedMovesEnd
         score<CAPTURES>();
         partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
         ++stage;
@@ -250,12 +250,14 @@ top:
             cur = endBadQuiets = endBadCaptures;
             endCur             = generate<QUIETS>(pos, cur);
             // If quiets are generated, update allGeneratedMovesEnd to include them.
-            allGeneratedMovesEnd = endCur;
+            allGeneratedMovesEnd = endCur; // All quiets generated, update allGeneratedMovesEnd
 
             score<QUIETS>();
             partial_insertion_sort(cur, endCur, -3560 * depth);
         }
         // If skipQuiets is true, allGeneratedMovesEnd remains pointing after captures.
+        // This is correct as no new moves (quiets) were added.
+
         ++stage;
         [[fallthrough]];
 
@@ -267,7 +269,7 @@ top:
                 return false;
             }))
             return *(cur - 1);
-
+    
         // Prepare the pointers to loop over the bad captures
         cur    = moves;
         endCur = endBadCaptures;
@@ -295,7 +297,7 @@ top:
     case EVASION_INIT :
         cur    = moves;
         endCur = generate<EVASIONS>(pos, cur);
-        allGeneratedMovesEnd = endCur;
+        allGeneratedMovesEnd = endCur; // All evasions generated, update allGeneratedMovesEnd
 
         score<EVASIONS>();
         partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
@@ -321,7 +323,7 @@ bool MovePicker::can_move_king_or_pawn() const {
     // SEE negative captures shouldn't be returned in GOOD_CAPTURE stage
     assert(stage > GOOD_CAPTURE && stage != EVASION_INIT);
 
-    for (const ExtMove* m = moves; m < allGeneratedMovesEnd; ++m)
+    for (const ExtMove* m = moves; m < allGeneratedMovesEnd; ++m) // Iterate up to allGeneratedMovesEnd
     {
         PieceType movedPieceType = type_of(pos.moved_piece(*m));
         if ((movedPieceType == PAWN || movedPieceType == KING) && pos.legal(*m))
