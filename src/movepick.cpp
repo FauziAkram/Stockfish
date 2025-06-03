@@ -95,7 +95,7 @@ MovePicker::MovePicker(const Position&              p,
     continuationHistory(ch),
     pawnHistory(ph),
     ttMove(ttm),
-    allGeneratedMovesEnd(moves), // Initializer reordered
+    allGeneratedMovesEnd(moves),
     depth(d),
     ply(pl) {
 
@@ -112,7 +112,7 @@ MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceTo
     pos(p),
     captureHistory(cph),
     ttMove(ttm),
-    allGeneratedMovesEnd(moves), // Initializer reordered
+    allGeneratedMovesEnd(moves),
     threshold(th) {
     assert(!pos.checkers());
 
@@ -256,8 +256,6 @@ top:
             partial_insertion_sort(cur, endCur, -3560 * depth);
         }
         // If skipQuiets is true, allGeneratedMovesEnd remains pointing after captures.
-        // This is correct as no new moves (quiets) were added.
-
         ++stage;
         [[fallthrough]];
 
@@ -269,7 +267,7 @@ top:
                 return false;
             }))
             return *(cur - 1);
-    
+
         // Prepare the pointers to loop over the bad captures
         cur    = moves;
         endCur = endBadCaptures;
