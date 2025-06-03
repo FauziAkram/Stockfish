@@ -321,7 +321,7 @@ bool MovePicker::can_move_king_or_pawn() const {
     // SEE negative captures shouldn't be returned in GOOD_CAPTURE stage
     assert(stage > GOOD_CAPTURE && stage != EVASION_INIT);
 
-    for (const ExtMove* m = moves; m < allGeneratedMovesEnd; ++m) // Iterate up to allGeneratedMovesEnd
+    for (const ExtMove* m = moves; m < allGeneratedMovesEnd; ++m)
     {
         PieceType movedPieceType = type_of(pos.moved_piece(*m));
         if ((movedPieceType == PAWN || movedPieceType == KING) && pos.legal(*m))
