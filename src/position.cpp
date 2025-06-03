@@ -16,24 +16,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- 
- 
-
- 
- 
- 
- 
-
- 
- 
- 
- 
-
- 
- 
-*/
-
 #include "position.h"
 
 #include <algorithm>
@@ -1285,13 +1267,12 @@ void Position::flip() {
 // This is meant to be helpful when debugging.
 bool Position::pos_is_ok() const {
 
-    // Initial checks are kept
     if ((sideToMove != WHITE && sideToMove != BLACK) || piece_on(square<KING>(WHITE)) != W_KING
         || piece_on(square<KING>(BLACK)) != B_KING
         || (ep_square() != SQ_NONE && relative_rank(sideToMove, ep_square()) != RANK_6))
         assert(0 && "pos_is_ok: Default");
 
-    return true; // This is now the effective return
+    return true;
 }
 
 }  // namespace Stockfish
