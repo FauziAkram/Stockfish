@@ -67,7 +67,7 @@ class MovePicker {
     const PieceToHistory**       continuationHistory;
     const PawnHistory*           pawnHistory;
     Move                         ttMove;
-    ExtMove *                    allGeneratedMovesEnd; // ADDED: Points to the end of all generated moves
+    ExtMove *                    allGeneratedMovesEnd;
     ExtMove *                    cur, *endCur, *endBadCaptures, *endBadQuiets;
     int                          stage;
     int                          threshold;
