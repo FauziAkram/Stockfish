@@ -16,6 +16,24 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+ 
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ 
+*/
+
 #include "position.h"
 
 #include <algorithm>
@@ -1267,46 +1285,13 @@ void Position::flip() {
 // This is meant to be helpful when debugging.
 bool Position::pos_is_ok() const {
 
+    // Initial checks are kept
     if ((sideToMove != WHITE && sideToMove != BLACK) || piece_on(square<KING>(WHITE)) != W_KING
         || piece_on(square<KING>(BLACK)) != B_KING
         || (ep_square() != SQ_NONE && relative_rank(sideToMove, ep_square()) != RANK_6))
         assert(0 && "pos_is_ok: Default");
 
-        return true;
-
-    if (pieceCount[W_KING] != 1 || pieceCount[B_KING] != 1
-        || attackers_to_exist(square<KING>(~sideToMove), pieces(), sideToMove))
-        assert(0 && "pos_is_ok: Kings");
-
-    if ((pieces(PAWN) & (Rank1BB | Rank8BB)) || pieceCount[W_PAWN] > 8 || pieceCount[B_PAWN] > 8)
-        assert(0 && "pos_is_ok: Pawns");
-
-    if ((pieces(WHITE) & pieces(BLACK)) || (pieces(WHITE) | pieces(BLACK)) != pieces()
-        || popcount(pieces(WHITE)) > 16 || popcount(pieces(BLACK)) > 16)
-        assert(0 && "pos_is_ok: Bitboards");
-
-    for (PieceType p1 = PAWN; p1 <= KING; ++p1)
-        for (PieceType p2 = PAWN; p2 <= KING; ++p2)
-            if (p1 != p2 && (pieces(p1) & pieces(p2)))
-                assert(0 && "pos_is_ok: Bitboards");
-
-
-    for (Piece pc : Pieces)
-        if (pieceCount[pc] != popcount(pieces(color_of(pc), type_of(pc)))
-            || pieceCount[pc] != std::count(board, board + SQUARE_NB, pc))
-            assert(0 && "pos_is_ok: Pieces");
-
-    for (Color c : {WHITE, BLACK})
-        for (CastlingRights cr : {c & KING_SIDE, c & QUEEN_SIDE})
-        {
-            if (!can_castle(cr))
-                continue;
-
-            if (piece_on(castlingRookSquare[cr]) != make_piece(c, ROOK)
-                || castlingRightsMask[castlingRookSquare[cr]] != cr
-                || (castlingRightsMask[square<KING>(c)] & cr) != cr)
-                assert(0 && "pos_is_ok: Castling");
-        }
+    return true; // This is now the effective return
 }
 
 }  // namespace Stockfish
