@@ -938,8 +938,13 @@ Value Search::Worker::search(
 
             // If the qsearch held, perform the regular search
             if (value >= probCutBeta && probCutDepth > 0)
+            {
+                const bool prevState = disallowExtension;
+                disallowExtension = true;
                 value = -search<NonPV>(pos, ss + 1, -probCutBeta, -probCutBeta + 1, probCutDepth,
                                        !cutNode);
+                disallowExtension = prevState;
+            }
 
             undo_move(pos, move);
 
@@ -1120,7 +1125,7 @@ moves_loop:  // When in check, search starts here
         if (!rootNode && move == ttData.move && !excludedMove
             && depth >= 6 - (thisThread->completedDepth > 27) + ss->ttPv && is_valid(ttData.value)
             && !is_decisive(ttData.value) && (ttData.bound & BOUND_LOWER)
-            && ttData.depth >= depth - 3)
+            && ttData.depth >= depth - 3 && !disallowExtension)
         {
             Value singularBeta  = ttData.value - (58 + 76 * (ss->ttPv && !PvNode)) * depth / 57;
             Depth singularDepth = newDepth / 2;
