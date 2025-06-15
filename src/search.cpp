@@ -1214,18 +1214,18 @@ moves_loop:  // When in check, search starts here
         if (move == ttData.move)
             r -= 2006;
 
-        if (capture)
+        if (capture) {
             ss->statScore =
               826 * int(PieceValue[pos.captured_piece()]) / 128
               + thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())]
               - 5030;
-          dbg_mean_of(int(PieceValue[pos.captured_piece()]),0);
-dbg_extremes_of(int(PieceValue[pos.captured_piece()]),0);'
+          dbg_mean_of(826 * int(PieceValue[pos.captured_piece()]) / 128,0);
+dbg_extremes_of(826 * int(PieceValue[pos.captured_piece()]) / 128,0);'
   dbg_mean_of(thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())],1);
-dbg_extremes_of(thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())],1);
+dbg_extremes_of(thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())],1); }
 
 
-        else
+        else {
             ss->statScore = 2 * thisThread->mainHistory[us][move.from_to()]
                           + (*contHist[0])[movedPiece][move.to_sq()]
                           + (*contHist[1])[movedPiece][move.to_sq()] - 3206;
@@ -1237,7 +1237,7 @@ dbg_extremes_of(thisThread->mainHistory[us][move.from_to()],2);
 dbg_extremes_of((*contHist[0])[movedPiece][move.to_sq()],3);
 
       dbg_mean_of((*contHist[0])[movedPiece][move.to_sq()],4);
-dbg_extremes_of((*contHist[0])[movedPiece][move.to_sq()],4);
+dbg_extremes_of((*contHist[0])[movedPiece][move.to_sq()],4);}
 
 
         // Decrease/increase reduction for moves with a good/bad history
