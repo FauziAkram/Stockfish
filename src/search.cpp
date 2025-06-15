@@ -1219,8 +1219,8 @@ moves_loop:  // When in check, search starts here
               826 * int(PieceValue[pos.captured_piece()]) / 128
               + thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())]
               - 5030;
-          dbg_mean_of(826 * int(PieceValue[pos.captured_piece()]) / 128,0);
-dbg_extremes_of(826 * int(PieceValue[pos.captured_piece()]) / 128,0);'
+          dbg_mean_of(int(PieceValue[pos.captured_piece()]),0);
+dbg_extremes_of(int(PieceValue[pos.captured_piece()]),0);'
   dbg_mean_of(thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())],1);
 dbg_extremes_of(thisThread->captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())],1);
 
