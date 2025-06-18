@@ -1203,7 +1203,7 @@ moves_loop:  // When in check, search starts here
         if (ttCapture)
             r += 1210 + (depth < 8) * 963;
 
-        if ((ss + 2)->cutoffCnt >= 24)
+        if ((ss + 2)->cutoffCnt >= 24 && allNode)
             r += 1024;
 
         // Increase reduction if next ply has a lot of fail high
