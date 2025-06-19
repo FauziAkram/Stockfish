@@ -1226,6 +1226,11 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * 826 / 8192;
+dbg_mean_of(r);
+dbg_extremes_of(r);
+dbg_hit_on(r>0, 0);
+dbg_hit_on(r>4000, 1);
+dbg_hit_on(r<-4000, 2);
 
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
