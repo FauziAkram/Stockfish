@@ -1205,7 +1205,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 2)
-            r += 1036 + allNode * 848;
+            r += 1165;
 
         if (!capture && !givesCheck && ss->quietMoveStreak >= 2)
             r += (ss->quietMoveStreak - 1) * 50;
