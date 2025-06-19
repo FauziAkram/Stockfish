@@ -50,6 +50,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=125, xx2=77, xx3=2301, xx4=100, xx5=77, xx6=1500, xx7=2301;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7);
 
 namespace TB = Tablebases;
 
@@ -682,13 +684,23 @@ Value Search::Worker::search(
         if (ttData.move && ttData.value >= beta)
         {
             // Bonus for a quiet ttMove that fails high
+            if (depth < 11) {
             if (!ttCapture)
                 update_quiet_histories(pos, ss, *this, ttData.move,
-                                       std::min(125 * depth - 77, 1157));
+                                          (xx1 * depth - xx2));
 
             // Extra penalty for early quiet moves of the previous ply
             if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 && !priorCapture)
-                update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -2301);
+                update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -xx3);}
+
+            else {
+            if (!ttCapture)
+                update_quiet_histories(pos, ss, *this, ttData.move,
+                                       std::min(xx4 * depth - xx5, xx6));
+
+            // Extra penalty for early quiet moves of the previous ply
+            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 && !priorCapture)
+                update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -xx7);}
         }
 
         // Partial workaround for the graph history interaction problem
