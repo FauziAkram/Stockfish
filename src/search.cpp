@@ -682,13 +682,23 @@ Value Search::Worker::search(
         if (ttData.move && ttData.value >= beta)
         {
             // Bonus for a quiet ttMove that fails high
+            if (depth < 11) {
             if (!ttCapture)
                 update_quiet_histories(pos, ss, *this, ttData.move,
-                                       std::min(125 * depth - 77, 1157));
+                                       (127 * depth - 83));
 
             // Extra penalty for early quiet moves of the previous ply
             if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 && !priorCapture)
-                update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -2301);
+                update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -1908);}
+
+            else {
+            if (!ttCapture)
+                update_quiet_histories(pos, ss, *this, ttData.move,
+                                       std::min(96 * depth - 80, 1463));
+
+            // Extra penalty for early quiet moves of the previous ply
+            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 && !priorCapture)
+                update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -2260);}
         }
 
         // Partial workaround for the graph history interaction problem
