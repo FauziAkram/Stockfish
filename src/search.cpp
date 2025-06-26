@@ -687,7 +687,7 @@ Value Search::Worker::search(
                                        std::min(125 * depth - 77, 1157));
 
             // Extra penalty for early quiet moves of the previous ply
-            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 && !priorCapture)
+            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 - (depth < 11) && !priorCapture)
                 update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -2301);
         }
 
