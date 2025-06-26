@@ -684,7 +684,7 @@ Value Search::Worker::search(
             // Bonus for a quiet ttMove that fails high
             if (!ttCapture)
                 update_quiet_histories(pos, ss, *this, ttData.move,
-                                      ((depth < 11) ? (127 * depth) : std::min(96 * depth, 1464)) - 82;
+                (depth < 11 ? 127 * depth : std::min(96 * depth, 1464)) - 82);
 
             // Extra penalty for early quiet moves of the previous ply
             if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 && !priorCapture)
