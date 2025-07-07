@@ -90,8 +90,8 @@ void TimeManagement::init(Search::LimitsType& limits,
     int centiMTG = limits.movestogo ? std::min(limits.movestogo * 100, 5000) : 5051;
 
     // If less than one second, gradually reduce mtg
-    if (scaledTime < 1000)
-        centiMTG = scaledTime * 4.5;
+    if (scaledTime < 960)
+        centiMTG = scaledTime * 4.4;
 
     // Make sure timeLeft is > 0 since we may use it as a divisor
     TimePoint timeLeft =
