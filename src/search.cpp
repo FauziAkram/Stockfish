@@ -1075,7 +1075,7 @@ moves_loop:  // When in check, search starts here
                 int history =
                   (*contHist[0])[movedPiece][move.to_sq()]
                   + (*contHist[1])[movedPiece][move.to_sq()]
-                  + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
+                  + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()]
                   + 68 * thisThread->mainHistory[us][move.from_to()] / 32;
 
                 lmrDepth += history / 3388;
