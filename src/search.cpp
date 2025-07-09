@@ -1077,13 +1077,30 @@ moves_loop:  // When in check, search starts here
                   + (*contHist[1])[movedPiece][move.to_sq()]
                   + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
 
+              dbg_mean_of(history, 0);
+dbg_extremes_of(history, 0);
+
                 // Continuation history based pruning
                 if (history < -4229 * depth)
                     continue;
 
+              
+
                 history += 68 * thisThread->mainHistory[us][move.from_to()] / 32;
 
+               dbg_mean_of(history, 1);
+dbg_extremes_of(history, 1);
+               dbg_mean_of(68 * thisThread->mainHistory[us][move.from_to()] / 32, 2);
+dbg_extremes_of(68 * thisThread->mainHistory[us][move.from_to()] / 32, 2);
+              
+              dbg_mean_of(lmrDepth, 3);
+dbg_extremes_of(lmrDepth, 3);
                 lmrDepth += history / 3388;
+
+              dbg_mean_of(lmrDepth, 4);
+dbg_extremes_of(lmrDepth, 4);
+              dbg_mean_of(history / 3388, 5);
+dbg_extremes_of(history / 3388, 5);
 
                 Value baseFutility = (bestMove ? 46 : 230);
                 Value futilityValue =
