@@ -1085,12 +1085,12 @@ moves_loop:  // When in check, search starts here
 
                 Value baseFutility = (bestMove ? 46 : 230);
                 Value futilityValue =
-                  ss->staticEval + baseFutility + 110 * lmrDepth + 102 * (ss->staticEval > alpha);
+                  ss->staticEval + baseFutility + 102 * lmrDepth + 102 * (ss->staticEval > alpha);
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
                 // scales well with respect to time and threads
-                if (!ss->inCheck && lmrDepth < 15 && futilityValue <= alpha)
+                if (!ss->inCheck && lmrDepth < 14 && futilityValue <= alpha)
                 {
                     if (bestValue <= futilityValue && !is_decisive(bestValue)
                         && !is_win(futilityValue))
