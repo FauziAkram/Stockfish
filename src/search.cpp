@@ -51,6 +51,14 @@
 
 namespace Stockfish {
 
+static constexpr Value FutilityMargin[49] = {
+    -1404, -1287, -1170, -1053,  -936,  -819,  -702,  -585,  -468, -351, -234, -117,
+        0,   117,   234,   351,   468,   585,   702,   819,   936, 1053, 1170, 1287,
+     1404,  1521,  1638,  1755,  1872,  1989,  2106,  2223,  2340, 2457, 2574, 2691,
+     2808,  2925,  3042,  3159,  3276,  3393,  3510,  3627,  3744, 3861, 3978, 4095,
+     4212
+};
+
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1087,7 +1095,7 @@ moves_loop:  // When in check, search starts here
 
                 Value baseFutility = (bestMove ? 46 : 230);
                 Value futilityValue =
-                  ss->staticEval + baseFutility + 117 * lmrDepth + 102 * (ss->staticEval > alpha);
+                  ss->staticEval + baseFutility + FutilityMargin[lmrDepth + 12] + 102 * (ss->staticEval > alpha);
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
