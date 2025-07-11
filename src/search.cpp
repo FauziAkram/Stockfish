@@ -1992,7 +1992,7 @@ void SearchManager::check_time(Search::Worker& worker) {
           || (worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes)))
         worker.threads.stop = worker.threads.abortedSearch = true;
 
-    pastOptimum = limits.use_time_management() && elapsed > mainThread->tm.optimum();
+    pastOptimum = worker.limits.use_time_management() && elapsed > tm.optimum();
 }
 
 // Used to correct and extend PVs for moves that have a TB (but not a mate) score.
