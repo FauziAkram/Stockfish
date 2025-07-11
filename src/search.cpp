@@ -230,6 +230,8 @@ void Search::Worker::start_searching() {
     main_manager()->updates.onBestmove(bestmove, ponder);
 }
 
+bool pastOptimum;
+
 // Main iterative deepening loop. It calls search()
 // repeatedly with increasing depth until the allocated thinking time has been
 // consumed, the user stops the search, or the maximum search depth is reached.
@@ -248,6 +250,7 @@ void Search::Worker::iterative_deepening() {
     Color  us            = rootPos.side_to_move();
     double timeReduction = 1, totBestMoveChanges = 0;
     int    delta, iterIdx                        = 0;
+    pastOptimum = false;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
     // (ss - 7) is needed for update_continuation_histories(ss - 1) which accesses (ss - 6),
@@ -1197,6 +1200,9 @@ moves_loop:  // When in check, search starts here
         r -= moveCount * 66;
         r -= std::abs(correctionValue) / 28047;
 
+        if (pastOptimum && thisThread->completedDepth >= 10)
+            r += 1024;
+
         // Increase reduction for cut nodes
         if (cutNode)
             r += 2864 + 966 * !ttData.move;
@@ -1985,6 +1991,8 @@ void SearchManager::check_time(Search::Worker& worker) {
           || (worker.limits.movetime && elapsed >= worker.limits.movetime)
           || (worker.limits.nodes && worker.threads.nodes_searched() >= worker.limits.nodes)))
         worker.threads.stop = worker.threads.abortedSearch = true;
+
+    pastOptimum = Limits.use_time_management() && elapsed > Time.optimum();
 }
 
 // Used to correct and extend PVs for moves that have a TB (but not a mate) score.
