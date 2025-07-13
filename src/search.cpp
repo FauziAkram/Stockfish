@@ -50,6 +50,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=31, zz1=31, xx2=137, zz2=137, xx3=125, zz3=125, xx4=158;
+TUNE(SetRange(1, 94), xx1,zz1);
+TUNE(SetRange(0, 411), xx2,zz2);
+TUNE(SetRange(0, 375), xx3,zz3);
+TUNE(SetRange(0, 474), xx4);
 
 namespace TB = Tablebases;
 
@@ -1055,8 +1060,9 @@ moves_loop:  // When in check, search starts here
                 }
 
                 // SEE based pruning for captures and checks
-                int seeHist = std::clamp(captHist / 31, -137 * depth, 125 * depth);
-                if (!pos.see_ge(move, -158 * depth - seeHist))
+                int seeHist = capture ? std::clamp(captHist / xx1, -xx2 * depth, xx3 * depth):
+                                        std::clamp(captHist / zz1, -zz2 * depth, zz3 * depth);
+                if (!pos.see_ge(move, -xx4 * depth - seeHist))
                 {
                     bool mayStalemateTrap =
                       depth > 2 && alpha < 0 && pos.non_pawn_material(us) == PieceValue[movedPiece]
