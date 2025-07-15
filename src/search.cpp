@@ -1246,6 +1246,14 @@ moves_loop:  // When in check, search starts here
           dbg_mean_of(r,3);
   dbg_extremes_of(r,3);
 
+          if (value > alpha) {
+dbg_mean_of(r,6);
+  dbg_extremes_of(r,6);}
+
+          if (d < newDepth) {
+dbg_mean_of(r,7);
+  dbg_extremes_of(r,7);}
+          
             // Do a full-depth search when reduced LMR search fails high
             // (*Scaler) Usually doing more shallower searches
             // doesn't scale well to longer TCs
