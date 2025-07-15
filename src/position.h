@@ -1,21 +1,3 @@
-/*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2025 The Stockfish developers (see AUTHORS file)
-
-  Stockfish is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Stockfish is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #ifndef POSITION_H_INCLUDED
 #define POSITION_H_INCLUDED
 
@@ -26,6 +8,7 @@
 #include <string>
 
 #include "bitboard.h"
+#include "psqt.h"
 #include "types.h"
 
 namespace Stockfish {
@@ -35,14 +18,12 @@ class TranspositionTable;
 // StateInfo struct stores information needed to restore a Position object to
 // its previous state when we retract a move. Whenever a move is made on the
 // board (by calling Position::do_move), a StateInfo object must be passed.
-
+// This version is simplified to match HCE needs.
 struct StateInfo {
 
     // Copied when making a move
-    Key    materialKey;
     Key    pawnKey;
-    Key    minorPieceKey;
-    Key    nonPawnKey[COLOR_NB];
+    Key    materialKey;
     Value  nonPawnMaterial[COLOR_NB];
     int    castlingRights;
     int    rule50;
@@ -101,6 +82,7 @@ class Position {
     int count() const;
     template<PieceType Pt>
     Square square(Color c) const;
+    bool is_on_semiopen_file(Color c, Square s) const;
 
     // Castling
     CastlingRights castling_rights(Color c) const;
@@ -118,7 +100,7 @@ class Position {
     Bitboard attackers_to(Square s) const;
     Bitboard attackers_to(Square s, Bitboard occupied) const;
     bool     attackers_to_exist(Square s, Bitboard occupied, Color c) const;
-    void     update_slider_blockers(Color c) const;
+    void     update_slider_blockers(Color c) const; // Changed from slider_blockers
     template<PieceType Pt>
     Bitboard attacks_by(Color c) const;
 
@@ -131,12 +113,16 @@ class Position {
     Piece moved_piece(Move m) const;
     Piece captured_piece() const;
 
+    // Piece specific (added/changed for HCE)
+    bool pawn_passed(Color c, Square s) const;
+    bool opposite_bishops() const;
+    int  pawns_on_same_color_squares(Color c, Square s) const;
+
     // Doing and undoing moves
-    void       do_move(Move m, StateInfo& newSt, const TranspositionTable* tt);
-    DirtyPiece do_move(Move m, StateInfo& newSt, bool givesCheck, const TranspositionTable* tt);
-    void       undo_move(Move m);
-    void       do_null_move(StateInfo& newSt, const TranspositionTable& tt);
-    void       undo_null_move();
+    void do_move(Move m, StateInfo& newSt, const TranspositionTable* tt = nullptr);
+    void undo_move(Move m);
+    void do_null_move(StateInfo& newSt, const TranspositionTable& tt);
+    void undo_null_move();
 
     // Static Exchange Evaluation
     bool see_ge(Move m, int threshold = 0) const;
@@ -145,20 +131,19 @@ class Position {
     Key key() const;
     Key material_key() const;
     Key pawn_key() const;
-    Key minor_piece_key() const;
-    Key non_pawn_key(Color c) const;
 
     // Other properties of the position
     Color side_to_move() const;
     int   game_ply() const;
     bool  is_chess960() const;
     bool  is_draw(int ply) const;
-    bool  is_repetition(int ply) const;
-    bool  upcoming_repetition(int ply) const;
+    bool  upcoming_repetition(int ply) const; // Changed from has_game_cycle
     bool  has_repeated() const;
     int   rule50_count() const;
     Value non_pawn_material(Color c) const;
     Value non_pawn_material() const;
+    Score psq_score() const; // Added for HCE
+    Value psq_eg_stm() const; // Added for HCE
 
     // Position consistency check, for debugging
     bool pos_is_ok() const;
@@ -178,12 +163,7 @@ class Position {
     // Other helpers
     void move_piece(Square from, Square to);
     template<bool Do>
-    void do_castling(Color             us,
-                     Square            from,
-                     Square&           to,
-                     Square&           rfrom,
-                     Square&           rto,
-                     DirtyPiece* const dp = nullptr);
+    void do_castling(Color us, Square from, Square& to, Square& rfrom, Square& rto);
     template<bool AfterMove>
     Key adjust_key50(Key k) const;
 
@@ -198,6 +178,7 @@ class Position {
     StateInfo* st;
     int        gamePly;
     Color      sideToMove;
+    Score      psq; // Added for HCE
     bool       chess960;
 };
 
@@ -242,6 +223,10 @@ template<PieceType Pt>
 inline Square Position::square(Color c) const {
     assert(count<Pt>(c) == 1);
     return lsb(pieces(c, Pt));
+}
+
+inline bool Position::is_on_semiopen_file(Color c, Square s) const {
+  return !(pieces(c, PAWN) & file_bb(s));
 }
 
 inline Square Position::ep_square() const { return st->epSquare; }
@@ -299,9 +284,11 @@ inline Key Position::pawn_key() const { return st->pawnKey; }
 
 inline Key Position::material_key() const { return st->materialKey; }
 
-inline Key Position::minor_piece_key() const { return st->minorPieceKey; }
+inline Score Position::psq_score() const { return psq; }
 
-inline Key Position::non_pawn_key(Color c) const { return st->nonPawnKey[c]; }
+inline Value Position::psq_eg_stm() const {
+  return (sideToMove == WHITE ? 1 : -1) * eg_value(psq);
+}
 
 inline Value Position::non_pawn_material(Color c) const { return st->nonPawnMaterial[c]; }
 
@@ -320,9 +307,6 @@ inline bool Position::capture(Move m) const {
     return (!empty(m.to_sq()) && m.type_of() != CASTLING) || m.type_of() == EN_PASSANT;
 }
 
-// Returns true if a move is generated from the capture stage, having also
-// queen promotions covered, i.e. consistency with the capture stage move
-// generation is needed to avoid the generation of duplicate moves.
 inline bool Position::capture_stage(Move m) const {
     assert(m.is_ok());
     return capture(m) || m.promotion_type() == QUEEN;
@@ -337,6 +321,7 @@ inline void Position::put_piece(Piece pc, Square s) {
     byColorBB[color_of(pc)] |= s;
     pieceCount[pc]++;
     pieceCount[make_piece(color_of(pc), ALL_PIECES)]++;
+    psq += PSQT::psq[pc][s];
 }
 
 inline void Position::remove_piece(Square s) {
@@ -348,6 +333,7 @@ inline void Position::remove_piece(Square s) {
     board[s] = NO_PIECE;
     pieceCount[pc]--;
     pieceCount[make_piece(color_of(pc), ALL_PIECES)]--;
+    psq -= PSQT::psq[pc][s];
 }
 
 inline void Position::move_piece(Square from, Square to) {
@@ -359,13 +345,28 @@ inline void Position::move_piece(Square from, Square to) {
     byColorBB[color_of(pc)] ^= fromTo;
     board[from] = NO_PIECE;
     board[to]   = pc;
-}
-
-inline void Position::do_move(Move m, StateInfo& newSt, const TranspositionTable* tt = nullptr) {
-    do_move(m, newSt, gives_check(m), tt);
+    psq += PSQT::psq[pc][to] - PSQT::psq[pc][from];
 }
 
 inline StateInfo* Position::state() const { return st; }
+
+// Added for HCE
+inline bool Position::pawn_passed(Color c, Square s) const {
+    const Bitboard passed_pawn_span(Color c, Square s);
+    return !(pieces(~c, PAWN) & passed_pawn_span(c, s));
+}
+
+inline int Position::pawns_on_same_color_squares(Color c, Square s) const {
+    const Bitboard DarkSquares = 0xAA55AA55AA55AA55ULL;
+    return popcount(pieces(c, PAWN) & ((DarkSquares & s) ? DarkSquares : ~DarkSquares));
+}
+
+inline bool Position::opposite_bishops() const {
+  constexpr bool opposite_colors(Square s1, Square s2);
+  return   count<BISHOP>(WHITE) == 1
+        && count<BISHOP>(BLACK) == 1
+        && opposite_colors(square<BISHOP>(WHITE), square<BISHOP>(BLACK));
+}
 
 }  // namespace Stockfish
 
