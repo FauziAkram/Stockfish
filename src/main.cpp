@@ -18,6 +18,7 @@
 
 #include <iostream>
 
+#include "bitbases.h"
 #include "bitboard.h"
 #include "misc.h"
 #include "position.h"
