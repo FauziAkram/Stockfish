@@ -13,6 +13,8 @@
 #pragma warning(disable: 4800)
 #endif
 
+#define ASSERT_ALIGNED(ptr, alignment) assert(reinterpret_cast<uintptr_t>(ptr) % alignment == 0)
+
 #if defined(_WIN64) && defined(_MSC_VER)
 #  include <intrin.h>
 #  define IS_64BIT
