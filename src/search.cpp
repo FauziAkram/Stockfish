@@ -1244,7 +1244,7 @@ moves_loop:  // When in check, search starts here
             value         = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, d, true);
             ss->reduction = 0;
           dbg_mean_of(r,3);
-  dbg_extremes_of(r,3);}
+  dbg_extremes_of(r,3);
 
             // Do a full-depth search when reduced LMR search fails high
             // (*Scaler) Usually doing more shallower searches
@@ -1252,7 +1252,7 @@ moves_loop:  // When in check, search starts here
             if (value > alpha && d < newDepth)
             {
               dbg_mean_of(r,4);
-  dbg_extremes_of(r,4);}
+  dbg_extremes_of(r,4);
                 // Adjust full-depth search based on LMR results - if the result was
                 // good enough search deeper, if it was bad enough search shallower.
                 const bool doDeeperSearch    = value > (bestValue + 42 + 2 * newDepth);
