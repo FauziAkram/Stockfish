@@ -1095,7 +1095,7 @@ moves_loop:  // When in check, search starts here
                 if (!ss->inCheck && lmrDepth < 12 && futilityValue <= alpha)
                 {
                     if (bestValue <= futilityValue && !is_decisive(bestValue)
-                        && !is_win(futilityValue))
+                        && !is_win(futilityValue) && lmrDepth > -12)
                         bestValue = futilityValue;
                     continue;
                 }
