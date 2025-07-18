@@ -1092,11 +1092,13 @@ moves_loop:  // When in check, search starts here
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
                 // scales well with respect to time and threads
-                if (!ss->inCheck && lmrDepth < 12 && futilityValue <= alpha)
+                if (!ss->inCheck && futilityValue <= alpha)
                 {
                     if (bestValue <= futilityValue && !is_decisive(bestValue)
-                        && !is_win(futilityValue))
-                        bestValue = futilityValue;
+                        && !is_win(futilityValue)) {
+                      dbg_mean_of(lmrDepth);
+dbg_extremes_of(lmrDepth);
+                        bestValue = futilityValue;}
                     continue;
                 }
 
