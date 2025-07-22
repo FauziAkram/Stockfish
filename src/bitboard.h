@@ -297,16 +297,11 @@ inline Square lsb(Bitboard b) {
     #else  // MSVC, WIN32
     unsigned long idx;
 
-    if (b & 0xffffffff)
-    {
-        _BitScanForward(&idx, int32_t(b));
+    if (_BitScanForward(&idx, int32_t(b)))
         return Square(idx);
-    }
-    else
-    {
-        _BitScanForward(&idx, int32_t(b >> 32));
-        return Square(idx + 32);
-    }
+ 
+    _BitScanForward(&idx, int32_t(b >> 32));
+    return Square(idx + 32);
     #endif
 #else  // Compiler is neither GCC nor MSVC compatible
     #error "Compiler not supported."
@@ -332,16 +327,11 @@ inline Square msb(Bitboard b) {
 
     unsigned long idx;
 
-    if (b >> 32)
-    {
-        _BitScanReverse(&idx, int32_t(b >> 32));
+    if (_BitScanReverse(&idx, int32_t(b >> 32)))
         return Square(idx + 32);
-    }
-    else
-    {
-        _BitScanReverse(&idx, int32_t(b));
-        return Square(idx);
-    }
+ 
+    _BitScanReverse(&idx, int32_t(b));
+    return Square(idx);
     #endif
 #else  // Compiler is neither GCC nor MSVC compatible
     #error "Compiler not supported."
