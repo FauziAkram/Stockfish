@@ -218,23 +218,14 @@ bool has_large_pages() {
 
     constexpr size_t page_size = 2 * 1024 * 1024;  // 2MB page size assumed
     void*            mem       = aligned_large_pages_alloc_windows(page_size);
-    if (mem == nullptr)
-    {
-        return false;
-    }
-    else
-    {
+    if (mem)
         aligned_large_pages_free(mem);
-        return true;
-    }
+    // A void* is implicitly convertible to bool; nullptr becomes false.
+    return mem;
 
 #elif defined(__linux__)
 
-    #if defined(MADV_HUGEPAGE)
     return true;
-    #else
-    return false;
-    #endif
 
 #else
 
