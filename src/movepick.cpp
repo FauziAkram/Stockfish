@@ -82,6 +82,7 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
 // MovePicker constructor for the main search and for the quiescence search
 MovePicker::MovePicker(const Position&              p,
                        Move                         ttm,
+                       Move                         ssm,
                        Depth                        d,
                        const ButterflyHistory*      mh,
                        const LowPlyHistory*         lph,
@@ -96,6 +97,7 @@ MovePicker::MovePicker(const Position&              p,
     continuationHistory(ch),
     pawnHistory(ph),
     ttMove(ttm),
+    sMove(ssm),
     depth(d),
     ply(pl) {
 
@@ -150,9 +152,12 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         const PieceType pt            = type_of(pc);
         const Piece     capturedPiece = pos.piece_on(to);
 
-        if constexpr (Type == CAPTURES)
+        if constexpr (Type == CAPTURES) {
             m.value = (*captureHistory)[pc][to][type_of(capturedPiece)]
                     + 7 * int(PieceValue[capturedPiece]) + 1024 * bool(pos.check_squares(pt) & to);
+            if (m == ssMove)
+                m.value += 5000;
+        }
 
         else if constexpr (Type == QUIETS)
         {
@@ -176,6 +181,9 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
                 int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
                 m.value += bonus[pt] * v;
             }
+
+            if (m == ssMove)
+                m.value += 4000;
 
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + ply);
