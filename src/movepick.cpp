@@ -97,7 +97,7 @@ MovePicker::MovePicker(const Position&              p,
     continuationHistory(ch),
     pawnHistory(ph),
     ttMove(ttm),
-    sMove(ssm),
+    ssMove(ssm),
     depth(d),
     ply(pl) {
 
