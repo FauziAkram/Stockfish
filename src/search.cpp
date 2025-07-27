@@ -821,7 +821,7 @@ Value Search::Worker::search(
     if (priorReduction > 1) {
     if (!opponentWorsening)
         depth++;
-    if (depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 175)
+    else if (depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 175)
         depth--;
     }
 
