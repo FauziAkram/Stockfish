@@ -50,6 +50,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1024, xx2=1024, xx3=2, xx4=1, xx5=1, xx6=0;
+TUNE(SetRange(800, 1200), xx1,xx2);
+TUNE(SetRange(-5, 15), xx3,xx4,xx5,xx6);
 
 namespace TB = Tablebases;
 
@@ -1219,7 +1222,8 @@ moves_loop:  // When in check, search starts here
             // beyond the first move depth.
             // To prevent problems when the max value is less than the min value,
             // std::clamp has been replaced by a more robust implementation.
-            Depth d = std::max(1, std::min(newDepth - r / 1024, newDepth + 1 + PvNode)) + PvNode;
+            Depth d = PvNode? std::max(1, std::min(newDepth - r / xx1, newDepth + xx3)) + xx5:
+                              std::max(1, std::min(newDepth - r / xx2, newDepth + xx4)) + xx6;
 
             ss->reduction = newDepth - d;
             value         = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, d, true);
