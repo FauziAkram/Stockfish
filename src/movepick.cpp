@@ -29,14 +29,10 @@
 namespace Stockfish {
 
 int xx1=1024, xx2=1024, xx3=7168, xx4=75, xx5=16384, xx6=144, xx7=144, xx8=256, xx9=517, xx10=95, xx11=100,
-xx12=8, xx13=8, xx14=8,xx15=8, xx16=8, xx17=1, xx18=2, xx19=3, xx20=4, xx21=5, xx22=50000, xx23=2, xx24=2,
-xx25=2, xx26=2, xx27=2, xx28=1, xx29=2, xx30=3, xx31=4, xx32=5, xx33=14000, xx34=3560;
+xx12=8192, xx13=4096, xx14=2731,xx15=2048, xx16=1638, xx22=50000, xx23=2048, xx24=1024,
+xx25=683, xx26=512, xx27=410, xx33=14000, xx34=3560;
 TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16);
-TUNE(SetRange(1, 13), xx17,xx18,xx19,xx20,xx21);
-TUNE(xx22);
-TUNE(SetRange(0, 12), xx23,xx24,xx25,xx26,xx27);
-TUNE(SetRange(1, 13), xx28,xx29,xx30,xx31,xx32);
-TUNE(xx33,xx34);
+TUNE(xx22,xx23,xx24,xx25,xx26,xx27,xx33,xx34);
 
 namespace {
 
@@ -85,9 +81,7 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
 }  // namespace
 
             const int coeff[LOW_PLY_HISTORY_SIZE] = {xx12, xx13, xx14, xx15, xx16};
-            const int div[LOW_PLY_HISTORY_SIZE] = {xx17, xx18, xx19, xx20, xx21};
             const int coeff2[LOW_PLY_HISTORY_SIZE] = {xx23, xx24, xx25, xx26, xx27};
-            const int div2[LOW_PLY_HISTORY_SIZE] = {xx28, xx29, xx30, xx31, xx32};
 
 // Constructors of the MovePicker class. As arguments, we pass information
 // to decide which class of moves to emit, to help sorting the (presumably)
@@ -194,7 +188,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
 
             if (ply < LOW_PLY_HISTORY_SIZE)
               
-                m.value += coeff[ply] * (*lowPlyHistory)[ply][m.from_to()] / div[ply];
+                m.value += coeff[ply] * (*lowPlyHistory)[ply][m.from_to()] / 1024;
         }
 
         else  // Type == EVASIONS
@@ -205,7 +199,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             {
                 m.value = (*mainHistory)[us][m.from_to()] + (*continuationHistory[0])[pc][to];
                 if (ply < LOW_PLY_HISTORY_SIZE)
-                    m.value += coeff2[ply] * (*lowPlyHistory)[ply][m.from_to()] / div2[ply];
+                    m.value += coeff2[ply] * (*lowPlyHistory)[ply][m.from_to()] / 1024;
             }
         }
     }
