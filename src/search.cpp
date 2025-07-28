@@ -1228,7 +1228,7 @@ moves_loop:  // When in check, search starts here
             // Do a full-depth search when reduced LMR search fails high
             // (*Scaler) Usually doing more shallower searches
             // doesn't scale well to longer TCs
-            if (value > alpha)
+            if (value > alpha && d < newDepth)
             {
                 // Adjust full-depth search based on LMR results - if the result was
                 // good enough search deeper, if it was bad enough search shallower.
