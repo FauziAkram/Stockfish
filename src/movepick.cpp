@@ -182,9 +182,6 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
                 m.value += bonus[pt] * v;
             }
 
-            if (m == ssMove)
-                m.value += 4000;
-
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + ply);
         }
