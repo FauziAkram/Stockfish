@@ -815,7 +815,7 @@ Value Search::Worker::search(
         mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * 935 / 1024;
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             pawnHistory[pawn_structure_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus * 1428 / 1024;
+              << bonus * (ttHit? 750: 1428) / 1024;
     }
 
     // Set up the improving flag, which is true if current static evaluation is
