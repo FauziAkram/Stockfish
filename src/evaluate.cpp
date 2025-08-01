@@ -68,12 +68,12 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     // 1. Calculate the bonus from White's point of view.
     Value hce_bonus_w_pov = VALUE_ZERO;
     if (pos.count<BISHOP>(WHITE) >= 2)
-        hce_bonus_w_pov += BishopPairBonus;
+        hce_bonus_w_pov += 60;
     if (pos.count<BISHOP>(BLACK) >= 2)
-        hce_bonus_w_pov -= BishopPairBonus;
+        hce_bonus_w_pov -= 60;
 
     // 2. Adjust for the current side to move and add to the NNUE score.
-    nnue += (pos.side_to_move() == WHITE) ? 50 : -50;
+    nnue += (pos.side_to_move() == WHITE) ? hce_bonus_w_pov : -hce_bonus_w_pov;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
     if (smallNet && (std::abs(nnue) < 236))
