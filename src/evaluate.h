@@ -42,6 +42,31 @@ struct AccumulatorCaches;
 class AccumulatorStack;
 }
 
+namespace HCE {
+
+// This namespace holds all the tunable parameters for our
+// Hand-Crafted Evaluation (HCE) layer. All are initialized to 0.
+
+extern int BishopPairBonus;
+extern int KnightOutpostBonus;
+extern int RookOnOpenFile;
+extern int RookOnSemiOpenFile;
+
+extern int PassedPawnBonus[RANK_NB];
+extern int IsolatedPawnPenalty;
+extern int DoubledPawnPenalty;
+extern int BackwardPawnPenalty;
+
+extern int KingPawnShieldBonus;
+extern int KingAttackWeight[PIECE_TYPE_NB];
+
+extern int MobilityBonus[PIECE_TYPE_NB];
+
+}
+
+Value hce_evaluate(const Position& pos);
+
+
 std::string trace(Position& pos, const Eval::NNUE::Networks& networks);
 
 int   simple_eval(const Position& pos);
