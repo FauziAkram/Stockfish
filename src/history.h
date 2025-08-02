@@ -48,12 +48,13 @@ inline int pawn_history_index(const Position& pos) {
     return pos.pawn_key() & (PAWN_HISTORY_SIZE - 1)
 }
 
-inline int minor_piece_index(const Position& pos) {
-    return pos.minor_piece_key() & (CORRECTION_HISTORY_SIZE - 1);
-}
 
 inline int pawn_correction_history_index(const Position& pos) {
     return pos.pawn_key() & (CORRECTION_HISTORY_SIZE - 1);
+}
+
+inline int minor_piece_index(const Position& pos) {
+    return pos.minor_piece_key() & (CORRECTION_HISTORY_SIZE - 1);
 }
 
 template<Color c>
