@@ -589,7 +589,14 @@ endif
 # make -j profile-build CXX=clang++-20 COMP=clang
 # Locate the version in the same directory as the compiler used,
 # with fallback to a generic one if it can't be located
+ifeq ($(COMP),icx)
+	# For icx, the tools are in a subdirectory reported by 'icx -v'
+	ICX_TOOL_DIR := $(shell $(CXX) -v 2>&1 | grep InstalledDir | awk '{print $$2}')
+	LLVM_PROFDATA := $(ICX_TOOL_DIR)/llvm-profdata
+else
+	# For clang and gcc (as clang alias), the tool is next to the compiler
 	LLVM_PROFDATA := $(dir $(realpath $(shell which $(CXX) 2> /dev/null)))llvm-profdata
+endif
 ifeq ($(wildcard $(LLVM_PROFDATA)),)
 	LLVM_PROFDATA := llvm-profdata
 endif
@@ -1137,7 +1144,7 @@ icx-profile-make:
 	all
 
 icx-profile-use:
-	$(XCRUN) llvm-profdata merge -output=stockfish.profdata *.profraw
+	$(XCRUN) $(LLVM_PROFDATA) merge -output=stockfish.profdata *.profraw
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
 	EXTRACXXFLAGS='-fprofile-instr-use=stockfish.profdata' \
 	EXTRALDFLAGS='-fprofile-use ' \
