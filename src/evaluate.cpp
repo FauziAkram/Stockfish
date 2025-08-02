@@ -66,13 +66,13 @@ int KingAttackWeight[PIECE_TYPE_NB] = { 0 }; // Weight for each piece type attac
 int MobilityBonus[PIECE_TYPE_NB] = { 0 }; // Bonus per square of mobility for each piece type
 
 // == Register all parameters for tuning ==
-//TUNE(SetRange(-200, 200), BishopPairBonus, KnightOutpostBonus);
-//TUNE(SetRange(-150, 250), RookOnOpenFile, RookOnSemiOpenFile);
-//TUNE(SetRange(-150, 350), PassedPawnBonus);
-//TUNE(SetRange(-150, 150), IsolatedPawnPenalty, DoubledPawnPenalty, BackwardPawnPenalty);
-//TUNE(SetRange(-150, 250), KingPawnShieldBonus);
-//TUNE(SetRange(-150, 200), KingAttackWeight);
-//TUNE(SetRange(-120, 120), MobilityBonus);
+TUNE(SetRange(-200, 200), BishopPairBonus, KnightOutpostBonus);
+TUNE(SetRange(-150, 250), RookOnOpenFile, RookOnSemiOpenFile);
+TUNE(SetRange(-150, 350), PassedPawnBonus);
+TUNE(SetRange(-150, 150), IsolatedPawnPenalty, DoubledPawnPenalty, BackwardPawnPenalty);
+TUNE(SetRange(-150, 250), KingPawnShieldBonus);
+TUNE(SetRange(-150, 200), KingAttackWeight);
+TUNE(SetRange(-120, 120), MobilityBonus);
 
 } // namespace HCE
 
