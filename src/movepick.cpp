@@ -28,12 +28,6 @@
 
 namespace Stockfish {
 
-int xx1=1024, xx2=1024, xx3=7168, xx4=75, xx5=16384, xx6=144, xx7=144, xx8=256, xx9=517, xx10=95, xx11=100,
-xx12=8192, xx13=4096, xx14=2731,xx15=2048, xx16=1638, xx22=50000, xx23=2048, xx24=1024,
-xx25=683, xx26=512, xx27=410, xx33=14000, xx34=3560;
-TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13, xx14, xx15, xx16);
-TUNE(xx22,xx23,xx24,xx25,xx26,xx27,xx33,xx34);
-
 namespace {
 
 enum Stages {
@@ -80,8 +74,8 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
 
 }  // namespace
 
-            const int coeff[LOW_PLY_HISTORY_SIZE] = {xx12, xx13, xx14, xx15, xx16};
-            const int coeff2[LOW_PLY_HISTORY_SIZE] = {xx23, xx24, xx25, xx26, xx27};
+            const int coeff[LOW_PLY_HISTORY_SIZE] = {7720, 3922, 2230, 2091, 1791};
+            const int coeff2[LOW_PLY_HISTORY_SIZE] = {2007, 1158, 711, 412, 376};
 
 // Constructors of the MovePicker class. As arguments, we pass information
 // to decide which class of moves to emit, to help sorting the (presumably)
@@ -159,9 +153,9 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         const Piece     capturedPiece = pos.piece_on(to);
 
         if constexpr (Type == CAPTURES)
-            m.value = xx1 * bool(pos.check_squares(pt) & to)
-                    + ( xx2 * (*captureHistory)[pc][to][type_of(capturedPiece)]
-                    + xx3 * int(PieceValue[capturedPiece])) / 1024;
+            m.value = 916 * bool(pos.check_squares(pt) & to)
+                    + ( 1031 * (*captureHistory)[pc][to][type_of(capturedPiece)]
+                    + 6842 * int(PieceValue[capturedPiece])) / 1024;
 
         else if constexpr (Type == QUIETS)
         {
@@ -175,14 +169,14 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -xx4)) * xx5;
+            m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -71)) * 16630;
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
             if (KNIGHT <= pt && pt <= QUEEN)
             {
-                const int bonus[QUEEN + 1] = {0, 0, xx6, xx7, xx8, xx9};
-                int v = threatByLesser[pt] & to ? -xx10 : xx11 * bool(threatByLesser[pt] & from);
+                const int bonus[QUEEN + 1] = {0, 0, 133, 159, 254, 539};
+                int v = threatByLesser[pt] & to ? -114 : 101 * bool(threatByLesser[pt] & from);
                 m.value += bonus[pt] * v;
             }
 
@@ -194,7 +188,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         else  // Type == EVASIONS
         {
             if (pos.capture_stage(m))
-                m.value = PieceValue[capturedPiece] + xx22;
+                m.value = PieceValue[capturedPiece] + 50275;
             else
             {
                 m.value = (*mainHistory)[us][m.from_to()] + (*continuationHistory[0])[pc][to];
@@ -223,7 +217,7 @@ Move MovePicker::select(Pred filter) {
 // picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move() {
 
-    const int goodQuietThreshold = -xx33;
+    const int goodQuietThreshold = -13356;
 top:
     switch (stage)
     {
@@ -267,7 +261,7 @@ top:
 
             endCur = endGenerated = score<QUIETS>(ml);
 
-            partial_insertion_sort(cur, endCur, -xx34 * depth);
+            partial_insertion_sort(cur, endCur, -3250 * depth);
         }
 
         ++stage;
