@@ -66,13 +66,13 @@ int KingAttackWeight[PIECE_TYPE_NB] = { 0 }; // Weight for each piece type attac
 int MobilityBonus[PIECE_TYPE_NB] = { 0 }; // Bonus per square of mobility for each piece type
 
 // == Register all parameters for tuning ==
-TUNE(SetRange(-200, 200), BishopPairBonus, KnightOutpostBonus);
-TUNE(SetRange(-150, 250), RookOnOpenFile, RookOnSemiOpenFile);
-TUNE(SetRange(-150, 350), PassedPawnBonus);
-TUNE(SetRange(-150, 150), IsolatedPawnPenalty, DoubledPawnPenalty, BackwardPawnPenalty);
-TUNE(SetRange(-150, 250), KingPawnShieldBonus);
-TUNE(SetRange(-150, 200), KingAttackWeight);
-TUNE(SetRange(-120, 120), MobilityBonus);
+//TUNE(SetRange(-200, 200), BishopPairBonus, KnightOutpostBonus);
+//TUNE(SetRange(-150, 250), RookOnOpenFile, RookOnSemiOpenFile);
+//TUNE(SetRange(-150, 350), PassedPawnBonus);
+//TUNE(SetRange(-150, 150), IsolatedPawnPenalty, DoubledPawnPenalty, BackwardPawnPenalty);
+//TUNE(SetRange(-150, 250), KingPawnShieldBonus);
+//TUNE(SetRange(-150, 200), KingAttackWeight);
+//TUNE(SetRange(-120, 120), MobilityBonus);
 
 } // namespace HCE
 
@@ -236,28 +236,43 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, accumulators, &caches.small)
                                        : networks.big.evaluate(pos, accumulators, &caches.big);
 
-    Value nnue = (125 * psqt + 131 * positional) / 128;
+    Value nnue_stm_pov = (125 * psqt + 131 * positional) / 128;
 
-    // HCE Layer: Add handcrafted bonuses/penalties on top of NNUE evaluation
+    // === CORRECTED HCE INTEGRATION LOGIC ===
+    // 1. Convert NNUE score to White's point of view
+    Value nnue_white_pov = (pos.side_to_move() == WHITE) ? nnue_stm_pov : -nnue_stm_pov;
+    
+    // 2. Get HCE score (which is already from White's POV)
     Value hce_bonus_w_pov = hce_evaluate(pos);
-    nnue += (pos.side_to_move() == WHITE) ? hce_bonus_w_pov : -hce_bonus_w_pov;
+    
+    // 3. Add them together
+    Value total_white_pov = nnue_white_pov + hce_bonus_w_pov;
+    
+    // 4. Convert back to side-to-move's POV for the rest of the search
+    Value final_eval = (pos.side_to_move() == WHITE) ? total_white_pov : -total_white_pov;
+    // =======================================
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (std::abs(nnue) < 236))
+    if (smallNet && (std::abs(final_eval) < 236))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, &caches.big);
-        nnue                       = (125 * psqt + 131 * positional) / 128;
-        nnue += (pos.side_to_move() == WHITE) ? hce_bonus_w_pov : -hce_bonus_w_pov; // Re-apply HCE
-        smallNet                   = false;
+        nnue_stm_pov = (125 * psqt + 131 * positional) / 128;
+
+        // Re-apply the same corrected logic
+        nnue_white_pov = (pos.side_to_move() == WHITE) ? nnue_stm_pov : -nnue_stm_pov;
+        total_white_pov = nnue_white_pov + hce_bonus_w_pov;
+        final_eval = (pos.side_to_move() == WHITE) ? total_white_pov : -total_white_pov;
+        
+        smallNet = false;
     }
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
     optimism += optimism * nnueComplexity / 468;
-    nnue -= nnue * nnueComplexity / 18000;
+    final_eval -= final_eval * nnueComplexity / 18000;
 
     int material = 535 * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
+    int v        = (final_eval * (77777 + material) + optimism * (7777 + material)) / 77777;
 
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 212;
