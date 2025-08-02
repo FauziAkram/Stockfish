@@ -28,14 +28,185 @@
 #include <sstream>
 #include <tuple>
 
+#include "bitboard.h"
 #include "nnue/network.h"
 #include "nnue/nnue_misc.h"
 #include "position.h"
 #include "types.h"
 #include "uci.h"
 #include "nnue/nnue_accumulator.h"
+#include "tune.h"
 
 namespace Stockfish {
+
+namespace Eval {
+
+namespace HCE {
+
+// This namespace holds all the hardcoded parameters for our
+// Hand-Crafted Evaluation (HCE) layer, based on tuning results.
+
+// == Piece-specific bonuses ==
+const int BishopPairBonus = 197;
+const int KnightOutpostBonus = -63;
+const int RookOnOpenFile = 114;
+const int RookOnSemiOpenFile = -107;
+
+// == Pawn structure penalties/bonuses ==
+const int PassedPawnBonus[RANK_NB] = {
+    -47, -67, 152, -128, 37, -13, 47, 267
+};
+const int IsolatedPawnPenalty = 112;
+const int DoubledPawnPenalty = -133;
+const int BackwardPawnPenalty = -60;
+
+// == King safety ==
+const int KingPawnShieldBonus = 171;
+const int KingAttackWeight[PIECE_TYPE_NB] = {
+    -44, 57, 43, 139, 73, 46, -43, -4
+};
+
+// == Mobility ==
+const int MobilityBonus[PIECE_TYPE_NB] = {
+    95, -76, 17, -32, -10, 20, 120, -72
+};
+
+} // namespace HCE
+
+// hce_evaluate computes the total score from all handcrafted features.
+// The score is returned from White's point of view.
+Value hce_evaluate(const Position& pos) {
+    Value score = 0;
+
+    Bitboard whitePawns = pos.pieces(WHITE, PAWN);
+    Bitboard blackPawns = pos.pieces(BLACK, PAWN);
+    Bitboard allPawns = whitePawns | blackPawns;
+
+    // 1. Bishop Pair
+    if (pos.count<BISHOP>(WHITE) >= 2) score += HCE::BishopPairBonus;
+    if (pos.count<BISHOP>(BLACK) >= 2) score -= HCE::BishopPairBonus;
+
+    // 2. Pawns (Passed, Isolated, Doubled, Backward)
+    for (Color c : {WHITE, BLACK})
+    {
+        Bitboard pawns = pos.pieces(c, PAWN);
+        Bitboard oppPawns = pos.pieces(~c, PAWN);
+        Direction push = pawn_push(c);
+        int sign = (c == WHITE ? 1 : -1);
+
+        for (Bitboard b = pawns; b; )
+        {
+            Square s = pop_lsb(b);
+            File f = file_of(s);
+            Rank r_real = rank_of(s);
+            Rank r_rel = relative_rank(c, s);
+
+            // Passed Pawns: No enemy pawns in front on same or adjacent files
+            Bitboard forwardRanks = 0;
+            if (c == WHITE) {
+                for (Rank r_idx = Rank(r_real + 1); r_idx < RANK_NB; ++r_idx) forwardRanks |= rank_bb(r_idx);
+            } else {
+                for (Rank r_idx = Rank(r_real - 1); r_idx >= RANK_1; --r_idx) forwardRanks |= rank_bb(r_idx);
+            }
+            Bitboard passedMask = (file_bb(f) | (shift<WEST>(file_bb(f)) | shift<EAST>(file_bb(f)))) & forwardRanks;
+            if (!(passedMask & oppPawns))
+            {
+                score += sign * HCE::PassedPawnBonus[r_rel];
+            }
+
+            // Isolated Pawns
+            if (!((shift<WEST>(file_bb(f)) | shift<EAST>(file_bb(f))) & pawns))
+            {
+                score -= sign * HCE::IsolatedPawnPenalty;
+            }
+
+            // Doubled Pawns
+            if (popcount(file_bb(f) & pawns) > 1)
+            {
+                score -= sign * HCE::DoubledPawnPenalty;
+            }
+            
+            // Backward Pawns
+            Square stop = s + push;
+            if (relative_rank(c, stop) < RANK_8 && !(pawns & attacks_bb<PAWN>(stop, c)))
+            {
+                if (attacks_bb<PAWN>(stop, ~c) & oppPawns)
+                {
+                     score -= sign * HCE::BackwardPawnPenalty;
+                }
+            }
+        }
+    }
+
+    // 3. Piece Activity (Rooks on open files, Knight outposts)
+    for (Color c : {WHITE, BLACK})
+    {
+        int sign = (c == WHITE ? 1 : -1);
+
+        // Rooks
+        for (Bitboard b = pos.pieces(c, ROOK); b; )
+        {
+            Square s = pop_lsb(b);
+            File f = file_of(s);
+            if (!(file_bb(f) & allPawns))
+                score += sign * HCE::RookOnOpenFile;
+            else if (!(file_bb(f) & pos.pieces(c, PAWN)))
+                score += sign * HCE::RookOnSemiOpenFile;
+        }
+
+        // Knights
+        for (Bitboard b = pos.pieces(c, KNIGHT); b; )
+        {
+            Square s = pop_lsb(b);
+            // An outpost is a square supported by a friendly pawn and not attackable by an enemy pawn.
+            if ((attacks_bb<PAWN>(s, ~c) & pos.pieces(c, PAWN)) && !(attacks_bb<PAWN>(s, c) & pos.pieces(~c, PAWN)))
+            {
+                score += sign * HCE::KnightOutpostBonus;
+            }
+        }
+    }
+    
+    // 4. King Safety (Pawn shield and attacks on king)
+    for (Color c : {WHITE, BLACK})
+    {
+        int sign = (c == WHITE ? 1 : -1);
+        Square ksq = pos.square<KING>(c);
+        Bitboard kingZone = attacks_bb<KING>(ksq) | attacks_bb<KING>(ksq + pawn_push(c));
+        
+        // Pawn Shield
+        score += sign * popcount(kingZone & pos.pieces(c, PAWN)) * HCE::KingPawnShieldBonus;
+        
+        // Attacks on King
+        for (PieceType pt = KNIGHT; pt <= QUEEN; ++pt)
+        {
+            Bitboard attackers = pos.pieces(~c, pt);
+            while (attackers)
+            {
+                Square s = pop_lsb(attackers);
+                score -= sign * popcount(attacks_bb(pt, s, pos.pieces()) & kingZone) * HCE::KingAttackWeight[pt];
+            }
+        }
+    }
+
+    // 5. Mobility
+    for (Color c : {WHITE, BLACK})
+    {
+        int sign = (c == WHITE ? 1 : -1);
+        for (PieceType pt = KNIGHT; pt <= QUEEN; ++pt)
+        {
+            Bitboard pieces = pos.pieces(c, pt);
+            while (pieces)
+            {
+                Square s = pop_lsb(pieces);
+                score += sign * popcount(attacks_bb(pt, s, pos.pieces()) & ~pos.pieces(c)) * HCE::MobilityBonus[pt];
+            }
+        }
+    }
+
+    return score;
+}
+
+} // namespace Eval
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
@@ -64,11 +235,16 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
+    // HCE Layer: Add handcrafted bonuses/penalties on top of NNUE evaluation
+    Value hce_bonus_w_pov = hce_evaluate(pos);
+    nnue += (pos.side_to_move() == WHITE) ? hce_bonus_w_pov : -hce_bonus_w_pov;
+
     // Re-evaluate the position when higher eval accuracy is worth the time spent
     if (smallNet && (std::abs(nnue) < 236))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, &caches.big);
         nnue                       = (125 * psqt + 131 * positional) / 128;
+        nnue += (pos.side_to_move() == WHITE) ? hce_bonus_w_pov : -hce_bonus_w_pov; // Re-apply HCE
         smallNet                   = false;
     }
 
@@ -112,10 +288,13 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks) {
     v                       = pos.side_to_move() == WHITE ? v : -v;
     ss << "NNUE evaluation        " << 0.01 * UCIEngine::to_cp(v, pos) << " (white side)\n";
 
-    v = evaluate(networks, pos, accumulators, *caches, VALUE_ZERO);
+    Value hce_bonus_w_pov = hce_evaluate(pos);
+    ss << "HCE bonus              " << 0.01 * UCIEngine::to_cp(hce_bonus_w_pov, pos) << " (white side)\n";
+
+    v = evaluate(networks, pos, accumulators, *caches, 0);
     v = pos.side_to_move() == WHITE ? v : -v;
     ss << "Final evaluation       " << 0.01 * UCIEngine::to_cp(v, pos) << " (white side)";
-    ss << " [with scaled NNUE, ...]";
+    ss << " [with HCE, scaled NNUE, ...]";
     ss << "\n";
 
     return ss.str();
