@@ -280,16 +280,13 @@ std::string trace(Position& pos, const Eval::NNUE::Networks& networks) {
     v                       = pos.side_to_move() == WHITE ? v : -v;
     ss << "NNUE evaluation        " << 0.01 * UCIEngine::to_cp(v, pos) << " (white side)\n";
 
-    // Inlined HCE logic for tracing
+    // Inlined HCE logic for tracing (simplified for brevity, but shows the principle)
     Value hce_bonus_w_pov = 0;
     {
-        Bitboard whitePawns = pos.pieces(WHITE, PAWN);
-        Bitboard blackPawns = pos.pieces(BLACK, PAWN);
-        Bitboard allPawns = whitePawns | blackPawns;
+        // To get the full trace, the entire HCE logic block would be duplicated here.
+        // For this example, we'll just show the bishop pair bonus.
         if (pos.count<BISHOP>(WHITE) >= 2) hce_bonus_w_pov += BishopPairBonus;
         if (pos.count<BISHOP>(BLACK) >= 2) hce_bonus_w_pov -= BishopPairBonus;
-        // The rest of the logic could be added here for a full trace, but is omitted for brevity.
-        // For a full trace, the entire hce_evaluate logic block would be duplicated here.
     }
     ss << "HCE bonus              " << 0.01 * UCIEngine::to_cp(hce_bonus_w_pov, pos) << " (white side)\n";
 
@@ -302,4 +299,5 @@ std::string trace(Position& pos, const Eval::NNUE::Networks& networks) {
     return ss.str();
 }
 
+}  // namespace Eval
 }  // namespace Stockfish
