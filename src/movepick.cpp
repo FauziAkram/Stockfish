@@ -151,8 +151,9 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         const Piece     capturedPiece = pos.piece_on(to);
 
         if constexpr (Type == CAPTURES)
-            m.value = (*captureHistory)[pc][to][type_of(capturedPiece)]
-                    + 7 * int(PieceValue[capturedPiece]) + 1024 * bool(pos.check_squares(pt) & to);
+            m.value = 910 * bool(pos.check_squares(pt) & to)
+                    + (*captureHistory)[pc][to][type_of(capturedPiece)]
+                    + (6832 * int(PieceValue[capturedPiece])) / 1024;
 
         else if constexpr (Type == QUIETS)
         {
@@ -166,14 +167,14 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
+            m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -73)) * 16384;
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
             if (KNIGHT <= pt && pt <= QUEEN)
             {
-                static constexpr int bonus[QUEEN + 1] = {0, 0, 144, 144, 256, 517};
-                int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
+                static constexpr int bonus[QUEEN + 1] = {0, 0, 134, 158, 256, 541};
+                int v = threatByLesser[pt] & to ? -115 : 100 * bool(threatByLesser[pt] & from);
                 m.value += bonus[pt] * v;
             }
 
@@ -184,7 +185,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         else  // Type == EVASIONS
         {
             if (pos.capture_stage(m))
-                m.value = PieceValue[capturedPiece] + (1 << 28);
+                m.value = PieceValue[capturedPiece] + 49264;
             else
             {
                 m.value = (*mainHistory)[us][m.from_to()] + (*continuationHistory[0])[pc][to];
@@ -213,7 +214,7 @@ Move MovePicker::select(Pred filter) {
 // picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move() {
 
-    constexpr int goodQuietThreshold = -14000;
+    constexpr int goodQuietThreshold = -13388;
 top:
     switch (stage)
     {
@@ -257,7 +258,7 @@ top:
 
             endCur = endGenerated = score<QUIETS>(ml);
 
-            partial_insertion_sort(cur, endCur, -3560 * depth);
+            partial_insertion_sort(cur, endCur, -3322 * depth);
         }
 
         ++stage;
