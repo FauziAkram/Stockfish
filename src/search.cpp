@@ -966,7 +966,8 @@ moves_loop:  // When in check, search starts here
       (ss - 4)->continuationHistory, (ss - 5)->continuationHistory, (ss - 6)->continuationHistory};
 
 
-    MovePicker mp(pos, ttData.move, depth, &mainHistory, &lowPlyHistory, &captureHistory, contHist,
+    MovePicker mp(pos, (ss - 1)->currentMove, ttData.move, depth, &mainHistory,
+                  &lowPlyHistory, &counterMoveHistory, &captureHistory, contHist,
                   &pawnHistory, ss->ply);
 
     value = bestValue;
@@ -1357,6 +1358,17 @@ moves_loop:  // When in check, search starts here
                 if (value >= beta)
                 {
                     // (* Scaler) Especially if they make cutoffCnt increment more often.
+                    if (!pos.capture_stage(move))
+                    {
+                        Move prevMove = (ss - 1)->currentMove;
+                        // Update countermove for the previous move
+                        if (prevMove.is_ok() && !pos.capture_stage(prevMove))
+                        {
+                            Piece prevPc = pos.piece_on(prevMove.to_sq());
+                            if (counterMoveHistory[prevPc][prevMove.to_sq()] != move)
+                                counterMoveHistory[prevPc][prevMove.to_sq()] = move;
+                        }
+                    }
                     ss->cutoffCnt += (extension < 2) || PvNode;
                     assert(value >= beta);  // Fail high
                     break;
@@ -1596,8 +1608,9 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     // Initialize a MovePicker object for the current position, and prepare to search
     // the moves. We presently use two stages of move generator in quiescence search:
     // captures, or evasions only when in check.
-    MovePicker mp(pos, ttData.move, DEPTH_QS, &mainHistory, &lowPlyHistory, &captureHistory,
-                  contHist, &pawnHistory, ss->ply);
+    MovePicker mp(pos, (ss - 1)->currentMove, ttData.move, DEPTH_QS, &mainHistory,
+                  &lowPlyHistory, &counterMoveHistory, &captureHistory, contHist,
+                  &pawnHistory, ss->ply);
 
     // Step 5. Loop through all pseudo-legal moves until no moves remain or a beta
     // cutoff occurs.
