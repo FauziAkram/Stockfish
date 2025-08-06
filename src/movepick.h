@@ -37,7 +37,7 @@ class MovePicker {
 
    public:
     MovePicker(const MovePicker&) = delete;
-    MoveMovePicker& operator=(const MovePicker&) = delete;
+    MovePicker& operator=(const MovePicker&) = delete;
     Picker(const Position&, Move,
                Move,
                Depth,
