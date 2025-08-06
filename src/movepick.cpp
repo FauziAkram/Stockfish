@@ -36,6 +36,7 @@ enum Stages {
     CAPTURE_INIT,
     GOOD_CAPTURE,
     QUIET_INIT,
+    COUNTERMOVE,
     GOOD_QUIET,
     BAD_CAPTURE,
     BAD_QUIET,
@@ -81,10 +82,12 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
 
 // MovePicker constructor for the main search and for the quiescence search
 MovePicker::MovePicker(const Position&              p,
+                       Move                         prevMv,
                        Move                         ttm,
                        Depth                        d,
                        const ButterflyHistory*      mh,
                        const LowPlyHistory*         lph,
+                       const CounterMoveHistory*    cmh,
                        const CapturePieceToHistory* cph,
                        const PieceToHistory**       ch,
                        const PawnHistory*           ph,
@@ -92,11 +95,13 @@ MovePicker::MovePicker(const Position&              p,
     pos(p),
     mainHistory(mh),
     lowPlyHistory(lph),
+    counterMoveHistory(cmh),
     captureHistory(cph),
     continuationHistory(ch),
     pawnHistory(ph),
     ttMove(ttm),
     depth(d),
+    prevMove(prevMv),
     ply(pl) {
 
     if (pos.checkers())
@@ -260,6 +265,23 @@ top:
             partial_insertion_sort(cur, endCur, -3560 * depth);
         }
 
+        ++stage;
+        [[fallthrough]];
+
+    case COUNTERMOVE:
+        if (!skipQuiets && prevMove.is_ok() && !pos.capture_stage(prevMove))
+        {
+            Piece prevPc = pos.piece_on(prevMove.to_sq());
+            Move counter = (*counterMoveHistory)[prevPc][prevMove.to_sq()];
+
+            if (   counter != Move::none()
+                && counter != ttMove
+                && pos.pseudo_legal(counter))
+            {
+                ++stage;
+                return counter;
+            }
+        }
         ++stage;
         [[fallthrough]];
 
