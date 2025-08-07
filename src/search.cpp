@@ -662,6 +662,14 @@ Value Search::Worker::search(
     ss->statScore       = 0;
     (ss + 2)->cutoffCnt = 0;
 
+    // Pre-calculate and cache threat information for the move picker
+     if (!pos.checkers())
+     {
+         ss->threatsBy[KNIGHT] = ss->threatsBy[BISHOP] = pos.attacks_by<PAWN>(~us);
+         ss->threatsBy[ROOK] = pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | ss->threatsBy[KNIGHT];
+         ss->threatsBy[QUEEN] = pos.attacks_by<ROOK>(~us) | ss->threatsBy[ROOK];
+     }
+
     // Step 4. Transposition table lookup
     excludedMove                   = ss->excludedMove;
     posKey                         = pos.key();
@@ -965,7 +973,7 @@ moves_loop:  // When in check, search starts here
       (ss - 4)->continuationHistory, (ss - 5)->continuationHistory, (ss - 6)->continuationHistory};
 
 
-    MovePicker mp(pos, ttData.move, depth, &mainHistory, &lowPlyHistory, &captureHistory, contHist,
+    MovePicker mp(pos, ss, ttData.move, depth, &mainHistory, &lowPlyHistory, &captureHistory, contHist,
                   &pawnHistory, ss->ply);
 
     value = bestValue;
@@ -1595,8 +1603,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     // Initialize a MovePicker object for the current position, and prepare to search
     // the moves. We presently use two stages of move generator in quiescence search:
     // captures, or evasions only when in check.
-    MovePicker mp(pos, ttData.move, DEPTH_QS, &mainHistory, &lowPlyHistory, &captureHistory,
-                  contHist, &pawnHistory, ss->ply);
+    MovePicker mp(pos, ss, ttData.move, DEPTH_QS, &mainHistory, &lowPlyHistory, &captureHistory,
+                   contHist, &pawnHistory, ss->ply);
 
     // Step 5. Loop through all pseudo-legal moves until no moves remain or a beta
     // cutoff occurs.
