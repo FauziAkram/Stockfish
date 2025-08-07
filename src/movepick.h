@@ -23,6 +23,10 @@
 #include "movegen.h"
 #include "types.h"
 
+namespace Search {
+struct Stack;
+}
+
 namespace Stockfish {
 
 class Position;
@@ -39,6 +43,7 @@ class MovePicker {
     MovePicker(const MovePicker&)            = delete;
     MovePicker& operator=(const MovePicker&) = delete;
     MovePicker(const Position&,
+               const Search::Stack*,
                Move,
                Depth,
                const ButterflyHistory*,
@@ -61,6 +66,7 @@ class MovePicker {
     ExtMove* end() { return endCur; }
 
     const Position&              pos;
+    const Search::Stack*         ss;
     const ButterflyHistory*      mainHistory;
     const LowPlyHistory*         lowPlyHistory;
     const CapturePieceToHistory* captureHistory;
