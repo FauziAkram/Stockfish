@@ -70,6 +70,7 @@ struct Stack {
     Value                       staticEval;
     int                         statScore;
     int                         moveCount;
+    Bitboard                    threatsBy[QUEEN + 1];
     bool                        inCheck;
     bool                        ttPv;
     bool                        ttHit;
