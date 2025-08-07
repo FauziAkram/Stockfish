@@ -23,11 +23,11 @@
 #include "movegen.h"
 #include "types.h"
 
+namespace Stockfish {
+
 namespace Search {
 struct Stack;
 }
-
-namespace Stockfish {
 
 class Position;
 
