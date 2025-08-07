@@ -25,6 +25,7 @@
 #include "bitboard.h"
 #include "misc.h"
 #include "position.h"
+#include "search.h"
 
 namespace Stockfish {
 
@@ -81,6 +82,7 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
 
 // MovePicker constructor for the main search and for the quiescence search
 MovePicker::MovePicker(const Position&              p,
+                       const Search::Stack*         s,
                        Move                         ttm,
                        Depth                        d,
                        const ButterflyHistory*      mh,
@@ -90,6 +92,7 @@ MovePicker::MovePicker(const Position&              p,
                        const PawnHistory*           ph,
                        int                          pl) :
     pos(p),
+    ss(s),
     mainHistory(mh),
     lowPlyHistory(lph),
     captureHistory(cph),
@@ -109,7 +112,7 @@ MovePicker::MovePicker(const Position&              p,
 // MovePicker constructor for ProbCut: we generate captures with Static Exchange
 // Evaluation (SEE) greater than or equal to the given threshold.
 MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceToHistory* cph) :
-    pos(p),
+    pos(p), ss(nullptr),
     captureHistory(cph),
     ttMove(ttm),
     threshold(th) {
@@ -123,21 +126,11 @@ MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceTo
 // Captures are ordered by Most Valuable Victim (MVV), preferring captures
 // with a good history. Quiets moves are ordered using the history tables.
 template<GenType Type>
-ExtMove* MovePicker::score(MoveList<Type>& ml) {
+ExtMove* MovePicker::score(MoveList<Type>& ml, const Search::Stack* ss_local) {
 
     static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
 
     Color us = pos.side_to_move();
-
-    [[maybe_unused]] Bitboard threatByLesser[QUEEN + 1];
-    if constexpr (Type == QUIETS)
-    {
-        threatByLesser[KNIGHT] = threatByLesser[BISHOP] = pos.attacks_by<PAWN>(~us);
-        threatByLesser[ROOK] =
-          pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatByLesser[KNIGHT];
-        threatByLesser[QUEEN] = pos.attacks_by<ROOK>(~us) | threatByLesser[ROOK];
-    }
-
     ExtMove* it = cur;
     for (auto move : ml)
     {
@@ -173,7 +166,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             if (KNIGHT <= pt && pt <= QUEEN)
             {
                 static constexpr int bonus[QUEEN + 1] = {0, 0, 144, 144, 256, 517};
-                int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
+                int v = ss_local->threatsBy[pt] & to ? -95 : 100 * bool(ss_local->threatsBy[pt] & from);
                 m.value += bonus[pt] * v;
             }
 
@@ -231,7 +224,7 @@ top:
         MoveList<CAPTURES> ml(pos);
 
         cur = endBadCaptures = moves;
-        endCur = endCaptures = score<CAPTURES>(ml);
+        endCur = endCaptures = score<CAPTURES>(ml, ss);
 
         partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
         ++stage;
@@ -255,7 +248,7 @@ top:
         {
             MoveList<QUIETS> ml(pos);
 
-            endCur = endGenerated = score<QUIETS>(ml);
+            endCur = endGenerated = score<QUIETS>(ml, ss);
 
             partial_insertion_sort(cur, endCur, -3560 * depth);
         }
@@ -295,7 +288,7 @@ top:
         MoveList<EVASIONS> ml(pos);
 
         cur    = moves;
-        endCur = endGenerated = score<EVASIONS>(ml);
+        endCur = endGenerated = score<EVASIONS>(ml, ss);
 
         partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
         ++stage;
