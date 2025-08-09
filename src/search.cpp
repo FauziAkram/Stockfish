@@ -69,6 +69,7 @@ using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 template<bool PvNode> void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus);
 template<bool PvNode> void update_quiet_histories(const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus);
 template<bool PvNode> void update_all_stats(const Position& pos, Stack* ss, Search::Worker& workerThread, Move bestMove, Square prevSq, SearchedList& quietsSearched, SearchedList& capturesSearched, Depth depth, Move ttMove);
+template<bool PvNode>
 
 // (*Scalers):
 // The values with Scaler asterisks have proven non-linear scaling.
@@ -842,7 +843,7 @@ Value Search::Worker::search(
             return futilityMult * d                      //
                  - improving * futilityMult * 2          //
                  - opponentWorsening * futilityMult / 3  //
-                 + (ss - 1)->statScore / S(256,356)             //
+                 + (ss - 1)->statScore / S(356,356)             //
                  + std::abs(correctionValue) / S(171290,171290);
         };
 
