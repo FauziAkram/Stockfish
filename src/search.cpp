@@ -464,7 +464,7 @@ void Search::Worker::iterative_deepening() {
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             double k      = 0.527;
-            double center = lastBestMoveDepth + 11;
+            double center = lastBestMoveDepth + 11.0;
             timeReduction = 0.8 + 0.84 / (1.077 + std::exp(-k * (completedDepth - center)));
             double reduction =
               (1.4540 + mainThread->previousTimeReduction) / (2.1593 * timeReduction);
@@ -602,20 +602,17 @@ Value Search::Worker::search(
     assert(0 < depth && depth < MAX_PLY);
     assert(!(PvNode && cutNode));
 
-    Move      pv[MAX_PLY + 1];
-    StateInfo st;
-
-    Key   posKey;
-    Move  move, excludedMove, bestMove;
-    Depth extension, newDepth;
-    Value bestValue, value, eval, maxValue, probCutBeta;
-    bool  givesCheck, improving, priorCapture, opponentWorsening;
-    bool  capture, ttCapture;
-    int   priorReduction;
-    Piece movedPiece;
-
-    SearchedList capturesSearched;
-    SearchedList quietsSearched;
+    Move         pv[MAX_PLY + 1];
+    StateInfo    st;
+    Key          posKey;
+    Move         move, excludedMove, bestMove;
+    Depth        extension, newDepth;
+    Value        bestValue, value, eval, maxValue, probCutBeta;
+    bool         givesCheck, improving, priorCapture, opponentWorsening;
+    bool         capture, ttCapture;
+    int          priorReduction;
+    Piece        movedPiece;
+    SearchedList capturesSearched, quietsSearched;
 
     // Step 1. Initialize node
     ss->inCheck   = pos.checkers();
@@ -702,8 +699,7 @@ Value Search::Worker::search(
                 && !is_decisive(ttData.value))
             {
                 pos.do_move(ttData.move, st);
-                Key nextPosKey                             = pos.key();
-                auto [ttHitNext, ttDataNext, ttWriterNext] = tt.probe(nextPosKey);
+                auto [ttHitNext, ttDataNext, ttWriterNext] = tt.probe(pos.key());
                 pos.undo_move(ttData.move);
 
                 // Check that the ttValue after the tt move would also trigger a cutoff
@@ -1546,7 +1542,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         bestValue = futilityBase = -VALUE_INFINITE;
     else
     {
-        const auto correctionValue = correction_value(*this, pos, ss);
+        const auto correctionValue = correction_value<PvNode>(*this, pos, ss);
 
         if (ss->ttHit)
         {
