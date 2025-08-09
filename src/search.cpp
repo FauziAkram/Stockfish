@@ -83,7 +83,7 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
       m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
                  : 0;
 
-    return 8867 * pcv + 8136 * micv + 10757 * (wnpcv + bnpcv) + 7232 * cntcv;
+    return S(8867,8867) * pcv + S(8136,8136) * micv + S(10757,10757) * (wnpcv + bnpcv) + S(7232,7232) * cntcv;
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation
