@@ -79,8 +79,15 @@ xx13, zz13, xx14, zz14, xx15, zz15, xx16, zz16, xx17, zz17, xx18, zz18, xx19, zz
 xx24, zz24, xx25, zz25, xx26, zz26, xx27, zz27, xx28, zz28, xx29, zz29, xx30, zz30, xx31, zz31, xx32, zz32, xx33, zz33, xx34, zz34,
 xx35, zz35, xx36, zz36, xx37, zz37, xx38, zz38, xx39, zz39, xx40, zz40, xx41, zz41, xx42, zz42, xx43, zz43, xx44, zz44, xx45, zz45,
 xx46, zz46, xx47, zz47, xx48, zz48, xx49, zz49, xx50, zz50, xx51, zz51, xx52, zz52, xx53, zz53, xx54, zz54, xx55, zz55, xx56, zz56,
-xx57, zz57, xx58, zz58, xx59, zz59, xx60, zz60, xx61, zz61, xx62, zz62, xx63, zz63, xx64, zz64, xx65, zz65, xx66, zz66, xx67, zz67,
-xx68, zz68, xx69, zz69, xx70, zz70, xx71, zz71, xx72, zz72, xx73, zz73, xx74, zz74, xx75, zz75, xx76, zz76, xx77, zz77, xx78, zz78,
+xx57, zz57);
+TUNE(SetRange(-1, 9), xx58,zz58,xx59,zz59);
+TUNE(xx60,zz60);
+TUNE(SetRange(-1, 9), xx61,zz61);
+TUNE(xx62, zz62, xx63, zz63, xx64, zz64);
+TUNE(SetRange(1, 11), xx65,zz65);
+TUNE(xx66, zz66, xx67, zz67);
+TUNE(SetRange(1, 11), xx68,zz68);
+TUNE(xx69, zz69, xx70, zz70, xx71, zz71, xx72, zz72, xx73, zz73, xx74, zz74, xx75, zz75, xx76, zz76, xx77, zz77, xx78, zz78,
 xx79, zz79, xx80, zz80, xx81, zz81, xx82, zz82, xx83, zz83, xx84, zz84, xx85, zz85, xx86, zz86, xx87, zz87, xx88, zz88, xx89, zz89,
 xx90, zz90, xx91, zz91, xx92, zz92, xx93, zz93, xx94, zz94, xx95, zz95,xx96,zz96,xx97,zz97,xx98,zz98,xx99,zz99,xx100,zz100,xx101,
 zz101,xx102,zz102,xx103,zz103,xx104,zz104,xx105,zz105,xx106,zz106,xx107,zz107,xx108,zz108,xx109,zz109,xx110,zz110,xx111,zz111,xx112,
