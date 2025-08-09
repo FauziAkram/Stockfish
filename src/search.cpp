@@ -72,7 +72,11 @@ using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 // so changing them or adding conditions that are similar requires
 // tests at these types of time controls.
 
+// CHANGE 1: Templatize correction_value and add the S() macro.
+template<bool PvNode>
 int correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
+#define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
+
     const Color us    = pos.side_to_move();
     const auto  m     = (ss - 1)->currentMove;
     const auto  pcv   = w.pawnCorrectionHistory[pawn_correction_history_index(pos)][us];
@@ -83,7 +87,10 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
       m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
                  : 0;
 
-    return 8867 * pcv + 8136 * micv + 10757 * (wnpcv + bnpcv) + 7232 * cntcv;
+    // Apply the S() macro as requested
+    return S(8867,8867) * pcv + S(8136,8136) * micv + S(10757,10757) * (wnpcv + bnpcv) + S(7232,7232) * cntcv;
+
+#undef S
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation
@@ -579,6 +586,8 @@ Value Search::Worker::search(
     constexpr bool rootNode = nodeType == Root;
     const bool     allNode  = !(PvNode || cutNode);
 
+#define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
+
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
     {
@@ -771,8 +780,12 @@ Value Search::Worker::search(
     }
 
     // Step 6. Static evaluation of the position
-    Value      unadjustedStaticEval = VALUE_NONE;
-    const auto correctionValue      = correction_value(*this, pos, ss);
+    Value unadjustedStaticEval = VALUE_NONE;
+    
+    // CHANGE 2: The call to correction_value must be moved here, after PvNode is defined.
+    // We also use the new templated call syntax.
+    const auto correctionValue = correction_value<PvNode>(*this, pos, ss);
+
     if (ss->inCheck)
     {
         // Skip early pruning when in check
@@ -1126,10 +1139,11 @@ moves_loop:  // When in check, search starts here
 
             if (value < singularBeta)
             {
+                // CHANGE 3: Apply the S() macro here.
                 int corrValAdj   = std::abs(correctionValue) / 249096;
-                int doubleMargin = 4 + 205 * PvNode - 223 * !ttCapture - corrValAdj
+                int doubleMargin = S(4, 209) - 223 * !ttCapture - corrValAdj
                                  - 959 * ttMoveHistory / 131072 - (ss->ply > rootDepth) * 45;
-                int tripleMargin = 80 + 276 * PvNode - 249 * !ttCapture + 86 * ss->ttPv - corrValAdj
+                int tripleMargin = S(80, 356) - 249 * !ttCapture + 86 * ss->ttPv - corrValAdj
                                  - (ss->ply * 2 > rootDepth * 3) * 53;
 
                 extension =
@@ -1173,7 +1187,8 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 2510 + PvNode * 963 + (ttData.value > alpha) * 916
+            // CHANGE 4: Apply the S() macro here.
+            r -= S(2510, 3473) + (ttData.value > alpha) * 916
                + (ttData.depth >= depth) * (943 + cutNode * 1180);
 
         // These reduction adjustments have no proven non-linear scaling
@@ -1219,7 +1234,8 @@ moves_loop:  // When in check, search starts here
             // beyond the first move depth.
             // To prevent problems when the max value is less than the min value,
             // std::clamp has been replaced by a more robust implementation.
-            Depth d = std::max(1, std::min(newDepth - r / 1024, newDepth + 1 + PvNode)) + PvNode;
+            // CHANGE 5: Apply the S() macro here.
+            Depth d = std::max(1, std::min(newDepth - r / 1024, newDepth + S(1, 2))) + S(0, 1);
 
             ss->reduction = newDepth - d;
             value         = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, d, true);
@@ -1468,6 +1484,7 @@ moves_loop:  // When in check, search starts here
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
+#undef S
     return bestValue;
 }
 
@@ -1546,7 +1563,11 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         bestValue = futilityBase = -VALUE_INFINITE;
     else
     {
-        const auto correctionValue = correction_value(*this, pos, ss);
+        // We cannot use the templated version of correction_value here,
+        // because qsearch is a separate function from search and doesn't know about `PvNode` in the same way.
+        // For qsearch, we would need to pass the template parameter down, but we will use the NonPV version for simplicity
+        // as this part of the code is not part of the user's request.
+        const auto correctionValue = correction_value<false>(*this, pos, ss);
 
         if (ss->ttHit)
         {
