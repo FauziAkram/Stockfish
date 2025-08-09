@@ -50,6 +50,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1= 4, xx2=209;
+TUNE(xx1,xx2);
 
 namespace TB = Tablebases;
 
@@ -1129,7 +1131,7 @@ moves_loop:  // When in check, search starts here
             if (value < singularBeta)
             {
                 int corrValAdj   = std::abs(correctionValue) / 249096;
-                int doubleMargin = S(4, 209) - 223 * !ttCapture - corrValAdj
+                int doubleMargin = S(xx1, xx2) - 223 * !ttCapture - corrValAdj
                                  - 959 * ttMoveHistory / 131072 - (ss->ply > rootDepth) * 45;
                 int tripleMargin = S(80, 356) - 249 * !ttCapture + 86 * ss->ttPv - corrValAdj
                                  - (ss->ply * 2 > rootDepth * 3) * 53;
