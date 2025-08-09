@@ -69,7 +69,6 @@ using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 template<bool PvNode> void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus);
 template<bool PvNode> void update_quiet_histories(const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus);
 template<bool PvNode> void update_all_stats(const Position& pos, Stack* ss, Search::Worker& workerThread, Move bestMove, Square prevSq, SearchedList& quietsSearched, SearchedList& capturesSearched, Depth depth, Move ttMove);
-template<bool PvNode>
 
 // (*Scalers):
 // The values with Scaler asterisks have proven non-linear scaling.
@@ -1203,9 +1202,9 @@ moves_loop:  // When in check, search starts here
             ss->statScore = S(782,782) * int(PieceValue[pos.captured_piece()]) / 128
                           + captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())];
         else
-            ss->statScore = (S(2048,2048) * mainHistory[us][move.from_to()]
-                          + S(1024,1024) * (*contHist[0])[movedPiece][move.to_sq()]
-                          + S(1024,1024) * (*contHist[1])[movedPiece][move.to_sq()]) / 1024;
+            ss->statScore = 2 * mainHistory[us][move.from_to()]
+                          + (*contHist[0])[movedPiece][move.to_sq()]
+                          + (*contHist[1])[movedPiece][move.to_sq()];
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * S(789,789) / 8192;
