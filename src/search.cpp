@@ -66,6 +66,11 @@ namespace {
 constexpr int SEARCHEDLIST_CAPACITY = 32;
 using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 
+template<bool PvNode> void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus);
+template<bool PvNode> void update_quiet_histories(const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus);
+template<bool PvNode> void update_all_stats(const Position& pos, Stack* ss, Search::Worker& workerThread, Move bestMove, Square prevSq, SearchedList& quietsSearched, SearchedList& capturesSearched, Depth depth, Move ttMove);
+template<bool PvNode>
+
 // (*Scalers):
 // The values with Scaler asterisks have proven non-linear scaling.
 // They are optimized to time controls of 180 + 1.8 and longer,
@@ -73,6 +78,7 @@ using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 // tests at these types of time controls.
 
 int correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
+    #define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
     const Color us    = pos.side_to_move();
     const auto  m     = (ss - 1)->currentMove;
     const auto  pcv   = w.pawnCorrectionHistory[pawn_correction_history_index(pos)][us];
@@ -83,7 +89,8 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
       m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
                  : 0;
 
-    return 8867 * pcv + 8136 * micv + 10757 * (wnpcv + bnpcv) + 7232 * cntcv;
+    return S(8867, 8867) * pcv + S(8136, 8136) * micv + S(10757, 10757) * (wnpcv + bnpcv) + S(7232, 7232) * cntcv;
+#undef S
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation
@@ -92,17 +99,19 @@ Value to_corrected_static_eval(const Value v, const int cv) {
     return std::clamp(v + cv / 131072, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 }
 
+template<bool PvNode>
 void update_correction_history(const Position& pos,
                                Stack* const    ss,
                                Search::Worker& workerThread,
                                const int       bonus) {
+    #define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
     const Move  m  = (ss - 1)->currentMove;
     const Color us = pos.side_to_move();
 
-    static constexpr int nonPawnWeight = 165;
+    const int nonPawnWeight = S(165,165);
 
     workerThread.pawnCorrectionHistory[pawn_correction_history_index(pos)][us] << bonus;
-    workerThread.minorPieceCorrectionHistory[minor_piece_index(pos)][us] << bonus * 153 / 128;
+    workerThread.minorPieceCorrectionHistory[minor_piece_index(pos)][us] << bonus * S(153, 153) / 128;
     workerThread.nonPawnCorrectionHistory[non_pawn_index<WHITE>(pos)][WHITE][us]
       << bonus * nonPawnWeight / 128;
     workerThread.nonPawnCorrectionHistory[non_pawn_index<BLACK>(pos)][BLACK][us]
@@ -110,7 +119,8 @@ void update_correction_history(const Position& pos,
 
     if (m.is_ok())
         (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
-          << bonus * 153 / 128;
+          << bonus * S(153, 153) / 128;
+#undef S
 }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -118,18 +128,6 @@ Value value_draw(size_t nodes) { return VALUE_DRAW - 1 + Value(nodes & 0x2); }
 Value value_to_tt(Value v, int ply);
 Value value_from_tt(Value v, int ply, int r50c);
 void  update_pv(Move* pv, Move move, const Move* childPv);
-void  update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus);
-void  update_quiet_histories(
-   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus);
-void update_all_stats(const Position& pos,
-                      Stack*          ss,
-                      Search::Worker& workerThread,
-                      Move            bestMove,
-                      Square          prevSq,
-                      SearchedList&   quietsSearched,
-                      SearchedList&   capturesSearched,
-                      Depth           depth,
-                      Move            TTMove);
 
 }  // namespace
 
@@ -578,6 +576,7 @@ Value Search::Worker::search(
     constexpr bool PvNode   = nodeType != NonPV;
     constexpr bool rootNode = nodeType == Root;
     const bool     allNode  = !(PvNode || cutNode);
+    #define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
@@ -686,12 +685,12 @@ Value Search::Worker::search(
         {
             // Bonus for a quiet ttMove that fails high
             if (!ttCapture)
-                update_quiet_histories(pos, ss, *this, ttData.move,
-                                       std::min(127 * depth - 74, 1063));
+                update_quiet_histories<PvNode>(pos, ss, *this, ttData.move,
+                                       std::min(S(127, 127) * depth - S(74, 74), S(1063, 1063)));
 
             // Extra penalty for early quiet moves of the previous ply
             if (prevSq != SQ_NONE && (ss - 1)->moveCount <= 3 && !priorCapture)
-                update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -2128);
+                update_continuation_histories<PvNode>(ss - 1, pos.piece_on(prevSq), prevSq, S(-2128, -2128));
         }
 
         // Partial workaround for the graph history interaction problem
@@ -1467,6 +1466,7 @@ moves_loop:  // When in check, search starts here
     }
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
+    #undef S
 
     return bestValue;
 }
@@ -1483,6 +1483,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
     static_assert(nodeType != Root);
     constexpr bool PvNode = nodeType == PV;
+    #define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
 
     assert(alpha >= -VALUE_INFINITE && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
@@ -1717,13 +1718,18 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                    unadjustedStaticEval, tt.generation());
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
+    #undef S
 
     return bestValue;
 }
 
+template<bool PvNode>
+
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
+    #define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
     int reductionScale = reductions[d] * reductions[mn];
-    return reductionScale - delta * 731 / rootDelta + !i * reductionScale * 216 / 512 + 1089;
+    return reductionScale - delta * S(731, 731) / rootDelta + !i * reductionScale * S(216, 216) / 512 + S(1089, 1089);
+#undef S
 }
 
 // elapsed() returns the time elapsed since the search started. If the
@@ -1802,7 +1808,7 @@ void update_pv(Move* pv, Move move, const Move* childPv) {
     *pv = Move::none();
 }
 
-
+template<bool PvNode>
 // Updates stats at the end of search() when a bestMove is found
 void update_all_stats(const Position& pos,
                       Stack*          ss,
@@ -1814,51 +1820,54 @@ void update_all_stats(const Position& pos,
                       Depth           depth,
                       Move            ttMove) {
 
+    #define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
     CapturePieceToHistory& captureHistory = workerThread.captureHistory;
     Piece                  movedPiece     = pos.moved_piece(bestMove);
     PieceType              capturedPiece;
 
-    int quietBonus   = std::min(170 * depth - 87, 1598) + 332 * (bestMove == ttMove);
-    int quietMalus   = std::min(743 * depth - 180, 2287) - 33 * quietsSearched.size();
-    int captureBonus = std::min(124 * depth - 62, 1245) + 336 * (bestMove == ttMove);
-    int captureMalus = std::min(708 * depth - 148, 2287) - 29 * capturesSearched.size();
+    int quietBonus   = std::min(S(170, 170) * depth - S(87, 87), S(1598, 1598)) + S(332, 332) * (bestMove == ttMove);
+    int quietMalus   = std::min(S(743, 743) * depth - S(180, 180), S(2287, 2287)) - S(33, 33) * quietsSearched.size();
+    int captureBonus = std::min(S(124, 124) * depth - S(62, 62), S(1245, 1245)) + S(336, 336) * (bestMove == ttMove);
+    int captureMalus = std::min(S(708, 708) * depth - S(148, 148), S(2287, 2287)) - S(29, 29) * capturesSearched.size();
 
     if (!pos.capture_stage(bestMove))
     {
-        update_quiet_histories(pos, ss, workerThread, bestMove, quietBonus * 978 / 1024);
+        update_quiet_histories<PvNode>(pos, ss, workerThread, bestMove, quietBonus * S(978, 978) / 1024);
 
         // Decrease stats for all non-best quiet moves
         for (Move move : quietsSearched)
-            update_quiet_histories(pos, ss, workerThread, move, -quietMalus * 1115 / 1024);
+            update_quiet_histories<PvNode>(pos, ss, workerThread, move, -quietMalus * S(1115, 1115) / 1024);
     }
     else
     {
         // Increase stats for the best move in case it was a capture move
         capturedPiece = type_of(pos.piece_on(bestMove.to_sq()));
-        captureHistory[movedPiece][bestMove.to_sq()][capturedPiece] << captureBonus * 1288 / 1024;
+        captureHistory[movedPiece][bestMove.to_sq()][capturedPiece] << captureBonus * S(1288, 1288) / 1024;
     }
 
     // Extra penalty for a quiet early move that was not a TT move in
     // previous ply when it gets refuted.
     if (prevSq != SQ_NONE && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit) && !pos.captured_piece())
-        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                      -captureMalus * 622 / 1024);
+        update_continuation_histories<PvNode>(ss - 1, pos.piece_on(prevSq),
+                                      prevSq, -captureMalus * S(622, 622) / 1024);
 
     // Decrease stats for all non-best capture moves
     for (Move move : capturesSearched)
     {
         movedPiece    = pos.moved_piece(move);
         capturedPiece = type_of(pos.piece_on(move.to_sq()));
-        captureHistory[movedPiece][move.to_sq()][capturedPiece] << -captureMalus * 1431 / 1024;
+        captureHistory[movedPiece][move.to_sq()][capturedPiece] << -captureMalus * S(1431, 1431) / 1024;
     }
+  #undef S
 }
 
-
+template<bool PvNode>
 // Updates histories of the move pairs formed by moves
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
-    static constexpr std::array<ConthistBonus, 6> conthist_bonuses = {
-      {{1, 1108}, {2, 652}, {3, 273}, {4, 572}, {5, 126}, {6, 449}}};
+    #define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
+    const std::array<ConthistBonus, 6> conthist_bonuses = {
+      {{1, S(1108, 1108)}, {2, S(652, 652)}, {3, S(273, 273)}, {4, S(572, 572)}, {5, S(126, 126)}, {6, S(449, 449)}}};
 
     for (const auto [i, weight] : conthist_bonuses)
     {
@@ -1866,27 +1875,31 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
         if (ss->inCheck && i > 2)
             break;
         if (((ss - i)->currentMove).is_ok())
-            (*(ss - i)->continuationHistory)[pc][to] << (bonus * weight / 1024) + 80 * (i < 2);
+            (*(ss - i)->continuationHistory)[pc][to] << (bonus * weight / 1024) + S(80, 80) * (i < 2);
     }
+  #undef S
 }
 
+template<bool PvNode>
 // Updates move sorting heuristics
 
 void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
+  #define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
 
     Color us = pos.side_to_move();
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << (bonus * 771 / 1024) + 40;
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << (bonus * S(771, 771) / 1024) + S(40, 40);
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(),
-                                  bonus * (bonus > 0 ? 979 : 842) / 1024);
+    update_continuation_histories<PvNode>(ss, pos.moved_piece(move), move.to_sq(),
+                                  bonus * (bonus > 0 ? S(979, 979) : S(842, 842)) / 1024);
 
     int pIndex = pawn_history_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
-      << (bonus * (bonus > 0 ? 704 : 439) / 1024) + 70;
+      << (bonus * (bonus > 0 ? S(704, 704) : S(439, 439)) / 1024) + S(70, 70);
+#undef S
 }
 
 }
