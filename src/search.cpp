@@ -63,13 +63,14 @@ using namespace Search;
 
 namespace {
 
-// Forward declarations for newly templated helper functions
+constexpr int SEARCHEDLIST_CAPACITY = 32;
+using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
+
+// FIX: Move forward declarations after SearchedList is defined
 template<bool PvNode> void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus);
 template<bool PvNode> void update_quiet_histories(const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus);
 template<bool PvNode> void update_all_stats(const Position& pos, Stack* ss, Search::Worker& workerThread, Move bestMove, Square prevSq, SearchedList& quietsSearched, SearchedList& capturesSearched, Depth depth, Move ttMove);
 
-constexpr int SEARCHEDLIST_CAPACITY = 32;
-using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 
 // (*Scalers):
 // The values with Scaler asterisks have proven non-linear scaling.
@@ -759,6 +760,7 @@ Value Search::Worker::search(
     // Step 6. Static evaluation of the position
     Value unadjustedStaticEval = VALUE_NONE;
     const auto correctionValue = correction_value<PvNode>(*this, pos, ss);
+
     if (ss->inCheck)
     {
         ss->staticEval = eval = (ss - 2)->staticEval;
@@ -936,7 +938,7 @@ moves_loop:
 
         newDepth = depth - S(1, 1);
         int delta = beta - alpha;
-        Depth r = reduction<PvNode>(improving, depth, moveCount, delta);
+        Depth r = this->reduction<PvNode>(improving, depth, moveCount, delta);
 
         if (ss->ttPv)
             r += S(931, 931);
@@ -1393,6 +1395,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     return bestValue;
 }
 
+// FIX: Define the templated member function reduction() correctly
 template<bool PvNode>
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
 #define S(non_pv, pv) (PvNode ? (pv) : (non_pv))
