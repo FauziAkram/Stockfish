@@ -83,9 +83,9 @@ xx57, zz57, xx58, zz58, xx59, zz59, xx60, zz60, xx61, zz61, xx62, zz62, xx63, zz
 xx68, zz68, xx69, zz69, xx70, zz70, xx71, zz71, xx72, zz72, xx73, zz73, xx74, zz74, xx75, zz75, xx76, zz76, xx77, zz77, xx78, zz78,
 xx79, zz79, xx80, zz80, xx81, zz81, xx82, zz82, xx83, zz83, xx84, zz84, xx85, zz85, xx86, zz86, xx87, zz87, xx88, zz88, xx89, zz89,
 xx90, zz90, xx91, zz91, xx92, zz92, xx93, zz93, xx94, zz94, xx95, zz95,xx96,zz96,xx97,zz97,xx98,zz98,xx99,zz99,xx100,zz100,xx101,
-zz101xx102,zz102xx103,zz103xx104,zz104xx105,zz105xx106,zz106xx107,zz107xx108,zz108xx109,zz109xx110,zz110xx111,zz111xx112,zz112xx113,
-zz113xx114,zz114xx115,zz115xx116,zz116xx117,zz117xx118,zz118xx119,zz119xx120,zz120xx121,zz121xx122,zz122xx123,zz123xx124,zz124xx125,
-zz125xx126,zz126xx127,zz127xx128,zz128xx129,zz129xx130,zz130xx131,zz131);
+zz101,xx102,zz102,xx103,zz103,xx104,zz104,xx105,zz105,xx106,zz106,xx107,zz107,xx108,zz108,xx109,zz109,xx110,zz110,xx111,zz111,xx112,
+zz112,xx113,zz113,xx114,zz114,xx115,zz115,xx116,zz116,xx117,zz117,xx118,zz118,xx119,zz119,xx120,zz120,xx121,zz121,xx122,zz122,xx123,
+zz123,xx124,zz124,xx125,zz125,xx126,zz126,xx127,zz127,xx128,zz128,xx129,zz129,xx130,zz130,xx131,zz131);
 
 namespace TB = Tablebases;
 
