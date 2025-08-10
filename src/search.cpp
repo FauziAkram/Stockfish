@@ -1721,9 +1721,11 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     return bestValue;
 }
 
+template<bool PvNode>
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return reductionScale - delta * 731 / rootDelta + !i * reductionScale * 216 / 512 + 1089;
+    return reductionScale - delta * S(700, 641) / rootDelta + !i * reductionScale * S(237, 234) / 512 + S(899, 1088);
+#undef S
 }
 
 // elapsed() returns the time elapsed since the search started. If the
