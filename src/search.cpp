@@ -74,26 +74,6 @@ int zz97=170, zz98=87, zz99=1598, zz100=332, zz101=743, zz102=180, zz103=2287, z
 int zz109=708, zz110=148, zz111=2287, zz112=29, zz113=978, zz114=1115, zz115=1288, zz116=622, zz117=1431, zz118=1108, zz119=652;
 int zz120=273, zz121=572, zz122=126, zz123=449, zz124=80, zz125=771, zz126=40, zz127=979, zz128=842, zz129=704, zz130=439, zz131=70;
 
-TUNE(xx1, zz1, xx2, zz2, xx3, zz3, xx4, zz4, xx5, zz5, xx6, zz6, xx7, zz7, xx8, zz8, xx9, zz9, xx10, zz10, xx11, zz11, xx12, zz12,
-xx13, zz13, xx14, zz14, xx15, zz15, xx16, zz16, xx17, zz17, xx18, zz18, xx19, zz19, xx20, zz20, xx21, zz21, xx22, zz22, xx23, zz23,
-xx24, zz24, xx25, zz25, xx26, zz26, xx27, zz27, xx28, zz28, xx29, zz29, xx30, zz30, xx31, zz31, xx32, zz32, xx33, zz33, xx34, zz34,
-xx35, zz35, xx36, zz36, xx37, zz37, xx38, zz38, xx39, zz39, xx40, zz40, xx41, zz41, xx42, zz42, xx43, zz43, xx44, zz44, xx45, zz45,
-xx46, zz46, xx47, zz47, xx48, zz48, xx49, zz49, xx50, zz50, xx51, zz51, xx52, zz52, xx53, zz53, xx54, zz54, xx55, zz55, xx56, zz56,
-xx57, zz57);
-TUNE(SetRange(-1, 9), xx58,zz58,xx59,zz59);
-TUNE(xx60,zz60);
-TUNE(SetRange(-1, 9), xx61,zz61);
-TUNE(xx62, zz62, xx63, zz63, xx64, zz64);
-TUNE(SetRange(1, 11), xx65,zz65);
-TUNE(xx66, zz66, xx67, zz67);
-TUNE(SetRange(1, 11), xx68,zz68);
-TUNE(xx69, zz69, xx70, zz70, xx71, zz71, xx72, zz72, xx73, zz73, xx74, zz74, xx75, zz75, xx76, zz76, xx77, zz77, xx78, zz78,
-xx79, zz79, xx80, zz80, xx81, zz81, xx82, zz82, xx83, zz83, xx84, zz84, xx85, zz85, xx86, zz86, xx87, zz87, xx88, zz88, xx89, zz89,
-xx90, zz90, xx91, zz91, xx92, zz92, xx93, zz93, xx94, zz94, xx95, zz95,xx96,zz96,xx97,zz97,xx98,zz98,xx99,zz99,xx100,zz100,xx101,
-zz101,xx102,zz102,xx103,zz103,xx104,zz104,xx105,zz105,xx106,zz106,xx107,zz107,xx108,zz108,xx109,zz109,xx110,zz110,xx111,zz111,xx112,
-zz112,xx113,zz113,xx114,zz114,xx115,zz115,xx116,zz116,xx117,zz117,xx118,zz118,xx119,zz119,xx120,zz120,xx121,zz121,xx122,zz122,xx123,
-zz123,xx124,zz124,xx125,zz125,xx126,zz126,xx127,zz127,xx128,zz128,xx129,zz129,xx130,zz130,xx131,zz131);
-
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
