@@ -1870,6 +1870,7 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
     }
 }
 
+template<bool PvNode>
 // Updates move sorting heuristics
 
 void update_quiet_histories(
@@ -1879,17 +1880,15 @@ void update_quiet_histories(
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << (PvNode? ((bonus * 764 / 1024) + 34):
-                                                                        ((bonus * 889 / 1024) + 44));
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << (bonus * S(xx125, zz125) / 1024) + S(xx126, zz126);
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(),
-                                  bonus * (PvNode? ((bonus > 0 ? 1122 : 924) / 1024):
-                                                   ((bonus > 0 ? 733 : 755) / 1024));
+    update_continuation_histories<PvNode>(ss, pos.moved_piece(move), move.to_sq(),
+                                  bonus * (bonus > 0 ? S(xx127, zz127) : S(xx128, zz128)) / 1024);
 
     int pIndex = pawn_history_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
-      << (bonus * (PvNode? ((bonus > 0 ? 523 : 357) / 1024) + 61:
-                           ((bonus > 0 ? 651 : 515) / 1024) + 78);
+      << (bonus * (bonus > 0 ? S(xx129, zz129) : S(xx130, zz130)) / 1024) + S(xx131, zz131);
+#undef S
 }
 
 }
