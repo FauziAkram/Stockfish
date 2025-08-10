@@ -1880,14 +1880,14 @@ void update_quiet_histories(
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << (bonus * S(xx125, zz125) / 1024) + S(xx126, zz126);
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << (bonus * S(868, 737) / 1024) + S(44, 35);
 
     update_continuation_histories<PvNode>(ss, pos.moved_piece(move), move.to_sq(),
-                                  bonus * (bonus > 0 ? S(xx127, zz127) : S(xx128, zz128)) / 1024);
+                                  bonus * (bonus > 0 ? S(743, 1128) : S(906, 766)) / 1024);
 
     int pIndex = pawn_history_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
-      << (bonus * (bonus > 0 ? S(xx129, zz129) : S(xx130, zz130)) / 1024) + S(xx131, zz131);
+      << (bonus * (bonus > 0 ? S(639, 542) : S(517, 353)) / 1024) + S(75, 60);
 #undef S
 }
 
