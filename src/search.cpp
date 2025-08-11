@@ -810,19 +810,19 @@ Value Search::Worker::search(
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
     if (PvNode) {
-        int bonus = std::clamp(-10 * int((ss - 1)->staticEval + ss->staticEval), -1979, 1561) + 630;
-        mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * 935 / 1024;
+        int bonus = std::clamp(-11 * int((ss - 1)->staticEval + ss->staticEval), -1886, 1696) + 685;
+        mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * 1040 / 1024;
         if (!ttHit && type_of(pos.piece_on(prevSq)) != PAWN
             && ((ss - 1)->currentMove).type_of() != PROMOTION)
             pawnHistory[pawn_history_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus * 1428 / 1024;
+              << bonus * 1243 / 1024;
     } else {
-        int bonus = std::clamp(-10 * int((ss - 1)->staticEval + ss->staticEval), -1979, 1561) + 630;
-        mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * 935 / 1024;
+        int bonus = std::clamp(-8 * int((ss - 1)->staticEval + ss->staticEval), -1536, 1317) + 737;
+        mainHistory[~us][((ss - 1)->currentMove).from_to()] << bonus * 800 / 1024;
         if (!ttHit && type_of(pos.piece_on(prevSq)) != PAWN
             && ((ss - 1)->currentMove).type_of() != PROMOTION)
             pawnHistory[pawn_history_index(pos)][pos.piece_on(prevSq)][prevSq]
-              << bonus * 1428 / 1024;
+              << bonus * 1510 / 1024;
     }
     }
 
