@@ -1041,7 +1041,7 @@ moves_loop:  // When in check, search starts here
                 if (!givesCheck && lmrDepth < 7 && !ss->inCheck)
                 {
 
-                    Value futilityValue = ss->staticEval + 232 + 224 * lmrDepth
+                    Value futilityValue = ss->staticEval + (PvNode? 230 + 285 * lmrDepth: 271 + 214 * lmrDepth)
                                         + PieceValue[capturedPiece] + 131 * captHist / 1024;
 
                     if (futilityValue <= alpha)
