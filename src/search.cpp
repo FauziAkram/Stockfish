@@ -1076,7 +1076,7 @@ moves_loop:  // When in check, search starts here
 
                 history += 71 * mainHistory[us][move.from_to()] / 32;
 
-                lmrDepth += history / 3233;
+                lmrDepth += history / (PvNode? 3270: 3670);
 
                 Value baseFutility = (bestMove ? 46 : 230);
                 Value futilityValue =
