@@ -1200,7 +1200,7 @@ moves_loop:  // When in check, search starts here
         if (move == ttData.move)
             r -= 2043;
 
-        if (capture)
+        if (capture && PvNode)
             ss->statScore = 782 * int(PieceValue[pos.captured_piece()]) / 128
                           + captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())];
         else
