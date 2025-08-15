@@ -1201,7 +1201,7 @@ moves_loop:  // When in check, search starts here
             r -= 2043;
 
         if (capture)
-            ss->statScore = 782 * int(PieceValue[pos.captured_piece()]) / 128
+            ss->statScore = (PvNode? 900: 610) * int(PieceValue[pos.captured_piece()]) / 128
                           + captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())];
         else
             ss->statScore = 2 * mainHistory[us][move.from_to()]
