@@ -51,7 +51,7 @@
 
 namespace Stockfish {
 int xx1=0, xx2=8867, xx3=8136, xx4=10757, xx5=7232, xx6=165, xx7=153, xx8=153, xx9=89, xx10=11131, xx11=136, xx12=93, xx13=11396, xx14=2035, xx15=968, xx16=5786, xx17=16752, xx18=5270, xx19=1100, xx20=800,
-xx21=840, xx22=1077, xx23=1454, xx24=21593, xx25=9929, xx26=18519, xx27=5000, xx28=10, xx29=97056, xx30=6540, xx31=5138, xx32=64, xx33=753, xx34=1275, xx35=5, xx36=8, xx37=494, xx38=2782, xx39=127, xx40=74,
+xx21=840, xx22=1077, xx23=1454, xx24=21593, xx25=9929, xx26=18519, xx27=5000, xx28=10, xx29=970560, xx30=6540, xx31=5138, xx32=64, xx33=753, xx34=1275, xx35=5, xx36=8, xx37=494, xx38=2782, xx39=127, xx40=74,
 xx41=1063, xx42=4, xx43=2128, xx44=91, xx45=8, xx46=1979, xx47=1561, xx48=630, xx49=935, xx50=1428, xx51=10, xx52=1, xx53=3, xx54=1, xx55=2, xx56=177, xx57=495, xx58=290, xx59=90, xx60=20, xx61=2048, xx62=1365,
 xx63=356, xx64=171290, xx65=14, xx66=19, xx67=403, xx68=7, xx69=215, xx70=60, xx71=300, xx72=5, xx73=417, xx74=931, xx75=7, xx76=232, xx77=224, xx78=131, xx79=158, xx80=31, xx81=283, xx82=4361, xx83=71, xx84=3233,
 xx85=46, xx86=230, xx87=131, xx88=91, xx89=11, xx90=26, xx91=6, xx92=56, xx93=79, xx94=58, xx95=249096, xx96=4, xx97=205, xx98=223, xx99=959, xx100=131072, xx101=45, xx102=80, xx103=276, xx104=249, xx105=86,
@@ -512,7 +512,7 @@ void Search::Worker::iterative_deepening() {
 
             auto elapsedTime = elapsed();
 
-            if (completedDepth >= xx28 && nodesEffort >= xx29 && elapsedTime > totalTime * (xx30/10000.0)
+            if (completedDepth >= xx28 && nodesEffort >= (xx29/10.0) && elapsedTime > totalTime * (xx30/10000.0)
                 && !mainThread->ponder)
                 threads.stop = true;
 
