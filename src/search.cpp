@@ -61,6 +61,12 @@ void syzygy_extend_pv(const OptionsMap&            options,
 
 using namespace Search;
 
+static constexpr int lmrDivisorByDepth[33] = {
+    3240, 3181, 2984, 3322, 2799, 3170, 2974, 3192, 2999, 3276, 3485, 3387, 2991,
+    3140, 3041, 3557, 3179, 3274, 3458, 3111, 3180, 3193, 3166, 3602, 3309, 3260,
+    2979, 3222, 3009, 3162, 2955, 3447, 3247
+};
+
 namespace {
 
 constexpr int SEARCHEDLIST_CAPACITY = 32;
@@ -1076,7 +1082,8 @@ moves_loop:  // When in check, search starts here
 
                 history += 76 * mainHistory[us][move.from_to()] / 32;
 
-                lmrDepth += history / 3220;
+                int divisor = (depth < 33) ? lmrDivisorByDepth[depth] : 3309;
+                lmrDepth += history / divisor;
 
                 Value baseFutility = (bestMove ? 47 : 218);
                 Value futilityValue =
