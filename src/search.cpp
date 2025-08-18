@@ -62,9 +62,9 @@ void syzygy_extend_pv(const OptionsMap&            options,
 using namespace Search;
 
 static constexpr int lmrDivisorByDepth[33] = {
-    3240, 3181, 2984, 3322, 2799, 3170, 2974, 3192, 2999, 3276, 3485, 3387, 2991,
-    3140, 3041, 3557, 3179, 3274, 3458, 3111, 3180, 3193, 3166, 3602, 3309, 3260,
-    2979, 3222, 3009, 3162, 2955, 3447, 3247
+    3276, 3202, 3053, 3365, 2900, 3152, 2920, 3021, 2877, 3271, 3510, 3364, 2984,
+    3022, 3044, 3614, 3230, 3212, 3556, 3089, 3231, 3297, 3100, 3538, 3377, 3349,
+    3066, 3099, 3097, 3190, 3037, 3354, 3317
 };
 
 namespace {
@@ -1082,7 +1082,7 @@ moves_loop:  // When in check, search starts here
 
                 history += 76 * mainHistory[us][move.from_to()] / 32;
 
-                int divisor = (depth < 33) ? lmrDivisorByDepth[depth] : 3309;
+                int divisor = (depth < 33) ? lmrDivisorByDepth[depth] : 3295;
                 lmrDepth += history / divisor;
 
                 Value baseFutility = (bestMove ? 47 : 218);
