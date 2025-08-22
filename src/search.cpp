@@ -1250,7 +1250,7 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present
             if (!ttData.move)
-                r += 1178 + 35 * msb(depth);
+                r += 930 + 300 * !PvNode + 35 * msb(depth);
 
             if (depth < 5)
                 r += 1080;
