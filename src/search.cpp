@@ -1032,13 +1032,13 @@ moves_loop:  // When in check, search starts here
             // Reduced depth of the next LMR search
             int lmrDepth = newDepth - r / 1024;
 
-            if (capture || givesCheck)
+            if (capture)
             {
                 Piece capturedPiece = pos.piece_on(move.to_sq());
                 int   captHist = captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)];
 
                 // Futility pruning for captures
-                if (!givesCheck && lmrDepth < 7 && !ss->inCheck)
+                if (lmrDepth < 7 && !ss->inCheck)
                 {
 
                     Value futilityValue = ss->staticEval + 231 + 211 * lmrDepth
