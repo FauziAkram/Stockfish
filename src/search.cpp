@@ -1890,7 +1890,7 @@ void update_quiet_histories(const Position& pos,
         workerThread.lowPlyHistory[ss->ply][move.from_to()] << (bonus * 741 / 1024) + 38;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(),
-                                  bonus * ((bonus > 0 && PvNode) ? 1024 : 915) / 1024);
+                                  bonus * ((bonus > 0 && PvNode) ? 1170 : 850) / 1024);
 
     int pIndex = pawn_history_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
