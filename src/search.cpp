@@ -50,6 +50,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=741, xx2=741, xx3=1170, xx4=850, xx5=704, xx6=704, xx7=439, xx8=439;
+TUNE(xx1,xx2,xx3,xxx4,xx5,xx6,xx7,xx8);
 
 namespace TB = Tablebases;
 
@@ -1887,14 +1889,14 @@ void update_quiet_histories(const Position& pos,
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << (bonus * 741 / 1024) + 38;
+        workerThread.lowPlyHistory[ss->ply][move.from_to()] << (bonus * (PvNode? xx1: xx2) / 1024) + 38;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(),
-                                  bonus * ((bonus > 0 && PvNode) ? 1170 : 850) / 1024);
+                                  bonus * ((bonus > 0 && PvNode) ? xx3 : xx4) / 1024);
 
     int pIndex = pawn_history_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
-      << (bonus * (bonus > 0 ? 704 : 439) / 1024) + 70;
+      << (bonus * (bonus > 0 ? (bonus * (PvNode? xx5: xx6) : (bonus * (PvNode? xx7: xx8)) / 1024) + 70;
 }
 
 }
