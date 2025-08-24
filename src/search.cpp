@@ -1649,7 +1649,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 continue;
 
             // Do not search moves with bad enough SEE values
-            if (!pos.see_ge(move, (PvNode? 83, 69)))
+            if (!pos.see_ge(move, (PvNode? 83: 69)))
                 continue;
         }
 
