@@ -1896,7 +1896,7 @@ void update_quiet_histories(const Position& pos,
 
     int pIndex = pawn_history_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
-      << (bonus * (bonus > 0 ? (bonus * (PvNode? xx5: xx6) : (bonus * (PvNode? xx7: xx8)) / 1024)) + 70;
+      << (bonus * (bonus > 0 ? (PvNode? xx5: xx6) : (PvNode? xx7: xx8)) / 1024) + 70;
 }
 
 }
