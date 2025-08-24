@@ -119,8 +119,12 @@ Value value_to_tt(Value v, int ply);
 Value value_from_tt(Value v, int ply, int r50c);
 void  update_pv(Move* pv, Move move, const Move* childPv);
 void  update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus);
-void  update_quiet_histories(
-   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus);
+void  update_quiet_histories(const Position& pos,
+                             Stack*          ss,
+                             Search::Worker& workerThread,
+                             Move            move,
+                             int             bonus,
+                             bool            PvNode);
 void update_all_stats(const Position& pos,
                       Stack*          ss,
                       Search::Worker& workerThread,
@@ -1872,8 +1876,12 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
 
 // Updates move sorting heuristics
 
-void update_quiet_histories(
-  const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus, bool PvNode) {
+void update_quiet_histories(const Position& pos,
+                            Stack*          ss,
+                            Search::Worker& workerThread,
+                            Move            move,
+                            int             bonus,
+                            bool            PvNode) {
 
     Color us = pos.side_to_move();
     workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
@@ -1882,7 +1890,7 @@ void update_quiet_histories(
         workerThread.lowPlyHistory[ss->ply][move.from_to()] << (bonus * 741 / 1024) + 38;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(),
-                                  bonus * ((bonus > 0 && PvNode) ? 1024 : 915) / 1024);
+                                  bonus * ((bonus > 0 && PvNode) ? 1000 : 915) / 1024);
 
     int pIndex = pawn_history_index(pos);
     workerThread.pawnHistory[pIndex][pos.moved_piece(move)][move.to_sq()]
