@@ -1817,13 +1817,7 @@ void update_all_stats(const Position& pos,
     int malus = std::min(951 * depth - 156, 2468) - 30 * quietsSearched.size();
 
     if (!pos.capture_stage(bestMove))
-    {
         update_quiet_histories(pos, ss, workerThread, bestMove, bonus * 957 / 1024);
-
-        // Decrease stats for all non-best quiet moves
-        for (Move move : quietsSearched)
-            update_quiet_histories(pos, ss, workerThread, move, -malus);
-    }
     else
     {
         // Increase stats for the best move in case it was a capture move
