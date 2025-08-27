@@ -1824,12 +1824,6 @@ void update_all_stats(const Position& pos,
         for (Move move : quietsSearched)
             update_quiet_histories(pos, ss, workerThread, move, -malus);
     }
-    else
-    {
-        // Increase stats for the best move in case it was a capture move
-        capturedPiece = type_of(pos.piece_on(bestMove.to_sq()));
-        captureHistory[movedPiece][bestMove.to_sq()][capturedPiece] << bonus;
-    }
 
     // Extra penalty for a quiet early move that was not a TT move in
     // previous ply when it gets refuted.
