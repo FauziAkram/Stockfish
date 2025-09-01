@@ -1039,7 +1039,7 @@ moves_loop:  // When in check, search starts here
                 int   captHist = captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)];
 
                 // Futility pruning for captures
-                if (!givesCheck && lmrDepth < 7)
+                if (!givesCheck && lmrDepth < 7 && alpha < VALUE_TB_WIN_IN_MAX_PLY)
                 {
                     Value futilityValue = ss->staticEval + 231 + 211 * lmrDepth
                                         + PieceValue[capturedPiece] + 130 * captHist / 1024;
@@ -1080,7 +1080,7 @@ moves_loop:  // When in check, search starts here
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
                 // scales well with respect to time and threads
-                if (!ss->inCheck && lmrDepth < 11 && futilityValue <= alpha)
+                if (!ss->inCheck && lmrDepth < 11 && futilityValue <= alpha && alpha < VALUE_TB_WIN_IN_MAX_PLY)
                 {
                     if (bestValue <= futilityValue && !is_decisive(bestValue)
                         && !is_win(futilityValue))
