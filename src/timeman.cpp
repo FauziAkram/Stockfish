@@ -27,7 +27,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=3128, xx2=4354, xx3=32116, xx4=321123, xx5=508017, xx6=33977, xx7=30395, xx8=294761, xx9=121431, xx10=294693, xx11=461073, xx12=667704, xx13=119847;
+TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13);
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 
@@ -43,8 +44,8 @@ void TimeManagement::advance_nodes_time(std::int64_t nodes) {
 // Called at the beginning of the search and calculates
 // the bounds of time allowed for the current game ply. We currently support:
 //      1) x basetime (+ z increment)
-//      2) x moves in y seconds (+ z increment)
-//      3) x basetime (sudden death)
+//      2) x basetime (sudden death)
+//      3) x moves in y seconds (+ z increment)
 void TimeManagement::init(Search::LimitsType& limits,
                           Color               us,
                           int                 ply,
@@ -107,17 +108,17 @@ void TimeManagement::init(Search::LimitsType& limits,
         {
             // Extra time according to timeLeft
             if (originalTimeAdjust < 0)
-                originalTimeAdjust = 0.3128 * std::log10(timeLeft) - 0.4354;
+                originalTimeAdjust = (xx1/10000.0) * std::log10(timeLeft) - (xx2/10000.0);
 
             // Calculate time constants based on current time left.
             double logTimeInSec = std::log10(scaledTime / 1000.0);
-            double optConstant  = std::min(0.0032116 + 0.000321123 * logTimeInSec, 0.00508017);
-            double maxConstant  = std::max(3.3977 + 3.03950 * logTimeInSec, 2.94761);
+            double optConstant  = std::min((xx3/10000000.0) + (xx4/1000000000.0) * logTimeInSec, (xx5/100000000.0));
+            double maxConstant  = std::max((xx6/10000.0) + (xx7/10000.0) * logTimeInSec, (xx8/100000.0));
 
-            optScale = (0.0121431 + std::pow(ply + 2.94693, 0.461073) * optConstant)
+            optScale = ((xx9/10000000.0) + std::pow(ply + (xx10/100000.0), 0.461073) * optConstant)
                      * originalTimeAdjust;
 
-            maxScale = std::min(6.67704, maxConstant + ply / 11.9847);
+            maxScale = std::min((xx11/100000.0), maxConstant + ply / (xx10/10000.0));
         }
         // x basetime (+ z increment)
         // If there is a healthy increment, timeLeft can exceed the actual available
