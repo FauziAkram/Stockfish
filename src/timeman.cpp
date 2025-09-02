@@ -100,7 +100,9 @@ void TimeManagement::init(Search::LimitsType& limits,
                limits.time[us]
                  + (limits.inc[us] * (centiMTG - 100) - moveOverhead * (200 + centiMTG)) / 100);
 
-    // Sudden death time control
+    if (limits.movestogo == 0)
+    {
+        // Sudden death time control
         if (limits.inc[us] == 0)
         {
             // Extra time according to timeLeft
@@ -138,7 +140,6 @@ void TimeManagement::init(Search::LimitsType& limits,
             maxScale = std::min(6.67704, maxConstant + ply / 11.9847);
         }
     }
-
     // x moves in y seconds (+ z increment)
     else
     {
