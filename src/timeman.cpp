@@ -115,10 +115,10 @@ void TimeManagement::init(Search::LimitsType& limits,
             double optConstant  = std::min((xx3/10000000.0) + (xx4/1000000000.0) * logTimeInSec, (xx5/100000000.0));
             double maxConstant  = std::max((xx6/10000.0) + (xx7/10000.0) * logTimeInSec, (xx8/100000.0));
 
-            optScale = ((xx9/10000000.0) + std::pow(ply + (xx10/100000.0), 0.461073) * optConstant)
+            optScale = ((xx9/10000000.0) + std::pow(ply + (xx10/100000.0), (xx11/1000000.0)) * optConstant)
                      * originalTimeAdjust;
 
-            maxScale = std::min((xx11/100000.0), maxConstant + ply / (xx10/10000.0));
+            maxScale = std::min((xx12/100000.0), maxConstant + ply / (xx13/10000.0));
         }
         // x basetime (+ z increment)
         // If there is a healthy increment, timeLeft can exceed the actual available
