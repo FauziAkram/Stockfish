@@ -1,114 +1,83 @@
 /*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2025 The Stockfish developers (see AUTHORS file)
+ 
+ 
 
-  Stockfish is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+ 
+ 
+ 
+ 
 
-  Stockfish is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+ 
+ 
+ 
+ 
 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+ 
 */
 
 #ifndef TYPES_H_INCLUDED
-    #define TYPES_H_INCLUDED
+#define TYPES_H_INCLUDED
 
-// When compiling with provided Makefile (e.g. for Linux and OSX), configuration
-// is done automatically. To get started type 'make help'.
-//
-// When Makefile is not used (e.g. with Microsoft Visual Studio) some switches
-// need to be set manually:
-//
-// -DNDEBUG      | Disable debugging mode. Always use this for release.
-//
-// -DNO_PREFETCH | Disable use of prefetch asm-instruction. You may need this to
-//               | run on some very old machines.
-//
-// -DUSE_POPCNT  | Add runtime support for use of popcnt asm-instruction. Works
-//               | only in 64-bit mode and requires hardware with popcnt support.
-//
-// -DUSE_PEXT    | Add runtime support for use of pext asm-instruction. Works
-//               | only in 64-bit mode and requires hardware with pext support.
+#include <cassert>
+#include <cstdint>
+#include <type_traits>
 
-    #include <cassert>
-    #include <cstddef>
-    #include <cstdint>
-    #include <type_traits>
+#if defined(_MSC_VER)
+    #pragma warning(disable: 4127)
+    #pragma warning(disable: 4146)
+    #pragma warning(disable: 4800)
+#endif
 
-    #if defined(_MSC_VER)
-        // Disable some silly and noisy warnings from MSVC compiler
-        #pragma warning(disable: 4127)  // Conditional expression is constant
-        #pragma warning(disable: 4146)  // Unary minus operator applied to unsigned type
-        #pragma warning(disable: 4800)  // Forcing value to bool 'true' or 'false'
-    #endif
+#if defined(__GNUC__) && !defined(__clang__) && (__GNUC__ < 9 || (__GNUC__ == 9 && __GNUC_MINOR__ < 3))
+    #error "Stockfish requires GCC 9.3 or later for correct compilation"
+#endif
 
-// Predefined macros hell:
-//
-// __GNUC__                Compiler is GCC, Clang or ICX
-// __clang__               Compiler is Clang or ICX
-// __INTEL_LLVM_COMPILER   Compiler is ICX
-// _MSC_VER                Compiler is MSVC
-// _WIN32                  Building on Windows (any)
-// _WIN64                  Building on Windows 64 bit
+#if defined(__clang__) && (__clang_major__ < 10)
+    #error "Stockfish requires Clang 10.0 or later for correct compilation"
+#endif
 
-// Enforce minimum GCC version
-    #if defined(__GNUC__) && !defined(__clang__) \
-      && (__GNUC__ < 9 || (__GNUC__ == 9 && __GNUC_MINOR__ < 3))
-        #error "Stockfish requires GCC 9.3 or later for correct compilation"
-    #endif
+#define ASSERT_ALIGNED(ptr, alignment) assert(reinterpret_cast<uintptr_t>(ptr) % alignment == 0)
 
-    // Enforce minimum Clang version
-    #if defined(__clang__) && (__clang_major__ < 10)
-        #error "Stockfish requires Clang 10.0 or later for correct compilation"
-    #endif
+#if defined(_WIN64) && defined(_MSC_VER)
+    #include <intrin.h>
+    #define IS_64BIT
+#endif
 
-    #define ASSERT_ALIGNED(ptr, alignment) assert(reinterpret_cast<uintptr_t>(ptr) % alignment == 0)
+#if defined(USE_POPCNT) && defined(_MSC_VER)
+    #include <nmmintrin.h>
+#endif
 
-    #if defined(_WIN64) && defined(_MSC_VER)  // No Makefile used
-        #include <intrin.h>                   // Microsoft header for _BitScanForward64()
-        #define IS_64BIT
-    #endif
+#if !defined(NO_PREFETCH) && defined(_MSC_VER)
+    #include <xmmintrin.h>
+#endif
 
-    #if defined(USE_POPCNT) && defined(_MSC_VER)
-        #include <nmmintrin.h>  // Microsoft header for _mm_popcnt_u64()
-    #endif
-
-    #if !defined(NO_PREFETCH) && defined(_MSC_VER)
-        #include <xmmintrin.h>  // Microsoft header for _mm_prefetch()
-    #endif
-
-    #if defined(USE_PEXT)
-        #include <immintrin.h>  // Header for _pext_u64() intrinsic
-        #define pext(b, m) _pext_u64(b, m)
-    #else
-        #define pext(b, m) 0
-    #endif
+#if defined(USE_PEXT)
+    #include <immintrin.h>
+    #define pext(b, m) _pext_u64(b, m)
+#else
+    #define pext(b, m) 0
+#endif
 
 namespace Stockfish {
 
-    #ifdef USE_POPCNT
+#ifdef USE_POPCNT
 constexpr bool HasPopCnt = true;
-    #else
+#else
 constexpr bool HasPopCnt = false;
-    #endif
+#endif
 
-    #ifdef USE_PEXT
+#ifdef USE_PEXT
 constexpr bool HasPext = true;
-    #else
+#else
 constexpr bool HasPext = false;
-    #endif
+#endif
 
-    #ifdef IS_64BIT
+#ifdef IS_64BIT
 constexpr bool Is64Bit = true;
-    #else
+#else
 constexpr bool Is64Bit = false;
-    #endif
+#endif
 
 using Key      = uint64_t;
 using Bitboard = uint64_t;
@@ -145,15 +114,13 @@ enum Bound : int8_t {
     BOUND_EXACT = BOUND_UPPER | BOUND_LOWER
 };
 
-// Value is used as an alias for int, this is done to differentiate between a search
-// value and any other integer value. The values used in search are always supposed
-// to be in the range (-VALUE_NONE, VALUE_NONE] and should not exceed this range.
 using Value = int;
 
 constexpr Value VALUE_ZERO     = 0;
 constexpr Value VALUE_DRAW     = 0;
 constexpr Value VALUE_NONE     = 32002;
 constexpr Value VALUE_INFINITE = 32001;
+constexpr Value VALUE_KNOWN_WIN = 10000;
 
 constexpr Value VALUE_MATE             = 32000;
 constexpr Value VALUE_MATE_IN_MAX_PLY  = VALUE_MATE - MAX_PLY;
@@ -178,17 +145,14 @@ constexpr bool is_loss(Value value) {
 
 constexpr bool is_decisive(Value value) { return is_win(value) || is_loss(value); }
 
-// In the code, we make the assumption that these values
-// are such that non_pawn_material() can be used to uniquely
-// identify the material on the board.
-constexpr Value PawnValue   = 208;
-constexpr Value KnightValue = 781;
-constexpr Value BishopValue = 825;
-constexpr Value RookValue   = 1276;
-constexpr Value QueenValue  = 2538;
+constexpr Value PawnValueMg   = 126,   PawnValueEg   = 208;
+constexpr Value KnightValueMg = 781,   KnightValueEg = 854;
+constexpr Value BishopValueMg = 825,   BishopValueEg = 915;
+constexpr Value RookValueMg   = 1276,  RookValueEg   = 1380;
+constexpr Value QueenValueMg  = 2538,  QueenValueEg  = 2682;
 
+constexpr Value MidgameLimit  = 15258, EndgameLimit  = 3915;
 
-// clang-format off
 enum PieceType : std::int8_t {
     NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING,
     ALL_PIECES = 0,
@@ -201,31 +165,20 @@ enum Piece : std::int8_t {
     B_PAWN = PAWN + 8, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING,
     PIECE_NB = 16
 };
-// clang-format on
 
-constexpr Value PieceValue[PIECE_NB] = {
-  VALUE_ZERO, PawnValue, KnightValue, BishopValue, RookValue, QueenValue, VALUE_ZERO, VALUE_ZERO,
-  VALUE_ZERO, PawnValue, KnightValue, BishopValue, RookValue, QueenValue, VALUE_ZERO, VALUE_ZERO};
+constexpr Value PieceValue[2][PIECE_NB] = {
+  { VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg, VALUE_ZERO, VALUE_ZERO },
+  { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, VALUE_ZERO, VALUE_ZERO,
+    VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg, VALUE_ZERO, VALUE_ZERO }
+};
 
 using Depth = int;
 
-// The following DEPTH_ constants are used for transposition table entries
-// and quiescence search move generation stages. In regular search, the
-// depth stored in the transposition table is literal: the search depth
-// (effort) used to make the corresponding transposition table value. In
-// quiescence search, however, the transposition table entries only store
-// the current quiescence move generation stage (which should thus compare
-// lower than any regular search depth).
 constexpr Depth DEPTH_QS = 0;
-// For transposition table entries where no searching at all was done
-// (whether regular or qsearch) we use DEPTH_UNSEARCHED, which should thus
-// compare lower than any quiescence or regular depth. DEPTH_ENTRY_OFFSET
-// is used only for the transposition table entry occupancy check (see tt.cpp),
-// and should thus be lower than DEPTH_UNSEARCHED.
 constexpr Depth DEPTH_UNSEARCHED   = -2;
 constexpr Depth DEPTH_ENTRY_OFFSET = -3;
 
-// clang-format off
 enum Square : int8_t {
     SQ_A1, SQ_B1, SQ_C1, SQ_D1, SQ_E1, SQ_F1, SQ_G1, SQ_H1,
     SQ_A2, SQ_B2, SQ_C2, SQ_D2, SQ_E2, SQ_F2, SQ_G2, SQ_H2,
@@ -240,7 +193,6 @@ enum Square : int8_t {
     SQUARE_ZERO = 0,
     SQUARE_NB   = 64
 };
-// clang-format on
 
 enum Direction : int8_t {
     NORTH = 8,
@@ -255,37 +207,44 @@ enum Direction : int8_t {
 };
 
 enum File : int8_t {
-    FILE_A,
-    FILE_B,
-    FILE_C,
-    FILE_D,
-    FILE_E,
-    FILE_F,
-    FILE_G,
-    FILE_H,
-    FILE_NB
+    FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NB
 };
 
 enum Rank : int8_t {
-    RANK_1,
-    RANK_2,
-    RANK_3,
-    RANK_4,
-    RANK_5,
-    RANK_6,
-    RANK_7,
-    RANK_8,
-    RANK_NB
+    RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NB
 };
 
-// Keep track of what a move changes on the board (used by NNUE)
-struct DirtyPiece {
-    Piece  pc;        // this is never allowed to be NO_PIECE
-    Square from, to;  // to should be SQ_NONE for promotions
+enum Phase {
+  PHASE_ENDGAME,
+  PHASE_MIDGAME = 128,
+  MG = 0, EG = 1, PHASE_NB = 2
+};
 
-    // if {add,remove}_sq is SQ_NONE, {add,remove}_pc is allowed to be
-    // uninitialized
-    // castling uses add_sq and remove_sq to remove and add the rook
+enum Score : int { SCORE_ZERO };
+using ScaleFactor = int;
+
+constexpr ScaleFactor SCALE_FACTOR_DRAW    = 0;
+constexpr ScaleFactor SCALE_FACTOR_NORMAL  = 64;
+constexpr ScaleFactor SCALE_FACTOR_MAX     = 128;
+constexpr ScaleFactor SCALE_FACTOR_NONE    = 255;
+
+
+constexpr Score make_score(int mg, int eg) {
+  return Score((int)((unsigned int)eg << 16) + mg);
+}
+
+constexpr Value eg_value(Score s) {
+  return Value(static_cast<int16_t>((static_cast<unsigned>(s) + 0x8000) >> 16));
+}
+
+constexpr Value mg_value(Score s) {
+  return Value(static_cast<int16_t>(static_cast<uint16_t>(s)));
+}
+
+
+struct DirtyPiece {
+    Piece  pc;
+    Square from, to;
     Square remove_sq, add_sq;
     Piece  remove_pc, add_pc;
 };
@@ -303,23 +262,26 @@ ENABLE_INCR_OPERATORS_ON(Rank)
 
 constexpr Direction operator+(Direction d1, Direction d2) { return Direction(int(d1) + int(d2)); }
 constexpr Direction operator*(int i, Direction d) { return Direction(i * int(d)); }
+constexpr Score operator+(Score s, int v) { return make_score(mg_value(s) + v, eg_value(s) + v); }
+constexpr Score operator-(Score s, int v) { return make_score(mg_value(s) - v, eg_value(s) - v); }
+constexpr Score operator-(Score s) { return make_score(-mg_value(s), -eg_value(s)); }
 
-// Additional operators to add a Direction to a Square
+inline Score& operator+=(Score& s1, Score s2) { return s1 = make_score(mg_value(s1) + mg_value(s2), eg_value(s1) + eg_value(s2)); }
+inline Score& operator-=(Score& s1, Score s2) { return s1 = make_score(mg_value(s1) - mg_value(s2), eg_value(s1) - eg_value(s2)); }
+inline Score operator*(int i, Score s) { return make_score(i * mg_value(s), i * eg_value(s)); }
+inline Score operator*(Score s, int i) { return make_score(i * mg_value(s), i * eg_value(s)); }
+inline Score operator*(Score s, bool b) { return b ? s : SCORE_ZERO; }
+inline Score operator/(Score s, int i) { return make_score(mg_value(s) / i, eg_value(s) / i); }
+
+
 constexpr Square  operator+(Square s, Direction d) { return Square(int(s) + int(d)); }
 constexpr Square  operator-(Square s, Direction d) { return Square(int(s) - int(d)); }
 constexpr Square& operator+=(Square& s, Direction d) { return s = s + d; }
 constexpr Square& operator-=(Square& s, Direction d) { return s = s - d; }
 
-// Toggle color
 constexpr Color operator~(Color c) { return Color(c ^ BLACK); }
-
-// Swap A1 <-> A8
 constexpr Square flip_rank(Square s) { return Square(s ^ SQ_A8); }
-
-// Swap A1 <-> H1
 constexpr Square flip_file(Square s) { return Square(s ^ SQ_H1); }
-
-// Swap color of piece B_KNIGHT <-> W_KNIGHT
 constexpr Piece operator~(Piece pc) { return Piece(pc ^ 8); }
 
 constexpr CastlingRights operator&(Color c, CastlingRights cr) {
@@ -355,12 +317,9 @@ constexpr Rank relative_rank(Color c, Square s) { return relative_rank(c, rank_o
 
 constexpr Direction pawn_push(Color c) { return c == WHITE ? NORTH : SOUTH; }
 
-
-// Based on a congruential pseudo-random number generator
 constexpr Key make_key(uint64_t seed) {
     return seed * 6364136223846793005ULL + 1442695040888963407ULL;
 }
-
 
 enum MoveType {
     NORMAL,
@@ -369,58 +328,28 @@ enum MoveType {
     CASTLING   = 3 << 14
 };
 
-// A move needs 16 bits to be stored
-//
-// bit  0- 5: destination square (from 0 to 63)
-// bit  6-11: origin square (from 0 to 63)
-// bit 12-13: promotion piece type - 2 (from KNIGHT-2 to QUEEN-2)
-// bit 14-15: special move flag: promotion (1), en passant (2), castling (3)
-// NOTE: en passant bit is set only when a pawn can be captured
-//
-// Special cases are Move::none() and Move::null(). We can sneak these in because
-// in any normal move the destination square and origin square are always different,
-// but Move::none() and Move::null() have the same origin and destination square.
-
 class Move {
    public:
     Move() = default;
-    constexpr explicit Move(std::uint16_t d) :
-        data(d) {}
-
-    constexpr Move(Square from, Square to) :
-        data((from << 6) + to) {}
+    constexpr explicit Move(std::uint16_t d) : data(d) {}
+    constexpr Move(Square from, Square to) : data((from << 6) + to) {}
 
     template<MoveType T>
     static constexpr Move make(Square from, Square to, PieceType pt = KNIGHT) {
         return Move(T + ((pt - KNIGHT) << 12) + (from << 6) + to);
     }
 
-    constexpr Square from_sq() const {
-        assert(is_ok());
-        return Square((data >> 6) & 0x3F);
-    }
-
-    constexpr Square to_sq() const {
-        assert(is_ok());
-        return Square(data & 0x3F);
-    }
-
+    constexpr Square from_sq() const { assert(is_ok()); return Square((data >> 6) & 0x3F); }
+    constexpr Square to_sq() const { assert(is_ok()); return Square(data & 0x3F); }
     constexpr int from_to() const { return data & 0xFFF; }
-
     constexpr MoveType type_of() const { return MoveType(data & (3 << 14)); }
-
     constexpr PieceType promotion_type() const { return PieceType(((data >> 12) & 3) + KNIGHT); }
-
     constexpr bool is_ok() const { return none().data != data && null().data != data; }
-
     static constexpr Move null() { return Move(65); }
     static constexpr Move none() { return Move(0); }
-
     constexpr bool operator==(const Move& m) const { return data == m.data; }
     constexpr bool operator!=(const Move& m) const { return data != m.data; }
-
     constexpr explicit operator bool() const { return data != 0; }
-
     constexpr std::uint16_t raw() const { return data; }
 
     struct MoveHash {
@@ -431,16 +360,6 @@ class Move {
     std::uint16_t data;
 };
 
-template<typename T, typename... Ts>
-struct is_all_same {
-    static constexpr bool value = (std::is_same_v<T, Ts> && ...);
-};
-
-template<typename... Ts>
-constexpr auto is_all_same_v = is_all_same<Ts...>::value;
-
 }  // namespace Stockfish
 
-#endif  // #ifndef TYPES_H_INCLUDED
-
-#include "tune.h"  // Global visibility to tuning setup
+#endif // #ifndef TYPES_H_INCLUDED
