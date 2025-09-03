@@ -19,6 +19,8 @@
 #include <cassert>
 
 #include "bitboard.h"
+#include "position.h"
+#include "movegen.h"
 #include "endgame.h"
 #include "movegen.h"
 
