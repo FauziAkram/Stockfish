@@ -146,21 +146,11 @@ Search::Worker::Worker(SharedState&                    sharedState,
     manager(std::move(sm)),
     options(sharedState.options),
     threads(sharedState.threads),
-    tt(sharedState.tt),
-    networks(sharedState.networks),
-    refreshTable(networks[token]) {
+    tt(sharedState.tt) {
     clear();
 }
 
-void Search::Worker::ensure_network_replicated() {
-    // Access once to force lazy initialization.
-    // We do this because we want to avoid initialization during search.
-    (void) (networks[numaAccessToken]);
-}
-
 void Search::Worker::start_searching() {
-
-    accumulatorStack.reset();
 
     // Non-main threads go directly to iterative_deepening()
     if (!is_mainthread())
@@ -523,10 +513,7 @@ void Search::Worker::do_move(Position& pos, const Move move, StateInfo& st, Stac
 
 void Search::Worker::do_move(
   Position& pos, const Move move, StateInfo& st, const bool givesCheck, Stack* const ss) {
-    bool       capture = pos.capture_stage(move);
-    DirtyPiece dp      = pos.do_move(move, st, givesCheck, &tt);
     nodes.fetch_add(1, std::memory_order_relaxed);
-    accumulatorStack.push(dp);
     if (ss != nullptr)
     {
         ss->currentMove         = move;
@@ -535,11 +522,10 @@ void Search::Worker::do_move(
     }
 }
 
-void Search::Worker::do_null_move(Position& pos, StateInfo& st) { pos.do_null_move(st, tt); }
+void Search::Worker::do_null_move(Position& pos, StateInfo& st) { pos.do_null_move(st); }
 
 void Search::Worker::undo_move(Position& pos, const Move move) {
     pos.undo_move(move);
-    accumulatorStack.pop();
 }
 
 void Search::Worker::undo_null_move(Position& pos) { pos.undo_null_move(); }
@@ -549,6 +535,7 @@ void Search::Worker::undo_null_move(Position& pos) { pos.undo_null_move(); }
 void Search::Worker::clear() {
     mainHistory.fill(68);
     captureHistory.fill(-689);
+    counterMoves.fill(Move::none());
     pawnHistory.fill(-1238);
     pawnCorrectionHistory.fill(5);
     minorPieceCorrectionHistory.fill(0);
@@ -568,8 +555,6 @@ void Search::Worker::clear() {
 
     for (size_t i = 1; i < reductions.size(); ++i)
         reductions[i] = int(2809 / 128.0 * std::log(i));
-
-    refreshTable.clear(networks[numaAccessToken]);
 }
 
 
@@ -1729,8 +1714,7 @@ TimePoint Search::Worker::elapsed() const {
 TimePoint Search::Worker::elapsed_time() const { return main_manager()->tm.elapsed_time(); }
 
 Value Search::Worker::evaluate(const Position& pos) {
-    return Eval::evaluate(networks[numaAccessToken], pos, accumulatorStack, refreshTable,
-                          optimism[pos.side_to_move()]);
+    return Eval::evaluate(pos);
 }
 
 namespace {
