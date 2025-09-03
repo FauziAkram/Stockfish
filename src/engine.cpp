@@ -221,6 +221,14 @@ void Engine::set_tt_size(size_t mb) {
 
 void Engine::set_ponderhit(bool b) { threads.main_manager()->ponder = b; }
 
+void Engine::trace_eval() const {
+    StateListPtr trace_states(new std::deque<StateInfo>(1));
+    Position     p;
+    p.set(pos.fen(), options["UCI_Chess960"], &trace_states->back(), threads.main_thread());
+
+    sync_cout << "\n" << Eval::trace(p) << sync_endl;
+}
+
 // utility functions
 
 const OptionsMap& Engine::get_options() const { return options; }
