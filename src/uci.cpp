@@ -499,57 +499,47 @@ void UCIEngine::position(std::istringstream& is) {
 
 namespace {
 
-struct WinRateParams {
-    double a;
-    double b;
-};
-
-WinRateParams win_rate_params(const Position& pos) {
-
-    int material = pos.count<PAWN>() + 3 * pos.count<KNIGHT>() + 3 * pos.count<BISHOP>()
-                 + 5 * pos.count<ROOK>() + 9 * pos.count<QUEEN>();
-
-    // The fitted model only uses data for material counts in [17, 78], and is anchored at count 58.
-    double m = std::clamp(material, 17, 78) / 58.0;
-
-    // Return a = p_a(material) and b = p_b(material), see github.com/official-stockfish/WDL_model
-    constexpr double as[] = {-13.50030198, 40.92780883, -36.82753545, 386.83004070};
-    constexpr double bs[] = {96.53354896, -165.79058388, 90.89679019, 49.29561889};
-
-    double a = (((as[0] * m + as[1]) * m + as[2]) * m) + as[3];
-    double b = (((bs[0] * m + bs[1]) * m + bs[2]) * m) + bs[3];
-
-    return {a, b};
+int to_cp(Value v) {
+    return v * 100 / NormalizeToPawnValue;
 }
 
-// The win rate model is 1 / (1 + exp((a - eval) / b)), where a = p_a(material) and b = p_b(material).
-// It fits the LTC fishtest statistics rather accurately.
-int win_rate_model(Value v, const Position& pos) {
+int win_rate_model(Value v, int ply) {
 
-    auto [a, b] = win_rate_params(pos);
+    double m = std::min(ply, 128) / 64.0;
 
-    // Return the win rate in per mille units, rounded to the nearest integer.
-    return int(0.5 + 1000 / (1 + std::exp((a - double(v)) / b)));
+    // Return a = p_a(m) and b = p_b(m)
+    // m = 0   -> ply = 0
+    // m = 1   -> ply = 64
+    // m = 2   -> ply = 128
+    constexpr double as[] = {1.3521, -0.4493,  0.0563};
+    constexpr double bs[] = {0.6409,  0.1341, -0.0163};
+
+    double a = (as[2] * m + as[1]) * m + as[0];
+    double b = (bs[2] * m + bs[1]) * m + bs[0];
+
+    return int(0.5 + 1000 / (1 + std::exp((a - double(to_cp(v)) / 100) / b)));
 }
 }
 
 std::string UCIEngine::format_score(const Score& s)
 {
+  constexpr int TB_CP = 20000;
   std::stringstream ss;
 
-  if (std::abs(s.get<Score::InternalUnits>().value) > VALUE_KNOWN_WIN)
-  {
-      auto m = s.is<Score::Mate>()
-          ? s.get<Score::Mate>().plies
-          : VALUE_MATE_IN_MAX_PLY - std::abs(s.get<Score::Tablebase>().plies);
+    const auto    format =
+      overload{[](Score::Mate mate) -> std::string {
+                   auto m = (mate.plies > 0 ? (mate.plies + 1) : mate.plies) / 2;
+                   return std::string("mate ") + std::to_string(m);
+               },
+               [](Score::Tablebase tb) -> std::string {
+                   return std::string("cp ")
+                        + std::to_string((tb.win ? TB_CP - tb.plies : -TB_CP - tb.plies));
+               },
+               [](Score::InternalUnits units) -> std::string {
+                   return std::string("cp ") + std::to_string(to_cp(units.value));
+               }};
 
-      ss << "mate " << (m > 0 ? (m + 1) / 2 : m / 2);
-  }
-  else
-  {
-      ss << "cp " << s.get<Score::InternalUnits>().value;
-  }
-  return ss.str();
+    return s.visit(format);
 }
 
 std::string UCIEngine::wdl(Value v, const Position& pos)
@@ -560,17 +550,6 @@ std::string UCIEngine::wdl(Value v, const Position& pos)
   int wdl_d = 1000 - wdl_w - wdl_l;
   ss << " wdl " << wdl_w << " " << wdl_d << " " << wdl_l;
   return ss.str();
-}
-
-std::string UCIEngine::wdl(Value v, const Position& pos) {
-    std::stringstream ss;
-
-    int wdl_w = win_rate_model(v, pos);
-    int wdl_l = win_rate_model(-v, pos);
-    int wdl_d = 1000 - wdl_w - wdl_l;
-    ss << wdl_w << " " << wdl_d << " " << wdl_l;
-
-    return ss.str();
 }
 
 std::string UCIEngine::square(Square s) {
