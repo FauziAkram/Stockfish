@@ -80,6 +80,8 @@ class Engine {
     void set_on_iter(std::function<void(const InfoIter&)>&&);
     void set_on_bestmove(std::function<void(std::string_view, std::string_view)>&&);
 
+    void trace_eval() const;
+
     // utility functions
 
     const OptionsMap& get_options() const;
