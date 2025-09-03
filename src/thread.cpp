@@ -102,8 +102,6 @@ void Thread::run_custom_job(std::function<void()> f) {
     cv.notify_one();
 }
 
-void Thread::ensure_network_replicated() { worker->ensure_network_replicated(); }
-
 // Thread gets parked here, blocked on the condition variable
 // when the thread has no work to do.
 
@@ -160,6 +158,9 @@ void ThreadPool::set(const NumaConfig&                           numaConfig,
         // change the NumaConfig UCI setting) is to not bind the threads to processors
         // unless we know for sure that we span NUMA nodes and replication is required.
         const std::string numaPolicy(sharedState.options["NumaPolicy"]);
+    // Per-thread pawn and material hash tables
+    Pawns::Table pawnsTable;
+    Material::Table materialTable;
         const bool        doBindThreads = [&]() {
             if (numaPolicy == "none")
                 return false;
@@ -212,6 +213,8 @@ void ThreadPool::clear() {
     for (auto&& th : threads)
         th->wait_for_search_finished();
 
+    main_thread()->worker->pawnsTable.clear();
+    main_thread()->worker->materialTable.clear();
     // These two affect the time taken on the first move of a game:
     main_manager()->bestPreviousAverageScore = VALUE_INFINITE;
     main_manager()->previousTimeReduction    = 0.85;
@@ -400,11 +403,6 @@ std::vector<size_t> ThreadPool::get_bound_thread_count_by_numa_node() const {
     }
 
     return counts;
-}
-
-void ThreadPool::ensure_network_replicated() {
-    for (auto&& th : threads)
-        th->ensure_network_replicated();
 }
 
 }  // namespace Stockfish
