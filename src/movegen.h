@@ -36,11 +36,12 @@ enum GenType {
     LEGAL
 };
 
-struct ExtMove: public Move {
-    int value;
+struct ExtMove {
+    Move move;
+    int  value;
 
-    void operator=(Move m) { data = m.raw(); }
-
+    operator Move() const { return move; }
+    void operator=(Move m) { move = m; }
     // Inhibit unwanted implicit conversions to Move
     // with an ambiguity that yields to a compile error.
     operator float() const = delete;
@@ -49,7 +50,7 @@ struct ExtMove: public Move {
 inline bool operator<(const ExtMove& f, const ExtMove& s) { return f.value < s.value; }
 
 template<GenType>
-Move* generate(const Position& pos, Move* moveList);
+ExtMove* generate(const Position& pos, ExtMove* moveList);
 
 // The MoveList struct wraps the generate() function and returns a convenient
 // list of moves. Using MoveList is sometimes preferable to directly calling
@@ -59,13 +60,13 @@ struct MoveList {
 
     explicit MoveList(const Position& pos) :
         last(generate<T>(pos, moveList)) {}
-    const Move* begin() const { return moveList; }
-    const Move* end() const { return last; }
+    const ExtMove* begin() const { return moveList; }
+    const ExtMove* end() const { return last; }
     size_t      size() const { return last - moveList; }
     bool        contains(Move move) const { return std::find(begin(), end(), move) != end(); }
 
    private:
-    Move moveList[MAX_MOVES], *last;
+    ExtMove moveList[MAX_MOVES], *last;
 };
 
 }  // namespace Stockfish
