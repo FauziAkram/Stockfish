@@ -33,8 +33,6 @@
 
 #include "history.h"
 #include "misc.h"
-#include "nnue/network.h"
-#include "nnue/nnue_accumulator.h"
 #include "numa.h"
 #include "position.h"
 #include "score.h"
@@ -62,17 +60,18 @@ namespace Search {
 // its own array of Stack objects, indexed by the current ply.
 struct Stack {
     Move*                       pv;
-    PieceToHistory*             continuationHistory;
-    CorrectionHistory<PieceTo>* continuationCorrectionHistory;
+    const PieceToHistory*       continuationHistory;
     int                         ply;
     Move                        currentMove;
     Move                        excludedMove;
+    Move                        killers[2];
     Value                       staticEval;
     int                         statScore;
     int                         moveCount;
     bool                        inCheck;
     bool                        ttPv;
     bool                        ttHit;
+    int                         doubleExtensions;
     int                         cutoffCnt;
     int                         reduction;
     int                         quietMoveStreak;
@@ -135,21 +134,18 @@ struct LimitsType {
 // This struct is used to easily forward data to the Search::Worker class.
 struct SharedState {
     SharedState(const OptionsMap&                               optionsMap,
-                ThreadPool&                                     threadPool,
-                TranspositionTable&                             transpositionTable,
-                const LazyNumaReplicated<Eval::NNUE::Networks>& nets) :
+                ThreadPool&                 threadPool,
+                TranspositionTable&         transpositionTable) :
         options(optionsMap),
         threads(threadPool),
-        tt(transpositionTable),
-        networks(nets) {}
+        tt(transpositionTable) {}
 
     const OptionsMap&                               options;
     ThreadPool&                                     threads;
     TranspositionTable&                             tt;
-    const LazyNumaReplicated<Eval::NNUE::Networks>& networks;
 };
 
-class Worker;
+class Thread;
 
 // Null Object Pattern, implement a common interface for the SearchManagers.
 // A Null Object will be given to non-mainthread workers.
@@ -277,20 +273,14 @@ class Worker {
 
     bool is_mainthread() const { return threadIdx == 0; }
 
-    void ensure_network_replicated();
-
     // Public because they need to be updatable by the stats
     ButterflyHistory mainHistory;
     LowPlyHistory    lowPlyHistory;
 
     CapturePieceToHistory captureHistory;
     ContinuationHistory   continuationHistory[2][2];
+    CounterMoveHistory    counterMoves;
     PawnHistory           pawnHistory;
-
-    CorrectionHistory<Pawn>         pawnCorrectionHistory;
-    CorrectionHistory<Minor>        minorPieceCorrectionHistory;
-    CorrectionHistory<NonPawn>      nonPawnCorrectionHistory;
-    CorrectionHistory<Continuation> continuationCorrectionHistory;
 
     TTMoveHistory ttMoveHistory;
 
@@ -323,8 +313,6 @@ class Worker {
     TimePoint elapsed() const;
     TimePoint elapsed_time() const;
 
-    Value evaluate(const Position&);
-
     LimitsType limits;
 
     size_t                pvIdx, pvLast;
@@ -353,14 +341,11 @@ class Worker {
     const OptionsMap&                               options;
     ThreadPool&                                     threads;
     TranspositionTable&                             tt;
-    const LazyNumaReplicated<Eval::NNUE::Networks>& networks;
-
-    // Used by NNUE
-    Eval::NNUE::AccumulatorStack  accumulatorStack;
-    Eval::NNUE::AccumulatorCaches refreshTable;
-
-    friend class Stockfish::ThreadPool;
+    friend class Thread;
     friend class SearchManager;
+     // Per-thread pawn and material hash tables
+    Pawns::Table pawnsTable;
+    Material::Table materialTable;
 };
 
 struct ConthistBonus {
