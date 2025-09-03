@@ -36,13 +36,18 @@ class Score;
 enum Square : int8_t;
 using Value = int;
 
+namespace UCI {
+
+// Normalizes the internal value as reported by evaluate or search
+// to the UCI centipawn result used in output.
+const int NormalizeToPawnValue = 328;
+
 class UCIEngine {
    public:
     UCIEngine(int argc, char** argv);
 
     void loop();
 
-    static int         to_cp(Value v, const Position& pos);
     static std::string format_score(const Score& s);
     static std::string square(Square s);
     static std::string move(Move m, bool chess960);
