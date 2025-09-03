@@ -20,12 +20,15 @@
 
 #include "bitboard.h"
 #include "misc.h"
+#include "endgame.h"
 #include "position.h"
+#include "psqt.h"
 #include "types.h"
 #include "uci.h"
 #include "tune.h"
 
 using namespace Stockfish;
+namespace Bitbases { void init(); }
 
 int main(int argc, char* argv[]) {
 
@@ -33,6 +36,9 @@ int main(int argc, char* argv[]) {
 
     Bitboards::init();
     Position::init();
+    PSQT::init();
+    Bitbases::init();
+    Endgames::init();
 
     UCIEngine uci(argc, argv);
 
