@@ -29,6 +29,8 @@
 #include <vector>
 
 #include "numa.h"
+#include "pawns.h"
+#include "material.h"
 #include "position.h"
 #include "search.h"
 #include "thread_win32_osx.h"
@@ -83,8 +85,6 @@ class Thread {
     void clear_worker();
     void run_custom_job(std::function<void()> f);
 
-    void ensure_network_replicated();
-
     // Thread has been slightly altered to allow running custom jobs, so
     // this name is no longer correct. However, this class (and ThreadPool)
     // require further work to make them properly generic while maintaining
@@ -123,6 +123,16 @@ class ThreadPool {
         }
     }
 
+    ~ThreadPool() {
+        // destroy any existing thread(s)
+        if (threads.size() > 0)
+        {
+            main_thread()->wait_for_search_finished();
+
+            threads.clear();
+        }
+    }
+
     ThreadPool(const ThreadPool&) = delete;
     ThreadPool(ThreadPool&&)      = delete;
 
@@ -148,8 +158,6 @@ class ThreadPool {
 
     std::vector<size_t> get_bound_thread_count_by_numa_node() const;
 
-    void ensure_network_replicated();
-
     std::atomic_bool stop, abortedSearch, increaseDepth;
 
     auto cbegin() const noexcept { return threads.cbegin(); }
@@ -163,6 +171,9 @@ class ThreadPool {
     StateListPtr                         setupStates;
     std::vector<std::unique_ptr<Thread>> threads;
     std::vector<NumaIndex>               boundThreadToNumaNode;
+    // Per-thread pawn and material hash tables
+    Pawns::Table pawnsTable;
+    Material::Table materialTable;
 
     uint64_t accumulate(std::atomic<uint64_t> Search::Worker::* member) const {
 
