@@ -850,7 +850,7 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
     // Calculate checkers bitboard (if move gives check)
     st->checkersBB = givesCheck ? attackers_to(square<KING>(them)) & pieces(us) : 0;
 
-    prefetch(thisThread->pawnsTable[pos.pawn_key()]);
+    prefetch(thisThread->worker->pawnsTable[pos.pawn_key()]);
     sideToMove = ~sideToMove;
 
     // Update king attacks used for fast check detection
