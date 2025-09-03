@@ -81,7 +81,7 @@ class Position {
     Position& operator=(const Position&) = delete;
 
     // FEN string input/output
-    Position&   set(const std::string& fenStr, bool isChess960, StateInfo* si);
+    Position&   set(const std::string& fenStr, bool isChess960, StateInfo* si, Thread* th = nullptr);
     Position&   set(const std::string& code, Color c, StateInfo* si);
     std::string fen() const;
 
@@ -92,6 +92,7 @@ class Position {
     Bitboard pieces(Color c) const;
     template<typename... PieceTypes>
     Bitboard pieces(Color c, PieceTypes... pts) const;
+    bool is_on_semiopen_file(Color c, Square s) const;
     Piece    piece_on(Square s) const;
     Square   ep_square() const;
     bool     empty(Square s) const;
@@ -103,6 +104,7 @@ class Position {
     Square square(Color c) const;
 
     // Castling
+    CastlingRights castling_rights(Color c) const;
     bool   can_castle(CastlingRights cr) const;
     bool   castling_impeded(CastlingRights cr) const;
     Square castling_rook_square(CastlingRights cr) const;
@@ -130,11 +132,16 @@ class Position {
     Piece moved_piece(Move m) const;
     Piece captured_piece() const;
 
+    // Piece specific
+    bool pawn_passed(Color c, Square s) const;
+    bool opposite_bishops() const;
+    int pawns_on_same_color_squares(Color c, Square s) const;
+
     // Doing and undoing moves
-    void       do_move(Move m, StateInfo& newSt, const TranspositionTable* tt);
-    DirtyPiece do_move(Move m, StateInfo& newSt, bool givesCheck, const TranspositionTable* tt);
+    void       do_move(Move m, StateInfo& newSt, bool givesCheck);
+    void       do_move(Move m, StateInfo& newSt) { do_move(m, newSt, gives_check(m)); }
     void       undo_move(Move m);
-    void       do_null_move(StateInfo& newSt, const TranspositionTable& tt);
+    void       do_null_move(StateInfo& newSt);
     void       undo_null_move();
 
     // Static Exchange Evaluation
@@ -142,6 +149,7 @@ class Position {
 
     // Accessing hash keys
     Key key() const;
+    Key key_after(Move m) const;
     Key material_key() const;
     Key pawn_key() const;
     Key minor_piece_key() const;
@@ -150,12 +158,15 @@ class Position {
     // Other properties of the position
     Color side_to_move() const;
     int   game_ply() const;
+    Thread* this_thread() const;
     bool  is_chess960() const;
     bool  is_draw(int ply) const;
     bool  is_repetition(int ply) const;
+    bool  has_game_cycle(int ply) const;
     bool  upcoming_repetition(int ply) const;
     bool  has_repeated() const;
     int   rule50_count() const;
+    Score psq_score() const;
     Value non_pawn_material(Color c) const;
     Value non_pawn_material() const;
 
@@ -183,7 +194,8 @@ class Position {
                      Square&           rfrom,
                      Square&           rto,
                      DirtyPiece* const dp = nullptr);
-    Key  adjust_key50(Key k) const;
+    template<bool AfterMove>
+    Key adjust_key50(Key k) const;
 
     // Data members
     Piece      board[SQUARE_NB];
@@ -193,6 +205,7 @@ class Position {
     int        castlingRightsMask[SQUARE_NB];
     Square     castlingRookSquare[CASTLING_RIGHT_NB];
     Bitboard   castlingPath[CASTLING_RIGHT_NB];
+    Thread*    thisThread;
     StateInfo* st;
     int        gamePly;
     Color      sideToMove;
@@ -244,6 +257,9 @@ inline Square Position::square(Color c) const {
 
 inline Square Position::ep_square() const { return st->epSquare; }
 
+inline CastlingRights Position::castling_rights(Color c) const {
+  return c & CastlingRights(st->castlingRights);
+
 inline bool Position::can_castle(CastlingRights cr) const { return st->castlingRights & cr; }
 
 inline bool Position::castling_impeded(CastlingRights cr) const {
@@ -282,11 +298,21 @@ inline Bitboard Position::pinners(Color c) const { return st->pinners[c]; }
 
 inline Bitboard Position::check_squares(PieceType pt) const { return st->checkSquares[pt]; }
 
-inline Key Position::key() const { return adjust_key50(st->key); }
-
-inline Key Position::adjust_key50(Key k) const {
-    return st->rule50 < 14 ? k : k ^ make_key((st->rule50 - 14) / 8);
+inline bool Position::pawn_passed(Color c, Square s) const {
+  return !(pieces(~c, PAWN) & passed_pawn_span(c, s));
 }
+
+inline int Position::pawns_on_same_color_squares(Color c, Square s) const {
+  return popcount(pieces(c, PAWN) & ((DarkSquares & s) ? DarkSquares : ~DarkSquares));
+}
+
+inline Key Position::key() const {
+  return adjust_key50<false>(st->key);
+}
+
+template<bool AfterMove>
+inline Key Position::adjust_key50(Key k) const
+{ return st->rule50 < 14 - AfterMove ? k : k ^ make_key((st->rule50 - (14 - AfterMove)) / 8); }
 
 inline Key Position::pawn_key() const { return st->pawnKey; }
 
@@ -295,6 +321,10 @@ inline Key Position::material_key() const { return st->materialKey; }
 inline Key Position::minor_piece_key() const { return st->minorPieceKey; }
 
 inline Key Position::non_pawn_key(Color c) const { return st->nonPawnKey[c]; }
+
+inline Score Position::psq_score() const {
+  return st->psq;
+}
 
 inline Value Position::non_pawn_material(Color c) const { return st->nonPawnMaterial[c]; }
 
@@ -305,6 +335,14 @@ inline Value Position::non_pawn_material() const {
 inline int Position::game_ply() const { return gamePly; }
 
 inline int Position::rule50_count() const { return st->rule50; }
+
+inline bool Position::opposite_bishops() const {
+  return   count<BISHOP>(WHITE) == 1
+        && count<BISHOP>(BLACK) == 1
+        && opposite_colors(square<BISHOP>(WHITE), square<BISHOP>(BLACK));
+}
+
+inline Thread* Position::this_thread() const { return thisThread; }
 
 inline bool Position::is_chess960() const { return chess960; }
 
@@ -341,6 +379,7 @@ inline void Position::remove_piece(Square s) {
     board[s] = NO_PIECE;
     pieceCount[pc]--;
     pieceCount[make_piece(color_of(pc), ALL_PIECES)]--;
+    st->psq -= PSQT::psq[pc][s];
 }
 
 inline void Position::move_piece(Square from, Square to) {
@@ -352,10 +391,7 @@ inline void Position::move_piece(Square from, Square to) {
     byColorBB[color_of(pc)] ^= fromTo;
     board[from] = NO_PIECE;
     board[to]   = pc;
-}
-
-inline void Position::do_move(Move m, StateInfo& newSt, const TranspositionTable* tt = nullptr) {
-    do_move(m, newSt, gives_check(m), tt);
+st->psq += PSQT::psq[pc][to] - PSQT::psq[pc][from];
 }
 
 inline StateInfo* Position::state() const { return st; }
