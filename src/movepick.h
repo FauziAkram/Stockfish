@@ -46,18 +46,18 @@ class MovePicker {
                const CapturePieceToHistory*,
                const PieceToHistory**,
                const PawnHistory*,
-               int);
-    MovePicker(const Position&, Move, int, const CapturePieceToHistory*);
-    Move next_move();
-    void skip_quiet_moves();
+               Move, const Move*, int);
+    MovePicker(const Position&, Move, Depth, const ButterflyHistory*, const CapturePieceToHistory*, const PieceToHistory**, Square);
+    MovePicker(const Position&, Move, Value, const CapturePieceToHistory*);
+    Move next_move(bool skipQuiets = false);
 
    private:
     template<typename Pred>
     Move select(Pred);
     template<GenType T>
-    ExtMove* score(MoveList<T>&);
-    ExtMove* begin() { return cur; }
-    ExtMove* end() { return endCur; }
+    void score();
+    ExtMove* begin() { return moves; }
+    ExtMove* end() { return endMoves; }
 
     const Position&              pos;
     const ButterflyHistory*      mainHistory;
@@ -65,14 +65,14 @@ class MovePicker {
     const CapturePieceToHistory* captureHistory;
     const PieceToHistory**       continuationHistory;
     const PawnHistory*           pawnHistory;
-    Move                         ttMove;
-    ExtMove *                    cur, *endCur, *endBadCaptures, *endCaptures, *endGenerated;
-    int                          stage;
-    int                          threshold;
-    Depth                        depth;
-    int                          ply;
-    bool                         skipQuiets = false;
-    ExtMove                      moves[MAX_MOVES];
+    Move ttMove;
+    ExtMove refutations[3], *cur, *endMoves, *endBadCaptures;
+    int stage;
+    Square recaptureSquare;
+    Value threshold;
+    Depth depth;
+    int ply;
+    ExtMove moves[MAX_MOVES];
 };
 
 }  // namespace Stockfish
