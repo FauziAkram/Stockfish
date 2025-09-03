@@ -30,31 +30,12 @@ namespace Stockfish {
 
 namespace {
 
-enum Stages {
-    // generate main search moves
-    MAIN_TT,
-    CAPTURE_INIT,
-    GOOD_CAPTURE,
-    QUIET_INIT,
-    GOOD_QUIET,
-    BAD_CAPTURE,
-    BAD_QUIET,
-
-    // generate evasion moves
-    EVASION_TT,
-    EVASION_INIT,
-    EVASION,
-
-    // generate probcut moves
-    PROBCUT_TT,
-    PROBCUT_INIT,
-    PROBCUT,
-
-    // generate qsearch moves
-    QSEARCH_TT,
-    QCAPTURE_INIT,
-    QCAPTURE
-};
+  enum Stages {
+    MAIN_TT, CAPTURE_INIT, GOOD_CAPTURE, REFUTATION, QUIET_INIT, QUIET, BAD_CAPTURE,
+    EVASION_TT, EVASION_INIT, EVASION,
+    PROBCUT_TT, PROBCUT_INIT, PROBCUT,
+    QSEARCH_TT, QCAPTURE_INIT, QCAPTURE, QCHECK_INIT, QCHECK
+  };
 
 
 // Sort moves in descending order up to and including a given limit.
@@ -80,44 +61,44 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
 // good moves first, and how important move ordering is at the current node.
 
 // MovePicker constructor for the main search and for the quiescence search
-MovePicker::MovePicker(const Position&              p,
-                       Move                         ttm,
-                       Depth                        d,
-                       const ButterflyHistory*      mh,
-                       const LowPlyHistory*         lph,
-                       const CapturePieceToHistory* cph,
-                       const PieceToHistory**       ch,
-                       const PawnHistory*           ph,
-                       int                          pl) :
-    pos(p),
-    mainHistory(mh),
-    lowPlyHistory(lph),
-    captureHistory(cph),
-    continuationHistory(ch),
-    pawnHistory(ph),
-    ttMove(ttm),
-    depth(d),
-    ply(pl) {
+MovePicker::MovePicker(const Position& p, Move ttm, Depth d, const ButterflyHistory* mh,
+                                                             const CapturePieceToHistory* cph,
+                                                             const PieceToHistory** ch,
+                                                             Move cm,
+                                                             const Move* killers, int pl)
+           : pos(p), mainHistory(mh), captureHistory(cph), continuationHistory(ch),
+             ttMove(ttm), refutations{{killers[0], 0}, {killers[1], 0}, {cm, 0}}, depth(d), ply(pl)
+{
+  assert(d > 0);
 
-    if (pos.checkers())
-        stage = EVASION_TT + !(ttm && pos.pseudo_legal(ttm));
+  stage = (pos.checkers() ? EVASION_TT : MAIN_TT) +
+          !(ttm && pos.pseudo_legal(ttm));
+}
 
-    else
-        stage = (depth > 0 ? MAIN_TT : QSEARCH_TT) + !(ttm && pos.pseudo_legal(ttm));
+/// MovePicker constructor for quiescence search
+MovePicker::MovePicker(const Position& p, Move ttm, Depth d, const ButterflyHistory* mh,
+                                                             const CapturePieceToHistory* cph,
+                                                             const PieceToHistory** ch,
+                                                             Square rs, int pl)
+           : pos(p), mainHistory(mh), captureHistory(cph), continuationHistory(ch), ttMove(ttm), recaptureSquare(rs), depth(d), ply(pl)
+{
+  assert(d <= 0);
+
+  stage = (pos.checkers() ? EVASION_TT : QSEARCH_TT) +
+          !(   ttm
+            && pos.pseudo_legal(ttm));
 }
 
 // MovePicker constructor for ProbCut: we generate captures with Static Exchange
 // Evaluation (SEE) greater than or equal to the given threshold.
-MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceToHistory* cph) :
-    pos(p),
-    captureHistory(cph),
-    ttMove(ttm),
-    threshold(th) {
-    assert(!pos.checkers());
+MovePicker::MovePicker(const Position& p, Move ttm, Value th, const CapturePieceToHistory* cph)
+           : pos(p), captureHistory(cph), ttMove(ttm), threshold(th)
+{
+  assert(!pos.checkers());
 
-    // Removing the SEE check passes as simplification, but hurts mate finding
-    stage = PROBCUT_TT
-          + !(ttm && pos.capture_stage(ttm) && pos.pseudo_legal(ttm) && pos.see_ge(ttm, threshold));
+  stage = PROBCUT_TT + !(ttm && pos.capture_stage(ttm)
+                             && pos.pseudo_legal(ttm)
+                             && pos.see_ge(ttm, threshold));
 }
 
 // Assigns a numerical value to each move in a list, used for sorting.
@@ -126,7 +107,7 @@ MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceTo
 template<GenType Type>
 ExtMove* MovePicker::score(MoveList<Type>& ml) {
 
-    static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
+    static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS || Type == QUIET_CHECKS, "Wrong type");
 
     Color us = pos.side_to_move();
 
@@ -141,23 +122,20 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         threatByLesser[KING]  = pos.attacks_by<QUEEN>(~us) | threatByLesser[QUEEN];
     }
 
-    ExtMove* it = cur;
-    for (auto move : ml)
+    for (auto& m : *this)
     {
-        ExtMove& m = *it++;
-        m          = move;
-
         const Square    from          = m.from_sq();
         const Square    to            = m.to_sq();
         const Piece     pc            = pos.moved_piece(m);
-        const PieceType pt            = type_of(pc);
-        const Piece     capturedPiece = pos.piece_on(to);
 
         if constexpr (Type == CAPTURES)
+        {
+            const Piece capturedPiece = pos.piece_on(to);
             m.value = (*captureHistory)[pc][to][type_of(capturedPiece)]
-                    + 7 * int(PieceValue[capturedPiece]) + 1024 * bool(pos.check_squares(pt) & to);
+                    + 7 * int(PieceValue[MG][capturedPiece]) + 1024 * bool(pos.check_squares(type_of(pc)) & to);
+        }
 
-        else if constexpr (Type == QUIETS)
+        else if constexpr (Type == QUIETS || Type == QUIET_CHECKS)
         {
             // histories
             m.value = 2 * (*mainHistory)[us][m.from_to()];
@@ -171,12 +149,14 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             // bonus for checks
             m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
 
-            // penalty for moving to a square threatened by a lesser piece
-            // or bonus for escaping an attack by a lesser piece.
-            static constexpr int bonus[KING + 1] = {0, 0, 144, 144, 256, 517, 10000};
-            int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
-            m.value += bonus[pt] * v;
-
+            if constexpr (Type == QUIETS)
+            {
+                // penalty for moving to a square threatened by a lesser piece
+                // or bonus for escaping an attack by a lesser piece.
+                static constexpr int bonus[KING + 1] = {0, 0, 144, 144, 256, 517, 10000};
+                int v = (threatByLesser[type_of(pc)] & to) ? -95 : 100 * bool(threatByLesser[type_of(pc)] & from);
+                m.value += bonus[type_of(pc)] * v;
+            }
 
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + ply);
@@ -184,8 +164,8 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
 
         else  // Type == EVASIONS
         {
-            if (pos.capture_stage(m))
-                m.value = PieceValue[capturedPiece] + (1 << 28);
+            if (pos.capture(m))
+                m.value = PieceValue[MG][pos.piece_on(to)] - Value(type_of(pc)) + (1 << 28);
             else
             {
                 m.value = (*mainHistory)[us][m.from_to()] + (*continuationHistory[0])[pc][to];
@@ -194,27 +174,31 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             }
         }
     }
-    return it;
 }
 
 // Returns the next move satisfying a predicate function.
 // This never returns the TT move, as it was emitted before.
-template<typename Pred>
-Move MovePicker::select(Pred filter) {
-
-    for (; cur < endCur; ++cur)
+template<MovePicker::PickType T, typename Pred>
+Move MovePicker::select(Pred filter)
+{
+    while (cur < endMoves)
+    {
+        if constexpr (T == Best)
+            std::swap(*cur, *std::max_element(cur, endMoves));
+      
         if (*cur != ttMove && filter())
             return *cur++;
 
-    return Move::none();
+        cur++;
+    }
+    return MOVE_NONE;
 }
 
 // This is the most important method of the MovePicker class. We emit one
 // new pseudo-legal move on every call until there are no more moves left,
 // picking the move with the highest score from a list of generated moves.
-Move MovePicker::next_move() {
+Move MovePicker::next_move(bool skipQuiets) {
 
-    constexpr int goodQuietThreshold = -14000;
 top:
     switch (stage)
     {
@@ -227,46 +211,50 @@ top:
         return ttMove;
 
     case CAPTURE_INIT :
-    case PROBCUT_INIT :
-    case QCAPTURE_INIT : {
-        MoveList<CAPTURES> ml(pos);
+    cur = endBadCaptures = moves;
+    endMoves = generate<CAPTURES>(pos, cur);
 
-        cur = endBadCaptures = moves;
-        endCur = endCaptures = score<CAPTURES>(ml);
-
-        partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
-        ++stage;
-        goto top;
-    }
+    score<CAPTURES>();
+    partial_insertion_sort(cur, endMoves, std::numeric_limits<int>::min());
+    ++stage;
+    goto top;
 
     case GOOD_CAPTURE :
-        if (select([&]() {
-                if (pos.see_ge(*cur, -cur->value / 18))
-                    return true;
-                std::swap(*endBadCaptures++, *cur);
-                return false;
-            }))
-            return *(cur - 1);
+      if (select<Next>([&](){ return pos.see_ge(*cur, Value(-cur->value)) ? true : (*endBadCaptures++ = *cur, false); }))
+          return *(cur - 1);
 
-        ++stage;
-        [[fallthrough]];
+      // Prepare the pointers to loop over the refutations array
+      cur = std::begin(refutations);
+      endMoves = std::end(refutations);
 
-    case QUIET_INIT :
+      // If the countermove is the same as a killer, skip it
+      if (refutations[0].move == refutations[2].move || refutations[1].move == refutations[2].move)
+          --endMoves;
+
+      ++stage;
+      [[fallthrough]];
+
+  case REFUTATION:
+      if (select<Next>([&](){ return *cur != MOVE_NONE && !pos.capture_stage(*cur) && pos.pseudo_legal(*cur); }))
+          return *(cur - 1);
+      ++stage;
+      [[fallthrough]];
+
+  case QUIET_INIT :
         if (!skipQuiets)
         {
-            MoveList<QUIETS> ml(pos);
-
-            endCur = endGenerated = score<QUIETS>(ml);
-
-            partial_insertion_sort(cur, endCur, -3560 * depth);
+            cur = endBadCaptures;
+            endMoves = generate<QUIETS>(pos, cur);
+            score<QUIETS>();
+            partial_insertion_sort(cur, endMoves, -3000 * depth);
         }
 
         ++stage;
         [[fallthrough]];
 
-    case GOOD_QUIET :
-        if (!skipQuiets && select([&]() { return cur->value > goodQuietThreshold; }))
-            return *(cur - 1);
+  case QUIET :
+      if (!skipQuiets && select<Next>([&](){return *cur != refutations[0].move && *cur != refutations[1].move && *cur != refutations[2].move;}))
+          return *(cur - 1);
 
         // Prepare the pointers to loop over the bad captures
         cur    = moves;
@@ -275,46 +263,58 @@ top:
         ++stage;
         [[fallthrough]];
 
-    case BAD_CAPTURE :
-        if (select([]() { return true; }))
-            return *(cur - 1);
+  case BAD_CAPTURE :
+      return select<Next>([](){ return true; });
 
-        // Prepare the pointers to loop over quiets again
-        cur    = endCaptures;
-        endCur = endGenerated;
+  case EVASION_INIT :
+      cur = moves;
+      endMoves = generate<EVASIONS>(pos, cur);
+      score<EVASIONS>();
+      ++stage;
+      [[fallthrough]];
 
-        ++stage;
-        [[fallthrough]];
+  case EVASION :
+      return select<Best>([](){ return true; });
 
-    case BAD_QUIET :
-        if (!skipQuiets)
-            return select([&]() { return cur->value <= goodQuietThreshold; });
+  case PROBCUT_INIT:
+      cur = moves;
+      endMoves = generate<CAPTURES>(pos, cur);
+      score<CAPTURES>();
+      ++stage;
+      [[fallthrough]];
 
-        return Move::none();
+  case PROBCUT :
+      return select<Best>([&](){ return pos.see_ge(*cur, threshold); });
 
-    case EVASION_INIT : {
-        MoveList<EVASIONS> ml(pos);
+  case QCAPTURE_INIT:
+      cur = endBadCaptures = moves;
+      endMoves = generate<CAPTURES>(pos, cur);
+      score<CAPTURES>();
+      ++stage;
+      [[fallthrough]];
 
-        cur    = moves;
-        endCur = endGenerated = score<EVASIONS>(ml);
+  case QCAPTURE :
+      if (select<Best>([&](){ return depth > DEPTH_QS_RECAPTURES || to_sq(*cur) == recaptureSquare; }))
+          return *(cur - 1);
 
-        partial_insertion_sort(cur, endCur, std::numeric_limits<int>::min());
-        ++stage;
-        [[fallthrough]];
-    }
+      // If we did not find any move and we do not try checks, we have finished
+      if (depth != DEPTH_QS_CHECKS)
+          return MOVE_NONE;
 
-    case EVASION :
-    case QCAPTURE :
-        return select([]() { return true; });
+      ++stage;
+      [[fallthrough]];
 
-    case PROBCUT :
-        return select([&]() { return pos.see_ge(*cur, threshold); });
-    }
+  case QCHECK_INIT:
+      cur = moves;
+      endMoves = generate<QUIET_CHECKS>(pos, cur);
+      ++stage;
+      [[fallthrough]];
 
-    assert(false);
-    return Move::none();  // Silence warning
+  case QCHECK:
+      return select<Next>([](){ return true; });
+  }
+  assert(false);
+  return MOVE_NONE; // Silence warning
 }
-
-void MovePicker::skip_quiet_moves() { skipQuiets = true; }
 
 }  // namespace Stockfish
