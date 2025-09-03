@@ -533,35 +533,33 @@ int win_rate_model(Value v, const Position& pos) {
 }
 }
 
-std::string UCIEngine::format_score(const Score& s) {
-    constexpr int TB_CP = 20000;
-    const auto    format =
-      overload{[](Score::Mate mate) -> std::string {
-                   auto m = (mate.plies > 0 ? (mate.plies + 1) : mate.plies) / 2;
-                   return std::string("mate ") + std::to_string(m);
-               },
-               [](Score::Tablebase tb) -> std::string {
-                   return std::string("cp ")
-                        + std::to_string((tb.win ? TB_CP - tb.plies : -TB_CP - tb.plies));
-               },
-               [](Score::InternalUnits units) -> std::string {
-                   return std::string("cp ") + std::to_string(units.value);
-               }};
+std::string UCIEngine::format_score(const Score& s)
+{
+  std::stringstream ss;
 
-    return s.visit(format);
+  if (std::abs(s.get<Score::InternalUnits>().value) > VALUE_KNOWN_WIN)
+  {
+      auto m = s.is<Score::Mate>()
+          ? s.get<Score::Mate>().plies
+          : VALUE_MATE_IN_MAX_PLY - std::abs(s.get<Score::Tablebase>().plies);
+
+      ss << "mate " << (m > 0 ? (m + 1) / 2 : m / 2);
+  }
+  else
+  {
+      ss << "cp " << s.get<Score::InternalUnits>().value;
+  }
+  return ss.str();
 }
 
-// Turns a Value to an integer centipawn number,
-// without treatment of mate and similar special scores.
-int UCIEngine::to_cp(Value v, const Position& pos) {
-
-    // In general, the score can be defined via the WDL as
-    // (log(1/L - 1) - log(1/W - 1)) / (log(1/L - 1) + log(1/W - 1)).
-    // Based on our win_rate_model, this simply yields v / a.
-
-    auto [a, b] = win_rate_params(pos);
-
-    return std::round(100 * int(v) / a);
+std::string UCIEngine::wdl(Value v, const Position& pos)
+{
+  std::stringstream ss;
+  int wdl_w = win_rate_model(v, pos.game_ply());
+  int wdl_l = win_rate_model(-v, pos.game_ply());
+  int wdl_d = 1000 - wdl_w - wdl_l;
+  ss << " wdl " << wdl_w << " " << wdl_d << " " << wdl_l;
+  return ss.str();
 }
 
 std::string UCIEngine::wdl(Value v, const Position& pos) {
