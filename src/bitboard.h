@@ -16,6 +16,24 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+ 
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ 
+*/
+
 #ifndef BITBOARD_H_INCLUDED
 #define BITBOARD_H_INCLUDED
 
@@ -38,6 +56,7 @@ bool probe(Square wksq, Square wpsq, Square bksq, Color us);
 
 } // namespace Stockfish::Bitbases
 
+
 namespace Bitboards {
 
 void        init();
@@ -47,6 +66,7 @@ std::string pretty(Bitboard b);
 
 constexpr Bitboard AllSquares = ~Bitboard(0);
 constexpr Bitboard DarkSquares = 0xAA55AA55AA55AA55ULL;
+
 constexpr Bitboard FileABB = 0x0101010101010101ULL;
 constexpr Bitboard FileBBB = FileABB << 1;
 constexpr Bitboard FileCBB = FileABB << 2;
@@ -83,6 +103,7 @@ extern Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
 extern Bitboard LineBB[SQUARE_NB][SQUARE_NB];
 extern Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
 extern Bitboard PawnAttacks[COLOR_NB][SQUARE_NB];
+
 
 // Magic holds all magic bitboards relevant data for a single square
 struct Magic {
@@ -140,20 +161,6 @@ constexpr bool opposite_colors(Square s1, Square s2) {
   return (s1 + rank_of(s1) + s2 + rank_of(s2)) & 1;
 }
 
-/// frontmost_sq() returns the most advanced square for the given color,
-/// requires a non-zero bitboard.
-inline Square frontmost_sq(Color c, Bitboard b) {
-  assert(b);
-  return c == WHITE ? msb(b) : lsb(b);
-}
-
-/// backmost_sq() returns the least advanced square for the given color,
-/// requires a non-zero bitboard.
-inline Square backmost_sq(Color c, Bitboard b) {
-  assert(b);
-  return c == WHITE ? lsb(b) : msb(b);
-}
-
 // rank_bb() and file_bb() return a bitboard representing all the squares on
 // the given file or rank.
 
@@ -164,13 +171,6 @@ constexpr Bitboard rank_bb(Square s) { return rank_bb(rank_of(s)); }
 constexpr Bitboard file_bb(File f) { return FileABB << f; }
 
 constexpr Bitboard file_bb(Square s) { return file_bb(file_of(s)); }
-
-// adjacent_files_bb() returns a bitboard representing all the squares on the
-// adjacent files of a given square.
-
-constexpr Bitboard adjacent_files_bb(Square s) {
-  return shift<EAST>(file_bb(s)) | shift<WEST>(file_bb(s));
-}
 
 // Moves a bitboard one or two steps as specified by the direction D
 template<Direction D>
@@ -189,7 +189,13 @@ constexpr Bitboard shift(Bitboard b) {
 }
 
 
-// Returns the squares attacked by pawns of the given color
+// adjacent_files_bb() returns a bitboard representing all the squares on the
+// adjacent files of a given square.
+constexpr Bitboard adjacent_files_bb(Square s) {
+  return shift<EAST>(file_bb(s)) | shift<WEST>(file_bb(s));
+}
+
+// pawn_attacks_bb() returns the squares attacked by pawns of the given color
 // from the squares in the given bitboard.
 template<Color C>
 constexpr Bitboard pawn_attacks_bb(Bitboard b) {
@@ -198,9 +204,100 @@ constexpr Bitboard pawn_attacks_bb(Bitboard b) {
 }
 
 inline Bitboard pawn_attacks_bb(Color c, Square s) {
-
   assert(is_ok(s));
   return PawnAttacks[c][s];
+}
+
+/// pawn_double_attacks_bb() returns the squares doubly attacked by pawns of the
+/// given color from the squares in the given bitboard.
+template<Color C>
+constexpr Bitboard pawn_double_attacks_bb(Bitboard b) {
+  return C == WHITE ? shift<NORTH_WEST>(b) & shift<NORTH_EAST>(b)
+                    : shift<SOUTH_WEST>(b) & shift<SOUTH_EAST>(b);
+}
+
+
+// Returns the least significant bit in a non-zero bitboard.
+inline Square lsb(Bitboard b) {
+    assert(b);
+
+#if defined(__GNUC__)  // GCC, Clang, ICX
+
+    return Square(__builtin_ctzll(b));
+
+#elif defined(_MSC_VER)
+    #ifdef _WIN64  // MSVC, WIN64
+
+    unsigned long idx;
+    _BitScanForward64(&idx, b);
+    return Square(idx);
+
+    #else  // MSVC, WIN32
+    unsigned long idx;
+
+    if (b & 0xffffffff)
+    {
+        _BitScanForward(&idx, int32_t(b));
+        return Square(idx);
+    }
+    else
+    {
+        _BitScanForward(&idx, int32_t(b >> 32));
+        return Square(idx + 32);
+    }
+    #endif
+#else  // Compiler is neither GCC nor MSVC compatible
+    #error "Compiler not supported."
+#endif
+}
+
+// Returns the most significant bit in a non-zero bitboard.
+inline Square msb(Bitboard b) {
+    assert(b);
+
+#if defined(__GNUC__)  // GCC, Clang, ICX
+
+    return Square(63 ^ __builtin_clzll(b));
+
+#elif defined(_MSC_VER)
+    #ifdef _WIN64  // MSVC, WIN64
+
+    unsigned long idx;
+    _BitScanReverse64(&idx, b);
+    return Square(idx);
+
+    #else  // MSVC, WIN32
+
+    unsigned long idx;
+
+    if (b >> 32)
+    {
+        _BitScanReverse(&idx, int32_t(b >> 32));
+        return Square(idx + 32);
+    }
+    else
+    {
+        _BitScanReverse(&idx, int32_t(b));
+        return Square(idx);
+    }
+    #endif
+#else  // Compiler is neither GCC nor MSVC compatible
+    #error "Compiler not supported."
+#endif
+}
+
+/// frontmost_sq() returns the most advanced square for the given color,
+/// requires a non-zero bitboard.
+inline Square frontmost_sq(Color c, Bitboard b) {
+  assert(b);
+  return c == WHITE ? msb(b) : lsb(b);
+}
+
+/// backmost_sq() returns the least advanced square for the given color,
+/// requires a non-zero bitboard.
+inline Square backmost_sq(Color c, Bitboard b) {
+  assert(b);
+  return c == WHITE ? lsb(b) : msb(b);
 }
 
 // Returns a bitboard representing an entire line (from board edge
@@ -227,38 +324,37 @@ inline Bitboard between_bb(Square s1, Square s2) {
     return BetweenBB[s1][s2];
 }
 
-// forward_ranks_bb() returns a bitboard representing the squares on the ranks in
-// front of the given one, from the point of view of the given color. For instance,
-// forward_ranks_bb(BLACK, SQ_D3) will return the 16 squares on ranks 1 and 2.
-
+/// forward_ranks_bb() returns a bitboard representing the squares on the ranks in
+/// front of the given one, from the point of view of the given color. For instance,
+/// forward_ranks_bb(BLACK, SQ_D3) will return the 16 squares on ranks 1 and 2.
 constexpr Bitboard forward_ranks_bb(Color c, Square s) {
   return c == WHITE ? ~Rank1BB << 8 * relative_rank(WHITE, s)
                     : ~Rank8BB >> 8 * relative_rank(BLACK, s);
 }
 
-
-// forward_file_bb() returns a bitboard representing all the squares along the
-// line in front of the given one, from the point of view of the given color.
-
+/// forward_file_bb() returns a bitboard representing all the squares along the
+/// line in front of the given one, from the point of view of the given color.
 constexpr Bitboard forward_file_bb(Color c, Square s) {
   return forward_ranks_bb(c, s) & file_bb(s);
 }
 
-
-// pawn_attack_span() returns a bitboard representing all the squares that can
-// be attacked by a pawn of the given color when it moves along its file, starting
-// from the given square.
-
+/// pawn_attack_span() returns a bitboard representing all the squares that can
+/// be attacked by a pawn of the given color when it moves along its file, starting
+/// from the given square.
 constexpr Bitboard pawn_attack_span(Color c, Square s) {
   return forward_ranks_bb(c, s) & adjacent_files_bb(s);
 }
 
-
-// passed_pawn_span() returns a bitboard which can be used to test if a pawn of
-// the given color and on the given square is a passed pawn.
-
+/// passed_pawn_span() returns a bitboard which can be used to test if a pawn of
+/// the given color and on the given square is a passed pawn.
 constexpr Bitboard passed_pawn_span(Color c, Square s) {
   return pawn_attack_span(c, s) | forward_file_bb(c, s);
+}
+
+/// aligned() returns true if the squares s1, s2 and s3 are aligned either on a
+/// straight or on a diagonal line.
+inline bool aligned(Square s1, Square s2, Square s3) {
+  return line_bb(s1, s2) & s3;
 }
 
 // distance() functions return the distance between x and y, defined as the
@@ -283,6 +379,7 @@ inline int distance<Square>(Square x, Square y) {
 }
 
 inline int edge_distance(File f) { return std::min(f, File(FILE_H - f)); }
+inline int edge_distance(Rank r) { return std::min(r, Rank(RANK_8 - r)); }
 
 // Returns the pseudo attacks of the given piece type
 // assuming an empty board.
@@ -356,74 +453,6 @@ inline int popcount(Bitboard b) {
 #endif
 }
 
-// Returns the least significant bit in a non-zero bitboard.
-inline Square lsb(Bitboard b) {
-    assert(b);
-
-#if defined(__GNUC__)  // GCC, Clang, ICX
-
-    return Square(__builtin_ctzll(b));
-
-#elif defined(_MSC_VER)
-    #ifdef _WIN64  // MSVC, WIN64
-
-    unsigned long idx;
-    _BitScanForward64(&idx, b);
-    return Square(idx);
-
-    #else  // MSVC, WIN32
-    unsigned long idx;
-
-    if (b & 0xffffffff)
-    {
-        _BitScanForward(&idx, int32_t(b));
-        return Square(idx);
-    }
-    else
-    {
-        _BitScanForward(&idx, int32_t(b >> 32));
-        return Square(idx + 32);
-    }
-    #endif
-#else  // Compiler is neither GCC nor MSVC compatible
-    #error "Compiler not supported."
-#endif
-}
-
-// Returns the most significant bit in a non-zero bitboard.
-inline Square msb(Bitboard b) {
-    assert(b);
-
-#if defined(__GNUC__)  // GCC, Clang, ICX
-
-    return Square(63 ^ __builtin_clzll(b));
-
-#elif defined(_MSC_VER)
-    #ifdef _WIN64  // MSVC, WIN64
-
-    unsigned long idx;
-    _BitScanReverse64(&idx, b);
-    return Square(idx);
-
-    #else  // MSVC, WIN32
-
-    unsigned long idx;
-
-    if (b >> 32)
-    {
-        _BitScanReverse(&idx, int32_t(b >> 32));
-        return Square(idx + 32);
-    }
-    else
-    {
-        _BitScanReverse(&idx, int32_t(b));
-        return Square(idx);
-    }
-    #endif
-#else  // Compiler is neither GCC nor MSVC compatible
-    #error "Compiler not supported."
-#endif
-}
 
 // Returns the bitboard of the least significant
 // square of a non-zero bitboard. It is equivalent to square_bb(lsb(bb)).
