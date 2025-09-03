@@ -34,6 +34,7 @@
 #include "bitboard.h"
 #include "misc.h"
 #include "movegen.h"
+#include "psqt.h"
 #include "syzygy/tbprobe.h"
 #include "tt.h"
 #include "uci.h"
@@ -159,7 +160,7 @@ void Position::init() {
 // Initializes the position object with the given FEN string.
 // This function is not very robust - make sure that input FENs are correct,
 // this is assumed to be the responsibility of the GUI.
-Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
+Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Thread* th) {
     /*
    A FEN string defines a particular position using only the ASCII character set.
 
@@ -286,6 +287,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
     gamePly = std::max(2 * (gamePly - 1), 0) + (sideToMove == BLACK);
 
     chess960 = isChess960;
+    thisThread = th;
     set_state();
 
     assert(pos_is_ok());
@@ -335,10 +337,12 @@ void Position::set_check_info() const {
 // The function is only used when a new position is set up
 void Position::set_state() const {
 
+    st->psq = SCORE_ZERO;
     st->key = st->materialKey = 0;
     st->minorPieceKey         = 0;
     st->nonPawnKey[WHITE] = st->nonPawnKey[BLACK] = 0;
     st->pawnKey                                   = Zobrist::noPawns;
+    st->psq = SCORE_ZERO;
     st->nonPawnMaterial[WHITE] = st->nonPawnMaterial[BLACK] = VALUE_ZERO;
     st->checkersBB = attackers_to(square<KING>(sideToMove)) & pieces(~sideToMove);
 
@@ -349,6 +353,7 @@ void Position::set_state() const {
         Square s  = pop_lsb(b);
         Piece  pc = piece_on(s);
         st->key ^= Zobrist::psq[pc][s];
+        st->psq += PSQT::psq[pc][s];
 
         if (type_of(pc) == PAWN)
             st->pawnKey ^= Zobrist::psq[pc][s];
@@ -377,7 +382,7 @@ void Position::set_state() const {
 
     for (Piece pc : Pieces)
         for (int cnt = 0; cnt < pieceCount[pc]; ++cnt)
-            st->materialKey ^= Zobrist::psq[pc][8 + cnt];
+            st->materialKey ^= Zobrist::psq[pc][cnt];
 }
 
 
@@ -687,10 +692,7 @@ bool Position::gives_check(Move m) const {
 // moves should be filtered out before this function is called.
 // If a pointer to the TT table is passed, the entry for the new position
 // will be prefetched
-DirtyPiece Position::do_move(Move                      m,
-                             StateInfo&                newSt,
-                             bool                      givesCheck,
-                             const TranspositionTable* tt = nullptr) {
+void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
 
     assert(m.is_ok());
     assert(&newSt != st);
@@ -717,14 +719,6 @@ DirtyPiece Position::do_move(Move                      m,
     Piece  pc       = piece_on(from);
     Piece  captured = m.type_of() == EN_PASSANT ? make_piece(them, PAWN) : piece_on(to);
 
-    bool checkEP = false;
-
-    DirtyPiece dp;
-    dp.pc     = pc;
-    dp.from   = from;
-    dp.to     = to;
-    dp.add_sq = SQ_NONE;
-
     assert(color_of(pc) == us);
     assert(captured == NO_PIECE || color_of(captured) == (m.type_of() != CASTLING ? them : us));
     assert(type_of(captured) != KING);
@@ -735,7 +729,7 @@ DirtyPiece Position::do_move(Move                      m,
         assert(captured == make_piece(us, ROOK));
 
         Square rfrom, rto;
-        do_castling<true>(us, from, to, rfrom, rto, &dp);
+        do_castling<true>(us, from, to, rfrom, rto);
 
         k ^= Zobrist::psq[captured][rfrom] ^ Zobrist::psq[captured][rto];
         st->nonPawnKey[us] ^= Zobrist::psq[captured][rfrom] ^ Zobrist::psq[captured][rto];
@@ -771,17 +765,11 @@ DirtyPiece Position::do_move(Move                      m,
                 st->minorPieceKey ^= Zobrist::psq[captured][capsq];
         }
 
-        dp.remove_pc = captured;
-        dp.remove_sq = capsq;
-
         // Update board and piece lists
         remove_piece(capsq);
 
         k ^= Zobrist::psq[captured][capsq];
-        st->materialKey ^= Zobrist::psq[captured][8 + pieceCount[captured]];
-
-        // Reset rule 50 counter
-        st->rule50 = 0;
+        st->materialKey ^= Zobrist::psq[captured][pieceCount[captured]];
     }
     else
         dp.remove_sq = SQ_NONE;
@@ -804,6 +792,7 @@ DirtyPiece Position::do_move(Move                      m,
         k ^= Zobrist::castling[st->castlingRights];
     }
 
+    st->psq += psq_score_of(pc, to) - psq_score_of(pc, from);
     // Move the piece. The tricky Chess960 castling is handled earlier
     if (m.type_of() != CASTLING)
         move_piece(from, to);
@@ -813,7 +802,7 @@ DirtyPiece Position::do_move(Move                      m,
     {
         // Check later if the en passant square needs to be set
         if ((int(to) ^ int(from)) == 16)
-            checkEP = true;
+            ; // checkEP = true;
 
         else if (m.type_of() == PROMOTION)
         {
@@ -826,21 +815,18 @@ DirtyPiece Position::do_move(Move                      m,
             remove_piece(to);
             put_piece(promotion, to);
 
-            dp.add_pc = promotion;
-            dp.add_sq = to;
-            dp.to     = SQ_NONE;
-
             // Update hash keys
             // Zobrist::psq[pc][to] is zero, so we don't need to clear it
             k ^= Zobrist::psq[promotion][to];
-            st->materialKey ^= Zobrist::psq[promotion][8 + pieceCount[promotion] - 1]
-                             ^ Zobrist::psq[pc][8 + pieceCount[pc]];
+            st->materialKey ^= Zobrist::psq[promotion][pieceCount[promotion] - 1]
+                             ^ Zobrist::psq[pc][pieceCount[pc]];
 
             if (promotionType <= BISHOP)
                 st->minorPieceKey ^= Zobrist::psq[promotion][to];
 
             // Update material
             st->nonPawnMaterial[us] += PieceValue[promotion];
+            st->psq += psq_score_of(promotion, to) - psq_score_of(pc, to);
         }
 
         // Update pawn hash key
@@ -864,6 +850,7 @@ DirtyPiece Position::do_move(Move                      m,
     // Calculate checkers bitboard (if move gives check)
     st->checkersBB = givesCheck ? attackers_to(square<KING>(them)) & pieces(us) : 0;
 
+    prefetch(thisThread->pawnsTable[pos.pawn_key()]);
     sideToMove = ~sideToMove;
 
     // Update king attacks used for fast check detection
@@ -922,14 +909,6 @@ DirtyPiece Position::do_move(Move                      m,
     }
 
     // Update the key with the final value
-    st->key = k;
-    if (tt)
-        prefetch(tt->first_entry(key()));
-
-    // Calculate the repetition info. It is the ply distance from the previous
-    // occurrence of the same position, negative in the 3-fold case, or zero
-    // if the position was not repeated.
-    st->repetition = 0;
     int end        = std::min(st->rule50, st->pliesFromNull);
     if (end >= 4)
     {
@@ -946,12 +925,6 @@ DirtyPiece Position::do_move(Move                      m,
     }
 
     assert(pos_is_ok());
-
-    assert(dp.pc != NO_PIECE);
-    assert(!(bool(captured) || m.type_of() == CASTLING) ^ (dp.remove_sq != SQ_NONE));
-    assert(dp.from != SQ_NONE);
-    assert(!(dp.add_sq != SQ_NONE) ^ (m.type_of() == PROMOTION || m.type_of() == CASTLING));
-    return dp;
 }
 
 
@@ -1022,24 +995,15 @@ void Position::undo_move(Move m) {
 // tricky in Chess960 where from/to squares can overlap.
 template<bool Do>
 void Position::do_castling(
-  Color us, Square from, Square& to, Square& rfrom, Square& rto, DirtyPiece* const dp) {
+  Color us, Square from, Square& to, Square& rfrom, Square& rto) {
 
     bool kingSide = to > from;
     rfrom         = to;  // Castling is encoded as "king captures friendly rook"
     rto           = relative_square(us, kingSide ? SQ_F1 : SQ_D1);
     to            = relative_square(us, kingSide ? SQ_G1 : SQ_C1);
 
-    assert(!Do || dp);
-
-    if (Do)
-    {
-        dp->to        = to;
-        dp->remove_pc = dp->add_pc = make_piece(us, ROOK);
-        dp->remove_sq              = rfrom;
-        dp->add_sq                 = rto;
-    }
-
     // Remove both pieces first since squares could overlap in Chess960
+    st->psq -= psq_score_of(make_piece(us, KING), Do ? from : to) + psq_score_of(make_piece(us, ROOK), Do ? rfrom : rto);
     remove_piece(Do ? from : to);
     remove_piece(Do ? rfrom : rto);
     board[Do ? from : to] = board[Do ? rfrom : rto] =
@@ -1051,7 +1015,7 @@ void Position::do_castling(
 
 // Used to do a "null move": it flips
 // the side to move without executing any move on the board.
-void Position::do_null_move(StateInfo& newSt, const TranspositionTable& tt) {
+void Position::do_null_move(StateInfo& newSt) {
 
     assert(!checkers());
     assert(&newSt != st);
@@ -1068,7 +1032,7 @@ void Position::do_null_move(StateInfo& newSt, const TranspositionTable& tt) {
     }
 
     st->key ^= Zobrist::side;
-    prefetch(tt.first_entry(key()));
+    prefetch(thisThread->tt.first_entry(key()));
 
     st->pliesFromNull = 0;
 
@@ -1089,6 +1053,26 @@ void Position::undo_null_move() {
 
     st         = st->previous;
     sideToMove = ~sideToMove;
+ }
+
+// Position::key_after() computes the new hash key after the given move. Needed
+// for speculative prefetch. It doesn't recognize special moves like castling,
+// en passant and promotions.
+
+Key Position::key_after(Move m) const {
+
+  Square from = m.from_sq();
+  Square to = m.to_sq();
+  Piece pc = piece_on(from);
+  Piece captured = piece_on(to);
+  Key k = st->key ^ Zobrist::side;
+
+  if (captured)
+      k ^= Zobrist::psq[captured][to];
+
+  k ^= Zobrist::psq[pc][to] ^ Zobrist::psq[pc][from];
+
+  return (captured || type_of(pc) == PAWN) ? k : adjust_key50<true>(k);
 }
 
 
@@ -1179,8 +1163,8 @@ bool Position::see_ge(Move m, int threshold) const {
 
         else if ((bb = stmAttackers & pieces(QUEEN)))
         {
-            swap = QueenValue - swap;
-            //  implies that the previous recapture was done by a higher rated piece than a Queen (King is excluded)
+            if ((swap = QueenValue - swap) < res)
+                break;
             assert(swap >= res);
             occupied ^= least_significant_square_bb(bb);
 
