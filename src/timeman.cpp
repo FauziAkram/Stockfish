@@ -27,8 +27,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=3128, xx2=4354, xx3=32116, xx4=321123, xx5=508017, xx6=33977, xx7=30395, xx8=294761, xx9=121431, xx10=294693, xx11=461073, xx12=667704, xx13=119847;
-TUNE(xx1, xx2, xx3, xx4, xx5, xx6, xx7, xx8, xx9, xx10, xx11, xx12, xx13);
+
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 
@@ -108,17 +107,17 @@ void TimeManagement::init(Search::LimitsType& limits,
         {
             // Extra time according to timeLeft
             if (originalTimeAdjust < 0)
-                originalTimeAdjust = (xx1/10000.0) * std::log10(timeLeft) - (xx2/10000.0);
+                originalTimeAdjust = 0.2862 * std::log10(timeLeft) - 0.4126;
 
             // Calculate time constants based on current time left.
             double logTimeInSec = std::log10(scaledTime / 1000.0);
-            double optConstant  = std::min((xx3/10000000.0) + (xx4/1000000000.0) * logTimeInSec, (xx5/100000000.0));
-            double maxConstant  = std::max((xx6/10000.0) + (xx7/10000.0) * logTimeInSec, (xx8/100000.0));
+            double optConstant  = std::min(0.0034775 + 0.000284188 * logTimeInSec, 0.00406734);
+            double maxConstant  = std::max(3.6627 + 3.7269 * logTimeInSec, 2.75068);
 
-            optScale = ((xx9/10000000.0) + std::pow(ply + (xx10/100000.0), (xx11/1000000.0)) * optConstant)
+            optScale = (0.011299 + std::pow(ply + 2.82122, 0.466422) * optConstant)
                      * originalTimeAdjust;
 
-            maxScale = std::min((xx12/100000.0), maxConstant + ply / (xx13/10000.0));
+            maxScale = std::min(6.35772, maxConstant + ply / 12.7592);
         }
         // x basetime (+ z increment)
         // If there is a healthy increment, timeLeft can exceed the actual available
