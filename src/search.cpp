@@ -1666,6 +1666,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         if (value > bestValue)
         {
             bestValue = value;
+            bestMove = move;
 
             if (value > alpha)
             {
