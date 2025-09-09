@@ -1692,7 +1692,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     }
 
     if (!is_decisive(bestValue) && bestValue > beta)
-        bestValue = (bestValue + beta) / 2;
+        bestValue = beta;
 
 
     Color us = pos.side_to_move();
