@@ -1363,8 +1363,8 @@ moves_loop:  // When in check, search starts here
                 }
 
                 // Reduce other moves if we have found at least one score improvement
-                if (depth > (1 + PvNode) && depth < 14 && !is_decisive(value))
-                    depth -= 1 + PvNode;
+                if (depth > (1 + !allNode) && depth < 14 && !is_decisive(value))
+                    depth -= 1 + !allNode;
 
                 assert(depth > 0);
                 alpha = value;  // Update alpha! Always alpha < beta
