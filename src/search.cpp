@@ -50,6 +50,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0, xx3=0;
+TUNE(SetRange(-50, 50), xx1,xx2,xx3);
 
 namespace TB = Tablebases;
 
@@ -1458,8 +1460,8 @@ moves_loop:  // When in check, search starts here
 
     // Adjust correction history
     if (!ss->inCheck && !(bestMove && pos.capture(bestMove))
-        && ((bestValue < ss->staticEval && bestValue < beta)  // negative correction & no fail high
-            || (bestValue > ss->staticEval && bestMove)))     // positive correction & no fail low
+        && ((bestValue < ss->staticEval + xx1 && bestValue < beta + xx2)  // negative correction & no fail high
+            || (bestValue > ss->staticEval + xx3 && bestMove)))     // positive correction & no fail low
     {
         auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
                                 -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
