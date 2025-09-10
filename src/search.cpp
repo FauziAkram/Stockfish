@@ -399,7 +399,7 @@ void Search::Worker::iterative_deepening() {
                 else
                     break;
 
-                delta += delta / (3 + bestMoveChanges);
+                delta += delta / (3 + previousBestMoveChanges);
 
                 assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
             }
