@@ -1823,6 +1823,9 @@ void update_all_stats(const Position& pos,
 
     if (!pos.capture_stage(bestMove))
     {
+        auto&     mainHist   = workerThread.mainHistory[pos.side_to_move()][bestMove.from_to()];
+        const int extraBonus = std::clamp(-(mainHist + 3000) / 100, 0, 100);
+        mainHist << extraBonus;
         update_quiet_histories(pos, ss, workerThread, bestMove, bonus * 957 / 1024);
 
         // Decrease stats for all non-best quiet moves
