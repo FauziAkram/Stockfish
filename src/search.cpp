@@ -50,7 +50,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=228, xx2=104, xx3=63, xx4=508, xx5=184, xx6=3, xx7=6, xx8=143, xx9=149;
+TUNE(xx1,xx2,xx3,xx4,xx5);
+TUNE(SetRange(-5, 5), xx6);
+TUNE(SetRange(0, 40), xx7);
+TUNE(xx8,xx9);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1409,12 +1413,13 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior quiet countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonusScale = -228;
-        bonusScale -= (ss - 1)->statScore / 104;
-        bonusScale += std::min(63 * depth, 508);
-        bonusScale += 184 * ((ss - 1)->moveCount > 8);
-        bonusScale += 143 * (!ss->inCheck && bestValue <= ss->staticEval - 92);
-        bonusScale += 149 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 70);
+        int bonusScale = -xx1;
+        bonusScale -= (ss - 1)->statScore / xx2;
+        bonusScale += std::min(xx3 * depth, xx4);
+        bonusScale += xx5 * ((ss - 1)->moveCount > 8);
+        bonusScale += ((ss-1)->moveCount - xx6) * xx7
+        bonusScale += xx8 * (!ss->inCheck && bestValue <= ss->staticEval - 92);
+        bonusScale += xx9 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 70);
 
         bonusScale = std::max(bonusScale, 0);
 
