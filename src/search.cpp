@@ -1216,7 +1216,7 @@ moves_loop:  // When in check, search starts here
         r -= ss->statScore * 794 / 8192;
 
         // Step 17. Late moves reduction / extension (LMR)
-        if (depth >= 2 && moveCount > 1)
+        if (depth >= 3 && moveCount > 1)
         {
             // In general we want to cap the LMR depth search at newDepth, but when
             // reduction is negative, we allow this move a limited search extension
@@ -1250,7 +1250,7 @@ moves_loop:  // When in check, search starts here
         }
 
         // Step 18. Full-depth search when LMR is skipped
-        else if (!PvNode || moveCount > 1)
+        else if (!PvNode || (depth > 2 && moveCount > 1))
         {
             // Increase reduction if ttMove is not present
             if (!ttData.move)
@@ -1261,9 +1261,10 @@ moves_loop:  // When in check, search starts here
                                    newDepth - (r > 3212) - (r > 4784 && newDepth > 2), !cutNode);
         }
 
-        // For PV nodes only, do a full PV search on the first move or after a fail high,
-        // otherwise let the parent node fail low with value <= alpha and try another move.
-        if (PvNode && (moveCount == 1 || value > alpha))
+        // For PV nodes only, do a full PV search for shallow depths, on the first move or
+        // after a fail high, otherwise let the parent node fail low with value <= alpha and
+        // try another move.
+        if (PvNode && (depth <= 2 || moveCount == 1 || value > alpha))
         {
             (ss + 1)->pv    = pv;
             (ss + 1)->pv[0] = Move::none();
