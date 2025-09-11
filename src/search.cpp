@@ -1456,15 +1456,26 @@ moves_loop:  // When in check, search starts here
                        moveCount != 0 ? depth : std::min(MAX_PLY - 1, depth + 6), bestMove,
                        unadjustedStaticEval, tt.generation());
 
-    // Adjust correction history
-    if (!ss->inCheck && !(bestMove && pos.capture(bestMove))
-        && ((bestValue < ss->staticEval && bestValue < beta)  // negative correction & no fail high
-            || (bestValue > ss->staticEval && bestMove)))     // positive correction & no fail low
-    {
-        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
-                                -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
-        update_correction_history(pos, ss, *this, bonus);
-    }
+// Adjust correction history
+if (!ss->inCheck && !(bestMove && pos.capture(bestMove)))
+{
+// Negative correction
+if (bestValue < ss->staticEval && bestValue < beta)
+{
+    // Allow a larger maximum negative adjustment.
+    auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
+                            -CORRECTION_HISTORY_LIMIT / 3, CORRECTION_HISTORY_LIMIT / 3);
+    update_correction_history(pos, ss, *this, bonus);
+}
+// Positive correction
+else if (bestValue > ss->staticEval && bestMove)
+{
+    // Keep the positive adjustment smaller to be more cautious.
+    auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
+                            -CORRECTION_HISTORY_LIMIT / 5, CORRECTION_HISTORY_LIMIT / 5);
+    update_correction_history(pos, ss, *this, bonus);
+}
+}
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
