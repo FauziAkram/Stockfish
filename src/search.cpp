@@ -50,6 +50,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=3000, xx2=100, xx3=0, xx4=100, xx5=957;
+TUNE(xx1);
+TUNE(SetRange(1, 201), xx2);
+TUNE(SetRange(-50, 50), xx3);
+TUNE(xx4,xx5);
 
 namespace TB = Tablebases;
 
@@ -1824,9 +1829,9 @@ void update_all_stats(const Position& pos,
     if (!pos.capture_stage(bestMove))
     {
         auto&     mainHist   = workerThread.mainHistory[pos.side_to_move()][bestMove.from_to()];
-        const int extraBonus = std::clamp(-(mainHist + 3000) / 100, 0, 100);
+        const int extraBonus = std::clamp(-(mainHist + xx1) / xx2, xx3, xx4);
         mainHist << extraBonus;
-        update_quiet_histories(pos, ss, workerThread, bestMove, bonus * 957 / 1024);
+        update_quiet_histories(pos, ss, workerThread, bestMove, bonus * xx5 / 1024);
 
         // Decrease stats for all non-best quiet moves
         for (Move move : quietsSearched)
