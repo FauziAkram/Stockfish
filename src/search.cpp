@@ -1459,7 +1459,7 @@ moves_loop:  // When in check, search starts here
 // Adjust correction history
 if (!ss->inCheck && !(bestMove && pos.capture(bestMove)))
 {
-    // Negative correction: Static eval was too optimistic. React more strongly.
+    // Negative correction
     if (bestValue < ss->staticEval && bestValue < beta)
     {
         // Use a smaller divisor to make the bonus larger and more impactful.
@@ -1468,7 +1468,7 @@ if (!ss->inCheck && !(bestMove && pos.capture(bestMove)))
                                 -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
         update_correction_history(pos, ss, *this, bonus);
     }
-    // Positive correction: Static eval was too pessimistic. Be more conservative.
+    // Positive correction
     else if (bestValue > ss->staticEval && bestMove)
     {
         // Use a larger divisor to make the bonus smaller and more gradual.
