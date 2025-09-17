@@ -50,13 +50,6 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=8, xx2=4, xx3=4, xx4=1024, xx5=8, xx6=4, xx7=4, xx8=1024;
-TUNE(SetRange(1, 21), xx1);
-TUNE(SetRange(1, 11), xx2, xx3);
-TUNE(xx4);
-TUNE(SetRange(1, 21), xx5);
-TUNE(SetRange(1, 11), xx6, xx7);
-TUNE(xx8);
 
 namespace TB = Tablebases;
 
@@ -1457,16 +1450,16 @@ moves_loop:  // When in check, search starts here
         // negative correction & no fail high
         if (bestValue < ss->staticEval && bestValue < beta)
         {
-            auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / xx1,
-                                    -CORRECTION_HISTORY_LIMIT / xx2, CORRECTION_HISTORY_LIMIT / xx3);
-            update_correction_history(pos, ss, *this, xx4 * bonus / 1024);
+            auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
+                                    -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+            update_correction_history(pos, ss, *this, 1086 * bonus / 1024);
         }
         // positive correction & no fail low
         else if (bestValue > ss->staticEval && bestMove)
         {
-            auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / xx5,
-                                    -CORRECTION_HISTORY_LIMIT / xx6, CORRECTION_HISTORY_LIMIT / xx7);
-            update_correction_history(pos, ss, *this, xx8 * bonus / 1024);
+            auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 9,
+                                    -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+            update_correction_history(pos, ss, *this, 912 * bonus / 1024);
         }
     }
 
