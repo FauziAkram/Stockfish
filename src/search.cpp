@@ -1452,14 +1452,14 @@ moves_loop:  // When in check, search starts here
         {
             auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
                                     -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
-            update_correction_history(pos, ss, *this, 1086 * bonus / 1024);
+            update_correction_history(pos, ss, *this, 1088 * bonus / 1024);
         }
         // positive correction & no fail low
         else if (bestValue > ss->staticEval && bestMove)
         {
-            auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 9,
+            auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 10,
                                     -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
-            update_correction_history(pos, ss, *this, 912 * bonus / 1024);
+            update_correction_history(pos, ss, *this, 910 * bonus / 1024);
         }
     }
 
