@@ -1181,7 +1181,7 @@ moves_loop:  // When in check, search starts here
         if (!rootNode && moveCount > 1 && ss->pvStability > 0)
         {
             // The bonus increases with stability, but is capped to prevent excessive pruning.
-            int stabilityBonus = std::min(ss->pvStability, 5) * 128;
+            int stabilityBonus = std::min(ss->pvStability, 5) * 64;
             r += stabilityBonus;
         }
 
