@@ -77,6 +77,13 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     optimism += optimism * nnueComplexity / 468;
     nnue -= nnue * nnueComplexity / 18000;
 
+  constexpr int desperationThreshold = -400;
+    if (nnue < desperationThreshold)
+    {
+        int desperationBonus = nnueComplexity * (desperationThreshold - nnue) / 3000;
+        nnue += desperationBonus;
+    }
+
     int material = 535 * pos.count<PAWN>() + pos.non_pawn_material();
     int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
 
