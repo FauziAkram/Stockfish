@@ -249,6 +249,7 @@ void Search::Worker::iterative_deepening() {
     Color  us            = rootPos.side_to_move();
     double timeReduction = 1, totBestMoveChanges = 0;
     int    delta, iterIdx                        = 0;
+    int    pvStability = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
     // (ss - 7) is needed for update_continuation_histories(ss - 1) which accesses (ss - 6),
@@ -295,6 +296,7 @@ void Search::Worker::iterative_deepening() {
     while (++rootDepth < MAX_PLY && !threads.stop
            && !(limits.depth && mainThread && rootDepth > limits.depth))
     {
+        ss->pvStability = pvStability;
         // Age out PV variability metric
         if (mainThread)
             totBestMoveChanges /= 2;
@@ -425,9 +427,14 @@ void Search::Worker::iterative_deepening() {
         }
         else if (rootMoves[0].pv[0] != lastBestPV[0])
         {
-            lastBestPV        = rootMoves[0].pv;
-            lastBestScore     = rootMoves[0].score;
+            lastBestPV = rootMoves[0].pv;
+            lastBestScore = rootMoves[0].score;
             lastBestMoveDepth = rootDepth;
+            pvStability = 0; // The PV changed, so reset our confidence.
+        }
+        else if (rootDepth > 5) // Don't get overconfident at very shallow depths
+        {
+            pvStability++; // The PV is stable, so increase confidence.
         }
 
         if (!mainThread)
@@ -1158,6 +1165,7 @@ moves_loop:  // When in check, search starts here
         }
 
         // Step 16. Make the move
+        (ss + 1)->pvStability = ss->pvStability;
         do_move(pos, move, st, givesCheck, ss);
 
         // Add extension to new depth
@@ -1168,6 +1176,14 @@ moves_loop:  // When in check, search starts here
         if (ss->ttPv)
             r -= 2618 + PvNode * 991 + (ttData.value > alpha) * 903
                + (ttData.depth >= depth) * (978 + cutNode * 1051);
+
+        // If the PV is stable, we have higher confidence and can prune non-PV moves more aggressively.
+        if (!rootNode && moveCount > 1 && ss->pvStability > 0)
+        {
+            // The bonus increases with stability, but is capped to prevent excessive pruning.
+            int stabilityBonus = std::min(ss->pvStability, 5) * 200;
+            r += stabilityBonus;
+        }
 
         // These reduction adjustments have no proven non-linear scaling
 
