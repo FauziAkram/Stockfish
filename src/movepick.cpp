@@ -173,7 +173,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
                 Square futureSq = pop_lsb(futureMoves);
                 resonanceBonus += (*mainHistory)[us][(to << 6) + futureSq];
             }
-            m.value += resonanceBonus / 64;
+            m.value += resonanceBonus / 128;
 
             // bonus for checks
             m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
