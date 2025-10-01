@@ -166,6 +166,15 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             m.value += (*continuationHistory[3])[pc][to];
             m.value += (*continuationHistory[5])[pc][to];
 
+          int resonanceBonus = 0;
+            Bitboard futureMoves = attacks_bb(pt, to, pos.pieces(us));
+            while (futureMoves)
+            {
+                Square futureSq = pop_lsb(futureMoves);
+                resonanceBonus += (*mainHistory)[us][(to << 6) + futureSq];
+            }
+            m.value += resonanceBonus / 64;
+
             // bonus for checks
             m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
 
