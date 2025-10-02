@@ -59,6 +59,7 @@ Engine::Engine(std::optional<std::string> path) :
       numaContext,
       NN::Networks(
         NN::NetworkBig({EvalFileDefaultNameBig, "None", ""}, NN::EmbeddedNNUEType::BIG),
+        NN::NetworkFast({EvalFileDefaultNameFast, "None", ""}, NN::EmbeddedNNUEType::FAST),
         NN::NetworkSmall({EvalFileDefaultNameSmall, "None", ""}, NN::EmbeddedNNUEType::SMALL))) {
     pos.set(StartFEN, false, &states->back());
 
@@ -131,6 +132,12 @@ Engine::Engine(std::optional<std::string> path) :
     options.add(  //
       "EvalFile", Option(EvalFileDefaultNameBig, [this](const Option& o) {
           load_big_network(o);
+          return std::nullopt;
+      }));
+
+    options.add(  //
+      "EvalFileFast", Option(EvalFileDefaultNameFast, [this](const Option& o) {
+          load_fast_network(o);
           return std::nullopt;
       }));
 
@@ -253,12 +260,14 @@ void Engine::set_ponderhit(bool b) { threads.main_manager()->ponder = b; }
 
 void Engine::verify_networks() const {
     networks->big.verify(options["EvalFile"], onVerifyNetworks);
+    networks->fast.verify(options["EvalFileFast"], onVerifyNetworks);
     networks->small.verify(options["EvalFileSmall"], onVerifyNetworks);
 }
 
 void Engine::load_networks() {
     networks.modify_and_replicate([this](NN::Networks& networks_) {
         networks_.big.load(binaryDirectory, options["EvalFile"]);
+        networks_.fast.load(binaryDirectory, options["EvalFileFast"]);
         networks_.small.load(binaryDirectory, options["EvalFileSmall"]);
     });
     threads.clear();
@@ -268,6 +277,13 @@ void Engine::load_networks() {
 void Engine::load_big_network(const std::string& file) {
     networks.modify_and_replicate(
       [this, &file](NN::Networks& networks_) { networks_.big.load(binaryDirectory, file); });
+    threads.clear();
+    threads.ensure_network_replicated();
+}
+
+void Engine::load_fast_network(const std::string& file) {
+    networks.modify_and_replicate(
+      [this, &file](NN::Networks& networks_) { networks_.fast.load(binaryDirectory, file); });
     threads.clear();
     threads.ensure_network_replicated();
 }
