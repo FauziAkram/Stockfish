@@ -47,11 +47,15 @@
 // Note that this does not work in Microsoft Visual Studio.
 #if !defined(_MSC_VER) && !defined(NNUE_EMBEDDING_OFF)
 INCBIN(EmbeddedNNUEBig, EvalFileDefaultNameBig);
+INCBIN(EmbeddedNNUEFast, EvalFileDefaultNameFast);
 INCBIN(EmbeddedNNUESmall, EvalFileDefaultNameSmall);
 #else
 const unsigned char        gEmbeddedNNUEBigData[1]   = {0x0};
 const unsigned char* const gEmbeddedNNUEBigEnd       = &gEmbeddedNNUEBigData[1];
 const unsigned int         gEmbeddedNNUEBigSize      = 1;
+const unsigned char        gEmbeddedNNUEFastData[1]  = {0x0};
+const unsigned char* const gEmbeddedNNUEFastEnd      = &gEmbeddedNNUEFastData[1];
+const unsigned int         gEmbeddedNNUEFastSize     = 1;
 const unsigned char        gEmbeddedNNUESmallData[1] = {0x0};
 const unsigned char* const gEmbeddedNNUESmallEnd     = &gEmbeddedNNUESmallData[1];
 const unsigned int         gEmbeddedNNUESmallSize    = 1;
@@ -76,6 +80,8 @@ using namespace Stockfish::Eval::NNUE;
 EmbeddedNNUE get_embedded(EmbeddedNNUEType type) {
     if (type == EmbeddedNNUEType::BIG)
         return EmbeddedNNUE(gEmbeddedNNUEBigData, gEmbeddedNNUEBigEnd, gEmbeddedNNUEBigSize);
+    else if (type == EmbeddedNNUEType::FAST)
+        return EmbeddedNNUE(gEmbeddedNNUEFastData, gEmbeddedNNUEFastEnd, gEmbeddedNNUEFastSize);
     else
         return EmbeddedNNUE(gEmbeddedNNUESmallData, gEmbeddedNNUESmallEnd, gEmbeddedNNUESmallSize);
 }
@@ -435,6 +441,9 @@ bool Network<Arch, Transformer>::write_parameters(std::ostream&      stream,
 
 template class Network<NetworkArchitecture<TransformedFeatureDimensionsBig, L2Big, L3Big>,
                        FeatureTransformer<TransformedFeatureDimensionsBig>>;
+
+template class Network<NetworkArchitecture<TransformedFeatureDimensionsFast, L2Fast, L3Fast>,
+                       FeatureTransformer<TransformedFeatureDimensionsFast>>;
 
 template class Network<NetworkArchitecture<TransformedFeatureDimensionsSmall, L2Small, L3Small>,
                        FeatureTransformer<TransformedFeatureDimensionsSmall>>;
