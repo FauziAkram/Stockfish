@@ -46,7 +46,18 @@ int Eval::simple_eval(const Position& pos) {
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
-bool Eval::use_smallnet(const Position& pos) { return std::abs(simple_eval(pos)) > 962; }
+namespace {
+enum class NetType { STRONG, FAST, SMALL };
+
+NetType net_to_use(const Position& pos) {
+    const int imbalance = std::abs(Eval::simple_eval(pos));
+    if (imbalance > 962)
+        return NetType::SMALL;
+    if (imbalance > 450)
+        return NetType::FAST;
+    return NetType::STRONG;
+}
+}
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
@@ -58,18 +69,23 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     assert(!pos.checkers());
 
-    bool smallNet           = use_smallnet(pos);
-    auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, accumulators, &caches.small)
-                                       : networks.big.evaluate(pos, accumulators, &caches.big);
+    NetType netType = net_to_use(pos);
+    auto [psqt, positional] = std::make_tuple(0, 0);
+
+    if (netType == NetType::SMALL)
+        std::tie(psqt, positional) = networks.small.evaluate(pos, accumulators, &caches.small);
+    else if (netType == NetType::FAST)
+        std::tie(psqt, positional) = networks.fast.evaluate(pos, accumulators, &caches.fast);
+    else // STRONG
+        std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, &caches.big);
 
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (std::abs(nnue) < 236))
+    if (netType != NetType::STRONG && (std::abs(nnue) < 236))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, &caches.big);
         nnue                       = (125 * psqt + 131 * positional) / 128;
-        smallNet                   = false;
     }
 
     // Blend optimism and eval with nnue complexity
