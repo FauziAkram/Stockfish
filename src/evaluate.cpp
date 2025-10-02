@@ -36,7 +36,10 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int xx1=962, xx2=450, xx3=236;
 
+TUNE(SetRange(0, 2000), xx1,xx2);
+TUNE(SetRange(0, 500), xx3);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -51,9 +54,9 @@ enum class NetType { STRONG, FAST, SMALL };
 
 NetType net_to_use(const Position& pos) {
     const int imbalance = std::abs(Eval::simple_eval(pos));
-    if (imbalance > 962)
+    if (imbalance > xx1)
         return NetType::SMALL;
-    if (imbalance > 450)
+    if (imbalance > xx2)
         return NetType::FAST;
     return NetType::STRONG;
 }
@@ -82,7 +85,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (netType != NetType::STRONG && (std::abs(nnue) < 236))
+    if (netType != NetType::STRONG && (std::abs(nnue) < xx3))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, &caches.big);
         nnue                       = (125 * psqt + 131 * positional) / 128;
