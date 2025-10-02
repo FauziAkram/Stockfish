@@ -59,12 +59,6 @@ void update_accumulator_refresh_cache(const FeatureTransformer<Dimensions>& feat
 
 }
 
-void AccumulatorState::reset(const DirtyPiece& dp) noexcept {
-    dirtyPiece = dp;
-    accumulatorBig.computed.fill(false);
-    accumulatorSmall.computed.fill(false);
-}
-
 const AccumulatorState& AccumulatorStack::latest() const noexcept { return accumulators[size - 1]; }
 
 AccumulatorState& AccumulatorStack::mut_latest() noexcept { return accumulators[size - 1]; }
