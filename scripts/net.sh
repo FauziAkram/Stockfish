@@ -73,4 +73,5 @@ fetch_network() {
 }
 
 fetch_network EvalFileDefaultNameBig && \
+fetch_network EvalFileDefaultNameFast && \
 fetch_network EvalFileDefaultNameSmall
