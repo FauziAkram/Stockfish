@@ -51,9 +51,9 @@ enum class NetType { STRONG, FAST, SMALL };
 
 NetType net_to_use(const Position& pos) {
     const int imbalance = std::abs(Eval::simple_eval(pos));
-    if (imbalance > 962)
+    if (imbalance > 826)
         return NetType::SMALL;
-    if (imbalance > 450)
+    if (imbalance > 986)
         return NetType::FAST;
     return NetType::STRONG;
 }
@@ -82,7 +82,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     Value nnue = (125 * psqt + 131 * positional) / 128;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (netType != NetType::STRONG && (std::abs(nnue) < 236))
+    if (netType != NetType::STRONG && (std::abs(nnue) < 240))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, &caches.big);
         nnue                       = (125 * psqt + 131 * positional) / 128;
