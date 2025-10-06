@@ -97,7 +97,7 @@ struct NetworkArchitecture {
             && fc_2.write_parameters(stream);
     }
 
-    std::int32_t propagate(const TransformedFeatureType* transformedFeatures) {
+    std::int32_t propagate(const TransformedFeatureType* transformedFeatures, std::int32_t king_threat_score) {
         struct alignas(CacheLineSize) Buffer {
             alignas(CacheLineSize) typename decltype(fc_0)::OutputBuffer fc_0_out;
             alignas(CacheLineSize) typename decltype(ac_sqr_0)::OutputType
@@ -130,9 +130,14 @@ struct NetworkArchitecture {
 
         // buffer.fc_0_out[FC_0_OUTPUTS] is such that 1.0 is equal to 127*(1<<WeightScaleBits) in
         // quantized form, but we want 1.0 to be equal to 600*OutputScale
-        std::int32_t fwdOut =
-          (buffer.fc_0_out[FC_0_OUTPUTS]) * (600 * OutputScale) / (127 * (1 << WeightScaleBits));
-        std::int32_t outputValue = buffer.fc_2_out[0] + fwdOut;
+        const std::int32_t fwdOut =
+            (buffer.fc_0_out[FC_0_OUTPUTS]) * (600 * OutputScale) / (127 * (1 << WeightScaleBits));
+
+        constexpr std::int32_t ScalingDivisor = 256;
+        std::int32_t positional_component = buffer.fc_2_out[0];
+        positional_component += (positional_component * king_threat_score) / ScalingDivisor;
+
+        std::int32_t outputValue = positional_component + fwdOut;
 
         return outputValue;
     }
