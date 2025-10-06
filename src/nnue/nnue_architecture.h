@@ -97,7 +97,7 @@ struct NetworkArchitecture {
             && fc_2.write_parameters(stream);
     }
 
-    std::int32_t propagate(const TransformedFeatureType* transformedFeatures) {
+    std::int32_t propagate(const TransformedFeatureType* transformedFeatures, std::int32_t psqt_value) {
         struct alignas(CacheLineSize) Buffer {
             alignas(CacheLineSize) typename decltype(fc_0)::OutputBuffer fc_0_out;
             alignas(CacheLineSize) typename decltype(ac_sqr_0)::OutputType
@@ -122,6 +122,15 @@ struct NetworkArchitecture {
         fc_0.propagate(transformedFeatures, buffer.fc_0_out);
         ac_sqr_0.propagate(buffer.fc_0_out, buffer.ac_sqr_0_out);
         ac_0.propagate(buffer.fc_0_out, buffer.ac_0_out);
+
+        constexpr std::int32_t GatingScale = 8192;
+        const std::int32_t gate = std::clamp((psqt_value * 128) / GatingScale + 128, 0, 256);
+
+        for (IndexType i = 0; i < FC_0_OUTPUTS; ++i)
+        {
+            buffer.ac_sqr_0_out[i] = (buffer.ac_sqr_0_out[i] * gate) / 256;
+            buffer.ac_0_out[i]     = (buffer.ac_0_out[i] * (256 - gate)) / 256;
+        }
         std::memcpy(buffer.ac_sqr_0_out + FC_0_OUTPUTS, buffer.ac_0_out,
                     FC_0_OUTPUTS * sizeof(typename decltype(ac_0)::OutputType));
         fc_1.propagate(buffer.ac_sqr_0_out, buffer.fc_1_out);
