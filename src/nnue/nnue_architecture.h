@@ -133,7 +133,7 @@ struct NetworkArchitecture {
         const std::int32_t fwdOut =
             (buffer.fc_0_out[FC_0_OUTPUTS]) * (600 * OutputScale) / (127 * (1 << WeightScaleBits));
 
-        constexpr std::int32_t ScalingDivisor = 256;
+        constexpr std::int32_t ScalingDivisor = 512;
         std::int32_t positional_component = buffer.fc_2_out[0];
         positional_component += (positional_component * king_threat_score) / ScalingDivisor;
 
