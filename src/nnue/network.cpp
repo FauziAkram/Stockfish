@@ -223,7 +223,26 @@ Network<Arch, Transformer>::evaluate(const Position&                         pos
     const int  bucket = (pos.count<ALL_PIECES>() - 1) / 4;
     const auto psqt =
       featureTransformer->transform(pos, accumulatorStack, cache, transformedFeatures, bucket);
-    const auto positional = network[bucket].propagate(transformedFeatures);
+    auto calculate_king_threats = [&](Color c) {
+        constexpr int ThreatValues[] = {0, 1, 3, 3, 5, 9, 0};
+        int threat_score = 0;
+        Bitboard king_zone = attacks_bb<KING>(pos.square<KING>(c));
+        while (king_zone)
+        {
+            Bitboard attackers = pos.attackers_to(pop_lsb(king_zone)) & pos.pieces(~c);
+            while (attackers)
+                threat_score += ThreatValues[type_of(pos.piece_on(pop_lsb(attackers)))];
+        }
+        return threat_score;
+    };
+
+    const std::int32_t white_king_threat = calculate_king_threats(WHITE);
+    const std::int32_t black_king_threat = calculate_king_threats(BLACK);
+    const std::int32_t king_threat_score = (pos.side_to_move() == WHITE) ?
+                                           (black_king_threat - white_king_threat) :
+                                           (white_king_threat - black_king_threat);
+
+    const auto positional = network[bucket].propagate(transformedFeatures, king_threat_score);
     return {static_cast<Value>(psqt / OutputScale), static_cast<Value>(positional / OutputScale)};
 }
 
@@ -288,7 +307,26 @@ Network<Arch, Transformer>::trace_evaluate(const Position&                      
     {
         const auto materialist =
           featureTransformer->transform(pos, accumulatorStack, cache, transformedFeatures, bucket);
-        const auto positional = network[bucket].propagate(transformedFeatures);
+        auto calculate_king_threats = [&](Color c) {
+            constexpr int ThreatValues[] = {0, 1, 3, 3, 5, 9, 0};
+            int threat_score = 0;
+            Bitboard king_zone = attacks_bb<KING>(pos.square<KING>(c));
+            while (king_zone)
+            {
+                Bitboard attackers = pos.attackers_to(pop_lsb(king_zone)) & pos.pieces(~c);
+                while (attackers)
+                    threat_score += ThreatValues[type_of(pos.piece_on(pop_lsb(attackers)))];
+            }
+            return threat_score;
+        };
+
+        const std::int32_t white_king_threat = calculate_king_threats(WHITE);
+        const std::int32_t black_king_threat = calculate_king_threats(BLACK);
+        const std::int32_t king_threat_score = (pos.side_to_move() == WHITE) ?
+                                               (black_king_threat - white_king_threat) :
+                                               (white_king_threat - black_king_threat);
+
+        const auto positional = network[bucket].propagate(transformedFeatures, king_threat_score);
 
         t.psqt[bucket]       = static_cast<Value>(materialist / OutputScale);
         t.positional[bucket] = static_cast<Value>(positional / OutputScale);
