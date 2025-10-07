@@ -50,8 +50,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=946, 	xx2=3094, 	xx3=1056, 	xx4=1415, 	xx5=1051, 	xx6=814, 	xx7=1118;
-int zz1=2618, 	zz2=991, 	zz3=903, 	zz4=978, 	zz5=1051, 	zz6=66, 	zz7=30450, 	zz8=2018;
+int xx1=946, 	xx2=3094, 	xx3=1056, 	xx4=1415, 	xx5=1051, 	xx6=814, 	xx7=1118, xx8=794;
+int zz1=2618, 	zz2=991, 	zz3=903, 	zz4=978, 	zz5=1051, 	zz6=66, 	zz7=30450, 	zz8=2018, zz9=794;
 int vv1=0, vv2=0, vv3=0, vv4=0, vv5=0, bb1=843;
 TUNE(SetRange(0, 7568), xx1);
 TUNE(SetRange(0, 24752), xx2);
@@ -60,6 +60,7 @@ TUNE(SetRange(0, 11320), xx4);
 TUNE(SetRange(0, 8408), xx5);
 TUNE(SetRange(0, 6512), xx6);
 TUNE(SetRange(0, 8944), xx7);
+TUNE(SetRange(0, 6352), xx8);
 TUNE(SetRange(0, 20944), zz1);
 TUNE(SetRange(0, 7928), zz2);
 TUNE(SetRange(0, 7224), zz3);
@@ -68,6 +69,7 @@ TUNE(SetRange(0, 8408), zz5);
 TUNE(SetRange(0, 528), zz6);
 TUNE(SetRange(0, 243600), zz7);
 TUNE(SetRange(0, 16144), zz8);
+TUNE(SetRange(0, 6352), zz9);
 TUNE(SetRange(-400, 400), vv1,vv2);
 TUNE(SetRange(-4000, 4000), vv3,vv4,vv5);
 TUNE(bb1);
@@ -1222,7 +1224,7 @@ moves_loop:  // When in check, search starts here
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move) {
             r -= 2018;
-          rminus += 2018;}
+          rminus += zz8;}
 
         if (capture)
             ss->statScore = 803 * int(PieceValue[pos.captured_piece()]) / 128
@@ -1234,8 +1236,8 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * 794 / 8192;
-          rminus += std::max(ss->statScore * 794 / 8192, 0);
-          rplus -= std::min(ss->statScore * 794 / 8192, 0);
+          rminus += std::max(ss->statScore * zz9 / 8192, 0);
+          rplus -= std::min(ss->statScore * xx8 / 8192, 0);
           
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
