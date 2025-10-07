@@ -52,7 +52,7 @@
 namespace Stockfish {
 int xx1=946, 	xx2=3094, 	xx3=1056, 	xx4=1415, 	xx5=1051, 	xx6=814, 	xx7=1118;
 int zz1=2618, 	zz2=991, 	zz3=903, 	zz4=978, 	zz5=1051, 	zz6=66, 	zz7=30450, 	zz8=2018;
-int vv1=0, vv2=0, vv3=0;
+int vv1=0, vv2=0, vv3=0, vv4=0, vv5=0, bb1=843;
 TUNE(SetRange(0, 7568), xx1);
 TUNE(SetRange(0, 24752), xx2);
 TUNE(SetRange(0, 8448), xx3);
@@ -69,8 +69,8 @@ TUNE(SetRange(0, 528), zz6);
 TUNE(SetRange(0, 243600), zz7);
 TUNE(SetRange(0, 16144), zz8);
 TUNE(SetRange(-400, 400), vv1,vv2);
-TUNE(SetRange(-4000, 4000), vv3);
-
+TUNE(SetRange(-4000, 4000), vv3,vv4,vv5);
+TUNE(bb1);
 
 namespace TB = Tablebases;
 
@@ -1198,7 +1198,7 @@ moves_loop:  // When in check, search starts here
 
         // These reduction adjustments have no proven non-linear scaling
 
-        r += 843;  // Base reduction offset to compensate for other tweaks
+        r += bb1;  // Base reduction offset to compensate for other tweaks
         r -= moveCount * 66;
         rminus += moveCount * zz6;
         r -= std::abs(correctionValue) / 30450;
@@ -1278,18 +1278,15 @@ moves_loop:  // When in check, search starts here
             if (!ttData.move) {
                 r += 1118;
               rplus += xx7; }
-          
-dbg_mean_of(rplus, 0);
-dbg_extremes_of(rplus, 0);
-dbg_mean_of(rminus, 1);
-dbg_extremes_of(rminus, 1);
-dbg_hit_on(rplus > rminus);
 
           r += vv1 * rplus / 1024;
           r += vv2 * rminus / 1024;
 if (rplus > rminus)
           r += vv3;
-
+if (rplus > rminus + 3000)
+          r += vv4;
+if (rplus + 3000 < rminus)
+          r += vv5;
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
                                    newDepth - (r > 3212) - (r > 4784 && newDepth > 2), !cutNode);
