@@ -52,7 +52,7 @@
 namespace Stockfish {
 int xx1=946, 	xx2=3094, 	xx3=1056, 	xx4=1415, 	xx5=1051, 	xx6=814, 	xx7=1118;
 int zz1=2618, 	zz2=991, 	zz3=903, 	zz4=978, 	zz5=1051, 	zz6=66, 	zz7=30450, 	zz8=2018;
-int vv1=0, vv2=0;
+int vv1=0, vv2=0, vv3=0;
 TUNE(SetRange(0, 7568), xx1);
 TUNE(SetRange(0, 24752), xx2);
 TUNE(SetRange(0, 8448), xx3);
@@ -68,7 +68,8 @@ TUNE(SetRange(0, 8408), zz5);
 TUNE(SetRange(0, 528), zz6);
 TUNE(SetRange(0, 243600), zz7);
 TUNE(SetRange(0, 16144), zz8);
-TUNE(SetRange(-1024, 1024), vv1,vv2);
+TUNE(SetRange(-400, 400), vv1,vv2);
+TUNE(SetRange(-4000, 4000), vv3);
 
 
 namespace TB = Tablebases;
@@ -1286,6 +1287,8 @@ dbg_hit_on(rplus > rminus);
 
           r += vv1 * rplus / 1024;
           r += vv2 * rminus / 1024;
+if (rplus > rminus)
+          r += vv3;
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
