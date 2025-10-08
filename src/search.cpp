@@ -67,7 +67,7 @@ TUNE(SetRange(0, 7224), zz3);
 TUNE(SetRange(0, 7824), zz4);
 TUNE(SetRange(0, 8408), zz5);
 TUNE(SetRange(0, 528), zz6);
-TUNE(SetRange(0, 243600), zz7);
+TUNE(SetRange(1, 243600), zz7);
 TUNE(SetRange(0, 16144), zz8);
 TUNE(SetRange(0, 6352), zz9);
 TUNE(SetRange(-400, 400), vv1,vv2);
