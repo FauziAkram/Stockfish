@@ -1263,8 +1263,6 @@ if (rplus > rminus)
           r += 531;
 if (rplus > rminus + 3000)
           r -= 156;
-if (rplus + 3000 < rminus)
-          r -= 61;
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
                                    newDepth - (r > 3212) - (r > 4784 && newDepth > 2), !cutNode);
