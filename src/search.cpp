@@ -50,29 +50,6 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=946, 	xx2=3094, 	xx3=1056, 	xx4=1415, 	xx5=1051, 	xx6=814, 	xx7=1118, xx8=794;
-int zz1=2618, 	zz2=991, 	zz3=903, 	zz4=978, 	zz5=1051, 	zz6=66, 	zz7=30450, 	zz8=2018, zz9=794;
-int vv1=0, vv2=0, vv3=0, vv4=0, vv5=0, bb1=843;
-TUNE(SetRange(0, 7568), xx1);
-TUNE(SetRange(0, 24752), xx2);
-TUNE(SetRange(0, 8448), xx3);
-TUNE(SetRange(0, 11320), xx4);
-TUNE(SetRange(0, 8408), xx5);
-TUNE(SetRange(0, 6512), xx6);
-TUNE(SetRange(0, 8944), xx7);
-TUNE(SetRange(0, 6352), xx8);
-TUNE(SetRange(0, 20944), zz1);
-TUNE(SetRange(0, 7928), zz2);
-TUNE(SetRange(0, 7224), zz3);
-TUNE(SetRange(0, 7824), zz4);
-TUNE(SetRange(0, 8408), zz5);
-TUNE(SetRange(0, 528), zz6);
-TUNE(SetRange(1, 243600), zz7);
-TUNE(SetRange(0, 16144), zz8);
-TUNE(SetRange(0, 6352), zz9);
-TUNE(SetRange(-400, 400), vv1,vv2);
-TUNE(SetRange(-4000, 4000), vv3,vv4,vv5);
-TUNE(bb1);
 
 namespace TB = Tablebases;
 
@@ -1047,7 +1024,7 @@ moves_loop:  // When in check, search starts here
         // Bigger value is better for long time controls
         if (ss->ttPv) {
             r += 946;
-          rplus += xx1;}
+          rplus += 1141;}
 
         // Step 14. Pruning at shallow depth.
         // Depth conditions are important for mate finding.
@@ -1195,36 +1172,36 @@ moves_loop:  // When in check, search starts here
         if (ss->ttPv) {
             r -= 2618 + PvNode * 991 + (ttData.value > alpha) * 903
                + (ttData.depth >= depth) * (978 + cutNode * 1051);
-            rminus += zz1 + PvNode * zz2 + (ttData.value > alpha) * zz3
-               + (ttData.depth >= depth) * (zz4 + cutNode * zz5);}
+            rminus += 1853 + PvNode * 1052 + (ttData.value > alpha) * 918
+               + (ttData.depth >= depth) * (1349 + cutNode * 1078);}
 
         // These reduction adjustments have no proven non-linear scaling
 
-        r += bb1;  // Base reduction offset to compensate for other tweaks
+        r += 855;  // Base reduction offset to compensate for other tweaks
         r -= moveCount * 66;
-        rminus += moveCount * zz6;
+        rminus += moveCount * 61;
         r -= std::abs(correctionValue) / 30450;
-        rminus += std::abs(correctionValue) / zz7;
+        rminus += std::abs(correctionValue) / 41219;
 
         // Increase reduction for cut nodes
         if (cutNode) {
             r += 3094 + 1056 * !ttData.move;
-        rplus += xx2 + xx3 * !ttData.move;}
+        rplus += 3090 + 1215 * !ttData.move;}
 
         // Increase reduction if ttMove is a capture
         if (ttCapture) {
             r += 1415;
-        rplus += xx4; }
+        rplus += 1883; }
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 2) {
             r += 1051 + allNode * 814;
-        rplus += xx5 + allNode * xx6;}
+        rplus += 1042 + allNode * 1086;}
 
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move) {
             r -= 2018;
-          rminus += zz8;}
+          rminus += 2763;}
 
         if (capture)
             ss->statScore = 803 * int(PieceValue[pos.captured_piece()]) / 128
@@ -1236,8 +1213,8 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * 794 / 8192;
-          rminus += std::max(ss->statScore * zz9 / 8192, 0);
-          rplus -= std::min(ss->statScore * xx8 / 8192, 0);
+          rminus += std::max(ss->statScore * 859 / 8192, 0);
+          rplus -= std::min(ss->statScore * 1000 / 8192, 0);
           
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
@@ -1279,16 +1256,15 @@ moves_loop:  // When in check, search starts here
             // Increase reduction if ttMove is not present
             if (!ttData.move) {
                 r += 1118;
-              rplus += xx7; }
+              rplus += 996; }
 
-          r += vv1 * rplus / 1024;
-          r += vv2 * rminus / 1024;
+          r += 12 * rplus / 1024;
 if (rplus > rminus)
-          r += vv3;
+          r += 531;
 if (rplus > rminus + 3000)
-          r += vv4;
+          r -= 156;
 if (rplus + 3000 < rminus)
-          r += vv5;
+          r -= 61;
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
                                    newDepth - (r > 3212) - (r > 4784 && newDepth > 2), !cutNode);
