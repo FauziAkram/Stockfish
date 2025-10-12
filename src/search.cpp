@@ -1023,7 +1023,7 @@ moves_loop:  // When in check, search starts here
         // Smaller or even negative value is better for short time controls
         // Bigger value is better for long time controls
         if (ss->ttPv)
-            r += 946;
+            r += 964;
 
         // Step 14. Pruning at shallow depth.
         // Depth conditions are important for mate finding.
@@ -1174,13 +1174,13 @@ moves_loop:  // When in check, search starts here
 
         // These reduction adjustments have no proven non-linear scaling
 
-        r += 843;  // Base reduction offset to compensate for other tweaks
+        r += 855;  // Base reduction offset to compensate for other tweaks
         r -= moveCount * 66;
         r -= std::abs(correctionValue) / 30450;
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 3094 + 1056 * !ttData.move;
+            r += 3142 + 1075 * !ttData.move;
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
@@ -1188,7 +1188,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 2)
-            r += 1051 + allNode * 814;
+            r += 1067 + allNode * 831;
 
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move)
@@ -1203,7 +1203,7 @@ moves_loop:  // When in check, search starts here
                           + (*contHist[1])[movedPiece][move.to_sq()];
 
         // Decrease/increase reduction for moves with a good/bad history
-        r -= ss->statScore * 794 / 8192;
+        r -= ss->statScore * (ss->statScore > 0? 812: 794) / 8192;
 
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
@@ -1244,7 +1244,7 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present
             if (!ttData.move)
-                r += 1118;
+                r += 1134;
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
