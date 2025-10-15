@@ -1209,6 +1209,11 @@ moves_loop:  // When in check, search starts here
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
         {
+            if (rplus > rminus)
+                r += 0;
+
+            r += rplus - rminus;
+
             // In general we want to cap the LMR depth search at newDepth, but when
             // reduction is negative, we allow this move a limited search extension
             // beyond the first move depth.
@@ -1243,11 +1248,13 @@ moves_loop:  // When in check, search starts here
         // Step 18. Full-depth search when LMR is skipped
         else if (!PvNode || moveCount > 1)
         {
+            int rplus_local = 0;
             // Increase reduction if ttMove is not present
             if (!ttData.move)
-                rplus += 1118;
+                rplus_local += 1118;
 
-          r += rplus - rminus;
+            if (rplus + rplus_local > rminus)
+                r += 0;
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
