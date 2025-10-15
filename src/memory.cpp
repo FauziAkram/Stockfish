@@ -88,13 +88,13 @@ void* std_aligned_alloc(size_t alignment, size_t size) {
 
 void std_aligned_free(void* ptr) {
 
-#if defined(POSIXALIGNEDALLOC)
-    free(ptr);
-#elif defined(_WIN32) && !defined(_M_ARM) && !defined(_M_ARM64)
+#if defined(_WIN32)
+    #if !defined(_M_ARM) && !defined(_M_ARM64)
     _mm_free(ptr);
-#elif defined(_WIN32)
+    #else
     _aligned_free(ptr);
-#else
+    #endif
+#else // Non-Windows
     free(ptr);
 #endif
 }
