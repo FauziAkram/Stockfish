@@ -1016,6 +1016,7 @@ moves_loop:  // When in check, search starts here
         newDepth = depth - 1;
 
         int delta = beta - alpha;
+        int rplus = 0, rminus = 0;
 
         Depth r = reduction(improving, depth, moveCount, delta);
 
@@ -1023,7 +1024,7 @@ moves_loop:  // When in check, search starts here
         // Smaller or even negative value is better for short time controls
         // Bigger value is better for long time controls
         if (ss->ttPv)
-            r += 946;
+            rplus += 946;
 
         // Step 14. Pruning at shallow depth.
         // Depth conditions are important for mate finding.
@@ -1169,30 +1170,30 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 2618 + PvNode * 991 + (ttData.value > alpha) * 903
+            rminus += 2618 + PvNode * 991 + (ttData.value > alpha) * 903
                + (ttData.depth >= depth) * (978 + cutNode * 1051);
 
         // These reduction adjustments have no proven non-linear scaling
 
         r += 843;  // Base reduction offset to compensate for other tweaks
-        r -= moveCount * 66;
-        r -= std::abs(correctionValue) / 30450;
+        rminus += moveCount * 66;
+        rminus += std::abs(correctionValue) / 30450;
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 3094 + 1056 * !ttData.move;
+            rplus += 3094 + 1056 * !ttData.move;
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
-            r += 1415;
+            rplus += 1415;
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 2)
-            r += 1051 + allNode * 814;
+            rplus += 1051 + allNode * 814;
 
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move)
-            r -= 2018;
+            rminus += 2018;
 
         if (capture)
             ss->statScore = 803 * int(PieceValue[pos.captured_piece()]) / 128
@@ -1244,7 +1245,9 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present
             if (!ttData.move)
-                r += 1118;
+                rplus += 1118;
+
+          r += rplus - rminus;
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
