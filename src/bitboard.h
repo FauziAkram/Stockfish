@@ -324,18 +324,16 @@ inline Square msb(Bitboard b) {
     #else  // MSVC, WIN32
 
     unsigned long idx;
+    int32_t       hi = int32_t(b >> 32);
 
-    if (b >> 32)
+    if (hi)
     {
-        _BitScanReverse(&idx, int32_t(b >> 32));
+        _BitScanReverse(&idx, hi);
         return Square(idx + 32);
     }
-    else
-    {
-        _BitScanReverse(&idx, int32_t(b));
-        return Square(idx);
-    }
-    #endif
+_BitScanReverse(&idx, int32_t(b));
+return Square(idx);
+#endif
 #else  // Compiler is neither GCC nor MSVC compatible
     #error "Compiler not supported."
 #endif
