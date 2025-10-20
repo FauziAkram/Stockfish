@@ -50,13 +50,13 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=18, xx2=0, 	xx3=450, 	xx4=157, 	xx5=0, 	xx6=3900, 	xx7=4312, 	xx8=0, 	xx9=107800, 	xx10=63, 	xx11=0, 	xx12=508;
+int xx1=18, xx2=0, 	xx3=450, 	xx4=157, 	xx5=0, 	xx6=3900, 	xx7=4312, 	xx8=0, 	xx9=60368, 	xx10=63, 	xx11=0, 	xx12=508;
 TUNE(SetRange(0, 288), xx1,xx2);
 TUNE(SetRange(0, 3600), xx3);
 TUNE(SetRange(0, 2512), xx4,xx5);
 TUNE(SetRange(0, 31200), xx6);
 TUNE(SetRange(0, 68992), xx7,xx8);
-TUNE(SetRange(0, 862400), xx9);
+TUNE(SetRange(0, 482944), xx9);
 TUNE(SetRange(0, 512), xx10,xx11);
 TUNE(SetRange(0, 2032), xx12);
 namespace TB = Tablebases;
@@ -1073,7 +1073,7 @@ moves_loop:  // When in check, search starts here
                             + pawnHistory[pawn_history_index(pos)][movedPiece][move.to_sq()];
 
                 // Continuation history based pruning
-                if (history < (-1 * std::min(xx7 * depth - xx8, xx9))
+                if (history < -std::min(xx7 * depth - xx8, xx9);
                     continue;
 
                 history += 76 * mainHistory[us][move.from_to()] / 32;
