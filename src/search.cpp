@@ -1166,33 +1166,34 @@ moves_loop:  // When in check, search starts here
         // Add extension to new depth
         newDepth += extension;
         uint64_t nodeCount = rootNode ? uint64_t(nodes) : 0;
+        int rplus = 0, rminus = 0;
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 2618 + PvNode * 991 + (ttData.value > alpha) * 903
+            rminus += 2618 + PvNode * 991 + (ttData.value > alpha) * 903
                + (ttData.depth >= depth) * (978 + cutNode * 1051);
 
         // These reduction adjustments have no proven non-linear scaling
 
         r += 843;  // Base reduction offset to compensate for other tweaks
-        r -= moveCount * 66;
-        r -= std::abs(correctionValue) / 30450;
+        rminus += moveCount * 66;
+        rminus += std::abs(correctionValue) / 30450;
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 3094 + 1056 * !ttData.move;
+            rplus += 3094 + 1056 * !ttData.move;
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
-            r += 1415;
+            rplus += 1415;
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 2)
-            r += 1051 + allNode * 814;
+            rplus += 1051 + allNode * 814;
 
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move)
-            r -= 2018;
+            rminus += 2018;
 
         if (capture)
             ss->statScore = 803 * int(PieceValue[pos.captured_piece()]) / 128
@@ -1213,6 +1214,10 @@ moves_loop:  // When in check, search starts here
             // beyond the first move depth.
             // To prevent problems when the max value is less than the min value,
             // std::clamp has been replaced by a more robust implementation.
+            if (rplus > rminus)
+                r += 0;
+
+            r += rplus - rminus;
             Depth d = std::max(1, std::min(newDepth - r / 1024, newDepth + 2)) + PvNode;
 
             ss->reduction = newDepth - d;
@@ -1244,7 +1249,12 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present
             if (!ttData.move)
-                r += 1118;
+                rplus_local += 1118;
+
+            if (rplus_local > rminus)
+                r += 0;
+
+            r += rplus_local - rminus;
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
