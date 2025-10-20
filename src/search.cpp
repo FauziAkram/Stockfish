@@ -51,7 +51,14 @@
 
 namespace Stockfish {
 int xx1=18, xx2=0, 	xx3=450, 	xx4=157, 	xx5=0, 	xx6=3900, 	xx7=4312, 	xx8=0, 	xx9=107800, 	xx10=63, 	xx11=0, 	xx12=508;
-
+TUNE(SetRange(0, 288), xx1,xx2);
+TUNE(SetRange(0, 3600), xx3);
+TUNE(SetRange(0, 2512), xx4,xx5);
+TUNE(SetRange(0, 31200), xx6);
+TUNE(SetRange(0, 68992), xx7,xx8);
+TUNE(SetRange(0, 862400), xx9);
+TUNE(SetRange(0, 512), xx10,xx11);
+TUNE(SetRange(0, 2032), xx12);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
