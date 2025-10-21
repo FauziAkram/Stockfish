@@ -27,7 +27,10 @@
 #include "position.h"
 
 namespace Stockfish {
-
+int xx1=20000, xx2=7000, xx3=2000;
+TUNE(xx1);
+TUNE(SetRange(0, 20000), xx2);
+TUNE(SetRange(0, 7000), xx3);
 namespace {
 
 enum Stages {
@@ -175,15 +178,15 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
             m.value += bonus[pt] * v;
 
-            if (pt == BISHOP && threatenedPieces & from
+            if (pt == BISHOP && (threatByLesser[pt] & from)
                 && ((relative_square(pos.side_to_move(), from) == SQ_B5)
                     || (relative_square(pos.side_to_move(), from) == SQ_C4))
                 && relative_square(pos.side_to_move(), to) == SQ_F1)
-                m.value += 20000;
+                m.value += xx1;
             if (pt == KNIGHT && relative_rank(pos.side_to_move(), rank_of(to)) == RANK_1)
-                m.value -= 7000;
+                m.value -= xx2;
             if ((pt == BISHOP || pt == KNIGHT) && (relative_square(pos.side_to_move(),to) == SQ_A1 || relative_square(pos.side_to_move(),to) == SQ_H1))
-                m.value -= 2000;
+                m.value -= xx3;
           
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + ply);
