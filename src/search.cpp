@@ -50,10 +50,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=978, xx2=978, xx3=978, xx4=978, xx5=978, xx6=978;
-int xx7=0, xx8=0, xx9=0, xx10=0, xx11=0, xx12=0;
-int zz1=1051, zz2=1051, zz3=1051, zz4=1051, zz5=1051, zz6=1051;
-int zz7=0, zz8=0, zz9=0, zz10=0, zz11=0, zz12=0;
+int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0;
+int xx6=978, xx7=978, xx8=978, xx9=978, xx10=978, xx11=978, xx12=978;
+int zz1=0, zz2=0, zz3=0, zz4=0, zz5=0;
+int zz6=1051, zz7=1051, zz8=1051, zz9=1051, zz10=1051, zz11=1051, zz12=1051;
 
 
 namespace TB = Tablebases;
@@ -1177,18 +1177,18 @@ moves_loop:  // When in check, search starts here
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv) {
             r -= 2618 + PvNode * 991 + (ttData.value > alpha) * 903;
-        if (ttData.depth >= depth - 5) r -= (xx1 + cutNode * zz1);
-        else if (ttData.depth >= depth - 4) r -= (xx2 + cutNode * zz2);
-        else if (ttData.depth >= depth - 3) r -= (xx3 + cutNode * zz3);
-        else if (ttData.depth >= depth - 2) r -= (xx4 + cutNode * zz4);
-        else if (ttData.depth >= depth - 1) r -= (xx5 + cutNode * zz5);
-        else if (ttData.depth >= depth) r -= (xx6 + cutNode * zz6);
-        else if (ttData.depth >= depth + 1) r -= (xx7 + cutNode * zz7);
-        else if (ttData.depth >= depth + 2) r -= (xx8 + cutNode * zz8);
-        else if (ttData.depth >= depth + 3) r -= (xx9 + cutNode * zz9);
-        else if (ttData.depth >= depth + 4) r -= (xx10 + cutNode * zz10);
-        else if (ttData.depth >= depth + 5) r -= (xx11 + cutNode * zz11);
-        else r -= (xx12 + cutNode * zz12);
+            if      (ttData.depth >= depth + 6) r -= (xx12 + cutNode * zz12);
+            else if (ttData.depth >= depth + 5) r -= (xx11 + cutNode * zz11);
+            else if (ttData.depth >= depth + 4) r -= (xx10 + cutNode * zz10);
+            else if (ttData.depth >= depth + 3) r -= (xx9  + cutNode * zz9);
+            else if (ttData.depth >= depth + 2) r -= (xx8  + cutNode * zz8);
+            else if (ttData.depth >= depth + 1) r -= (xx7  + cutNode * zz7);
+            else if (ttData.depth >= depth)     r -= (xx6  + cutNode * zz6);
+            else if (ttData.depth >= depth - 1) r -= (xx5  + cutNode * zz5);
+            else if (ttData.depth >= depth - 2) r -= (xx4  + cutNode * zz4);
+            else if (ttData.depth >= depth - 3) r -= (xx3  + cutNode * zz3);
+            else if (ttData.depth >= depth - 4) r -= (xx2  + cutNode * zz2);
+            else if (ttData.depth >= depth - 5) r -= (xx1  + cutNode * zz1);
         }
         // These reduction adjustments have no proven non-linear scaling
 
