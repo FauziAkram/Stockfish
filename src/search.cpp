@@ -50,8 +50,15 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=978, xx2=978, xx3=978, xx4=978, xx5=978, xx6=978;
+int xx7=0, xx8=0, xx9=0, xx10=0, xx11=0, xx12=0;
+int zz1=1051, zz2=1051, zz3=1051, zz4=1051, zz5=1051, zz6=1051;
+int zz7=0, zz8=0, zz9=0, zz10=0, zz11=0, zz12=0;
+
 
 namespace TB = Tablebases;
+TUNE(SetRange(-1024, 5120), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12);
+TUNE(SetRange(-1024, 5120), zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz10,zz11,zz12);
 
 void syzygy_extend_pv(const OptionsMap&            options,
                       const Search::LimitsType&    limits,
@@ -1168,10 +1175,21 @@ moves_loop:  // When in check, search starts here
         uint64_t nodeCount = rootNode ? uint64_t(nodes) : 0;
 
         // Decrease reduction for PvNodes (*Scaler)
-        if (ss->ttPv)
-            r -= 2618 + PvNode * 991 + (ttData.value > alpha) * 903
-               + (ttData.depth >= depth) * (978 + cutNode * 1051);
-
+        if (ss->ttPv) {
+            r -= 2618 + PvNode * 991 + (ttData.value > alpha) * 903;
+        if (ttData.depth >= depth - 5) r -= (xx1 + cutNode * zz1);
+        else if (ttData.depth >= depth - 4) r -= (xx2 + cutNode * zz2);
+        else if (ttData.depth >= depth - 3) r -= (xx3 + cutNode * zz3);
+        else if (ttData.depth >= depth - 2) r -= (xx4 + cutNode * zz4);
+        else if (ttData.depth >= depth - 1) r -= (xx5 + cutNode * zz5);
+        else if (ttData.depth >= depth) r -= (xx6 + cutNode * zz6);
+        else if (ttData.depth >= depth + 1) r -= (xx7 + cutNode * zz7);
+        else if (ttData.depth >= depth + 2) r -= (xx8 + cutNode * zz8);
+        else if (ttData.depth >= depth + 3) r -= (xx9 + cutNode * zz9);
+        else if (ttData.depth >= depth + 4) r -= (xx10 + cutNode * zz10);
+        else if (ttData.depth >= depth + 5) r -= (xx11 + cutNode * zz11);
+        else r -= (xx12 + cutNode * zz12);
+        }
         // These reduction adjustments have no proven non-linear scaling
 
         r += 843;  // Base reduction offset to compensate for other tweaks
