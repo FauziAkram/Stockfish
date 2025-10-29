@@ -175,6 +175,15 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             int v = threatByLesser[pt] & to ? -95 : 100 * bool(threatByLesser[pt] & from);
             m.value += bonus[pt] * v;
 
+            if (pt == BISHOP && (threatByLesser[pt] & from)
+                && ((relative_square(pos.side_to_move(), from) == SQ_B5)
+                    || (relative_square(pos.side_to_move(), from) == SQ_C4))
+                && relative_square(pos.side_to_move(), to) == SQ_F1)
+                m.value += 19285;
+            if (pt == KNIGHT && relative_rank(pos.side_to_move(), rank_of(to)) == RANK_1)
+                m.value -= 5575;
+            if ((pt == BISHOP || pt == KNIGHT) && (relative_square(pos.side_to_move(),to) == SQ_A1 || relative_square(pos.side_to_move(),to) == SQ_H1))
+                m.value -= 1750;
 
             if (ply < LOW_PLY_HISTORY_SIZE)
                 m.value += 8 * (*lowPlyHistory)[ply][m.from_to()] / (1 + ply);
