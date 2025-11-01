@@ -1447,8 +1447,7 @@ moves_loop:  // When in check, search starts here
     if (!ss->inCheck && !(bestMove && pos.capture(bestMove))
         && (bestValue < ss->staticEval) == !bestMove)
     {
-        auto bonus =
-          std::clamp(int(bestValue - ss->staticEval) * depth / 8),
+        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / 8,
                      -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
         update_correction_history(pos, ss, *this, bonus);
     }
