@@ -1342,5 +1342,4 @@ inline const NumaConfig& NumaReplicatedBase::get_numa_config() const {
 
 }  // namespace Stockfish
 
-
 #endif  // #ifndef NUMA_H_INCLUDED
