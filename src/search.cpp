@@ -50,19 +50,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=18, xx2=0, 	xx3=450, 	xx4=157, 	xx5=0, 	xx6=3900, 	xx7=4312, 	xx8=0, 	xx9=60368, 	xx10=63, 	xx11=0, 	xx12=508;
-TUNE(SetRange(0, 288), xx1);
-TUNE(SetRange(-144, 144), xx2);
-TUNE(SetRange(0, 3600), xx3);
-TUNE(SetRange(0, 2512), xx4);
-TUNE(SetRange(-1256, 1256), xx5);
-TUNE(SetRange(0, 31200), xx6);
-TUNE(SetRange(0, 68992), xx7);
-TUNE(SetRange(-34496, 34496), xx8);
-TUNE(SetRange(0, 482944), xx9);
-TUNE(SetRange(0, 512), xx10);
-TUNE(SetRange(-256, 256), xx11);
-TUNE(SetRange(0, 2032), xx12);
+
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -868,7 +856,7 @@ Value Search::Worker::search(
     }
 
     // Step 9. Null move search with verification search
-    if (cutNode && ss->staticEval >= beta - std::min(xx1 * depth - xx2, xx3) + 390 && !excludedMove
+    if (cutNode && ss->staticEval >= beta - std::min(22 * depth - 5, 361) + 390 && !excludedMove
         && pos.non_pawn_material(us) && ss->ply >= nmpMinPly && !is_loss(beta))
     {
         assert((ss - 1)->currentMove != Move::null());
@@ -1058,7 +1046,7 @@ moves_loop:  // When in check, search starts here
 
                 // SEE based pruning for captures and checks
                 // Avoid pruning sacrifices of our last piece for stalemate
-                int margin = std::max(std::min(xx4 * depth - xx5, xx6) + captHist / 29, 0);
+                int margin = std::max(std::min(205 * depth + 10, 3868) + captHist / 29, 0);
                 if ((alpha >= VALUE_DRAW || pos.non_pawn_material(us) != PieceValue[movedPiece])
                     && !pos.see_ge(move, -margin))
                     continue;
@@ -1070,7 +1058,7 @@ moves_loop:  // When in check, search starts here
                             + pawnHistory[pawn_history_index(pos)][movedPiece][move.to_sq()];
 
                 // Continuation history based pruning
-                if (history < -std::min(xx7 * depth - xx8, xx9))
+                if (history < -std::min(4356 * depth + 177, 53198))
                     continue;
 
                 history += 76 * mainHistory[us][move.from_to()] / 32;
@@ -1409,7 +1397,7 @@ moves_loop:  // When in check, search starts here
     {
         int bonusScale = -228;
         bonusScale -= (ss - 1)->statScore / 104;
-        bonusScale += std::min(xx10 * depth - xx11, xx12);
+        bonusScale += std::min(75 * depth - 18, 494);
         bonusScale += 184 * ((ss - 1)->moveCount > 8);
         bonusScale += 143 * (!ss->inCheck && bestValue <= ss->staticEval - 92);
         bonusScale += 149 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 70);
