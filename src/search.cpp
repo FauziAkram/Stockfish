@@ -522,7 +522,6 @@ void Search::Worker::iterative_deepening() {
                              skill.best ? skill.best : skill.pick_best(rootMoves, multiPV)));
 }
 
-
 void Search::Worker::do_move(Position& pos, const Move move, StateInfo& st, Stack* const ss) {
     do_move(pos, move, st, pos.gives_check(move), ss);
 }
