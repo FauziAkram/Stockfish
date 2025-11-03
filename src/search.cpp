@@ -632,7 +632,7 @@ Value Search::Worker::search(
     if (!rootNode)
     {
         // Step 2. Check for aborted search and immediate draw
-        if (threads.stop.load(std::memory_order_relaxed) || pos.is_draw(ss->ply)
+        if (threads.stop.load(std::memory_order_relaxed) || pos.is_draw()
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos) : value_draw(nodes);
 
@@ -1499,7 +1499,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         selDepth = ss->ply + 1;
 
     // Step 2. Check for an immediate draw or maximum ply reached
-    if (pos.is_draw(ss->ply) || ss->ply >= MAX_PLY)
+    if (pos.is_draw() || ss->ply >= MAX_PLY)
         return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos) : VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
@@ -1999,7 +1999,7 @@ void syzygy_extend_pv(const OptionsMap&         options,
     // Step 2, now extend the PV to mate, as if the user explored syzygy-tables.info
     // using top ranked moves (minimal DTZ), which gives optimal mates only for simple
     // endgames e.g. KRvK.
-    while (!(rule50 && pos.is_draw(0)))
+    while (!(rule50 && pos.is_draw()))
     {
         if (time_abort())
             break;
