@@ -930,25 +930,6 @@ DirtyPiece Position::do_move(Move                      m,
     if (tt)
         prefetch(tt->first_entry(key()));
 
-    // Calculate the repetition info. It is the ply distance from the previous
-    // occurrence of the same position, negative in the 3-fold case, or zero
-    // if the position was not repeated.
-    st->repetition = 0;
-    int end        = std::min(st->rule50, st->pliesFromNull);
-    if (end >= 4)
-    {
-        StateInfo* stp = st->previous->previous;
-        for (int i = 4; i <= end; i += 2)
-        {
-            stp = stp->previous->previous;
-            if (stp->key == st->key)
-            {
-                st->repetition = stp->repetition ? -i : i;
-                break;
-            }
-        }
-    }
-
     assert(pos_is_ok());
 
     assert(dp.pc != NO_PIECE);
@@ -1080,8 +1061,6 @@ void Position::do_null_move(StateInfo& newSt, const TranspositionTable& tt) {
 
     set_check_info();
 
-    st->repetition = 0;
-
     assert(pos_is_ok());
 }
 
@@ -1210,73 +1189,33 @@ bool Position::is_draw(int ply) const {
     if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size()))
         return true;
 
-    return is_repetition(ply);
+    return is_repetition();
 }
 
 // Return a draw score if a position repeats once earlier but strictly
 // after the root, or repeats twice before or at the root.
-bool Position::is_repetition(int ply) const { return st->repetition && st->repetition < ply; }
+bool Position::is_repetition() const {
 
-// Tests whether there has been at least one repetition
-// of positions since the last capture or pawn move.
-bool Position::has_repeated() const {
-
-    StateInfo* stc = st;
-    int        end = std::min(st->rule50, st->pliesFromNull);
-    while (end-- >= 4)
+    // Starting from the current position, search backwards through the states
+    // history. Stop at the first irreversible move (capture or pawn move),
+    // which is tracked by the rule50 counter.
+    StateInfo* stp = st->previous->previous;
+    for (int i = 4; i <= st->rule50 && i <= st->pliesFromNull && stp && stp->previous; i += 2)
     {
-        if (stc->repetition)
-            return true;
-
-        stc = stc->previous;
+        if (stp->key == st->key)
+            return true; // Found a repetition
+        stp = stp->previous->previous;
     }
     return false;
 }
 
+// Tests whether there has been at least one repetition
+// of positions since the last capture or pawn move.
+bool Position::has_repeated() const { return is_repetition(); }
 
 // Tests if the position has a move which draws by repetition.
 // This function accurately matches the outcome of is_draw() over all legal moves.
 bool Position::upcoming_repetition(int ply) const {
-
-    int j;
-
-    int end = std::min(st->rule50, st->pliesFromNull);
-
-    if (end < 3)
-        return false;
-
-    Key        originalKey = st->key;
-    StateInfo* stp         = st->previous;
-    Key        other       = originalKey ^ stp->key ^ Zobrist::side;
-
-    for (int i = 3; i <= end; i += 2)
-    {
-        stp = stp->previous;
-        other ^= stp->key ^ stp->previous->key ^ Zobrist::side;
-        stp = stp->previous;
-
-        if (other != 0)
-            continue;
-
-        Key moveKey = originalKey ^ stp->key;
-        if ((j = H1(moveKey), cuckoo[j] == moveKey) || (j = H2(moveKey), cuckoo[j] == moveKey))
-        {
-            Move   move = cuckooMove[j];
-            Square s1   = move.from_sq();
-            Square s2   = move.to_sq();
-
-            if (!((between_bb(s1, s2) ^ s2) & pieces()))
-            {
-                if (ply > i)
-                    return true;
-
-                // For nodes before or at the root, check that the move is a
-                // repetition rather than a move to the current position.
-                if (stp->repetition)
-                    return true;
-            }
-        }
-    }
     return false;
 }
 
