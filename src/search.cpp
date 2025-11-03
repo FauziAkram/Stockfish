@@ -1980,7 +1980,7 @@ void syzygy_extend_pv(const OptionsMap&         options,
         pos.do_move(pvMove, st);
 
         // Do not allow for repetitions or drawing moves along the PV in TB regime
-        if (config.rootInTB && ((rule50 && pos.is_draw(ply)) || pos.is_repetition(ply)))
+        if (config.rootInTB && ((rule50 && pos.is_draw()) || pos.is_repetition()))
         {
             pos.undo_move(pvMove);
             ply--;
@@ -2052,7 +2052,7 @@ void syzygy_extend_pv(const OptionsMap&         options,
     // We adjust the score to match the found PV. Note that a TB loss score can be
     // displayed if the engine did not find a drawing move yet, but eventually search
     // will figure it out (e.g. 1kq5/q2r4/5K2/8/8/8/8/7Q w - - 96 1 )
-    if (pos.is_draw(0))
+    if (pos.is_draw())
         v = VALUE_DRAW;
 
     // Undo the PV moves
