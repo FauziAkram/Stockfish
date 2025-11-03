@@ -1184,7 +1184,7 @@ bool Position::see_ge(Move m, int threshold) const {
 
 // Tests whether the position is drawn by 50-move rule
 // or by repetition. It does not detect stalemates.
-bool Position::is_draw(int ply) const {
+bool Position::is_draw() const {
 
     if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size()))
         return true;
@@ -1212,12 +1212,6 @@ bool Position::is_repetition() const {
 // Tests whether there has been at least one repetition
 // of positions since the last capture or pawn move.
 bool Position::has_repeated() const { return is_repetition(); }
-
-// Tests if the position has a move which draws by repetition.
-// This function accurately matches the outcome of is_draw() over all legal moves.
-bool Position::upcoming_repetition(int ply) const {
-    return false;
-}
 
 
 // Flips position with the white and black sides reversed. This
