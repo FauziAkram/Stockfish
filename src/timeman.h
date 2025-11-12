@@ -52,6 +52,7 @@ class TimeManagement {
 
     void clear();
     void advance_nodes_time(std::int64_t nodes);
+    double move_certainty = 1.0;
 
    private:
     TimePoint startTime;
