@@ -132,7 +132,11 @@ void AccumulatorStack::push(const DirtyBoardData& dirtyBoardData) noexcept {
 void AccumulatorStack::push_psq_only(const DirtyPiece& dp) noexcept {
     assert(size < MaxSize);
     psq_accumulators[size].reset(dp);
+
+    // Copy the previous accumulator state, then reset the diff.
     threat_accumulators[size] = threat_accumulators[size - 1];
+    threat_accumulators[size].diff = {};
+
     size++;
 }
 
