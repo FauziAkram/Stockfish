@@ -532,7 +532,11 @@ void Search::Worker::do_move(
     nodes.fetch_add(1, std::memory_order_relaxed);
 
     DirtyBoardData dirtyBoardData = pos.do_move(move, st, givesCheck, &tt);
-    accumulatorStack.push(dirtyBoardData);
+  
+    if (dirtyBoardData.dts.list.empty())
+        accumulatorStack.push_psq_only(dirtyBoardData.dp);
+    else
+        accumulatorStack.push(dirtyBoardData);
 
     if (ss != nullptr)
     {
