@@ -533,7 +533,7 @@ void Search::Worker::do_move(
 
     DirtyBoardData dirtyBoardData = pos.do_move(move, st, givesCheck, &tt);
   
-    if (dirtyBoardData.dts.list.empty())
+    if (dirtyBoardData.dts.list.size() == 0)
         accumulatorStack.push_psq_only(dirtyBoardData.dp);
     else
         accumulatorStack.push(dirtyBoardData);
