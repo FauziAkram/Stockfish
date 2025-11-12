@@ -1093,11 +1093,7 @@ void Position::update_piece_threats(Piece pc, Square s, DirtyThreats* const dts)
     }
 
     Bitboard sliders = (pieces(ROOK, QUEEN) & rAttacks) | (pieces(BISHOP, QUEEN) & bAttacks);
-
-    Bitboard incoming_threats = (attacks_bb<KNIGHT>(s, occupied) & pieces(KNIGHT))
-                              | (attacks_bb<PAWN>(s, WHITE) & pieces(BLACK, PAWN))
-                              | (attacks_bb<PAWN>(s, BLACK) & pieces(WHITE, PAWN))
-                              | (attacks_bb<KING>(s, occupied) & pieces(KING));
+    Bitboard incoming_threats = attackers_to(s, occupied) & ~sliders;
 
     while (sliders)
     {
