@@ -899,6 +899,3 @@ void update_threats_accumulator_full(const FeatureTransformer<Dimensions>& featu
 }
 
 }
-}
-
-}
