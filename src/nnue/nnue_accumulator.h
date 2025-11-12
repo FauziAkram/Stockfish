@@ -152,6 +152,7 @@ class AccumulatorStack {
 
     void reset() noexcept;
     void push(const DirtyBoardData& dirtyBoardData) noexcept;
+    void push_psq_only(const DirtyPiece& dp) noexcept;
     void pop() noexcept;
 
     template<IndexType Dimensions>
