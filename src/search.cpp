@@ -457,6 +457,8 @@ void Search::Worker::iterative_deepening() {
         // Use part of the gained time from a previous stable move for the current move
         for (auto&& th : threads)
         {
+            if (th->worker->rootMoves.size() > 1)
+                mainThread->tm.move_certainty = std::max(0.0, 1.0 - double(th->worker->rootMoves[1].score - th->worker->rootMoves[0].score) / PawnValue);
             totBestMoveChanges += th->worker->bestMoveChanges;
             th->worker->bestMoveChanges = 0;
         }
