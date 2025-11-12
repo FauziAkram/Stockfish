@@ -1054,32 +1054,11 @@ void Position::update_piece_threats(Piece pc, Square s, DirtyThreats* const dts)
     // Add newly threatened pieces
     Bitboard occupied = pieces();
 
+    Bitboard threatened = attacks_bb(pc, s, occupied) & occupied;
+
     Bitboard rAttacks = attacks_bb<ROOK>(s, occupied);
     Bitboard bAttacks = attacks_bb<BISHOP>(s, occupied);
     Bitboard qAttacks = rAttacks | bAttacks;
-
-    Bitboard threatened;
-
-    switch (type_of(pc))
-    {
-    case PAWN :
-        threatened = PseudoAttacks[color_of(pc)][s];
-        break;
-    case BISHOP :
-        threatened = bAttacks;
-        break;
-    case ROOK :
-        threatened = rAttacks;
-        break;
-    case QUEEN :
-        threatened = qAttacks;
-        break;
-
-    default :
-        threatened = PseudoAttacks[type_of(pc)][s];
-    }
-
-    threatened &= occupied;
 
     while (threatened)
     {
