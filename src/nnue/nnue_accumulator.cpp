@@ -129,6 +129,13 @@ void AccumulatorStack::push(const DirtyBoardData& dirtyBoardData) noexcept {
     size++;
 }
 
+void AccumulatorStack::push_psq_only(const DirtyPiece& dp) noexcept {
+    assert(size < MaxSize);
+    psq_accumulators[size].reset(dp);
+    threat_accumulators[size] = threat_accumulators[size - 1];
+    size++;
+}
+
 void AccumulatorStack::pop() noexcept {
     assert(size > 1);
     size--;
@@ -889,6 +896,9 @@ void update_threats_accumulator_full(const FeatureTransformer<Dimensions>& featu
 #endif
 }
 
+}
+
+}
 }
 
 }
