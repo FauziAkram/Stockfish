@@ -824,7 +824,7 @@ Value Search::Worker::search(
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
         int evalDiff = std::clamp(-int((ss - 1)->staticEval + ss->staticEval), -200, 156) + 58;
-        mainHistory[~us][((ss - 1)->currentMove).from_to()] << evalDiff * 9;
+        mainHistory[~us][((ss - 1)->currentMove).raw()] << evalDiff * 9;
         if (!ttHit && type_of(pos.piece_on(prevSq)) != PAWN
             && ((ss - 1)->currentMove).type_of() != PROMOTION)
             pawnHistory[pawn_history_index(pos)][pos.piece_on(prevSq)][prevSq] << evalDiff * 14;
@@ -834,9 +834,12 @@ Value Search::Worker::search(
     // bigger than the previous static evaluation at our turn (if we were in
     // check at our previous move we go back until we weren't in check) and is
     // false otherwise. The improving flag is used in various pruning heuristics.
+    // Similarly, opponentWorsening is true if our static evaluation is better
+    // for us than at the last ply.
     improving         = ss->staticEval > (ss - 2)->staticEval;
     opponentWorsening = ss->staticEval > -(ss - 1)->staticEval;
 
+    // Hindsight adjustment of reductions based on static evaluation difference.
     if (priorReduction >= 3 && !opponentWorsening)
         depth++;
     if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173)
@@ -854,9 +857,9 @@ Value Search::Worker::search(
         auto futility_margin = [&](Depth d) {
             Value futilityMult = 91 - 21 * !ss->ttHit;
 
-            return futilityMult * d                                //
-                 - 2094 * improving * futilityMult / 1024          //
-                 - 1324 * opponentWorsening * futilityMult / 4096  //
+            return futilityMult * d                               //
+                 - 2094 * improving * futilityMult / 1024         //
+                 - 331 * opponentWorsening * futilityMult / 1024  //
                  + std::abs(correctionValue) / 158105;
         };
 
@@ -872,7 +875,7 @@ Value Search::Worker::search(
         assert((ss - 1)->currentMove != Move::null());
 
         // Null move dynamic reduction based on depth
-        Depth R = 6 + depth / 3 + improving;
+        Depth R = 7 + depth / 3;
         do_null_move(pos, st, ss);
 
         Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, false);
@@ -904,7 +907,7 @@ Value Search::Worker::search(
 
     // Step 10. Internal iterative reductions
     // At sufficient depth, reduce depth for PV/Cut nodes without a TTMove.
-    // (*Scaler) Especially if they make IIR less aggressive.
+    // (*Scaler) Making IIR more aggressive scales poorly.
     if (!allNode && depth >= 6 && !ttData.move && priorReduction <= 3)
         depth--;
 
@@ -1018,12 +1021,11 @@ moves_loop:  // When in check, search starts here
         Depth r = reduction(improving, depth, moveCount, delta);
 
         // Increase reduction for ttPv nodes (*Scaler)
-        // Smaller or even negative value is better for short time controls
-        // Bigger value is better for long time controls
+        // Larger values scale well
         if (ss->ttPv)
             r += 946;
 
-        // Step 14. Pruning at shallow depth.
+        // Step 14. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
         if (!rootNode && pos.non_pawn_material(us) && !is_loss(bestValue))
         {
@@ -1066,9 +1068,9 @@ moves_loop:  // When in check, search starts here
                 if (history < -std::min(4356 * depth + 177, 53198))
                     continue;
 
-                history += 76 * mainHistory[us][move.from_to()] / 32;
+                history += 76 * mainHistory[us][move.raw()] / 32;
 
-                // (*Scaler): Generally, a lower divisor scales well
+                // (*Scaler): Generally, lower divisors scales well
                 lmrDepth += history / 3220;
 
                 Value futilityValue = ss->staticEval + 47 + 171 * !bestMove + 134 * lmrDepth
@@ -1076,7 +1078,7 @@ moves_loop:  // When in check, search starts here
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
-                // scales well with respect to time and threads
+                // scales well
                 if (!ss->inCheck && lmrDepth < 11 && futilityValue <= alpha)
                 {
                     if (bestValue <= futilityValue && !is_decisive(bestValue)
@@ -1196,7 +1198,7 @@ moves_loop:  // When in check, search starts here
             ss->statScore = 803 * int(PieceValue[pos.captured_piece()]) / 128
                           + captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())];
         else
-            ss->statScore = 2 * mainHistory[us][move.from_to()]
+            ss->statScore = 2 * mainHistory[us][move.raw()]
                           + (*contHist[0])[movedPiece][move.to_sq()]
                           + (*contHist[1])[movedPiece][move.to_sq()];
 
@@ -1218,8 +1220,7 @@ moves_loop:  // When in check, search starts here
             ss->reduction = 0;
 
             // Do a full-depth search when reduced LMR search fails high
-            // (*Scaler) Usually doing more shallower searches
-            // doesn't scale well to longer TCs
+            // (*Scaler) Shallower searches here don't scale well
             if (value > alpha)
             {
                 // Adjust full-depth search based on LMR results - if the result was
@@ -1347,7 +1348,7 @@ moves_loop:  // When in check, search starts here
 
                 if (value >= beta)
                 {
-                    // (*Scaler) Especially if they make cutoffCnt increment more often.
+                    // (*Scaler) Infrequent and small updates scale well
                     ss->cutoffCnt += (extension < 2) || PvNode;
                     assert(value >= beta);  // Fail high
                     break;
@@ -1414,7 +1415,7 @@ moves_loop:  // When in check, search starts here
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
                                       scaledBonus * 400 / 32768);
 
-        mainHistory[~us][((ss - 1)->currentMove).from_to()] << scaledBonus * 220 / 32768;
+        mainHistory[~us][((ss - 1)->currentMove).raw()] << scaledBonus * 220 / 32768;
 
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
             pawnHistory[pawn_history_index(pos)][pos.piece_on(prevSq)][prevSq]
@@ -1450,10 +1451,9 @@ moves_loop:  // When in check, search starts here
     // Adjust correction history if the best move is not a capture
     // and the error direction matches whether we are above/below bounds.
     if (!ss->inCheck && !(bestMove && pos.capture(bestMove))
-        && (bestValue < ss->staticEval) == !bestMove)
+        && (bestValue > ss->staticEval) == bool(bestMove))
     {
-        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth
-                                  / (8 + 2 * (bestValue > ss->staticEval)),
+        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / (bestMove ? 10 : 8),
                                 -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
         update_correction_history(pos, ss, *this, bonus);
     }
@@ -1862,10 +1862,10 @@ void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
 
     Color us = pos.side_to_move();
-    workerThread.mainHistory[us][move.from_to()] << bonus;  // Untuned to prevent duplicate effort
+    workerThread.mainHistory[us][move.raw()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.from_to()] << bonus * 761 / 1024;
+        workerThread.lowPlyHistory[ss->ply][move.raw()] << bonus * 761 / 1024;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 955 / 1024);
 
@@ -1980,8 +1980,9 @@ void syzygy_extend_pv(const OptionsMap&         options,
         for (const auto& m : MoveList<LEGAL>(pos))
             legalMoves.emplace_back(m);
 
-        Tablebases::Config config = Tablebases::rank_root_moves(options, pos, legalMoves);
-        RootMove&          rm     = *std::find(legalMoves.begin(), legalMoves.end(), pvMove);
+        Tablebases::Config config =
+          Tablebases::rank_root_moves(options, pos, legalMoves, false, time_abort);
+        RootMove& rm = *std::find(legalMoves.begin(), legalMoves.end(), pvMove);
 
         if (legalMoves[0].tbRank != rm.tbRank)
             break;
@@ -2040,7 +2041,8 @@ void syzygy_extend_pv(const OptionsMap&         options,
           [](const Search::RootMove& a, const Search::RootMove& b) { return a.tbRank > b.tbRank; });
 
         // The winning side tries to minimize DTZ, the losing side maximizes it
-        Tablebases::Config config = Tablebases::rank_root_moves(options, pos, legalMoves, true);
+        Tablebases::Config config =
+          Tablebases::rank_root_moves(options, pos, legalMoves, true, time_abort);
 
         // If DTZ is not available we might not find a mate, so we bail out
         if (!config.rootInTB || config.cardinality > 0)
