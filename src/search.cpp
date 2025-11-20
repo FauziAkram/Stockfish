@@ -1131,6 +1131,8 @@ moves_loop:  // When in check, search starts here
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
 
                 depth++;
+
+                if (value < beta)
                 update_continuation_histories(ss, movedPiece, move.to_sq(), 
                                               std::min(190 * singularDepth - 108, 1600));
             }
