@@ -1134,7 +1134,7 @@ moves_loop:  // When in check, search starts here
 
                 if (value < beta)
                 update_continuation_histories(ss, movedPiece, move.to_sq(), 
-                                              std::min(190 * singularDepth - 108, 1600));
+                                              std::min(95 * singularDepth - 54, 800));
             }
 
             // Multi-cut pruning
