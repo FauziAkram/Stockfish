@@ -1072,7 +1072,7 @@ moves_loop:  // When in check, search starts here
                             + pawnHistory[pawn_history_index(pos)][movedPiece][move.to_sq()];
 
                 // Continuation history based pruning
-                if (history < -4083 * depth)
+                if (history < -std::min(4083 * depth + 176, 53100))
                     continue;
 
                 history += 69 * mainHistory[us][move.raw()] / 32;
