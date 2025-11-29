@@ -27,6 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=1024, xx2=1024, xx3=1024, xx4=1024, xx5=1024;
+TUNE(SetRange(0, 16384), xx1,xx2,xx3,xx4,xx5);
 
 namespace {
 
@@ -186,8 +188,16 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             else
             {
                 m.value = (*mainHistory)[us][m.raw()] + (*continuationHistory[0])[pc][to];
-                if (ply < LOW_PLY_HISTORY_SIZE)
-                    m.value += (*lowPlyHistory)[ply][m.raw()];
+                if (ply == 0)
+                    xx1 * m.value += (*lowPlyHistory)[ply][m.raw()] / 1024;
+                if (ply == 1)
+                    xx2 * m.value += (*lowPlyHistory)[ply][m.raw()] / 1024;
+                if (ply == 2)
+                    xx3 * m.value += (*lowPlyHistory)[ply][m.raw()] / 1024;
+                if (ply == 3)
+                    xx4 * m.value += (*lowPlyHistory)[ply][m.raw()] / 1024;
+                if (ply == 4)
+                    xx5 * m.value += (*lowPlyHistory)[ply][m.raw()] / 1024;
             }
         }
     }
