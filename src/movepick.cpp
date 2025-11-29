@@ -182,7 +182,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         else  // Type == EVASIONS
         {
             if (pos.capture_stage(m))
-                m.value = PieceValue[capturedPiece] * 25;
+                m.value = PieceValue[capturedPiece] * 32;
             else
             {
                 m.value = (*mainHistory)[us][m.raw()] + (*continuationHistory[0])[pc][to];
