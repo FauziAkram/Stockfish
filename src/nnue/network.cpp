@@ -273,8 +273,8 @@ void Network<Arch, Transformer>::load_user_net(const std::string& dir,
 }
 
 
-template<typename Arch, typename Transformer>
-void Network<Arch, Transformer>::load_internal() {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+void Network<Arch, Transformer, EmbeddedType>::load_internal() {
     // C++ way to prepare a buffer for a memory stream
     class MemoryBuffer: public std::basic_streambuf<char> {
        public:
