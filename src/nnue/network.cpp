@@ -336,7 +336,7 @@ std::size_t Network<Arch, Transformer, EmbeddedType>::get_content_hash() const {
     for (auto&& layerstack : network)
         hash_combine(h, layerstack);
     hash_combine(h, evalFile);
-    hash_combine(h, static_cast<int>(embeddedType));
+    hash_combine(h, static_cast<int>(EmbeddedType));
     return h;
 }
 
