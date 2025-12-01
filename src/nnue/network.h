@@ -59,9 +59,8 @@ class Network {
     static constexpr IndexType FTDimensions = Arch::TransformedFeatureDimensions;
 
    public:
-    Network(EvalFile file, EmbeddedNNUEType type) :
-        evalFile(file),
-        embeddedType(type) {}
+    Network(EvalFile file) :
+        evalFile(file) {}
 
     Network(const Network& other) = default;
     Network(Network&& other)      = default;
@@ -125,8 +124,8 @@ using SmallNetworkArchitecture =
 using BigFeatureTransformer  = FeatureTransformer<TransformedFeatureDimensionsBig>;
 using BigNetworkArchitecture = NetworkArchitecture<TransformedFeatureDimensionsBig, L2Big, L3Big>;
 
-using NetworkBig   = Network<BigNetworkArchitecture, BigFeatureTransformer>;
-using NetworkSmall = Network<SmallNetworkArchitecture, SmallFeatureTransformer>;
+using NetworkBig   = Network<BigNetworkArchitecture, BigFeatureTransformer, EmbeddedNNUEType::BIG>;
+using NetworkSmall = Network<SmallNetworkArchitecture, SmallFeatureTransformer, EmbeddedNNUEType::SMALL>;
 
 
 struct Networks {
