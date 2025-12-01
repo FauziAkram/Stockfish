@@ -54,7 +54,7 @@ using NetworkOutput = std::tuple<Value, Value>;
 // The network must be a trivial type, i.e. the memory must be in-line.
 // This is required to allow sharing the network via shared memory, as
 // there is no way to run destructors.
-template<typename Arch, typename Transformer>
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
 class Network {
     static constexpr IndexType FTDimensions = Arch::TransformedFeatureDimensions;
 
@@ -105,7 +105,6 @@ class Network {
     Arch network[LayerStacks];
 
     EvalFile         evalFile;
-    EmbeddedNNUEType embeddedType;
 
     bool initialized = false;
 
