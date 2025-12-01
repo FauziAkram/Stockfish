@@ -57,7 +57,7 @@ Engine::Engine(std::optional<std::string> path) :
     numaContext(NumaConfig::from_system()),
     states(new std::deque<StateInfo>(1)),
     threads(),
-networks(
+    networks(
       numaContext,
       // Heap-allocate because sizeof(NN::Networks) is large
       std::make_unique<NN::Networks>(
