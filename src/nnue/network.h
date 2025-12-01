@@ -139,10 +139,10 @@ struct Networks {
 
 }  // namespace Stockfish
 
-template<typename ArchT, typename FeatureTransformerT>
-struct std::hash<Stockfish::Eval::NNUE::Network<ArchT, FeatureTransformerT>> {
+template<typename ArchT, typename FeatureTransformerT, Stockfish::Eval::NNUE::EmbeddedNNUEType EmbeddedType>
+struct std::hash<Stockfish::Eval::NNUE::Network<ArchT, FeatureTransformerT, EmbeddedType>> {
     std::size_t operator()(
-      const Stockfish::Eval::NNUE::Network<ArchT, FeatureTransformerT>& network) const noexcept {
+      const Stockfish::Eval::NNUE::Network<ArchT, FeatureTransformerT, EmbeddedType>& network) const noexcept {
         return network.get_content_hash();
     }
 };
