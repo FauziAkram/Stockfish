@@ -136,7 +136,6 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         threatByLesser[ROOK] =
           pos.attacks_by<KNIGHT>(~us) | pos.attacks_by<BISHOP>(~us) | threatByLesser[KNIGHT];
         threatByLesser[QUEEN] = pos.attacks_by<ROOK>(~us) | threatByLesser[ROOK];
-        threatByLesser[KING]  = pos.attacks_by<QUEEN>(~us) | threatByLesser[QUEEN];
     }
 
     ExtMove* it = cur;
@@ -171,7 +170,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
-            int v = threatByLesser[pt] & to ? -19 : 20 * bool(threatByLesser[pt] & from);
+            int v = (pt == KING) ? 0 : (threatByLesser[pt] & to ? -19 : 20 * bool(threatByLesser[pt] & from));
             m.value += PieceValue[pt] * v;
 
 
