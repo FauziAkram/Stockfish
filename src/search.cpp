@@ -1812,6 +1812,7 @@ void update_all_stats(const Position& pos,
                       Stack*          ss,
                       Search::Worker& workerThread,
                       Move            bestMove,
+                      Piece           bestMovedPiece,
                       Square          prevSq,
                       SearchedList&   quietsSearched,
                       SearchedList&   capturesSearched,
@@ -1820,7 +1821,7 @@ void update_all_stats(const Position& pos,
                       int             moveCount) {
 
     CapturePieceToHistory& captureHistory = workerThread.captureHistory;
-    Piece                  movedPiece     = pos.moved_piece(bestMove);
+    Piece                  movedPiece     = bestMovedPiece;
     PieceType              capturedPiece;
 
     int bonus = std::min(116 * depth - 81, 1515) + 347 * (bestMove == ttMove);
