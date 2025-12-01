@@ -189,9 +189,9 @@ Network<Arch, Transformer, EmbeddedType>::evaluate(const Position&              
 }
 
 
-template<typename Arch, typename Transformer>
-void Network<Arch, Transformer>::verify(std::string                                  evalfilePath,
-                                        const std::function<void(std::string_view)>& f) const {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+void Network<Arch, Transformer, EmbeddedType>::verify(std::string                                  evalfilePath,
+                                                      const std::function<void(std::string_view)>& f) const {
     if (evalfilePath.empty())
         evalfilePath = evalFile.defaultName;
 
@@ -259,9 +259,9 @@ Network<Arch, Transformer, EmbeddedType>::trace_evaluate(const Position&        
 }
 
 
-template<typename Arch, typename Transformer>
-void Network<Arch, Transformer>::load_user_net(const std::string& dir,
-                                               const std::string& evalfilePath) {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+void Network<Arch, Transformer, EmbeddedType>::load_user_net(const std::string& dir,
+                                                             const std::string& evalfilePath) {
     std::ifstream stream(dir + evalfilePath, std::ios::binary);
     auto          description = load(stream);
 
@@ -300,16 +300,16 @@ void Network<Arch, Transformer, EmbeddedType>::load_internal() {
 }
 
 
-template<typename Arch, typename Transformer>
-void Network<Arch, Transformer>::initialize() {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+void Network<Arch, Transformer, EmbeddedType>::initialize() {
     initialized = true;
 }
 
 
-template<typename Arch, typename Transformer>
-bool Network<Arch, Transformer>::save(std::ostream&      stream,
-                                      const std::string& name,
-                                      const std::string& netDescription) const {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+bool Network<Arch, Transformer, EmbeddedType>::save(std::ostream&      stream,
+                                                    const std::string& name,
+                                                    const std::string& netDescription) const {
     if (name.empty() || name == "None")
         return false;
 
@@ -317,8 +317,8 @@ bool Network<Arch, Transformer>::save(std::ostream&      stream,
 }
 
 
-template<typename Arch, typename Transformer>
-std::optional<std::string> Network<Arch, Transformer>::load(std::istream& stream) {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+std::optional<std::string> Network<Arch, Transformer, EmbeddedType>::load(std::istream& stream) {
     initialize();
     std::string description;
 
@@ -326,8 +326,8 @@ std::optional<std::string> Network<Arch, Transformer>::load(std::istream& stream
 }
 
 
-template<typename Arch, typename Transformer>
-std::size_t Network<Arch, Transformer>::get_content_hash() const {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+std::size_t Network<Arch, Transformer, EmbeddedType>::get_content_hash() const {
     if (!initialized)
         return 0;
 
@@ -341,10 +341,10 @@ std::size_t Network<Arch, Transformer>::get_content_hash() const {
 }
 
 // Read network header
-template<typename Arch, typename Transformer>
-bool Network<Arch, Transformer>::read_header(std::istream&  stream,
-                                             std::uint32_t* hashValue,
-                                             std::string*   desc) const {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+bool Network<Arch, Transformer, EmbeddedType>::read_header(std::istream&  stream,
+                                                           std::uint32_t* hashValue,
+                                                           std::string*   desc) const {
     std::uint32_t version, size;
 
     version    = read_little_endian<std::uint32_t>(stream);
@@ -359,10 +359,10 @@ bool Network<Arch, Transformer>::read_header(std::istream&  stream,
 
 
 // Write network header
-template<typename Arch, typename Transformer>
-bool Network<Arch, Transformer>::write_header(std::ostream&      stream,
-                                              std::uint32_t      hashValue,
-                                              const std::string& desc) const {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+bool Network<Arch, Transformer, EmbeddedType>::write_header(std::ostream&      stream,
+                                                            std::uint32_t      hashValue,
+                                                            const std::string& desc) const {
     write_little_endian<std::uint32_t>(stream, Version);
     write_little_endian<std::uint32_t>(stream, hashValue);
     write_little_endian<std::uint32_t>(stream, std::uint32_t(desc.size()));
@@ -371,9 +371,9 @@ bool Network<Arch, Transformer>::write_header(std::ostream&      stream,
 }
 
 
-template<typename Arch, typename Transformer>
-bool Network<Arch, Transformer>::read_parameters(std::istream& stream,
-                                                 std::string&  netDescription) {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+bool Network<Arch, Transformer, EmbeddedType>::read_parameters(std::istream& stream,
+                                                               std::string&  netDescription) {
     std::uint32_t hashValue;
     if (!read_header(stream, &hashValue, &netDescription))
         return false;
@@ -390,9 +390,9 @@ bool Network<Arch, Transformer>::read_parameters(std::istream& stream,
 }
 
 
-template<typename Arch, typename Transformer>
-bool Network<Arch, Transformer>::write_parameters(std::ostream&      stream,
-                                                  const std::string& netDescription) const {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+bool Network<Arch, Transformer, EmbeddedType>::write_parameters(std::ostream&      stream,
+                                                                const std::string& netDescription) const {
     if (!write_header(stream, Network::hash, netDescription))
         return false;
     if (!Detail::write_parameters(stream, featureTransformer))
