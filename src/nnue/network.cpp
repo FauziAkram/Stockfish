@@ -408,9 +408,9 @@ bool Network<Arch, Transformer>::write_parameters(std::ostream&      stream,
 // Explicit template instantiations
 
 template class Network<NetworkArchitecture<TransformedFeatureDimensionsBig, L2Big, L3Big>,
-                       FeatureTransformer<TransformedFeatureDimensionsBig>>;
+                       FeatureTransformer<TransformedFeatureDimensionsBig>, EmbeddedNNUEType::BIG>;
 
 template class Network<NetworkArchitecture<TransformedFeatureDimensionsSmall, L2Small, L3Small>,
-                       FeatureTransformer<TransformedFeatureDimensionsSmall>>;
+                       FeatureTransformer<TransformedFeatureDimensionsSmall>, EmbeddedNNUEType::SMALL>;
 
 }  // namespace Stockfish::Eval::NNUE
