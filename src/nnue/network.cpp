@@ -107,8 +107,8 @@ bool write_parameters(std::ostream& stream, const T& reference) {
 
 }  // namespace Detail
 
-template<typename Arch, typename Transformer>
-void Network<Arch, Transformer>::load(const std::string& rootDirectory, std::string evalfilePath) {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+void Network<Arch, Transformer, EmbeddedType>::load(const std::string& rootDirectory, std::string evalfilePath) {
 #if defined(DEFAULT_NNUE_DIRECTORY)
     std::vector<std::string> dirs = {"<internal>", "", rootDirectory,
                                      stringify(DEFAULT_NNUE_DIRECTORY)};
@@ -137,8 +137,8 @@ void Network<Arch, Transformer>::load(const std::string& rootDirectory, std::str
 }
 
 
-template<typename Arch, typename Transformer>
-bool Network<Arch, Transformer>::save(const std::optional<std::string>& filename) const {
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
+bool Network<Arch, Transformer, EmbeddedType>::save(const std::optional<std::string>& filename) const {
     std::string actualFilename;
     std::string msg;
 
@@ -168,11 +168,11 @@ bool Network<Arch, Transformer>::save(const std::optional<std::string>& filename
 }
 
 
-template<typename Arch, typename Transformer>
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
 NetworkOutput
-Network<Arch, Transformer>::evaluate(const Position&                         pos,
-                                     AccumulatorStack&                       accumulatorStack,
-                                     AccumulatorCaches::Cache<FTDimensions>& cache) const {
+Network<Arch, Transformer, EmbeddedType>::evaluate(const Position&                         pos,
+                                                   AccumulatorStack&                       accumulatorStack,
+                                                   AccumulatorCaches::Cache<FTDimensions>& cache) const {
 
     constexpr uint64_t alignment = CacheLineSize;
 
@@ -230,11 +230,11 @@ void Network<Arch, Transformer>::verify(std::string                             
 }
 
 
-template<typename Arch, typename Transformer>
+template<typename Arch, typename Transformer, EmbeddedNNUEType EmbeddedType>
 NnueEvalTrace
-Network<Arch, Transformer>::trace_evaluate(const Position&                         pos,
-                                           AccumulatorStack&                       accumulatorStack,
-                                           AccumulatorCaches::Cache<FTDimensions>& cache) const {
+Network<Arch, Transformer, EmbeddedType>::trace_evaluate(const Position&                         pos,
+                                                         AccumulatorStack&                       accumulatorStack,
+                                                         AccumulatorCaches::Cache<FTDimensions>& cache) const {
 
     constexpr uint64_t alignment = CacheLineSize;
 
@@ -284,7 +284,7 @@ void Network<Arch, Transformer, EmbeddedType>::load_internal() {
         }
     };
 
-    const auto embedded = get_embedded(embeddedType);
+    const auto embedded = get_embedded(EmbeddedType);
 
     MemoryBuffer buffer(const_cast<char*>(reinterpret_cast<const char*>(embedded.data)),
                         size_t(embedded.size));
