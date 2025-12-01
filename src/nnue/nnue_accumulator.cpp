@@ -221,18 +221,6 @@ void AccumulatorStack::forward_update_incremental(
 
             auto& accumulators = mut_accumulators<FeatureSet>();
 
-            if constexpr (std::is_same_v<FeatureSet, ThreatFeatureSet>)
-            {
-                if (dp2.remove_sq != SQ_NONE
-                    && (accumulators[next].diff.threateningSqs & square_bb(dp2.remove_sq)))
-                {
-                    double_inc_update(perspective, featureTransformer, ksq, accumulators[next],
-                                      accumulators[next + 1], accumulators[next - 1], dp2);
-                    next++;
-                    continue;
-                }
-            }
-
             if constexpr (std::is_same_v<FeatureSet, PSQFeatureSet>)
             {
                 if (dp1.to != SQ_NONE && dp1.to == dp2.remove_sq)
