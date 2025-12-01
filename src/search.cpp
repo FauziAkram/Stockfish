@@ -1798,10 +1798,12 @@ Value value_from_tt(Value v, int ply, int r50c) {
 
 // Adds current move and appends child pv[]
 void update_pv(Move* pv, Move move, const Move* childPv) {
+    *pv++ = move;
 
-    for (*pv++ = move; childPv && *childPv != Move::none();)
-        *pv++ = *childPv++;
-    *pv = Move::none();
+    if (childPv)
+        while ((*pv++ = *childPv++) != Move::none());
+    else
+        *pv = Move::none();
 }
 
 
