@@ -36,6 +36,8 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int zz1=24, zz2=277, zz3=24, zz4=476, zz5=18236, zz6=534, zz7=77871, zz8=7191, zz9=199;
+TUNE(zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8,zz9);
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
@@ -62,26 +64,26 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, accumulators, caches.small)
                                        : networks.big.evaluate(pos, accumulators, caches.big);
 
-    Value nnue = (125 * psqt + 131 * positional) / 128;
+    Value nnue = ((1000-zz1) * psqt + (1000+zz1) * positional) / 1024;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (std::abs(nnue) < 277))
+    if (smallNet && (std::abs(nnue) < zz2))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, caches.big);
-        nnue                       = (125 * psqt + 131 * positional) / 128;
+        nnue                       = ((1000-zz3) * psqt + (1000+zz3) * positional) / 1024;
         smallNet                   = false;
     }
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / 476;
-    nnue -= nnue * nnueComplexity / 18236;
+    optimism += optimism * nnueComplexity / zz4;
+    nnue -= nnue * nnueComplexity / zz5;
 
-    int material = 534 * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (nnue * (77871 + material) + optimism * (7191 + material)) / 77871;
+    int material = zz6 * pos.count<PAWN>() + pos.non_pawn_material();
+    int v        = (nnue * (zz7 + material) + optimism * (zz8 + material)) / zz7;
 
     // Damp down the evaluation linearly when shuffling
-    v -= v * pos.rule50_count() / 199;
+    v -= v * pos.rule50_count() / zz9;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
