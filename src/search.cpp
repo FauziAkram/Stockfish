@@ -72,7 +72,7 @@ TUNE(xx94,xx95,xx96,xx97);
 TUNE(SetRange(0, 10), xx98);
 TUNE(xx99,xx100,xx101,xx102,xx103,xx104,xx105,xx106,xx107,xx108,xx109,xx110,xx111,xx112,xx113,xx114,xx115,xx116,xx117,xx118,xx119,xx120,xx121,xx122);
 TUNE(SetRange(1, 11), xx123);
-TUNE(xx124,xx125,xx126,xx127,xx128
+TUNE(xx124,xx125,xx126,xx127,xx128);
 TUNE(SetRange(1, 11), xx129);
 TUNE(xx130,xx131,xx132,xx133,xx134,xx135);
 TUNE(SetRange(0, 10), xx136);
