@@ -28,7 +28,7 @@
 
 namespace Stockfish {
 int yy1=7, yy2=75, yy3=16384, yy4=19, yy5=20, yy6=8, yy7=14000, yy8=3560;
-TUNE(yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy7,yy8);
+TUNE(yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8);
 
 namespace {
 
