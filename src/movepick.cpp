@@ -27,6 +27,8 @@
 #include "position.h"
 
 namespace Stockfish {
+int yy1=7, yy2=75, yy3=16384, yy4=19, yy5=20, yy6=8, yy7=14000, yy8=3560;
+TUNE(yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy7,yy8);
 
 namespace {
 
@@ -153,7 +155,7 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
 
         if constexpr (Type == CAPTURES)
             m.value = (*captureHistory)[pc][to][type_of(capturedPiece)]
-                    + 7 * int(PieceValue[capturedPiece]);
+                    + yy1 * int(PieceValue[capturedPiece]);
 
         else if constexpr (Type == QUIETS)
         {
@@ -167,16 +169,16 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
+            m.value += (bool(pos.check_squares(pt) & to) && pos.see_ge(m, -yy2)) * yy3;
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
-            int v = threatByLesser[pt] & to ? -19 : 20 * bool(threatByLesser[pt] & from);
+            int v = threatByLesser[pt] & to ? -yy4 : yy5 * bool(threatByLesser[pt] & from);
             m.value += PieceValue[pt] * v;
 
 
             if (ply < LOW_PLY_HISTORY_SIZE)
-                m.value += 8 * (*lowPlyHistory)[ply][m.raw()] / (1 + ply);
+                m.value += yy6 * (*lowPlyHistory)[ply][m.raw()] / (1 + ply);
         }
 
         else  // Type == EVASIONS
@@ -211,7 +213,7 @@ Move MovePicker::select(Pred filter) {
 // picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move() {
 
-    constexpr int goodQuietThreshold = -14000;
+    constexpr int goodQuietThreshold = -yy7;
 top:
     switch (stage)
     {
@@ -255,7 +257,7 @@ top:
 
             endCur = endGenerated = score<QUIETS>(ml);
 
-            partial_insertion_sort(cur, endCur, -3560 * depth);
+            partial_insertion_sort(cur, endCur, -yy8 * depth);
         }
 
         ++stage;
