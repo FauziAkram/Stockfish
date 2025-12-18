@@ -683,7 +683,7 @@ Value Search::Worker::search(
 
     Square prevSq  = ((ss - 1)->currentMove).is_ok() ? ((ss - 1)->currentMove).to_sq() : SQ_NONE;
     bestMove       = Move::none();
-    priorReduction = std::min((ss - 1)->reduction, (ss - 1)->cutoffCnt);
+    priorReduction = std::min((ss - 1)->reduction, 1 + (ss - 1)->cutoffCnt);
     (ss - 1)->reduction = 0;
     ss->statScore       = 0;
     (ss + 2)->cutoffCnt = 0;
