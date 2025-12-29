@@ -941,7 +941,7 @@ Value Search::Worker::search(
         MovePicker mp(pos, ttData.move, probCutBeta - ss->staticEval, &captureHistory);
         Depth      probCutDepth = std::clamp(depth - 5 - (ss->staticEval - beta) / 315, 0, depth);
 
-        while ((move = mp.next_move()) != Move::none())
+        while ((move = mp.next_move()))
         {
             assert(move.is_ok());
 
@@ -996,7 +996,7 @@ moves_loop:  // When in check, search starts here
 
     // Step 13. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
-    while ((move = mp.next_move()) != Move::none())
+    while ((move = mp.next_move()))
     {
         assert(move.is_ok());
 
@@ -1611,7 +1611,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
     // Step 5. Loop through all pseudo-legal moves until no moves remain or a beta
     // cutoff occurs.
-    while ((move = mp.next_move()) != Move::none())
+    while ((move = mp.next_move()))
     {
         assert(move.is_ok());
 
@@ -1803,7 +1803,7 @@ Value value_from_tt(Value v, int ply, int r50c) {
 // Adds current move and appends child pv[]
 void update_pv(Move* pv, Move move, const Move* childPv) {
 
-    for (*pv++ = move; childPv && *childPv != Move::none();)
+    for (*pv++ = move; childPv && *childPv;)
         *pv++ = *childPv++;
     *pv = Move::none();
 }
@@ -2185,7 +2185,7 @@ bool RootMove::extract_ponder_from_tt(const TranspositionTable& tt, Position& po
     StateInfo st;
 
     assert(pv.size() == 1);
-    if (pv[0] == Move::none())
+    if (!pv[0])
         return false;
 
     pos.do_move(pv[0], st, &tt);
