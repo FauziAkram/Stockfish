@@ -574,7 +574,7 @@ std::string UCIEngine::square(Square s) {
 }
 
 std::string UCIEngine::move(Move m, bool chess960) {
-    if (m == Move::none())
+    if (!m)
         return "(none)";
 
     if (m == Move::null())
