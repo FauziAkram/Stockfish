@@ -114,7 +114,7 @@ trace(Position& pos, const Eval::NNUE::Networks& networks, Eval::NNUE::Accumulat
         for (int i = 1; i < 3; ++i)
             board[y + i][x] = board[y + i][x + 8] = '|';
         board[y][x] = board[y][x + 8] = board[y + 3][x + 8] = board[y + 3][x] = '+';
-        if (pc != NO_PIECE)
+        if (pc)
             board[y + 1][x + 4] = PieceToChar[pc];
         if (is_valid(value))
             format_cp_compact(value, &board[y + 2][x + 2], pos);
@@ -135,7 +135,7 @@ trace(Position& pos, const Eval::NNUE::Networks& networks, Eval::NNUE::Accumulat
             Piece  pc = pos.piece_on(sq);
             Value  v  = VALUE_NONE;
 
-            if (pc != NO_PIECE && type_of(pc) != KING)
+            if (pc && type_of(pc) != KING)
             {
                 pos.remove_piece(sq);
 
