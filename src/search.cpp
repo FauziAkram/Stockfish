@@ -747,8 +747,12 @@ Value Search::Worker::search(
     // Hindsight adjustment of reductions based on static evaluation difference.
     if (priorReduction >= 3 && !opponentWorsening)
         depth++;
-    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173)
+    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173){
         depth--;
+    dbg_hit_on(!allNode, 0);
+    dbg_hit_on(!ttData.move, 1);
+    dbg_hit_on(ss->staticEval + (ss - 1)->staticEval <= 0, 2);
+    }
 
     // At non-PV nodes we check for an early TT cutoff
     if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
@@ -923,8 +927,11 @@ Value Search::Worker::search(
     // Step 10. Internal iterative reductions
     // At sufficient depth, reduce depth for PV/Cut nodes without a TTMove.
     // (*Scaler) Making IIR more aggressive scales poorly.
-    if (!allNode && depth >= 6 && !ttData.move && priorReduction <= 3)
+    if (!allNode && depth >= 6 && !ttData.move && priorReduction <= 3){
         depth--;
+dbg_hit_on(ss->staticEval + (ss - 1)->staticEval > 173), 3);
+dbg_hit_on(ss->staticEval + (ss - 1)->staticEval <= 0, 4);
+    }
 
     // Step 11. ProbCut
     // If we have a good enough capture (or queen promotion) and a reduced search
