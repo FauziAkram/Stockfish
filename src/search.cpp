@@ -745,10 +745,13 @@ Value Search::Worker::search(
     opponentWorsening = ss->staticEval > -(ss - 1)->staticEval;
 
     // Hindsight adjustment of reductions based on static evaluation difference.
-    if (priorReduction >= 3 && !opponentWorsening)
-        depth++;
-    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173)
-        depth--;
+    int incScore = 100 * (priorReduction >= 3) 
+                 + 100 * (!opponentWorsening);
+
+    int decScore = 100 * (priorReduction >= 2 && depth >= 2) 
+                 + 100 * (ss->staticEval + (ss - 1)->staticEval > 173);
+
+    depth += (incScore > 199) - (decScore > 199);
 
     // At non-PV nodes we check for an early TT cutoff
     if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
