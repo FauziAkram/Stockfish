@@ -929,7 +929,7 @@ Value Search::Worker::search(
     // (*Scaler) Making IIR more aggressive scales poorly.
     if (!allNode && depth >= 6 && !ttData.move && priorReduction <= 3){
         depth--;
-dbg_hit_on(ss->staticEval + (ss - 1)->staticEval > 173), 3);
+dbg_hit_on((ss->staticEval + (ss - 1)->staticEval > 173), 3);
 dbg_hit_on(ss->staticEval + (ss - 1)->staticEval <= 0, 4);
     }
 
