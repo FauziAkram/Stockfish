@@ -70,7 +70,7 @@ constexpr int SEARCHEDLIST_CAPACITY = 32;
 constexpr int mainHistoryDefault    = 68;
 using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 
-constexpr int CutoffBonus[4][2] = {
+const int CutoffBonus[4][2] = {
     { xx1, xx5 }, 
     { xx2, xx6 }, 
     { xx3, xx7 }, 
