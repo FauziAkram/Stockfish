@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=64, xx2=192, xx3=1216, xx4=1316, xx5=1088, xx6=1216, xx7=2240, xx8=2340;
+TUNE(SetRange(-512, 7000), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8);
 
 namespace TB = Tablebases;
 
@@ -67,6 +69,13 @@ namespace {
 constexpr int SEARCHEDLIST_CAPACITY = 32;
 constexpr int mainHistoryDefault    = 68;
 using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
+
+constexpr int CutoffBonus[4][2] = {
+    { xx1, xx5 }, 
+    { xx2, xx6 }, 
+    { xx3, xx7 }, 
+    { xx4, xx8 }
+};
 
 // (*Scalers):
 // The values with Scaler asterisks have proven non-linear scaling.
@@ -1205,9 +1214,11 @@ moves_loop:  // When in check, search starts here
             r += 1119;
 
         // Increase reduction if next ply has a lot of fail high
-        if ((ss + 1)->cutoffCnt > 1)
-            r += 120 + 1024 * ((ss + 1)->cutoffCnt > 2) + 100 * ((ss + 1)->cutoffCnt > 3)
-               + 1024 * allNode;
+        if ((ss + 1)->cutoffCnt > 0)
+        {
+            int cntIdx = std::min((ss + 1)->cutoffCnt, 4) - 1;
+            r += CutoffBonus[cntIdx][allNode];
+        }
 
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move)
