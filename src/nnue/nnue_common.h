@@ -97,7 +97,7 @@ template<typename IntType>
 inline IntType read_little_endian(std::istream& stream) {
     IntType result;
 
-    if (IsLittleEndian)
+    if constexpr (IsLittleEndian)
         stream.read(reinterpret_cast<char*>(&result), sizeof(IntType));
     else
     {
@@ -122,7 +122,7 @@ inline IntType read_little_endian(std::istream& stream) {
 template<typename IntType>
 inline void write_little_endian(std::ostream& stream, IntType value) {
 
-    if (IsLittleEndian)
+    if constexpr (IsLittleEndian)
         stream.write(reinterpret_cast<const char*>(&value), sizeof(IntType));
     else
     {
@@ -150,7 +150,7 @@ inline void write_little_endian(std::ostream& stream, IntType value) {
 // This reads N integers from stream s and puts them in array out.
 template<typename IntType>
 inline void read_little_endian(std::istream& stream, IntType* out, std::size_t count) {
-    if (IsLittleEndian)
+    if constexpr (IsLittleEndian)
         stream.read(reinterpret_cast<char*>(out), sizeof(IntType) * count);
     else
         for (std::size_t i = 0; i < count; ++i)
@@ -162,7 +162,7 @@ inline void read_little_endian(std::istream& stream, IntType* out, std::size_t c
 // This takes N integers from array values and writes them on stream s.
 template<typename IntType>
 inline void write_little_endian(std::ostream& stream, const IntType* values, std::size_t count) {
-    if (IsLittleEndian)
+    if constexpr (IsLittleEndian)
         stream.write(reinterpret_cast<const char*>(values), sizeof(IntType) * count);
     else
         for (std::size_t i = 0; i < count; ++i)
