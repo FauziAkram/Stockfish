@@ -68,6 +68,12 @@ constexpr int SEARCHEDLIST_CAPACITY = 32;
 constexpr int mainHistoryDefault    = 68;
 using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 
+const int CutoffBonus[3][2] = {
+    { 20,   1235 }, 
+    { 182,  1155 }, 
+    { 1010, 2420 }
+};
+
 // (*Scalers):
 // The values with Scaler asterisks have proven non-linear scaling.
 // They are optimized to time controls of 180 + 1.8 and longer,
@@ -1205,8 +1211,11 @@ moves_loop:  // When in check, search starts here
             r += 1119;
 
         // Increase reduction if next ply has a lot of fail high
-        if ((ss + 1)->cutoffCnt > 1)
-            r += 256 + 1024 * ((ss + 1)->cutoffCnt > 2) + 1024 * allNode;
+        if ((ss + 1)->cutoffCnt > 0)
+        {
+            int cntIdx = std::min((ss + 1)->cutoffCnt, 3) - 1;
+            r += CutoffBonus[cntIdx][allNode];
+        }
 
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move)
