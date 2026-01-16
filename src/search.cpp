@@ -815,7 +815,18 @@ Value Search::Worker::search(
                  +   zz23 * (move == ttData.move)
                  +   zz24 * (!opponentWorsening);
 
-    depth += (incScore > 199) - (decScore > 199 && depth >= 2);
+    incScore = std::clamp(incScore, -1000, 1000);
+    decScore = std::clamp(decScore, -1000, 1000);
+
+    bool canExtend = (ss->extensions < 4);
+
+    int bonus = (canExtend && incScore > 400) ? 1 : 0;
+    int penalty = (decScore > 400 && depth >= 2) ? 1 : 0;
+
+    depth += bonus - penalty;
+
+    if (bonus > 0)
+        ss->extensions++;
 
     // At non-PV nodes we check for an early TT cutoff
     if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
