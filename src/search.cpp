@@ -820,8 +820,8 @@ Value Search::Worker::search(
 
     bool canExtend = (ss->ply < rootDepth + 7);
 
-    int depthBonus = (canExtend && incScore > 400) ? 1 : 0;
-    int depthPenalty = (decScore > 400 && depth >= 2) ? 1 : 0;
+    int depthBonus = (canExtend && incScore > 199) ? 1 : 0;
+    int depthPenalty = (decScore > 199 && depth >= 2) ? 1 : 0;
 
     depth += depthBonus - depthPenalty;
 
