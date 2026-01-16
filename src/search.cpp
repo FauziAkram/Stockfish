@@ -51,6 +51,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=100, xx2=100, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0, xx9=0, xx10=0, xx11=0, xx12=0, xx13=0, xx14=0, xx15=0, xx16=0, xx17=0, xx18=0, xx19=0, xx20=0, xx21=0, xx22=0, xx23=0, xx24=0;
+TUNE(xx1,xx2);
+TUNE(SetRange(-100, 100), xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23,xx24);
+int zz1=100, zz2=100, zz3=0, zz4=0, zz5=0, zz6=0, zz7=0, zz8=0, zz9=0, zz10=0, zz11=0, zz12=0, zz13=0, zz14=0, zz15=0, zz16=0, zz17=0, zz18=0, zz19=0, zz20=0, zz21=0, zz22=0, zz23=0, zz24=0;
+TUNE(zz1,zz2);
+TUNE(SetRange(-100, 100), zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz10,zz11,zz12,zz13,zz14,zz15,zz16,zz17,zz18,zz19,zz20,zz21,zz22,zz23,zz24);
 
 namespace TB = Tablebases;
 
@@ -751,10 +757,65 @@ Value Search::Worker::search(
     opponentWorsening = ss->staticEval > -(ss - 1)->staticEval;
 
     // Hindsight adjustment of reductions based on static evaluation difference.
-    if (priorReduction >= 3 && !opponentWorsening)
-        depth++;
-    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173)
-        depth--;
+    Move ttMove = ttHit ? ttData.move : Move(0); 
+    capture    = ttMove && pos.capture(ttMove);
+    givesCheck = ttMove && pos.gives_check(ttMove);
+    ttCapture  = capture; 
+    move       = ttMove; 
+
+    int evalSum = ss->staticEval + (ss - 1)->staticEval;
+
+    int incScore = xx1 * (priorReduction >= 3)
+                 + xx2 * (!opponentWorsening)
+                 +   xx3 * (ss->ply)
+                 +   xx4 * (ss->ply > 10)
+                 +   xx5 * (rootDepth)
+                 +   xx6 * (ss->ttPv)
+                 +   xx7 * (ss->staticEval > (ss - 1)->staticEval)
+                 +   xx8 * (pos.captured_piece() != NO_PIECE)
+                 +   xx9 * (priorReduction)
+                 +   xx10 * (priorCapture)
+                 +   xx11 * (cutNode)
+                 +   xx12 * (PvNode)
+                 +   xx13 * (allNode)
+                 +   xx14 * (improving)
+                 +   xx15 * (ttCapture)
+                 +   xx16 * (ss->inCheck)
+                 +   xx17 * (ttHit)
+                 +   xx18 * ((ss - 1)->currentMove == Move::null())
+                 +   xx19 * (bool(ttData.move))
+                 +   xx20 * (ss->staticEval > alpha)
+                 +   xx21 * (capture)
+                 +   xx22 * (givesCheck)
+                 +   xx23 * (move == ttData.move)
+                 +   xx24 * (evalSum > 173);
+
+    int decScore = zz1 * (priorReduction >= 2)
+                 + zz2 * (evalSum > 173)
+                 +   zz3 * (ss->ply)
+                 +   zz4 * (ss->ply > 10)
+                 +   zz5 * (rootDepth)
+                 +   zz6 * (ss->ttPv)
+                 +   zz7 * (ss->staticEval > (ss - 1)->staticEval)
+                 +   zz8 * (pos.captured_piece() != NO_PIECE)
+                 +   zz9 * (priorReduction)
+                 +   zz10 * (priorCapture)
+                 +   zz11 * (cutNode)
+                 +   zz12 * (PvNode)
+                 +   zz13 * (allNode)
+                 +   zz14 * (improving)
+                 +   zz15 * (ttCapture)
+                 +   zz16 * (ss->inCheck)
+                 +   zz17 * (ttHit)
+                 +   zz18 * ((ss - 1)->currentMove == Move::null())
+                 +   zz19 * (bool(ttData.move))
+                 +   zz20 * (ss->staticEval > alpha)
+                 +   zz21 * (capture)
+                 +   zz22 * (givesCheck)
+                 +   zz23 * (move == ttData.move)
+                 +   zz24 * (!opponentWorsening);
+
+    depth += (incScore > 199) - (decScore > 199 && depth >= 2);
 
     // At non-PV nodes we check for an early TT cutoff
     if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
