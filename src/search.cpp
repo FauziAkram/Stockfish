@@ -749,12 +749,18 @@ Value Search::Worker::search(
     // for us than at the last ply.
     improving         = ss->staticEval > (ss - 2)->staticEval;
     opponentWorsening = ss->staticEval > -(ss - 1)->staticEval;
+dbg_mean_of(rootDepth, 0);
+dbg_extremes_of(rootDepth, 0);
 
     // Hindsight adjustment of reductions based on static evaluation difference.
-    if (priorReduction >= 3 && !opponentWorsening)
+    if (priorReduction >= 3 && !opponentWorsening){
         depth++;
-    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173)
+    dbg_mean_of(rootDepth, 1);
+dbg_extremes_of(rootDepth, 1);}
+    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173){
         depth--;
+      dbg_mean_of(rootDepth, 2);
+dbg_extremes_of(rootDepth, 2);}
 
     // At non-PV nodes we check for an early TT cutoff
     if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
