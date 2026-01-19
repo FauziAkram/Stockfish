@@ -1209,7 +1209,7 @@ moves_loop:  // When in check, search starts here
             r += 256 + 1024 * ((ss + 1)->cutoffCnt > 2) + 1024 * allNode;
 
         if (ttHit && ttData.bound == BOUND_UPPER && ttData.value < alpha)
-            r += 512;
+            r += 1024;
 
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move)
