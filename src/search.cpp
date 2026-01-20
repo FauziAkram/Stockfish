@@ -99,7 +99,7 @@ constexpr FutilityParams FutilityTable[] = {
     {xx12, yy12, zz12, ww12, vv12}, // d=12
     {xx13, yy13, zz13, ww13, vv13}, // d=13
     {xx14, yy14, zz14, ww14, vv14}  // d>=14
-+};
+};
 
 // (*Scalers):
 // The values with Scaler asterisks have proven non-linear scaling.
