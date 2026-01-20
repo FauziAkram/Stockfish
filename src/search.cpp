@@ -83,7 +83,7 @@ struct FutilityParams {
     int base, ttHitBonus, imp, opp, corr;
 };
 
-constexpr FutilityParams FutilityTable[] = {
+const FutilityParams FutilityTable[] = {
     {   0,   0,    0,   0,      1}, // d=0 (unused)
     { xx1, yy1,  zz1, ww1,   vv1}, // d=1
     { xx2, yy2,  zz2, ww2,   vv2}, // d=2
