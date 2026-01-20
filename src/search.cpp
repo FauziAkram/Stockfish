@@ -51,6 +51,17 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1 = 76, xx2 = 76, xx3 = 76, xx4 = 76, xx5 = 76, xx6 = 76, xx7 = 76, xx8 = 76, xx9 = 76, xx10 = 76, xx11 = 76, xx12 = 76, xx13 = 76, xx14 = 76;
+int yy1 = 23, yy2 = 23, yy3 = 23, yy4 = 23, yy5 = 23, yy6 = 23, yy7 = 23, yy8 = 23, yy9 = 23, yy10 = 23, yy11 = 23, yy12 = 23, yy13 = 23, yy14 = 23;
+int zz1 = 2474, zz2 = 2474, zz3 = 2474, zz4 = 2474, zz5 = 2474, zz6 = 2474, zz7 = 2474, zz8 = 2474, zz9 = 2474, zz10 = 2474, zz11 = 2474, zz12 = 2474, zz13 = 2474, zz14 = 2474;
+int ww1 = 331, ww2 = 331, ww3 = 331, ww4 = 331, ww5 = 331, ww6 = 331, ww7 = 331, ww8 = 331, ww9 = 331, ww10 = 331, ww11 = 331, ww12 = 331, ww13 = 331, ww14 = 331;
+int vv1 = 174665, vv2 = 174665, vv3 = 174665, vv4 = 174665, vv5 = 174665, vv6 = 174665, vv7 = 174665, vv8 = 174665, vv9 = 174665, vv10 = 174665, vv11 = 174665, vv12 = 174665, vv13 = 174665, vv14 = 174665;
+
+TUNE(SetRange(0, 228), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14);
+TUNE(SetRange(0, 70), yy1,yy2,yy3,yy4,yy5,yy6,yy7,yy8,yy9,yy10,yy11,yy12,yy13,yy14);
+TUNE(SetRange(0, 7422), zz1,zz2,zz3,zz4,zz5,zz6,zz7,zz8,zz9,zz10,zz11,zz12,zz13,zz14);
+TUNE(SetRange(0, 1000), ww1,ww2,ww3,ww4,ww5,ww6,ww7,ww8,ww9,ww10,ww11,ww12,ww13,ww14);
+TUNE(SetRange(1, 524000), vv1,vv2,vv3,vv4,vv5,vv6,vv7,vv8,vv9,vv10,vv11,vv12,vv13,vv14);
 
 namespace TB = Tablebases;
 
@@ -67,6 +78,28 @@ namespace {
 constexpr int SEARCHEDLIST_CAPACITY = 32;
 constexpr int mainHistoryDefault    = 68;
 using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
+
+struct FutilityParams {
+    int base, ttHitBonus, imp, opp, corr;
+};
+
+constexpr FutilityParams FutilityTable[] = {
+    {   0,   0,    0,   0,      1}, // d=0 (unused)
+    { xx1, yy1,  zz1, ww1,   vv1}, // d=1
+    { xx2, yy2,  zz2, ww2,   vv2}, // d=2
+    { xx3, yy3,  zz3, ww3,   vv3}, // d=3
+    { xx4, yy4,  zz4, ww4,   vv4}, // d=4
+    { xx5, yy5,  zz5, ww5,   vv5}, // d=5
+    { xx6, yy6,  zz6, ww6,   vv6}, // d=6
+    { xx7, yy7,  zz7, ww7,   vv7}, // d=7
+    { xx8, yy8,  zz8, ww8,   vv8}, // d=8
+    { xx9, yy9,  zz9, ww9,   vv9}, // d=9
+    {xx10, yy10, zz10, ww10, vv10}, // d=10
+    {xx11, yy11, zz11, ww11, vv11}, // d=11
+    {xx12, yy12, zz12, ww12, vv12}, // d=12
+    {xx13, yy13, zz13, ww13, vv13}, // d=13
+    {xx14, yy14, zz14, ww14, vv14}  // d>=14
++};
 
 // (*Scalers):
 // The values with Scaler asterisks have proven non-linear scaling.
@@ -876,12 +909,13 @@ Value Search::Worker::search(
     // Step 8. Futility pruning: child node
     // The depth condition is important for mate finding.
     {
-        auto futility_margin = [&](Depth d) {
-            Value futilityMult = 76 - 23 * !ss->ttHit;
+        auto futility_margin = [&](Depth d) -> Value {
+            const auto& p = FutilityTable[std::min(int(d), 14)];
+            Value futilityMult = p.base - p.ttHitBonus * !ss->ttHit;
 
             return futilityMult * d
-                 - (2474 * improving + 331 * opponentWorsening) * futilityMult / 1024  //
-                 + std::abs(correctionValue) / 174665;
+                 - (p.imp * improving + p.opp * opponentWorsening) * futilityMult / 1024  //
+                 + std::abs(correctionValue) / p.corr;
         };
 
         if (!ss->ttPv && depth < 14 && eval - futility_margin(depth) >= beta && eval >= beta
