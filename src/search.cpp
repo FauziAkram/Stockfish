@@ -1151,7 +1151,7 @@ moves_loop:  // When in check, search starts here
                 depth++;
 
                 if (tripleMargin)
-                  r -= (ttData.value > alpha && ttData.depth >= depth) * 1024;
+                  r -= (ttData.value > alpha && ttData.depth >= depth) * 1536;
             }
 
             // Multi-cut pruning
