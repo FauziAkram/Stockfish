@@ -1149,6 +1149,9 @@ moves_loop:  // When in check, search starts here
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
 
                 depth++;
+
+                if (tripleMargin)
+                  r -= (ttData.value > alpha && ttData.depth >= depth) * 512;
             }
 
             // Multi-cut pruning
