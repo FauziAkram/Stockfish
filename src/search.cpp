@@ -51,7 +51,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=67, xx2=25, xx3=76, xx4=23, xx5=2474, xx6=331, xx7=174665;
+TUNE(SetRange(0, 160), xx1);
+TUNE(SetRange(0, 60), xx2);
+TUNE(SetRange(0, 160), xx3);
+TUNE(SetRange(0, 60), xx4);
+TUNE(xx5,xx6,xx7);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -878,11 +883,13 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     {
         auto futility_margin = [&](Depth d) {
-            Value futilityMult = 76 - 23 * !ss->ttHit;
+            Value futilityMult = (d < 4)
+            ? xx1 - xx2 * !ss->ttHit
+            : xx3 - xx4 * !ss->ttHit;
 
             return futilityMult * d
-                 - (2474 * improving + 331 * opponentWorsening) * futilityMult / 1024  //
-                 + std::abs(correctionValue) / 174665;
+                 - (xx5 * improving + xx6 * opponentWorsening) * futilityMult / 1024  //
+                 + std::abs(correctionValue) / xx7;
         };
 
         if (!ss->ttPv && depth < 14 && eval - futility_margin(depth) >= beta && eval >= beta
