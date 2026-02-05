@@ -752,8 +752,8 @@ Value Search::Worker::search(
     opponentWorsening = ss->staticEval > -(ss - 1)->staticEval;
 
     // Hindsight adjustment of reductions based on static evaluation difference.
-    if (priorReduction >= 3 && !opponentWorsening)
-        depth++;
+    if (priorReduction >= 3 && !opponentWorsening && (ss->staticEval <= alpha))
+        depth += 1 + priorReduction >= 4;
     if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173)
         depth--;
 
