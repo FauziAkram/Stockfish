@@ -876,9 +876,7 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     {
         auto futility_margin = [&](Depth d) {
-            Value futilityMult = (d < 4)
-            ? 64 - 25 * !ss->ttHit
-            : 73 - 24 * !ss->ttHit;
+            Value futilityMult = 64 + 9 * (d < 4) - 24 * !ss->ttHit;
 
             return futilityMult * d
                  - (2305 * improving + 330 * opponentWorsening) * futilityMult / 1024  //
