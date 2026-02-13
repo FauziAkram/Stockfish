@@ -51,7 +51,20 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=8, xx2=10347, xx3=8821, xx4=11665, xx5=7841, xx6=178, xx7=156, xx8=127, xx9=59, xx10=10, xx11=20, xx12=97, xx13=768, xx14=5, xx15=9000, xx16=142, xx17=91, xx18=8, xx19=529, xx20=2747, xx21=173, xx22=132, xx23=72, xx24=985, xx25=2060, xx26=8, xx27=209, xx28=167, xx29=59, xx30=9,
+xx31=13, xx32=485, xx33=281, xx34=76, xx35=23, xx36=2474, xx37=331, xx38=174665, xx39=14, xx40=18, xx41=350, xx42=7, xx43=6, xx44=235, xx45=63, xx46=5, xx47=418, xx48=946, xx49=7, xx50=232, xx51=217, xx52=131, xx53=166, xx54=29, xx55=4083, xx56=69, xx57=3208, xx58=42, xx59=161, xx60=127,
+xx61=85, xx62=13, xx63=25, xx64=53, xx65=75, xx66=60, xx67=230673, xx68=4, xx69=199, xx70=201, xx71=897, xx72=127649, xx73=42, xx74=73, xx75=302, xx76=248, xx77=90, xx78=48, xx79=400, xx80=100, xx81=4000, xx82=2719, xx83=983, xx84=922, xx85=934, xx86=1011, xx87=714, xx88=73, xx89=30370,
+xx90=3372, xx91=997, xx92=1119, xx93=256, xx94=1024, xx95=1024, xx96=2151, xx97=868, xx98=850, xx99=256, xx100=256, xx101=50, xx102=9, xx103=1365, xx104=1140, xx105=3957, xx106=5654, xx107=14, xx108=809, xx109=865, xx110=215, xx111=100, xx112=56, xx113=489, xx114=184, xx115=147,
+xx116=107, xx117=156, xx118=65, xx119=141, xx120=87, xx121=1351, xx122=406, xx123=243, xx124=290, xx125=1012, xx126=10, xx127=8, xx128=351, xx129=80, xx130=608, xx131=238, xx132=1182, xx133=116, xx134=81, xx135=1515, xx136=347, xx137=32, xx138=800, xx139=207, xx140=2200, xx141=910,
+xx142=1100, xx143=950, xx144=1395, xx145=602, xx146=1448, xx147=1133, xx148=683, xx149=312, xx150=582, xx151=149, xx152=474, xx153=88, xx154=805, xx155=896, xx156=905, xx157=505;
 
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23,xx24,xx25,xx26,xx27,xx28,xx29,xx30,xx31,xx32,xx33,xx34,xx35,xx36,xx37,xx38,xx39,xx40,xx41,xx42,xx43,xx44,xx45,xx46,xx47,xx48,xx49,xx50,xx51,xx52,xx53);
+TUNE(SetRange(1, 65), xx54);
+TUNE(xx55,xx56,xx57,xx58,xx59,xx60,xx61,xx62,xx63,xx64,xx65,xx66,xx67,xx68,xx69,xx70,xx71,xx72,xx73,xx74,xx75,xx76,xx77,xx78,xx79,xx80,xx81,xx82,xx83,xx84,xx85,xx86,xx87,xx88,xx89,xx90,xx91,xx92,xx93,xx94,xx95,xx96,xx97,xx98,xx99,xx100,xx101,xx102,xx103,xx104,xx105);
+TUNE(xx106,xx107,xx108,xx109,xx110,xx111,xx112,xx113,xx114,xx115,xx116,xx117,xx118,xx119,xx120,xx121,xx122,xx123,xx124,xx125,xx126,xx127,xx128,xx129,xx130,xx131,xx132,xx133,xx134,xx135,xx136);
+TUNE(SetRange(1, 69), xx137);
+TUNE(xx138,xx139,xx140,xx141,xx142,xx143,xx144,xx145,xx146,xx147,xx148,xx149,xx150,xx151,xx152,xx153,xx154,xx155,xx156,xx157);
+  
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -87,9 +100,9 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
     const int   cntcv =
       m.is_ok() ? (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
                     + (*(ss - 4)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
-                  : 8;
+                  : xx1;
 
-    return 10347 * pcv + 8821 * micv + 11665 * (wnpcv + bnpcv) + 7841 * cntcv;
+    return xx2 * pcv + xx3 * micv + xx4 * (wnpcv + bnpcv) + xx5 * cntcv;
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation
@@ -105,11 +118,11 @@ void update_correction_history(const Position& pos,
     const Move  m  = (ss - 1)->currentMove;
     const Color us = pos.side_to_move();
 
-    constexpr int nonPawnWeight = 178;
+    int nonPawnWeight = xx6;
     auto&         shared        = workerThread.sharedHistory;
 
     shared.pawn_correction_entry(pos).at(us).pawn << bonus;
-    shared.minor_piece_correction_entry(pos).at(us).minor << bonus * 156 / 128;
+    shared.minor_piece_correction_entry(pos).at(us).minor << bonus * xx7 / 128;
     shared.nonpawn_correction_entry<WHITE>(pos).at(us).nonPawnWhite << bonus * nonPawnWeight / 128;
     shared.nonpawn_correction_entry<BLACK>(pos).at(us).nonPawnBlack << bonus * nonPawnWeight / 128;
 
@@ -117,8 +130,8 @@ void update_correction_history(const Position& pos,
     const int    mask   = int(m.is_ok());
     const Square to     = m.to_sq_unchecked();
     const Piece  pc     = pos.piece_on(to);
-    const int    bonus2 = (bonus * 127 / 128) * mask;
-    const int    bonus4 = (bonus * 59 / 128) * mask;
+    const int    bonus2 = (bonus * xx8 / 128) * mask;
+    const int    bonus4 = (bonus * xx9 / 128) * mask;
     (*(ss - 2)->continuationCorrectionHistory)[pc][to] << bonus2;
     (*(ss - 4)->continuationCorrectionHistory)[pc][to] << bonus4;
 }
@@ -142,9 +155,9 @@ void update_all_stats(const Position& pos,
                       Move            ttMove);
 
 bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
-    if (pos.capture_stage(move) || pos.rule50_count() < 10)
+    if (pos.capture_stage(move) || pos.rule50_count() < xx10)
         return false;
-    if (pos.state()->pliesFromNull <= 6 || ss->ply < 20)
+    if (pos.state()->pliesFromNull <= 6 || ss->ply < xx11)
         return false;
     return move.from_sq() == (ss - 2)->currentMove.to_sq()
         && (ss - 2)->currentMove.from_sq() == (ss - 4)->currentMove.to_sq();
@@ -310,11 +323,11 @@ void Search::Worker::iterative_deepening() {
 
     int searchAgainCounter = 0;
 
-    lowPlyHistory.fill(97);
+    lowPlyHistory.fill(xx12);
 
     for (Color c : {WHITE, BLACK})
         for (int i = 0; i < UINT_16_HISTORY_SIZE; i++)
-            mainHistory[c][i] = mainHistory[c][i] * 3 / 4;
+            mainHistory[c][i] = mainHistory[c][i] * xx13 / 1024;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -350,13 +363,13 @@ void Search::Worker::iterative_deepening() {
             selDepth = 0;
 
             // Reset aspiration window starting size
-            delta     = 5 + threadIdx % 8 + std::abs(rootMoves[pvIdx].meanSquaredScore) / 9000;
+            delta     = xx14 + threadIdx % 8 + std::abs(rootMoves[pvIdx].meanSquaredScore) / xx15;
             Value avg = rootMoves[pvIdx].averageScore;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore
-            optimism[us]  = 142 * avg / (std::abs(avg) + 91);
+            optimism[us]  = xx16 * avg / (std::abs(avg) + xx17);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
@@ -593,16 +606,16 @@ void Search::Worker::clear() {
 
     for (auto& to : continuationCorrectionHistory)
         for (auto& h : to)
-            h.fill(8);
+            h.fill(xx18);
 
     for (bool inCheck : {false, true})
         for (StatsType c : {NoCaptures, Captures})
             for (auto& to : continuationHistory[inCheck][c])
                 for (auto& h : to)
-                    h.fill(-529);
+                    h.fill(-xx19);
 
     for (size_t i = 1; i < reductions.size(); ++i)
-        reductions[i] = int(2747 / 128.0 * std::log(i));
+        reductions[i] = int(xx20 / 128.0 * std::log(i));
 
     refreshTable.clear(networks[numaAccessToken]);
 }
@@ -751,7 +764,7 @@ Value Search::Worker::search(
     // Hindsight adjustment of reductions based on static evaluation difference.
     if (priorReduction >= 3 && !opponentWorsening)
         depth++;
-    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173)
+    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > xx21)
         depth--;
 
     // At non-PV nodes we check for an early TT cutoff
@@ -766,18 +779,18 @@ Value Search::Worker::search(
             // Bonus for a quiet ttMove that fails high
             if (!ttCapture)
                 update_quiet_histories(pos, ss, *this, ttData.move,
-                                       std::min(132 * depth - 72, 985));
+                                       std::min(xx22 * depth - xx23, xx24));
 
             // Extra penalty for early quiet moves of the previous ply
             if (prevSq != SQ_NONE && (ss - 1)->moveCount < 4 && !priorCapture)
-                update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -2060);
+                update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -xx25);
         }
 
         // Partial workaround for the graph history interaction problem
         // For high rule50 counts don't produce transposition table cutoffs.
         if (pos.rule50_count() < 96)
         {
-            if (depth >= 8 && ttData.move && pos.pseudo_legal(ttData.move) && pos.legal(ttData.move)
+            if (depth >= xx26 && ttData.move && pos.pseudo_legal(ttData.move) && pos.legal(ttData.move)
                 && !is_decisive(ttData.value))
             {
                 pos.do_move(ttData.move, st);
@@ -857,44 +870,44 @@ Value Search::Worker::search(
     // Use static evaluation difference to improve quiet move ordering
     if (((ss - 1)->currentMove).is_ok() && !(ss - 1)->inCheck && !priorCapture)
     {
-        int evalDiff = std::clamp(-int((ss - 1)->staticEval + ss->staticEval), -209, 167) + 59;
-        mainHistory[~us][((ss - 1)->currentMove).raw()] << evalDiff * 9;
+        int evalDiff = std::clamp(-int((ss - 1)->staticEval + ss->staticEval), -xx27, xx28) + xx29;
+        mainHistory[~us][((ss - 1)->currentMove).raw()] << evalDiff * xx30;
         if (!ttHit && type_of(pos.piece_on(prevSq)) != PAWN
             && ((ss - 1)->currentMove).type_of() != PROMOTION)
-            sharedHistory.pawn_entry(pos)[pos.piece_on(prevSq)][prevSq] << evalDiff * 13;
+            sharedHistory.pawn_entry(pos)[pos.piece_on(prevSq)][prevSq] << evalDiff * xx31;
     }
 
 
     // Step 7. Razoring
     // If eval is really low, skip search entirely and return the qsearch value.
     // For PvNodes, we must have a guard against mates being returned.
-    if (!PvNode && eval < alpha - 485 - 281 * depth * depth)
+    if (!PvNode && eval < alpha - xx32 - xx33 * depth * depth)
         return qsearch<NonPV>(pos, ss, alpha, beta);
 
     // Step 8. Futility pruning: child node
     // The depth condition is important for mate finding.
     {
         auto futility_margin = [&](Depth d) {
-            Value futilityMult = 76 - 23 * !ss->ttHit;
+            Value futilityMult = xx34 - xx35 * !ss->ttHit;
 
             return futilityMult * d
-                 - (2474 * improving + 331 * opponentWorsening) * futilityMult / 1024  //
-                 + std::abs(correctionValue) / 174665;
+                 - (xx36 * improving + xx37 * opponentWorsening) * futilityMult / 1024  //
+                 + std::abs(correctionValue) / xx38;
         };
 
-        if (!ss->ttPv && depth < 14 && eval - futility_margin(depth) >= beta && eval >= beta
+        if (!ss->ttPv && depth < xx39 && eval - futility_margin(depth) >= beta && eval >= beta
             && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
             return (2 * beta + eval) / 3;
     }
 
     // Step 9. Null move search with verification search
-    if (cutNode && ss->staticEval >= beta - 18 * depth + 350 && !excludedMove
+    if (cutNode && ss->staticEval >= beta - xx40 * depth + xx41 && !excludedMove
         && pos.non_pawn_material(us) && ss->ply >= nmpMinPly && !is_loss(beta))
     {
         assert((ss - 1)->currentMove != Move::null());
 
         // Null move dynamic reduction based on depth
-        Depth R = 7 + depth / 3;
+        Depth R = xx42 + depth / 3;
         do_null_move(pos, st, ss);
 
         Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, false);
@@ -927,13 +940,13 @@ Value Search::Worker::search(
     // Step 10. Internal iterative reductions
     // At sufficient depth, reduce depth for PV/Cut nodes without a TTMove.
     // (*Scaler) Making IIR more aggressive scales poorly.
-    if (!allNode && depth >= 6 && !ttData.move && priorReduction <= 3)
+    if (!allNode && depth >= xx43 && !ttData.move && priorReduction <= 3)
         depth--;
 
     // Step 11. ProbCut
     // If we have a good enough capture (or queen promotion) and a reduced search
     // returns a value much above beta, we can (almost) safely prune the previous move.
-    probCutBeta = beta + 235 - 63 * improving;
+    probCutBeta = beta + xx44 - xx45 * improving;
     if (depth >= 3
         && !is_decisive(beta)
         // If value from transposition table is lower than probCutBeta, don't attempt
@@ -943,7 +956,7 @@ Value Search::Worker::search(
         assert(probCutBeta < VALUE_INFINITE && probCutBeta > beta);
 
         MovePicker mp(pos, ttData.move, probCutBeta - ss->staticEval, &captureHistory);
-        Depth      probCutDepth = depth - 5;
+        Depth      probCutDepth = depth - xx46;
 
         while ((move = mp.next_move()) != Move::none())
         {
@@ -981,7 +994,7 @@ Value Search::Worker::search(
 moves_loop:  // When in check, search starts here
 
     // Step 12. A small Probcut idea
-    probCutBeta = beta + 418;
+    probCutBeta = beta + xx47;
     if ((ttData.bound & BOUND_LOWER) && ttData.depth >= depth - 4 && ttData.value >= probCutBeta
         && !is_decisive(beta) && is_valid(ttData.value) && !is_decisive(ttData.value))
         return probCutBeta;
@@ -1042,7 +1055,7 @@ moves_loop:  // When in check, search starts here
         // Increase reduction for ttPv nodes (*Scaler)
         // Larger values scale well
         if (ss->ttPv)
-            r += 946;
+            r += xx48;
 
         // Step 14. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
@@ -1061,10 +1074,10 @@ moves_loop:  // When in check, search starts here
                 int   captHist = captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)];
 
                 // Futility pruning for captures
-                if (!givesCheck && lmrDepth < 7)
+                if (!givesCheck && lmrDepth < xx49)
                 {
-                    Value futilityValue = ss->staticEval + 232 + 217 * lmrDepth
-                                        + PieceValue[capturedPiece] + 131 * captHist / 1024;
+                    Value futilityValue = ss->staticEval + xx50 + xx51 * lmrDepth
+                                        + PieceValue[capturedPiece] + xx52 * captHist / 1024;
 
                     if (futilityValue <= alpha)
                         continue;
@@ -1072,7 +1085,7 @@ moves_loop:  // When in check, search starts here
 
                 // SEE based pruning for captures and checks
                 // Avoid pruning sacrifices of our last piece for stalemate
-                int margin = std::max(166 * depth + captHist / 29, 0);
+                int margin = std::max(xx53 * depth + captHist / xx54, 0);
                 if ((alpha >= VALUE_DRAW || pos.non_pawn_material(us) != PieceValue[movedPiece])
                     && !pos.see_ge(move, -margin))
                     continue;
@@ -1084,21 +1097,21 @@ moves_loop:  // When in check, search starts here
                             + sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
 
                 // Continuation history based pruning
-                if (history < -4083 * depth)
+                if (history < -xx55 * depth)
                     continue;
 
-                history += 69 * mainHistory[us][move.raw()] / 32;
+                history += xx56 * mainHistory[us][move.raw()] / 32;
 
                 // (*Scaler): Generally, lower divisors scales well
-                lmrDepth += history / 3208;
+                lmrDepth += history / xx57;
 
-                Value futilityValue = ss->staticEval + 42 + 161 * !bestMove + 127 * lmrDepth
-                                    + 85 * (ss->staticEval > alpha);
+                Value futilityValue = ss->staticEval + xx58 + xx59 * !bestMove + xx60 * lmrDepth
+                                    + xx61 * (ss->staticEval > alpha);
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
                 // scales well
-                if (!ss->inCheck && lmrDepth < 13 && futilityValue <= alpha)
+                if (!ss->inCheck && lmrDepth < xx62 && futilityValue <= alpha)
                 {
                     if (bestValue <= futilityValue && !is_decisive(bestValue)
                         && !is_win(futilityValue))
@@ -1109,7 +1122,7 @@ moves_loop:  // When in check, search starts here
                 lmrDepth = std::max(lmrDepth, 0);
 
                 // Prune moves with negative SEE
-                if (!pos.see_ge(move, -25 * lmrDepth * lmrDepth))
+                if (!pos.see_ge(move, -xx63 * lmrDepth * lmrDepth))
                     continue;
             }
         }
@@ -1128,7 +1141,7 @@ moves_loop:  // When in check, search starts here
             && is_valid(ttData.value) && !is_decisive(ttData.value) && (ttData.bound & BOUND_LOWER)
             && ttData.depth >= depth - 3 && !is_shuffling(move, ss, pos))
         {
-            Value singularBeta  = ttData.value - (53 + 75 * (ss->ttPv && !PvNode)) * depth / 60;
+            Value singularBeta  = ttData.value - (xx64 + xx65 * (ss->ttPv && !PvNode)) * depth / xx66;
             Depth singularDepth = newDepth / 2;
 
             ss->excludedMove = move;
@@ -1137,11 +1150,11 @@ moves_loop:  // When in check, search starts here
 
             if (value < singularBeta)
             {
-                int corrValAdj   = std::abs(correctionValue) / 230673;
-                int doubleMargin = -4 + 199 * PvNode - 201 * !ttCapture - corrValAdj
-                                 - 897 * ttMoveHistory / 127649 - (ss->ply > rootDepth) * 42;
-                int tripleMargin = 73 + 302 * PvNode - 248 * !ttCapture + 90 * ss->ttPv - corrValAdj
-                                 - (ss->ply > rootDepth) * 48;
+                int corrValAdj   = std::abs(correctionValue) / xx67;
+                int doubleMargin = -xx68 + xx69 * PvNode - xx70 * !ttCapture - corrValAdj
+                                 - xx71 * ttMoveHistory / xx72 - (ss->ply > rootDepth) * xx73;
+                int tripleMargin = xx74 + xx75 * PvNode - xx76 * !ttCapture + xx77 * ss->ttPv - corrValAdj
+                                 - (ss->ply > rootDepth) * xx78;
 
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
@@ -1157,7 +1170,7 @@ moves_loop:  // When in check, search starts here
             // subtree by returning a softbound.
             else if (value >= beta && !is_decisive(value))
             {
-                ttMoveHistory << std::max(-400 - 100 * depth, -4000);
+                ttMoveHistory << std::max(-xx79 - xx80 * depth, -xx81);
                 return value;
             }
 
@@ -1187,31 +1200,31 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 2719 + PvNode * 983 + (ttData.value > alpha) * 922
-               + (ttData.depth >= depth) * (934 + cutNode * 1011);
+            r -= xx82 + PvNode * xx83 + (ttData.value > alpha) * xx84
+               + (ttData.depth >= depth) * (xx85 + cutNode * xx86);
 
-        r += 714;  // Base reduction offset to compensate for other tweaks
-        r -= moveCount * 73;
-        r -= std::abs(correctionValue) / 30370;
+        r += xx87;  // Base reduction offset to compensate for other tweaks
+        r -= moveCount * xx88;
+        r -= std::abs(correctionValue) / xx89;
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 3372 + 997 * !ttData.move;
+            r += xx90 + xx91 * !ttData.move;
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
-            r += 1119;
+            r += xx92;
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
-            r += 256 + 1024 * ((ss + 1)->cutoffCnt > 2) + 1024 * allNode;
+            r += xx93 + xx94 * ((ss + 1)->cutoffCnt > 2) + xx95 * allNode;
 
         // For first picked move (ttMove) reduce reduction
         if (move == ttData.move)
-            r -= 2151;
+            r -= xx96;
 
         if (capture)
-            ss->statScore = 868 * int(PieceValue[pos.captured_piece()]) / 128
+            ss->statScore = xx97 * int(PieceValue[pos.captured_piece()]) / 128
                           + captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())];
         else
             ss->statScore = 2 * mainHistory[us][move.raw()]
@@ -1219,11 +1232,11 @@ moves_loop:  // When in check, search starts here
                           + (*contHist[1])[movedPiece][move.to_sq()];
 
         // Decrease/increase reduction for moves with a good/bad history
-        r -= ss->statScore * 850 / 8192;
+        r -= ss->statScore * xx98 / 8192;
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
-            r += r / (depth + 1);
+            r += r * xx99 / (256 * depth + xx100);
 
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
@@ -1245,8 +1258,8 @@ moves_loop:  // When in check, search starts here
             {
                 // Adjust full-depth search based on LMR results - if the result was
                 // good enough search deeper, if it was bad enough search shallower.
-                const bool doDeeperSearch    = d < newDepth && value > bestValue + 50;
-                const bool doShallowerSearch = value < bestValue + 9;
+                const bool doDeeperSearch    = d < newDepth && value > bestValue + xx101;
+                const bool doShallowerSearch = value < bestValue + xx102;
 
                 newDepth += doDeeperSearch - doShallowerSearch;
 
@@ -1254,7 +1267,7 @@ moves_loop:  // When in check, search starts here
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates
-                update_continuation_histories(ss, movedPiece, move.to_sq(), 1365);
+                update_continuation_histories(ss, movedPiece, move.to_sq(), xx103);
             }
         }
 
@@ -1263,11 +1276,11 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present
             if (!ttData.move)
-                r += 1140;
+                r += xx104;
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
-                                   newDepth - (r > 3957) - (r > 5654 && newDepth > 2), !cutNode);
+                                   newDepth - (r > xx105) - (r > xx106 && newDepth > 2), !cutNode);
         }
 
         // For PV nodes only, do a full PV search on the first move or after a fail high,
@@ -1375,7 +1388,7 @@ moves_loop:  // When in check, search starts here
                 }
 
                 // Reduce other moves if we have found at least one score improvement
-                if (depth > 2 && depth < 14 && !is_decisive(value))
+                if (depth > 2 && depth < xx107 && !is_decisive(value))
                     depth -= 2;
 
                 assert(depth > 0);
@@ -1415,31 +1428,31 @@ moves_loop:  // When in check, search starts here
         update_all_stats(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth,
                          ttData.move);
         if (!PvNode)
-            ttMoveHistory << (bestMove == ttData.move ? 809 : -865);
+            ttMoveHistory << (bestMove == ttData.move ? xx108 : -xx109);
     }
 
     // Bonus for prior quiet countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
-        int bonusScale = -215;
-        bonusScale -= (ss - 1)->statScore / 100;
-        bonusScale += std::min(56 * depth, 489);
-        bonusScale += 184 * ((ss - 1)->moveCount > 8);
-        bonusScale += 147 * (!ss->inCheck && bestValue <= ss->staticEval - 107);
-        bonusScale += 156 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 65);
+        int bonusScale = -xx110;
+        bonusScale -= (ss - 1)->statScore / xx111;
+        bonusScale += std::min(xx112 * depth, xx113);
+        bonusScale += xx114 * ((ss - 1)->moveCount > 8);
+        bonusScale += xx115 * (!ss->inCheck && bestValue <= ss->staticEval - xx116);
+        bonusScale += xx117 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - xx118);
 
         bonusScale = std::max(bonusScale, 0);
 
         // scaledBonus ranges from 0 to roughly 2.3M, overflows happen for multipliers larger than 900
-        const int scaledBonus = std::min(141 * depth - 87, 1351) * bonusScale;
+        const int scaledBonus = std::min(xx119 * depth - xx120, xx121) * bonusScale;
 
         update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq,
-                                      scaledBonus * 406 / 32768);
+                                      scaledBonus * xx122 / 32768);
 
-        mainHistory[~us][((ss - 1)->currentMove).raw()] << scaledBonus * 243 / 32768;
+        mainHistory[~us][((ss - 1)->currentMove).raw()] << scaledBonus * xx123 / 32768;
 
         if (type_of(pos.piece_on(prevSq)) != PAWN && ((ss - 1)->currentMove).type_of() != PROMOTION)
-            sharedHistory.pawn_entry(pos)[pos.piece_on(prevSq)][prevSq] << scaledBonus * 290 / 8192;
+            sharedHistory.pawn_entry(pos)[pos.piece_on(prevSq)][prevSq] << scaledBonus * xx124 / 8192;
     }
 
     // Bonus for prior capture countermove that caused the fail low
@@ -1447,7 +1460,7 @@ moves_loop:  // When in check, search starts here
     {
         Piece capturedPiece = pos.captured_piece();
         assert(capturedPiece != NO_PIECE);
-        captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)] << 1012;
+        captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)] << xx125;
     }
 
     if (PvNode)
@@ -1473,7 +1486,7 @@ moves_loop:  // When in check, search starts here
     if (!ss->inCheck && !(bestMove && pos.capture(bestMove))
         && (bestValue > ss->staticEval) == bool(bestMove))
     {
-        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / (bestMove ? 10 : 8),
+        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / (bestMove ? xx126 : xx127),
                                 -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
         update_correction_history(pos, ss, *this, bonus);
     }
@@ -1599,7 +1612,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         if (bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = ss->staticEval + 351;
+        futilityBase = ss->staticEval + xx128;
     }
 
     const PieceToHistory* contHist[] = {(ss - 1)->continuationHistory};
@@ -1660,7 +1673,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 continue;
 
             // Do not search moves with bad enough SEE values
-            if (!pos.see_ge(move, -80))
+            if (!pos.see_ge(move, -xx129))
                 continue;
         }
 
@@ -1732,7 +1745,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
 
 Depth Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return reductionScale - delta * 608 / rootDelta + !i * reductionScale * 238 / 512 + 1182;
+    return reductionScale - delta * xx130 / rootDelta + !i * reductionScale * xx131 / 512 + xx132;
 }
 
 // elapsed() returns the time elapsed since the search started. If the
@@ -1828,18 +1841,18 @@ void update_all_stats(const Position& pos,
     PieceType              capturedPiece;
 
     int bonus =
-      std::min(116 * depth - 81, 1515) + 347 * (bestMove == ttMove) + (ss - 1)->statScore / 32;
-    int malus = std::min(800 * depth - 207, 2200);
+      std::min(xx133 * depth - xx134, xx135) + xx136 * (bestMove == ttMove) + (ss - 1)->statScore / xx137;
+    int malus = std::min(xx138 * depth - xx139, xx140);
 
     if (!pos.capture_stage(bestMove))
     {
-        update_quiet_histories(pos, ss, workerThread, bestMove, bonus * 910 / 1024);
+        update_quiet_histories(pos, ss, workerThread, bestMove, bonus * xx141 / 1024);
 
-        int actualMalus = malus * 1100 / 1024;
+        int actualMalus = malus * xx142 / 1024;
         // Decrease stats for all non-best quiet moves
         for (Move move : quietsSearched)
         {
-            actualMalus = actualMalus * 950 / 1024;
+            actualMalus = actualMalus * xx143 / 1024;
             update_quiet_histories(pos, ss, workerThread, move, -actualMalus);
         }
     }
@@ -1847,20 +1860,20 @@ void update_all_stats(const Position& pos,
     {
         // Increase stats for the best move in case it was a capture move
         capturedPiece = type_of(pos.piece_on(bestMove.to_sq()));
-        captureHistory[movedPiece][bestMove.to_sq()][capturedPiece] << bonus * 1395 / 1024;
+        captureHistory[movedPiece][bestMove.to_sq()][capturedPiece] << bonus * xx144 / 1024;
     }
 
     // Extra penalty for a quiet early move that was not a TT move in
     // previous ply when it gets refuted.
     if (prevSq != SQ_NONE && ((ss - 1)->moveCount == 1 + (ss - 1)->ttHit) && !pos.captured_piece())
-        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -malus * 602 / 1024);
+        update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -malus * xx145 / 1024);
 
     // Decrease stats for all non-best capture moves
     for (Move move : capturesSearched)
     {
         movedPiece    = pos.moved_piece(move);
         capturedPiece = type_of(pos.piece_on(move.to_sq()));
-        captureHistory[movedPiece][move.to_sq()][capturedPiece] << -malus * 1448 / 1024;
+        captureHistory[movedPiece][move.to_sq()][capturedPiece] << -malus * xx146 / 1024;
     }
 }
 
@@ -1868,8 +1881,8 @@ void update_all_stats(const Position& pos,
 // Updates histories of the move pairs formed by moves
 // at ply -1, -2, -3, -4, and -6 with current move.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
-    static constexpr std::array<ConthistBonus, 6> conthist_bonuses = {
-      {{1, 1133}, {2, 683}, {3, 312}, {4, 582}, {5, 149}, {6, 474}}};
+    static std::array<ConthistBonus, 6> conthist_bonuses = {
+      {{1, xx147}, {2, xx148}, {3, xx149}, {4, xx150}, {5, xx151}, {6, xx152}}};
 
     for (const auto [i, weight] : conthist_bonuses)
     {
@@ -1878,7 +1891,7 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
             break;
 
         if (((ss - i)->currentMove).is_ok())
-            (*(ss - i)->continuationHistory)[pc][to] << (bonus * weight / 1024) + 88 * (i < 2);
+            (*(ss - i)->continuationHistory)[pc][to] << (bonus * weight / 1024) + xx153 * (i < 2);
     }
 }
 
@@ -1891,12 +1904,12 @@ void update_quiet_histories(
     workerThread.mainHistory[us][move.raw()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
-        workerThread.lowPlyHistory[ss->ply][move.raw()] << bonus * 805 / 1024;
+        workerThread.lowPlyHistory[ss->ply][move.raw()] << bonus * xx154 / 1024;
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 896 / 1024);
+    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * xx155 / 1024);
 
     workerThread.sharedHistory.pawn_entry(pos)[pos.moved_piece(move)][move.to_sq()]
-      << bonus * (bonus > 0 ? 905 : 505) / 1024;
+      << bonus * (bonus > 0 ? xx156 : xx157) / 1024;
 }
 
 }
