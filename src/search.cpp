@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=3200, xx2=2000, xx3=173, xx4=3072;
+TUNE(xx1,xx2,xx3,xx4);
 
 namespace TB = Tablebases;
 
@@ -749,9 +751,9 @@ Value Search::Worker::search(
     opponentWorsening = ss->staticEval > -(ss - 1)->staticEval;
 
     // Hindsight adjustment of reductions based on static evaluation difference.
-    if (priorReduction >= 3 && !opponentWorsening)
+    if (priorReduction >= xx1 && !opponentWorsening)
         depth++;
-    if (priorReduction >= 2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > 173)
+    if (priorReduction >= xx2 && depth >= 2 && ss->staticEval + (ss - 1)->staticEval > xx3)
         depth--;
 
     // At non-PV nodes we check for an early TT cutoff
@@ -927,7 +929,7 @@ Value Search::Worker::search(
     // Step 10. Internal iterative reductions
     // At sufficient depth, reduce depth for PV/Cut nodes without a TTMove.
     // (*Scaler) Making IIR more aggressive scales poorly.
-    if (!allNode && depth >= 6 && !ttData.move && priorReduction <= 3)
+    if (!allNode && depth >= 6 && !ttData.move && priorReduction <= xx4)
         depth--;
 
     // Step 11. ProbCut
@@ -1235,7 +1237,7 @@ moves_loop:  // When in check, search starts here
             // std::clamp has been replaced by a more robust implementation.
             Depth d = std::max(1, std::min(newDepth - r / 1024, newDepth + 2)) + PvNode;
 
-            ss->reduction = newDepth - d;
+            ss->reduction = r;
             value         = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, d, true);
             ss->reduction = 0;
 
