@@ -51,7 +51,12 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=58,xx2=67,xx3=0,xx4=0,xx5=57,xx6=220870,xx7=4,xx8=213,xx9=196,xx10=943,xx11=123477,xx12=45,xx13=73,xx14=324,xx15=229,xx16=87,xx17=50;
+TUNE(SetRange(-50, 120), xx1,xx2,xx3,xx4);
+TUNE(SetRange(1, 110), xx5);
+TUNE(xx6);
+TUNE(SetRange(0, 16), xx7);
+TUNE(xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17);
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -61,15 +66,8 @@ void syzygy_extend_pv(const OptionsMap&            options,
                       Value&                       v);
 
 using namespace Search;
-int xx1=58,xx2=67,xx3=0,xx4=0,xx5=57,xx6=220870,xx7=4,xx8=213,xx9=196,xx10=943,xx11=123477,xx12=45,xx13=73,xx14=324,xx15=229,xx16=87,xx17=50;
-TUNE(SetRange(-50, 120), xx1,xx2,xx3,xx4);
-TUNE(SetRange(1, 110), xx5);
-TUNE(xx6);
-TUNE(SetRange(0, 16), xx7);
-TUNE(xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17);
 
 namespace {
-int 
 constexpr int SEARCHEDLIST_CAPACITY = 32;
 using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 
