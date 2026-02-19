@@ -61,9 +61,15 @@ void syzygy_extend_pv(const OptionsMap&            options,
                       Value&                       v);
 
 using namespace Search;
+int xx1=58,xx2=67,xx3=0,xx4=0,xx5=57,xx6=220870,xx7=4,xx8=213,xx9=196,xx10=943,xx11=123477,xx12=45,xx13=73,xx14=324,xx15=229,xx16=87,xx17=50;
+TUNE(SetRange(-50, 120), xx1,xx2,xx3,xx4);
+TUNE(SetRange(1, 110), xx5);
+TUNE(xx6);
+TUNE(SetRange(0, 16), xx7);
+TUNE(xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17);
 
 namespace {
-
+int 
 constexpr int SEARCHEDLIST_CAPACITY = 32;
 using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 
@@ -1128,7 +1134,8 @@ moves_loop:  // When in check, search starts here
             && is_valid(ttData.value) && !is_decisive(ttData.value) && (ttData.bound & BOUND_LOWER)
             && ttData.depth >= depth - 3 && !is_shuffling(move, ss, pos))
         {
-            Value singularBeta  = ttData.value - (58 + 67 * (ss->ttPv && !PvNode)) * depth / 57;
+            Value singularBeta  = ttData.value - (xx1 + xx2 * (ss->ttPv && !PvNode) 
+                        + xx3 * (ss->ttPv && PvNode) + xx4 * (!ss->ttPv && !PvNode)) * depth / xx5;
             Depth singularDepth = newDepth / 2;
 
             ss->excludedMove = move;
@@ -1137,11 +1144,11 @@ moves_loop:  // When in check, search starts here
 
             if (value < singularBeta)
             {
-                int corrValAdj   = std::abs(correctionValue) / 220870;
-                int doubleMargin = -4 + 213 * PvNode - 196 * !ttCapture - corrValAdj
-                                 - 943 * ttMoveHistory / 123477 - (ss->ply > rootDepth) * 45;
-                int tripleMargin = 73 + 324 * PvNode - 229 * !ttCapture + 87 * ss->ttPv - corrValAdj
-                                 - (ss->ply > rootDepth) * 50;
+                int corrValAdj   = std::abs(correctionValue) / xx6;
+                int doubleMargin = -xx7 + xx8 * PvNode - xx9 * !ttCapture - corrValAdj
+                                 - xx10 * ttMoveHistory / xx11 - (ss->ply > rootDepth) * xx12;
+                int tripleMargin = xx13 + xx14 * PvNode - xx15 * !ttCapture + xx16 * ss->ttPv - corrValAdj
+                                 - (ss->ply > rootDepth) * xx17;
 
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
