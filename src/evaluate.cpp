@@ -58,7 +58,7 @@ int mobility_score(const Position& pos, Color c) {
     return m;
 }
 
-int passed_score(const Position& pos, const Pawns::Entry* pe, Color c) {
+int passed_score(const Pawns::Entry* pe, Color c) {
     int bonus = 0;
     Bitboard b = pe->passed_pawns(c);
     while (b)
@@ -87,7 +87,7 @@ Value evaluate(const Position& pos) {
     score += me->imbalance();
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
     score += pe->king_safety<WHITE>(pos) - pe->king_safety<BLACK>(pos);
-    score += passed_score(pos, pe, WHITE) - passed_score(pos, pe, BLACK);
+    score += passed_score(pe, WHITE) - passed_score(pe, BLACK);
     score += 2 * (mobility_score(pos, WHITE) - mobility_score(pos, BLACK));
 
     Color strongSide = score >= 0 ? WHITE : BLACK;
@@ -114,7 +114,7 @@ std::string trace(Position& pos) {
     int imb    = me->imbalance();
     int pawns  = pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
     int king   = pe->king_safety<WHITE>(pos) - pe->king_safety<BLACK>(pos);
-    int passed = passed_score(pos, pe, WHITE) - passed_score(pos, pe, BLACK);
+    int passed = passed_score(pe, WHITE) - passed_score(pe, BLACK);
     int mob    = 2 * (mobility_score(pos, WHITE) - mobility_score(pos, BLACK));
 
     Value v = evaluate(pos);
