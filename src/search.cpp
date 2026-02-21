@@ -169,8 +169,6 @@ Search::Worker::Worker(SharedState&                    sharedState,
     clear();
 }
 
-void Search::Worker::ensure_network_replicated() {}
-
 void Search::Worker::start_searching() {
 
     // Non-main threads go directly to iterative_deepening()

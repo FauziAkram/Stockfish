@@ -29,10 +29,6 @@ class Position;
 
 namespace Eval {
 
-// Kept for compatibility with the build process tooling.
-#define EvalFileDefaultNameBig "nn-5227780996d3.nnue"
-#define EvalFileDefaultNameSmall "nn-37f18f62d772.nnue"
-
 std::string trace(Position& pos);
 
 int   simple_eval(const Position& pos);
