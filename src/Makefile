@@ -67,24 +67,18 @@ BINDIR = $(PREFIX)/bin
 PGOBENCH = $(RUN_PREFIX) ./$(EXE) bench
 
 ### Source and object files
-SRCS = benchmark.cpp bitboard.cpp evaluate.cpp main.cpp \
-	misc.cpp movegen.cpp movepick.cpp position.cpp \
+SRCS = benchmark.cpp bitboard.cpp endgame.cpp evaluate.cpp main.cpp \
+	material.cpp misc.cpp movegen.cpp movepick.cpp pawns.cpp position.cpp psqt.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
-	nnue/nnue_accumulator.cpp nnue/nnue_misc.cpp nnue/network.cpp \
-	nnue/features/half_ka_v2_hm.cpp nnue/features/full_threats.cpp \
 	engine.cpp score.cpp memory.cpp
 
-HEADERS = benchmark.h bitboard.h evaluate.h misc.h movegen.h movepick.h history.h \
-		nnue/nnue_misc.h nnue/features/half_ka_v2_hm.h nnue/features/full_threats.h \
-		nnue/layers/affine_transform.h nnue/layers/affine_transform_sparse_input.h \
-		nnue/layers/clipped_relu.h nnue/layers/sqr_clipped_relu.h nnue/nnue_accumulator.h \
-		nnue/nnue_architecture.h nnue/nnue_common.h nnue/nnue_feature_transformer.h nnue/simd.h \
-		position.h search.h syzygy/tbprobe.h thread.h thread_win32_osx.h timeman.h \
-		tt.h tune.h types.h uci.h ucioption.h perft.h nnue/network.h engine.h score.h numa.h memory.h shm.h shm_linux.h
+HEADERS = benchmark.h bitboard.h endgame.h evaluate.h material.h misc.h movegen.h movepick.h history.h pawns.h \
+		position.h psqt.h search.h syzygy/tbprobe.h thread.h thread_win32_osx.h timeman.h \
+		tt.h tune.h types.h uci.h ucioption.h perft.h engine.h score.h numa.h memory.h shm.h shm_linux.h
 
 OBJS = $(notdir $(SRCS:.cpp=.o))
 
-VPATH = syzygy:nnue:nnue/features
+VPATH = syzygy
 
 ### ==========================================================================
 ### Section 2. High-level Configuration
@@ -927,8 +921,7 @@ help:
 	echo "help                    > Display architecture details" && \
 	echo "profile-build           > standard build with profile-guided optimization" && \
 	echo "build                   > skip profile-guided optimization" && \
-	echo "net                     > Download the default nnue nets" && \
-	echo "strip                   > Strip executable" && \
+		echo "strip                   > Strip executable" && \
 	echo "install                 > Install executable" && \
 	echo "clean                   > Clean up" && \
 	echo "" && \
@@ -1035,21 +1028,21 @@ clean: objclean profileclean
 
 # clean binaries and objects
 objclean:
-	@rm -f stockfish stockfish.exe *.o ./syzygy/*.o ./nnue/*.o ./nnue/features/*.o
+	@rm -f stockfish stockfish.exe *.o ./syzygy/*.o
 
 # clean auxiliary profiling files
 profileclean:
 	@rm -rf profdir
-	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda ./nnue/*.gcda ./nnue/features/*.gcda *.s PGOBENCH.out
+	@rm -f bench.txt *.gcda *.gcno ./syzygy/*.gcda *.s PGOBENCH.out
 	@rm -f stockfish.profdata *.profraw
 	@rm -f stockfish.*args*
 	@rm -f stockfish.*lt*
 	@rm -f stockfish.res
 	@rm -f ./-lstdc++.res
 
-# evaluation network (nnue)
+# evaluation network (removed with HCE evaluator)
 net:
-	@$(SHELL) ../scripts/net.sh
+	@true
 
 format:
 	$(CLANG-FORMAT) -i $(SRCS) $(HEADERS) -style=file

@@ -20,8 +20,10 @@
 #include <memory>
 
 #include "bitboard.h"
+#include "endgame.h"
 #include "misc.h"
 #include "position.h"
+#include "psqt.h"
 #include "tune.h"
 #include "uci.h"
 
@@ -32,6 +34,8 @@ int main(int argc, char* argv[]) {
 
     Bitboards::init();
     Position::init();
+    PSQT::init();
+    Endgames::init();
 
     auto uci = std::make_unique<UCIEngine>(argc, argv);
 

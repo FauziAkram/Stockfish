@@ -279,7 +279,7 @@ enum Rank : uint8_t {
     RANK_NB
 };
 
-// Keep track of what a move changes on the board (used by NNUE)
+// Keep track of what a move changes on the board for incremental search bookkeeping
 struct DirtyPiece {
     Piece  pc;        // this is never allowed to be NO_PIECE
     Square from, to;  // to should be SQ_NONE for promotions
@@ -291,7 +291,7 @@ struct DirtyPiece {
     Piece  remove_pc, add_pc;
 };
 
-// Keep track of what threats change on the board (used by NNUE)
+// Keep track of what threats change on the board for incremental search bookkeeping
 struct DirtyThreat {
     static constexpr int PcSqOffset         = 0;
     static constexpr int ThreatenedSqOffset = 8;
