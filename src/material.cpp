@@ -76,8 +76,6 @@ EvalScore imbalance(const int pieceCount[][PIECE_TYPE_NB]) {
     return bonus;
 }
 
-Material::Table GlobalMaterialTable;
-
 }  // namespace
 
 namespace Material {
@@ -85,7 +83,8 @@ namespace Material {
 Entry* probe(const Position& pos) {
 
     Key    key = pos.material_key();
-    Entry* e   = GlobalMaterialTable[key];
+    thread_local Table localMaterialTable;
+    Entry* e   = localMaterialTable[key];
 
     if (e->key == key)
         return e;

@@ -174,8 +174,6 @@ EvalScore evaluate(const Position& pos, Pawns::Entry* e) {
     return score;
 }
 
-Pawns::Table GlobalPawnsTable;
-
 }  // namespace
 
 namespace Pawns {
@@ -183,7 +181,8 @@ namespace Pawns {
 Entry* probe(const Position& pos) {
 
     Key    key = pos.pawn_key();
-    Entry* e   = GlobalPawnsTable[key];
+    thread_local Table localPawnsTable;
+    Entry* e   = localPawnsTable[key];
 
     if (e->key == key)
         return e;
