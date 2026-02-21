@@ -16,30 +16,20 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
-#include <memory>
+#ifndef PSQT_H_INCLUDED
+#define PSQT_H_INCLUDED
 
-#include "bitboard.h"
-#include "misc.h"
-#include "position.h"
-#include "psqt.h"
-#include "tune.h"
-#include "uci.h"
+#include "types.h"
 
-using namespace Stockfish;
+namespace Stockfish::PSQT {
 
-int main(int argc, char* argv[]) {
-    std::cout << engine_info() << std::endl;
+using Score = int;
 
-    Bitboards::init();
-    Position::init();
-    PSQT::init();
+extern Score psq[PIECE_NB][SQUARE_NB];
 
-    auto uci = std::make_unique<UCIEngine>(argc, argv);
+// Fill psqt array from a set of internally linked parameters
+void init();
 
-    Tune::init(uci->engine_options());
+}  // namespace Stockfish::PSQT
 
-    uci->loop();
-
-    return 0;
-}
+#endif  // PSQT_H_INCLUDED
