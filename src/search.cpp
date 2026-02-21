@@ -537,18 +537,20 @@ void Search::Worker::do_move(Position& pos, const Move move, StateInfo& st, Stac
 void Search::Worker::do_move(
   Position& pos, const Move move, StateInfo& st, const bool givesCheck, Stack* const ss) {
     bool capture = pos.capture_stage(move);
-    Piece moved  = pos.moved_piece(move);
     // Preferable over fetch_add to avoid locking instructions
     nodes.store(nodes.load(std::memory_order_relaxed) + 1, std::memory_order_relaxed);
 
-    (void) givesCheck;
-    pos.do_move(move, st, &tt);
+    DirtyPiece   dirtyPiece;
+    DirtyThreats dirtyThreats;
+    pos.do_move(move, st, givesCheck, dirtyPiece, dirtyThreats, &tt, &sharedHistory);
 
     if (ss != nullptr)
     {
         ss->currentMove = move;
-        ss->continuationHistory = &continuationHistory[ss->inCheck][capture][moved][move.to_sq()];
-        ss->continuationCorrectionHistory = &continuationCorrectionHistory[moved][move.to_sq()];
+        ss->continuationHistory =
+          &continuationHistory[ss->inCheck][capture][dirtyPiece.pc][move.to_sq()];
+        ss->continuationCorrectionHistory =
+          &continuationCorrectionHistory[dirtyPiece.pc][move.to_sq()];
     }
 }
 
