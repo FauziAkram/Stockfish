@@ -29,28 +29,14 @@ class Position;
 
 namespace Eval {
 
-// The default net name MUST follow the format nn-[SHA256 first 12 digits].nnue
-// for the build process (profile-build and fishtest) to work. Do not change the
-// name of the macro or the location where this macro is defined, as it is used
-// in the Makefile/Fishtest.
+// Kept for compatibility with the build process tooling.
 #define EvalFileDefaultNameBig "nn-5227780996d3.nnue"
 #define EvalFileDefaultNameSmall "nn-37f18f62d772.nnue"
 
-namespace NNUE {
-struct Networks;
-struct AccumulatorCaches;
-class AccumulatorStack;
-}
-
-std::string trace(Position& pos, const Eval::NNUE::Networks& networks);
+std::string trace(Position& pos);
 
 int   simple_eval(const Position& pos);
-bool  use_smallnet(const Position& pos);
-Value evaluate(const NNUE::Networks&          networks,
-               const Position&                pos,
-               Eval::NNUE::AccumulatorStack&  accumulators,
-               Eval::NNUE::AccumulatorCaches& caches,
-               int                            optimism);
+Value evaluate(const Position& pos, int optimism);
 }  // namespace Eval
 
 }  // namespace Stockfish

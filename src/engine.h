@@ -31,7 +31,6 @@
 #include <vector>
 
 #include "history.h"
-#include "nnue/network.h"
 #include "numa.h"
 #include "position.h"
 #include "search.h"
@@ -84,14 +83,6 @@ class Engine {
     void set_on_bestmove(std::function<void(std::string_view, std::string_view)>&&);
     void set_on_verify_networks(std::function<void(std::string_view)>&&);
 
-    // network related
-
-    void                                  verify_networks() const;
-    std::unique_ptr<Eval::NNUE::Networks> get_default_networks() const;
-    void                                  load_big_network(const std::string& file);
-    void                                  load_small_network(const std::string& file);
-    void save_network(const std::pair<std::optional<std::string>, std::string> files[2]);
-
     // utility functions
 
     void trace_eval() const;
@@ -121,7 +112,6 @@ class Engine {
     OptionsMap                                         options;
     ThreadPool                                         threads;
     TranspositionTable                                 tt;
-    LazyNumaReplicatedSystemWide<Eval::NNUE::Networks> networks;
 
     Search::SearchManager::UpdateContext  updateContext;
     std::function<void(std::string_view)> onVerifyNetworks;

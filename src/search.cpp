@@ -39,8 +39,6 @@
 #include "misc.h"
 #include "movegen.h"
 #include "movepick.h"
-#include "nnue/network.h"
-#include "nnue/nnue_accumulator.h"
 #include "position.h"
 #include "syzygy/tbprobe.h"
 #include "thread.h"
@@ -167,21 +165,13 @@ Search::Worker::Worker(SharedState&                    sharedState,
     manager(std::move(sm)),
     options(sharedState.options),
     threads(sharedState.threads),
-    tt(sharedState.tt),
-    networks(sharedState.networks),
-    refreshTable(networks[token]) {
+    tt(sharedState.tt) {
     clear();
 }
 
-void Search::Worker::ensure_network_replicated() {
-    // Access once to force lazy initialization.
-    // We do this because we want to avoid initialization during search.
-    (void) (networks[numaAccessToken]);
-}
+void Search::Worker::ensure_network_replicated() {}
 
 void Search::Worker::start_searching() {
-
-    accumulatorStack.reset();
 
     // Non-main threads go directly to iterative_deepening()
     if (!is_mainthread())
@@ -549,19 +539,18 @@ void Search::Worker::do_move(Position& pos, const Move move, StateInfo& st, Stac
 void Search::Worker::do_move(
   Position& pos, const Move move, StateInfo& st, const bool givesCheck, Stack* const ss) {
     bool capture = pos.capture_stage(move);
+    Piece moved  = pos.moved_piece(move);
     // Preferable over fetch_add to avoid locking instructions
     nodes.store(nodes.load(std::memory_order_relaxed) + 1, std::memory_order_relaxed);
 
-    auto [dirtyPiece, dirtyThreats] = accumulatorStack.push();
-    pos.do_move(move, st, givesCheck, dirtyPiece, dirtyThreats, &tt, &sharedHistory);
+    (void) givesCheck;
+    pos.do_move(move, st, &tt);
 
     if (ss != nullptr)
     {
         ss->currentMove = move;
-        ss->continuationHistory =
-          &continuationHistory[ss->inCheck][capture][dirtyPiece.pc][move.to_sq()];
-        ss->continuationCorrectionHistory =
-          &continuationCorrectionHistory[dirtyPiece.pc][move.to_sq()];
+        ss->continuationHistory = &continuationHistory[ss->inCheck][capture][moved][move.to_sq()];
+        ss->continuationCorrectionHistory = &continuationCorrectionHistory[moved][move.to_sq()];
     }
 }
 
@@ -574,7 +563,6 @@ void Search::Worker::do_null_move(Position& pos, StateInfo& st, Stack* const ss)
 
 void Search::Worker::undo_move(Position& pos, const Move move) {
     pos.undo_move(move);
-    accumulatorStack.pop();
 }
 
 void Search::Worker::undo_null_move(Position& pos) { pos.undo_null_move(); }
@@ -604,7 +592,6 @@ void Search::Worker::clear() {
     for (size_t i = 1; i < reductions.size(); ++i)
         reductions[i] = int(2809 / 128.0 * std::log(i));
 
-    refreshTable.clear(networks[numaAccessToken]);
 }
 
 
@@ -1750,8 +1737,7 @@ TimePoint Search::Worker::elapsed() const {
 TimePoint Search::Worker::elapsed_time() const { return main_manager()->tm.elapsed_time(); }
 
 Value Search::Worker::evaluate(const Position& pos) {
-    return Eval::evaluate(networks[numaAccessToken], pos, accumulatorStack, refreshTable,
-                          optimism[pos.side_to_move()]);
+    return Eval::evaluate(pos, optimism[pos.side_to_move()]);
 }
 
 namespace {
