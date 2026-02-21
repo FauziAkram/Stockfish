@@ -22,8 +22,8 @@ namespace Stockfish::Eval {
 
 namespace {
 
-int psqt_score(const Position& pos) {
-    int score = 0;
+EvalScore psqt_score(const Position& pos) {
+    EvalScore score = 0;
 
     for (Piece pc : {W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
                      B_PAWN, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING})
@@ -37,7 +37,7 @@ int psqt_score(const Position& pos) {
     return score;
 }
 
-int mobility_score(const Position& pos, Color c) {
+EvalScore mobility_score(const Position& pos, Color c) {
     int ownOcc = popcount(pos.pieces(c));
     int m      = 0;
 
@@ -55,10 +55,10 @@ int mobility_score(const Position& pos, Color c) {
         }
     }
 
-    return m;
+    return make_score(m, m);
 }
 
-int passed_score(const Pawns::Entry* pe, Color c) {
+EvalScore passed_score(const Pawns::Entry* pe, Color c) {
     int bonus = 0;
     Bitboard b = pe->passed_pawns(c);
     while (b)
@@ -67,7 +67,7 @@ int passed_score(const Pawns::Entry* pe, Color c) {
         int r = int(relative_rank(c, s));
         bonus += r * r * 8;
     }
-    return bonus;
+    return make_score(bonus, bonus);
 }
 
 }  // namespace
@@ -82,7 +82,7 @@ Value evaluate(const Position& pos) {
 
     Pawns::Entry* pe = Pawns::probe(pos);
 
-    int score = 0;
+    EvalScore score = 0;
     score += psqt_score(pos);
     score += me->imbalance();
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
@@ -90,16 +90,20 @@ Value evaluate(const Position& pos) {
     score += passed_score(pe, WHITE) - passed_score(pe, BLACK);
     score += 2 * (mobility_score(pos, WHITE) - mobility_score(pos, BLACK));
 
-    Color strongSide = score >= 0 ? WHITE : BLACK;
+    Value scoreValue = (mg_value(score) * me->game_phase()
+                        + eg_value(score) * (PHASE_MIDGAME - me->game_phase()))
+                     / PHASE_MIDGAME;
+
+    Color strongSide = scoreValue >= 0 ? WHITE : BLACK;
     int   sf         = me->scale_factor(pos, strongSide);
-    score            = score * sf / SCALE_FACTOR_NORMAL;
+    scoreValue       = scoreValue * sf / SCALE_FACTOR_NORMAL;
 
-    score = (score / 16) * 16;
-    score = pos.side_to_move() == WHITE ? score : -score;
-    score = score * (200 - pos.rule50_count()) / 214;
-    score = std::clamp(score, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
+    scoreValue = (scoreValue / 16) * 16;
+    scoreValue = pos.side_to_move() == WHITE ? scoreValue : -scoreValue;
+    scoreValue = scoreValue * (200 - pos.rule50_count()) / 214;
+    scoreValue = std::clamp(scoreValue, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 
-    return Value(score);
+    return Value(scoreValue);
 }
 
 std::string trace(Position& pos) {
@@ -110,12 +114,17 @@ std::string trace(Position& pos) {
     Material::Entry* me = Material::probe(pos);
     Pawns::Entry*    pe = Pawns::probe(pos);
 
-    int psq    = psqt_score(pos);
-    int imb    = me->imbalance();
-    int pawns  = pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
-    int king   = pe->king_safety<WHITE>(pos) - pe->king_safety<BLACK>(pos);
-    int passed = passed_score(pe, WHITE) - passed_score(pe, BLACK);
-    int mob    = 2 * (mobility_score(pos, WHITE) - mobility_score(pos, BLACK));
+    const auto as_value = [&](EvalScore s) {
+        return Value((mg_value(s) * me->game_phase() + eg_value(s) * (PHASE_MIDGAME - me->game_phase()))
+                     / PHASE_MIDGAME);
+    };
+
+    Value psq    = as_value(psqt_score(pos));
+    Value imb    = as_value(me->imbalance());
+    Value pawns  = as_value(pe->pawn_score(WHITE) - pe->pawn_score(BLACK));
+    Value king   = as_value(pe->king_safety<WHITE>(pos) - pe->king_safety<BLACK>(pos));
+    Value passed = as_value(passed_score(pe, WHITE) - passed_score(pe, BLACK));
+    Value mob    = as_value(2 * (mobility_score(pos, WHITE) - mobility_score(pos, BLACK)));
 
     Value v = evaluate(pos);
     Value whiteV = pos.side_to_move() == WHITE ? v : -v;

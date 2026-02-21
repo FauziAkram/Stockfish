@@ -122,7 +122,12 @@ namespace Bitbases {
 bool probe(Square strongKing, Square strongPawn, Square weakKing, Color us);
 }
 
-constexpr int make_score(int mg, int eg) { return (mg + eg) / 2; }
+constexpr EvalScore make_score(int mg, int eg) {
+    return EvalScore((mg & 0xFFFF) + int(unsigned(eg & 0xFFFF) << 16));
+}
+
+constexpr int mg_value(EvalScore s) { return int16_t(s); }
+constexpr int eg_value(EvalScore s) { return int16_t(unsigned(s + 0x8000) >> 16); }
 
 }  // namespace Stockfish
 

@@ -27,7 +27,7 @@ namespace {
 
 using PSQT::Score;
 
-constexpr Score make_score(int mg, int eg) { return (mg + eg) / 2; }
+constexpr Score make_score(int mg, int eg) { return Score((mg & 0xFFFF) + int(unsigned(eg & 0xFFFF) << 16)); }
 
 auto constexpr S = make_score;
 
@@ -112,7 +112,7 @@ void init() {
 
     for (Piece pc : {W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING})
     {
-        Score score = PieceValue[pc];
+        Score score = make_score(PieceValue[pc], PieceValue[pc]);
 
         for (Square s = SQ_A1; s <= SQ_H8; ++s)
         {
