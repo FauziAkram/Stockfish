@@ -90,13 +90,16 @@ Value evaluate(const Position& pos) {
     score += passed_score(pe, WHITE) - passed_score(pe, BLACK);
     score += 2 * (mobility_score(pos, WHITE) - mobility_score(pos, BLACK));
 
-    Value scoreValue = (mg_value(score) * me->game_phase()
-                        + eg_value(score) * (PHASE_MIDGAME - me->game_phase()))
-                     / PHASE_MIDGAME;
+    Value mg = mg_value(score);
+    Value eg = eg_value(score);
 
-    Color strongSide = scoreValue >= 0 ? WHITE : BLACK;
-    int   sf         = me->scale_factor(pos, strongSide);
-    scoreValue       = scoreValue * sf / SCALE_FACTOR_NORMAL;
+    // Scale only the endgame term (as in classical tapered eval), not the
+    // full blended score.
+    int sf = me->scale_factor(pos, eg >= VALUE_DRAW ? WHITE : BLACK);
+
+    Value scoreValue = (mg * me->game_phase()
+                        + eg * (PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL)
+                     / PHASE_MIDGAME;
 
     scoreValue = (scoreValue / 16) * 16;
     scoreValue = pos.side_to_move() == WHITE ? scoreValue : -scoreValue;
