@@ -25,10 +25,23 @@
 
 #include "bitboard.h"
 #include "position.h"
-#include "types.h"
 #include "uci.h"
 
 namespace Stockfish {
+namespace Eval {
+
+bool        useNNUE             = false;
+std::string currentEvalFileName = "None";
+
+void NNUE::init() {
+    // Compatibility stub for the old eval API.
+    useNNUE             = false;
+    currentEvalFileName = "None";
+}
+
+void NNUE::verify() {
+    // Compatibility stub for the old eval API.
+}
 
 namespace {
 
@@ -57,7 +70,7 @@ int piece_square_bonus(PieceType pt, Square s, Color c) {
     }
 }
 
-int hce_side_score(const Position& pos, Color c) {
+int side_score(const Position& pos, Color c) {
     int score = 0;
 
     for (PieceType pt : {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING})
@@ -66,10 +79,7 @@ int hce_side_score(const Position& pos, Color c) {
 
         Bitboard b = pos.pieces(c, pt);
         while (b)
-        {
-            Square s = pop_lsb(b);
-            score += piece_square_bonus(pt, s, c);
-        }
+            score += piece_square_bonus(pt, pop_lsb(b), c);
     }
 
     return score;
@@ -77,32 +87,23 @@ int hce_side_score(const Position& pos, Color c) {
 
 }  // namespace
 
-int Eval::simple_eval(const Position& pos) {
-    Color c = pos.side_to_move();
-    return PawnValue * (pos.count<PAWN>(c) - pos.count<PAWN>(~c)) + pos.non_pawn_material(c)
-         - pos.non_pawn_material(~c);
-}
-
-Value Eval::evaluate(const Position& pos, int optimism) {
+Value evaluate(const Position& pos) {
 
     assert(!pos.checkers());
 
-    int hce = hce_side_score(pos, WHITE) - hce_side_score(pos, BLACK);
-    int v   = pos.side_to_move() == WHITE ? hce : -hce;
+    int v = side_score(pos, WHITE) - side_score(pos, BLACK);
 
-    v += optimism / 8;
-
-    int material = 534 * pos.count<PAWN>() + pos.non_pawn_material();
-    v            = v * (63270 + material) / 63270;
+    // Evaluation grain and side-to-move perspective, mirroring legacy flow.
+    v = (v / 16) * 16;
+    v = pos.side_to_move() == WHITE ? v : -v;
 
     v -= v * pos.rule50_count() / 180;
-
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 
     return Value(v);
 }
 
-std::string Eval::trace(Position& pos) {
+std::string trace(Position& pos) {
 
     if (pos.checkers())
         return "Final evaluation: none (in check)";
@@ -110,14 +111,15 @@ std::string Eval::trace(Position& pos) {
     std::stringstream ss;
     ss << std::showpoint << std::showpos << std::fixed << std::setprecision(2) << std::setw(15);
 
-    Value hce = Value(hce_side_score(pos, WHITE) - hce_side_score(pos, BLACK));
-    ss << "HCE evaluation         " << 0.01 * UCIEngine::to_cp(hce, pos) << " (white side)\n";
+    Value classical = Value(side_score(pos, WHITE) - side_score(pos, BLACK));
+    ss << "Classical evaluation   " << 0.01 * UCIEngine::to_cp(classical, pos) << " (white side)\n";
 
-    Value v = evaluate(pos, VALUE_ZERO);
+    Value v = evaluate(pos);
     v       = pos.side_to_move() == WHITE ? v : -v;
     ss << "Final evaluation       " << 0.01 * UCIEngine::to_cp(v, pos) << " (white side)\n";
 
     return ss.str();
 }
 
+}  // namespace Eval
 }  // namespace Stockfish

@@ -1735,7 +1735,8 @@ TimePoint Search::Worker::elapsed() const {
 TimePoint Search::Worker::elapsed_time() const { return main_manager()->tm.elapsed_time(); }
 
 Value Search::Worker::evaluate(const Position& pos) {
-    return Eval::evaluate(pos, optimism[pos.side_to_move()]);
+    (void) optimism;
+    return Eval::evaluate(pos);
 }
 
 namespace {
