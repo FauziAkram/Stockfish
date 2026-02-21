@@ -68,11 +68,11 @@ PGOBENCH = $(RUN_PREFIX) ./$(EXE) bench
 
 ### Source and object files
 SRCS = benchmark.cpp bitboard.cpp evaluate.cpp main.cpp \
-	misc.cpp movegen.cpp movepick.cpp position.cpp psqt.cpp \
+	material.cpp misc.cpp movegen.cpp movepick.cpp position.cpp psqt.cpp \
 	search.cpp thread.cpp timeman.cpp tt.cpp uci.cpp ucioption.cpp tune.cpp syzygy/tbprobe.cpp \
 	engine.cpp score.cpp memory.cpp
 
-HEADERS = benchmark.h bitboard.h evaluate.h misc.h movegen.h movepick.h history.h \
+HEADERS = benchmark.h bitboard.h endgame.h evaluate.h material.h misc.h movegen.h movepick.h history.h \
 		position.h psqt.h search.h syzygy/tbprobe.h thread.h thread_win32_osx.h timeman.h \
 		tt.h tune.h types.h uci.h ucioption.h perft.h engine.h score.h numa.h memory.h shm.h shm_linux.h
 
