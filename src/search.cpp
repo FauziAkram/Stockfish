@@ -51,6 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=200, xx2=50, xx3=100;
+TUNE(SetRange(0, 600), xx1);
+TUNE(SetRange(0, 150), xx2);
+TUNE(SetRange(0, 300), xx3);
 
 namespace TB = Tablebases;
 
@@ -919,6 +923,9 @@ Value Search::Worker::search(
 
             if (v >= beta)
                 return nullValue;
+
+            else if (v <= alpha - xx1 + xx2 * depth && !PvNode)
+                return alpha - xx3;
         }
     }
 
