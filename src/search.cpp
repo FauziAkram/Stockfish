@@ -1128,7 +1128,7 @@ moves_loop:  // When in check, search starts here
             && is_valid(ttData.value) && !is_decisive(ttData.value) && (ttData.bound & BOUND_LOWER)
             && ttData.depth >= depth - 3 && !is_shuffling(move, ss, pos))
         {
-            Value singularBeta  = ttData.value - (58 + 67 * (ss->ttPv && !PvNode)) * depth / 57;
+            Value singularBeta  = ttData.value - (60 + 67 * (ss->ttPv && !PvNode)) * depth / 61;
             Depth singularDepth = newDepth / 2;
 
             ss->excludedMove = move;
@@ -1137,11 +1137,11 @@ moves_loop:  // When in check, search starts here
 
             if (value < singularBeta)
             {
-                int corrValAdj   = std::abs(correctionValue) / 220870;
-                int doubleMargin = -4 + 213 * PvNode - 196 * !ttCapture - corrValAdj
-                                 - 943 * ttMoveHistory / 123477 - (ss->ply > rootDepth) * 45;
-                int tripleMargin = 73 + 324 * PvNode - 229 * !ttCapture + 87 * ss->ttPv - corrValAdj
-                                 - (ss->ply > rootDepth) * 50;
+                int corrValAdj   = std::abs(correctionValue) / 224364;
+                int doubleMargin = -4 + 212 * PvNode - 194 * !ttCapture - corrValAdj
+                                 - 889 * ttMoveHistory / 119560 - (ss->ply > rootDepth) * 46;
+                int tripleMargin = 72 + 345 * PvNode - 234 * !ttCapture + 88 * ss->ttPv - corrValAdj
+                                 - (ss->ply > rootDepth) * 47;
 
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
