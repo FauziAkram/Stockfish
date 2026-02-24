@@ -919,6 +919,9 @@ Value Search::Worker::search(
 
             if (v >= beta)
                 return nullValue;
+
+            else if (v <= alpha - 225 + 51 * depth && !PvNode)
+                return alpha - 100;
         }
     }
 
