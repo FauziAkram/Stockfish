@@ -1200,10 +1200,6 @@ moves_loop:  // When in check, search starts here
         if (cutNode)
             r += 3582 + 1015 * !ttData.move;
 
-        // Increase reduction if ttMove is a capture
-        if (ttCapture)
-            r += 1075;
-
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
             r += 249 + 1073 * ((ss + 1)->cutoffCnt > 2) + 1064 * allNode;
