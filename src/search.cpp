@@ -1873,6 +1873,8 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
     static constexpr std::array<ConthistBonus, 6> conthist_bonuses = {
       {{1, 1106}, {2, 705}, {3, 316}, {4, 572}, {5, 126}, {6, 427}}};
 
+    int m = 512;
+
     for (const auto [i, weight] : conthist_bonuses)
     {
         // Only update the first 2 continuation histories if we are in check
@@ -1880,7 +1882,13 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
             break;
 
         if (((ss - i)->currentMove).is_ok())
-            (*(ss - i)->continuationHistory)[pc][to] << (bonus * weight / 1024) + 82 * (i < 2);
+        {
+            auto& entry = (*(ss - i)->continuationHistory)[pc][to];
+
+            if (entry > 0) m = 1024;
+
+            entry << (bonus * weight * m / (1024 * 1024)) + 82 * (i < 2);
+        }
     }
 }
 
