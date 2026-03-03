@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx0=1024, xx1=1024, xx2=1024, xx3=1024, xx4=1024, xx5=1024, xx6=1024;
+TUNE(SetRange(0, 4096), xx1,xx2,xx3,xx4,xx5,xx6);
 
 namespace TB = Tablebases;
 
@@ -1884,11 +1886,15 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
         if (((ss - i)->currentMove).is_ok()) {
             auto& historyEntry = (*(ss - i)->continuationHistory)[pc][to];
             if (historyEntry > 0) positiveCount++;
-            dbg_mean_of(positiveCount);
-dbg_extremes_of(positiveCount);
 
             // Apply a consistency multiplier if the move is positive across multiple plies
-            int consistencyMultiplier = (positiveCount >= 2) ? 1280 : 1024;
+            int consistencyMultiplier = (positiveCount == 0) ? xx0 :
+                                        (positiveCount == 1) ? xx1 :
+                                        (positiveCount == 2) ? xx2 :
+                                        (positiveCount == 3) ? xx3 :
+                                        (positiveCount == 4) ? xx4 :
+                                        (positiveCount == 5) ? xx5 :
+                                                               xx6;
             historyEntry << (bonus * weight * consistencyMultiplier / (1024 * 1024)) + 82 * (i < 2);
         }
     }
