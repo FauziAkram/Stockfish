@@ -1888,7 +1888,7 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
                 positiveCount++;
 
             int multiplier = 88 + positiveCount * 7;
-            historyEntry << (bonus * weight * multiplier / 8192) + 82 * (i < 2);
+            historyEntry << (bonus * weight * multiplier / 131072) + 82 * (i < 2);
         }
     }
 }
