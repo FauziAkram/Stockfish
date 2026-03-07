@@ -1,0 +1,55 @@
+/*
+  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
+  Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+
+  Stockfish is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Stockfish is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+// Stockfish unity build translation unit.
+// This file aggregates all engine source files into one compilation unit.
+
+#include "benchmark.cpp"
+#include "bitboard.cpp"
+#include "evaluate.cpp"
+#include "main.cpp"
+#include "misc.cpp"
+#include "movegen.cpp"
+#include "movepick.cpp"
+#include "position.cpp"
+#include "search.cpp"
+#include "thread.cpp"
+#include "timeman.cpp"
+#include "tt.cpp"
+
+// Avoid internal symbol collisions with names shared by position.cpp.
+#define PieceToChar UciPieceToChar
+#define StartFEN UciStartFEN
+#include "uci.cpp"
+#undef StartFEN
+#undef PieceToChar
+
+#include "ucioption.cpp"
+#include "tune.cpp"
+// Avoid internal symbol collisions with names shared by position.cpp.
+#define PieceToChar TbprobePieceToChar
+#include "syzygy/tbprobe.cpp"
+#undef PieceToChar
+#include "nnue/nnue_accumulator.cpp"
+#include "nnue/nnue_misc.cpp"
+#include "nnue/network.cpp"
+#include "nnue/features/half_ka_v2_hm.cpp"
+#include "nnue/features/full_threats.cpp"
+#include "engine.cpp"
+#include "score.cpp"
+#include "memory.cpp"
