@@ -51,6 +51,25 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=8, xx2=11433, xx3=8823, xx4=12749, xx5=8022, xx6=181, xx7=155, xx8=129, xx9=61, xx10=11, xx11=6, xx12=19, xx13=100, xx14=778, xx15=9968, xx16=142, xx17=86, xx18=1185, xx19=2240, xx20=930, xx21=570, xx22=1700, xx23=510, xx24=1215,
+xx25=660, xx26=850, xx27=980, xx28=1430, xx29=2280, xx30=1020, xx31=2140, xx32=93340, xx33=760, xx34=1000, xx35=502, xx36=689, xx37=7, xx38=541, xx39=2809, xx40=188, xx41=121, xx42=75, xx43=932, xx44=2104, xx45=7, xx46=213, xx47=175,
+xx48=59, xx49=10, xx50=13, xx51=507, xx52=312, xx53=77, xx54=22, xx55=2661, xx56=355, xx57=176900, xx58=16, xx59=17, xx60=50, xx61=359, xx62=7, xx63=6, xx64=229, xx65=63, xx66=416, xx67=949, xx68=7, xx69=235, xx70=211, xx71=126, xx72=185,
+xx73=37, xx74=3826, xx75=73, xx76=2917, xx77=42, xx78=157, xx79=120, xx80=86, xx81=13, xx82=25, xx83=58, xx84=67, xx85=57, xx86=220870, xx87=213, xx88=196, xx89=943, xx90=123477, xx91=45, xx92=73, xx93=324, xx94=229, xx95=87, xx96=50,
+xx97=394, xx98=105, xx99=3692, xx100=2823, xx101=1013, xx102=910, xx103=933, xx104=979, xx105=690, xx106=70, xx107=26878, xx108=3582, xx109=1015, xx110=1075, xx111=249, xx112=1073, xx113=1064, xx114=2069, xx115=892, xx116=454, xx117=276,
+xx118=254, xx119=50, xx120=9, xx121=1342, xx122=993, xx123=4302, xx124=5919, xx125=14, xx126=804, xx127=860, xx128=227, xx129=101, xx130=58, xx131=488, xx132=172, xx133=150, xx134=113, xx135=154, xx136=68, xx137=137, xx138=79, xx139=1394,
+xx140=222, xx141=221, xx142=286, xx143=993, xx144=13, xx145=16, xx146=1024, xx147=351, xx148=72, xx149=576, xx150=217, xx151=1182, xx152=124, xx153=84, xx154=1376, xx155=349, xx156=872, xx157=212, xx158=2104, xx159=810, xx160=1159,
+xx161=963, xx162=1290, xx163=596, xx164=1561, xx165=1106, xx166=705, xx167=316, xx168=572, xx169=126, xx170=427, xx171=87, xx172=94, xx173=106, xx174=118, xx175=114, xx176=128, xx177=128, xx178=82, xx179=714, xx180=898, xx181=967, xx182=535;
+
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23,xx24,xx25,xx26,xx27,xx28,xx29,xx30,xx31,xx32,xx33,xx34,xx35,xx36);
+TUNE(SetRange(0, 22), xx37);
+TUNE(xx38,xx39,xx40,xx41,xx42,xx43,xx44,xx45,xx46,xx47,xx48,xx49,xx50,xx51,xx52,xx53,xx54,xx55,xx56,xx57,xx58,xx59,xx60,xx61,xx62,xx63,xx64,xx65,xx66,xx67,xx68,xx69,xx70,xx71,xx72);
+TUNE(xx73,xx74,xx75,xx76,xx77,xx78,xx79,xx80,xx81,xx82,xx83,xx84,xx85,xx86,xx87,xx88,xx89,xx90,xx91,xx92,xx93,xx94,xx95,xx96,xx97,xx98,xx99,xx100,xx101,xx102,xx103);
+TUNE(xx104,xx105,xx106,xx107,xx108,xx109,xx110,xx111,xx112,xx113,xx114,xx115,xx116);
+TUNE(xx117,xx118,xx119,xx120,xx121,xx122,xx123,xx124,xx125,xx126,xx127,xx128,xx129,xx130,xx131,xx132,xx133,xx134,xx135,xx136,xx137,xx138,xx139,xx140,xx141,xx142,xx143);
+TUNE(xx144,xx145,xx146,xx147,xx148,xx149,xx150,xx151,xx152,xx153,xx154,xx155,xx156,xx157,xx158,xx159,xx160,xx161,xx162,xx163,xx164,xx165,xx166,xx167,xx168,xx169,xx170);
+TUNE(SetRange(0, 300), xx171,xx172,xx173,xx174,xx175,xx176,xx177);
+TUNE(xx178,xx179,xx180,xx181,xx182);
+
 
 namespace TB = Tablebases;
 
@@ -1074,7 +1093,7 @@ moves_loop:  // When in check, search starts here
 
                 // SEE based pruning for captures and checks
                 // Avoid pruning sacrifices of our last piece for stalemate
-                int margin = std::max(xx72 * depth + captHist / xx73, 0);
+                int margin = std::max(xx72 * depth + captHist * xx73 / 1024, 0);
                 if ((alpha >= VALUE_DRAW || pos.non_pawn_material(us) != PieceValue[movedPiece])
                     && !pos.see_ge(move, -margin))
                     continue;
@@ -1475,7 +1494,7 @@ moves_loop:  // When in check, search starts here
     if (!ss->inCheck && !(bestMove && pos.capture(bestMove))
         && (bestValue > ss->staticEval) == bool(bestMove))
     {
-        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth / (bestMove ? xx144 : xx145),
+        auto bonus = std::clamp(int(bestValue - ss->staticEval) * depth * (bestMove ? xx144 : xx145) / 128,
                                 -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
         update_correction_history(pos, ss, *this, xx146 * bonus / 1024);
     }
