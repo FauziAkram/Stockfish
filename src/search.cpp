@@ -124,7 +124,7 @@ void update_correction_history(const Position& pos,
     const Move  m  = (ss - 1)->currentMove;
     const Color us = pos.side_to_move();
 
-    constexpr int nonPawnWeight = xx6;
+    int nonPawnWeight = xx6;
     auto&         shared        = workerThread.sharedHistory;
 
     shared.pawn_correction_entry(pos).at(us).pawn << bonus;
