@@ -51,6 +51,13 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=3611, xx2=985, xx3=0, xx4=2048, xx5=0, xx6=2048;
+TUNE(xx1);
+TUNE(SetRange(0, 3000), xx2);
+TUNE(SetRange(-1500, 1500), xx3);
+TUNE(SetRange(0, 4000), xx4);
+TUNE(SetRange(-1500, 1500), xx5);
+TUNE(SetRange(0, 4000), xx6);
 
 namespace TB = Tablebases;
 
@@ -1198,7 +1205,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 3611 + 985 * !ttData.move;
+            r += xx1 + xx2 * !ttData.move;
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
@@ -1209,8 +1216,10 @@ moves_loop:  // When in check, search starts here
             r += 251 + 1124 * ((ss + 1)->cutoffCnt > 2) + 1042 * allNode;
 
         // For first picked move (ttMove) reduce reduction
-        if (move == ttData.move)
-            r -= 2239;
+        else if (move == ttData.move) {
+           if (cutNode) r = std::max(xx3, r - xx4);
+           else r = std::max(xx5, r - xx6)
+}
 
         if (capture)
             ss->statScore = 863 * int(PieceValue[pos.captured_piece()]) / 128
