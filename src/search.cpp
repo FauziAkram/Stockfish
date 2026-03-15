@@ -1218,7 +1218,7 @@ moves_loop:  // When in check, search starts here
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move) {
            if (cutNode) r = std::max(xx3, r - xx4);
-           else r = std::max(xx5, r - xx6)
+           else r = std::max(xx5, r - xx6);
 }
 
         if (capture)
