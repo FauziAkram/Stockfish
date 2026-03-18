@@ -51,7 +51,6 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-namespace Stockfish {
 
 int ContHist0Weight[16] = {
     1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024,
