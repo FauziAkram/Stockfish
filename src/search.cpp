@@ -1427,9 +1427,18 @@ moves_loop:  // When in check, search starts here
         bonusScale -= (ss - 1)->statScore / 108;
         bonusScale += std::min(59 * depth, 454);
         bonusScale += 169 * ((ss - 1)->moveCount > 8);
-        bonusScale += 145 * (!ss->inCheck && bestValue <= ss->staticEval - 110);
-        bonusScale += 154 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 73);
-
+        if (!ss->inCheck)
+    {
+        int x = ss->staticEval - bestValue - 110;
+        int ramp = std::clamp(x, 0, 110);
+        bonusScale += 145 * ramp / 110;
+    }
+    if (!(ss - 1)->inCheck)
+    {
+        int x = -(ss - 1)->staticEval - bestValue - 73;
+        int ramp = std::clamp(x, 0, 73);
+        bonusScale += 154 * ramp / 73;
+    }
         bonusScale = std::max(bonusScale, 0);
 
         // scaledBonus ranges from 0 to roughly 2.3M, overflows happen for multipliers larger than 900
