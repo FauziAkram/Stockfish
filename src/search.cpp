@@ -1086,6 +1086,14 @@ moves_loop:  // When in check, search starts here
                             + sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
 
                 // Continuation history based pruning
+dbg_mean_of((*contHist[0])[movedPiece][move.to_sq()],0);
+dbg_extremes_of((*contHist[0])[movedPiece][move.to_sq()],0);
+dbg_mean_of((*contHist[1])[movedPiece][move.to_sq()],1);
+dbg_extremes_of((*contHist[1])[movedPiece][move.to_sq()],1);
+          dbg_mean_of(sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()],2);
+dbg_extremes_of(sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()],2);
+          dbg_mean_of(history,3);
+dbg_extremes_of(history,3);
                 if (history < -4097 * depth)
                     continue;
 
