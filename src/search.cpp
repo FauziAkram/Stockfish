@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=169, xx2=145, xx3=154, xx4=0, xx5=0, xx6=0;
+TUNE(SetRange(0, 400), xx1,xx2,xx3);
+TUNE(SetRange(-250, 250), xx4,xx5,xx6);
 
 namespace TB = Tablebases;
 
@@ -1423,12 +1426,18 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior quiet countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
+aa1 = ((ss - 1)->moveCount > 8);
+aa2 = (!ss->inCheck && bestValue <= ss->staticEval - 110);
+aa3 = (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 73);
         int bonusScale = -232;
         bonusScale -= (ss - 1)->statScore / 108;
         bonusScale += std::min(59 * depth, 454);
-        bonusScale += 169 * ((ss - 1)->moveCount > 8);
-        bonusScale += 145 * (!ss->inCheck && bestValue <= ss->staticEval - 110);
-        bonusScale += 154 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 73);
+        bonusScale += xx1 * aa1;
+        bonusScale += xx2 * aa2;
+        bonusScale += xx3 * aa3;
+        bonusScale += xx4 * (aa1 && aa2);
+        bonusScale += xx5 * (aa1 && aa3);
+        bonusScale += xx6 * (aa2 && aa3);
 
         bonusScale = std::max(bonusScale, 0);
 
