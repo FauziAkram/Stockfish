@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0;
+int zz1=0, zz2=0, zz3=0, zz4=0, zz5=0, zz6=0;
+TUNE(SetRange(-100, 100), xx1,xx2,xx3,xx4,xx5,xx6,zz1,zz2,zz3,zz4,zz5,zz6);
 
 namespace TB = Tablebases;
 
@@ -1139,11 +1142,31 @@ moves_loop:  // When in check, search starts here
 
             if (value < singularBeta)
             {
+                bool dd1 = PvNode;
+                bool dd2 = !ttCapture;
+                bool dd3 = (ss->ply > rootDepth);
+                bool dd4 = (ss->ttPv && !PvNode);
+          
                 int corrValAdj   = std::abs(correctionValue) / 210590;
                 int doubleMargin = -4 + 212 * PvNode - 182 * !ttCapture - corrValAdj
                                  - 906 * ttMoveHistory / 116517 - (ss->ply > rootDepth) * 44;
+
+                doubleMargin += xx1 * (dd1 && dd2);
+                doubleMargin += xx2 * (dd1 && dd3);
+                doubleMargin += xx3 * (dd1 && dd4);
+                doubleMargin += xx4 * (dd2 && dd3);
+                doubleMargin += xx5 * (dd2 && dd4);
+                doubleMargin += xx6 * (dd3 && dd4);
+          
                 int tripleMargin = 73 + 320 * PvNode - 218 * !ttCapture + 92 * ss->ttPv - corrValAdj
                                  - (ss->ply > rootDepth) * 45;
+
+                tripleMargin += zz1 * (dd1 && dd2);
+                tripleMargin += zz2 * (dd1 && dd3);
+                tripleMargin += zz3 * (dd1 && dd4);
+                tripleMargin += zz4 * (dd2 && dd3);
+                tripleMargin += zz5 * (dd2 && dd4);
+                tripleMargin += zz6 * (dd3 && dd4);
 
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
