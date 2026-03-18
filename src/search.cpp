@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+TUNE(ContHist0Weight, ContHist1Weight, PawnHistWeight, MainHistWeight, LmrDivisor, FutilityBase, FutilityBestMove, FutilityLmrMult, FutilityStaticAlpha);
+TUNE(SetRange(-70000, 0), PruningThreshold);
 
 namespace TB = Tablebases;
 
@@ -1081,21 +1083,64 @@ moves_loop:  // When in check, search starts here
             }
             else
             {
-                int history = (*contHist[0])[movedPiece][move.to_sq()]
-                            + (*contHist[1])[movedPiece][move.to_sq()]
-                            + sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
+                int dIndex = std::clamp(int(depth), 1, 16) - 1;
+
+                static int ContHist0Weight[26] = {
+                    1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024,
+                    1024, 1024, 1024, 1024, 1024, 1024
+                };
+                static int ContHist1Weight[26] = {
+                    1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024,
+                    1024, 1024, 1024, 1024, 1024, 1024
+                };
+                static int PawnHistWeight[26] = {
+                    1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024,
+                    1024, 1024, 1024, 1024, 1024, 1024
+                };
+                static int PruningThreshold[26] = {
+                    -4097, -8194, -12291, -16388, -20485, -24582, -28679, -32776, -36873, -40970,
+                    -45067, -49164, -53261, -57358, -61455, -65552
+                };
+                static int MainHistWeight[26] = {
+                    71, 71, 71, 71, 71, 71, 71, 71, 71, 71,
+                    71, 71, 71, 71, 71, 71
+                };
+                static int LmrDivisor[26] = {
+                    2995, 2995, 2995, 2995, 2995, 2995, 2995, 2995, 2995, 2995,
+                    2995, 2995, 2995, 2995, 2995, 2995
+                };
+                static int FutilityBase[26] = {
+                    42, 42, 42, 42, 42, 42, 42, 42, 42, 42,
+                    42, 42, 42, 42, 42, 42
+                };
+                static int FutilityBestMove[26] = {
+                    151, 151, 151, 151, 151, 151, 151, 151, 151, 151,
+                    151, 151, 151, 151, 151, 151
+                };
+                static int FutilityLmrMult[26] = {
+                    120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+                    120, 120, 120, 120, 120, 120
+                };
+                static int FutilityStaticAlpha[26] = {
+                    86, 86, 86, 86, 86, 86, 86, 86, 86, 86,
+                    86, 86, 86, 86, 86, 86
+                };
+
+                int history = (ContHist0Weight[dIndex] * (*contHist[0])[movedPiece][move.to_sq()]
+                            + ContHist1Weight[dIndex] * (*contHist[1])[movedPiece][move.to_sq()]
+                            + PawnHistWeight[dIndex] * sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()]) / 1024;
 
                 // Continuation history based pruning
-                if (history < -4097 * depth)
+                if (history < PruningThreshold[dIndex])
                     continue;
 
-                history += 71 * mainHistory[us][move.raw()] / 32;
+                history += MainHistWeight[dIndex] * mainHistory[us][move.raw()] / 32;
 
                 // (*Scaler): Generally, lower divisors scales well
-                lmrDepth += history / 2995;
+                lmrDepth += history / LmrDivisor[dIndex];
 
-                Value futilityValue = ss->staticEval + 42 + 151 * !bestMove + 120 * lmrDepth
-                                    + 86 * (ss->staticEval > alpha);
+                Value futilityValue = ss->staticEval + FutilityBase[dIndex] + FutilityBestMove[dIndex] * !bestMove + FutilityLmrMult[dIndex] * lmrDepth
+                                    + FutilityStaticAlpha[dIndex] * (ss->staticEval > alpha);
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
