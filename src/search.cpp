@@ -1446,8 +1446,7 @@ moves_loop:  // When in check, search starts here
         int bonusScale = -232;
         bonusScale -= (ss - 1)->statScore / 108;
         bonusScale += std::min(59 * depth, 454);
-        bonusScale += 169 * ((ss - 1)->moveCount > 8);
-        bonusScale += 145 * (!ss->inCheck && bestValue <= ss->staticEval - 110);
+        bonusScale += 170 * ((ss - 1)->moveCount > 8);
         bonusScale += 154 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 73);
 
         bonusScale = std::max(bonusScale, 0);
