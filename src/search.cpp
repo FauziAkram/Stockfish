@@ -1447,15 +1447,13 @@ moves_loop:  // When in check, search starts here
         bool aa2 = (!ss->inCheck && bestValue <= ss->staticEval - 110);
         bool aa3 = (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 73);
 
+        constexpr int aaBonus[8] = { 0, 198, 118, 320, 174, 400, 262, 492 };
+        int idx = aa1 | (aa2 << 1) | (aa3 << 2);
+
         int bonusScale = -232;
         bonusScale -= (ss - 1)->statScore / 108;
         bonusScale += std::min(59 * depth, 454);
-        bonusScale += 198 * aa1;
-        bonusScale += 118 * aa2;
-        bonusScale += 174 * aa3;
-        bonusScale += 4 * (aa1 && aa2);
-        bonusScale += 28 * (aa1 && aa3);
-        bonusScale -= 30 * (aa2 && aa3);
+        bonusScale += aaBonus[idx];
 
         bonusScale = std::max(bonusScale, 0);
 
