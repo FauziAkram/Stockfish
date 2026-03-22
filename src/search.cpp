@@ -1443,12 +1443,19 @@ moves_loop:  // When in check, search starts here
     // Bonus for prior quiet countermove that caused the fail low
     else if (!priorCapture && prevSq != SQ_NONE)
     {
+        bool aa1 = ((ss - 1)->moveCount > 8);
+        bool aa2 = (!ss->inCheck && bestValue <= ss->staticEval - 110);
+        bool aa3 = (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 73);
+
         int bonusScale = -232;
         bonusScale -= (ss - 1)->statScore / 108;
         bonusScale += std::min(59 * depth, 454);
-        bonusScale += 169 * ((ss - 1)->moveCount > 8);
-        bonusScale += 145 * (!ss->inCheck && bestValue <= ss->staticEval - 110);
-        bonusScale += 154 * (!(ss - 1)->inCheck && bestValue <= -(ss - 1)->staticEval - 73);
+        bonusScale += 198 * aa1;
+        bonusScale += 118 * aa2;
+        bonusScale += 174 * aa3;
+        bonusScale += 4 * (aa1 && aa2);
+        bonusScale += 28 * (aa1 && aa3);
+        bonusScale -= 30 * (aa2 && aa3);
 
         bonusScale = std::max(bonusScale, 0);
 
