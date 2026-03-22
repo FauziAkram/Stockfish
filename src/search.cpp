@@ -1450,10 +1450,9 @@ moves_loop:  // When in check, search starts here
         int bonusScale = -232;
         bonusScale -= (ss - 1)->statScore / 108;
         bonusScale += std::min(59 * depth, 454);
-        bonusScale += 198 * aa1;
-        bonusScale += 118 * aa2;
+        bonusScale += 220 * aa1;
+        bonusScale += 120 * aa2;
         bonusScale += 174 * aa3;
-        bonusScale += 4 * (aa1 && aa2);
         bonusScale += 28 * (aa1 && aa3);
         bonusScale -= 30 * (aa2 && aa3);
 
