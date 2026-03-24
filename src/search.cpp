@@ -910,7 +910,7 @@ Value Search::Worker::search(
     }
 
     // Step 9. Null move search with verification search
-    if (cutNode && ss->staticEval >= beta - 16 * depth - 53 * improving + 378 && !excludedMove
+    if (cutNode && ss->staticEval >= beta - 16 * depth + 350 && !excludedMove
         && pos.non_pawn_material(us) && ss->ply >= nmpMinPly && !is_loss(beta))
     {
         assert((ss - 1)->currentMove != Move::null());
