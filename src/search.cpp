@@ -1159,11 +1159,29 @@ moves_loop:  // When in check, search starts here
 
             if (value < singularBeta)
             {
+                bool dd1 = PvNode;
+                bool dd2 = !ttCapture;
+                bool dd3 = (ss->ply > rootDepth);
+                bool dd4 = (ss->ttPv && !PvNode);
+
                 int corrValAdj   = std::abs(correctionValue) / 210590;
-                int doubleMargin = -4 + 212 * PvNode - 182 * !ttCapture - corrValAdj
-                                 - 906 * ttMoveHistory / 116517 - (ss->ply > rootDepth) * 44;
-                int tripleMargin = 73 + 320 * PvNode - 218 * !ttCapture + 92 * ss->ttPv - corrValAdj
-                                 - (ss->ply > rootDepth) * 45;
+                int doubleMargin = -4 + 212 * dd1 - 182 * dd2 - corrValAdj
+                                 - 906 * ttMoveHistory / 116517 - dd3 * 44;
+
+                doubleMargin += 4 * (dd1 && dd2);
+                doubleMargin += 6 * (dd1 && dd3);
+                doubleMargin += -3 * (dd1 && dd4);
+                doubleMargin += 4 * (dd2 && dd3);
+                doubleMargin += -4 * (dd2 && dd4);
+
+                int tripleMargin = 73 + 320 * dd1 - 218 * dd2 + 92 * ss->ttPv - corrValAdj
+                                 - dd3 * 45;
+
+                tripleMargin += -3 * (dd1 && dd2);
+                tripleMargin += -3 * (dd1 && dd3);
+                tripleMargin += 5 * (dd1 && dd4);
+                tripleMargin += 10 * (dd2 && dd3);
+                tripleMargin += 8 * (dd2 && dd4);
 
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
