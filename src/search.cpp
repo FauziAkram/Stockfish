@@ -51,7 +51,18 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+static constexpr int ContHist0Weight[16] = {
+    964, 956, 988, 993, 986, 1156, 998, 915, 911, 977,
+    1097, 948, 920, 1116, 1004, 1005
+};
+static constexpr int ContHist1Weight[16] = {
+    1034, 1020, 1065, 1011, 1131, 980, 1018, 1120, 1062, 1002,
+    1106, 994, 1077, 1024, 978, 989
+};
+static constexpr int PawnHistWeight[16] = {
+    978, 1052, 1191, 1089, 1109, 1023, 1035, 1048, 1161, 982,
+    1081, 1123, 1200, 957, 989, 844
+};
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1098,9 +1109,11 @@ moves_loop:  // When in check, search starts here
             }
             else if (!ss->followPV || !PvNode)
             {
-                int history = (*contHist[0])[movedPiece][move.to_sq()]
-                            + (*contHist[1])[movedPiece][move.to_sq()]
-                            + sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
+                int dIndex = std::clamp(int(depth), 1, 16) - 1;
+
+                int history = (ContHist0Weight[dIndex] * (*contHist[0])[movedPiece][move.to_sq()]
+                            + ContHist1Weight[dIndex] * (*contHist[1])[movedPiece][move.to_sq()]
+                            + PawnHistWeight[dIndex] * sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()]) / 1024;
 
                 // Continuation history based pruning
                 if (history < -4097 * depth)
