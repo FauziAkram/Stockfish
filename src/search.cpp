@@ -51,7 +51,22 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+static constexpr int FutilityBase[16] = {
+    39, 45, 41, 44, 41, 40, 44, 43, 46, 39,
+    45, 43, 41, 41, 42, 43
+};
+static constexpr int FutilityBestMove[16] = {
+    139, 159, 153, 157, 151, 157, 150, 161, 144, 141,
+    131, 125, 143, 133, 146, 135
+};
+static constexpr int FutilityLmrMult[16] = {
+    118, 122, 121, 115, 123, 112, 125, 110, 120, 131,
+    126, 115, 123, 117, 127, 120
+};
+static constexpr int FutilityStaticAlpha[16] = {
+    86, 80, 89, 85, 88, 85, 93, 87, 85, 98,
+    96, 95, 86, 81, 88, 106
+};
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1098,6 +1113,7 @@ moves_loop:  // When in check, search starts here
             }
             else if (!ss->followPV || !PvNode)
             {
+                int dIndex = std::clamp(int(depth), 1, 16) - 1;
                 int history = (*contHist[0])[movedPiece][move.to_sq()]
                             + (*contHist[1])[movedPiece][move.to_sq()]
                             + sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
@@ -1111,8 +1127,8 @@ moves_loop:  // When in check, search starts here
                 // (*Scaler): Generally, lower divisors scales well
                 lmrDepth += history / 2995;
 
-                Value futilityValue = ss->staticEval + 42 + 151 * !bestMove + 120 * lmrDepth
-                                    + 86 * (ss->staticEval > alpha);
+                Value futilityValue = ss->staticEval + FutilityBase[dIndex] + FutilityBestMove[dIndex] * !bestMove + FutilityLmrMult[dIndex] * lmrDepth
+                                    + FutilityStaticAlpha[dIndex] * (ss->staticEval > alpha);
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning
