@@ -51,7 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+static constexpr int MainHistWeight[16] = {
+    65, 67, 64, 71, 68, 64, 66, 68, 69, 69,
+    64, 74, 73, 77, 63, 67
+};
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1098,6 +1101,7 @@ moves_loop:  // When in check, search starts here
             }
             else if (!ss->followPV || !PvNode)
             {
+                int dIndex = std::clamp(int(depth), 1, 16) - 1;
                 int history = (*contHist[0])[movedPiece][move.to_sq()]
                             + (*contHist[1])[movedPiece][move.to_sq()]
                             + sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
@@ -1106,7 +1110,7 @@ moves_loop:  // When in check, search starts here
                 if (history < -4097 * depth)
                     continue;
 
-                history += 71 * mainHistory[us][move.raw()] / 32;
+                history += MainHistWeight[dIndex] * mainHistory[us][move.raw()] / 32;
 
                 // (*Scaler): Generally, lower divisors scales well
                 lmrDepth += history / 2995;
