@@ -51,7 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+static constexpr int LmrDivisor[16] = {
+    3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782, 2858, 2919,
+    3088, 3275, 3180, 2868, 3006, 3599
+};
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
