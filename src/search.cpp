@@ -51,7 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+static constexpr int PruningThreshold[16] = {
+    -5046, -6036, -10453, -16181, -21674, -25210, -31303, -34162, -41020, -42942,
+    -43883, -44699, -55013, -59254, -62622, -65806
+};
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1098,12 +1101,13 @@ moves_loop:  // When in check, search starts here
             }
             else if (!ss->followPV || !PvNode)
             {
+                int dIndex = std::clamp(int(depth), 1, 16) - 1;
                 int history = (*contHist[0])[movedPiece][move.to_sq()]
                             + (*contHist[1])[movedPiece][move.to_sq()]
                             + sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
 
                 // Continuation history based pruning
-                if (history < -4097 * depth)
+                if (history < PruningThreshold[dIndex])
                     continue;
 
                 history += 71 * mainHistory[us][move.raw()] / 32;
