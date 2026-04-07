@@ -51,6 +51,11 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=2819, 	xx2=973, 	xx3=905, 	xx4=935, 	xx5=959, 	xx6=3506, 	xx7=1015, 	xx8=0, 	xx9=2140, 	xx10=172, 	xx11=0;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7);
+TUNE(SetRange(-512, 512), xx8);
+TUNE(xx9);
+TUNE(SetRange(-512, 1024), xx10,xx11);
 
 namespace TB = Tablebases;
 
@@ -1206,8 +1211,8 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 2819 + PvNode * 973 + (ttData.value > alpha) * 905
-               + (ttData.depth >= depth) * (935 + cutNode * 959);
+            r -= xx1 + PvNode * xx2 + (ttData.value > alpha) * xx3
+               + (ttData.depth >= depth) * (xx4 + cutNode * xx5);
 
         r += 691;  // Base reduction offset to compensate for other tweaks
         r -= moveCount * 65;
@@ -1215,7 +1220,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 3611 + 985 * !ttData.move;
+            r += xx6 + xx7 * !ttData.move;
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
@@ -1226,8 +1231,8 @@ moves_loop:  // When in check, search starts here
             r += 251 + 1124 * ((ss + 1)->cutoffCnt > 2) + 1042 * allNode;
 
         // For first picked move (ttMove) reduce reduction
-        if (move == ttData.move)
-            r -= 2239;
+        else if (move == ttData.move)
+           r = std::max(xx8, r - xx9 + xx10 * cutNode + xx11 * ss->ttPv);
 
         if (capture)
             ss->statScore = 863 * int(PieceValue[pos.captured_piece()]) / 128
