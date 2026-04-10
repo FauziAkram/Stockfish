@@ -1841,7 +1841,6 @@ void update_all_stats(const Position& pos,
 
     CapturePieceToHistory& captureHistory = workerThread.captureHistory;
     Piece                  movedPiece     = pos.moved_piece(bestMove);
-    PieceType              capturedPiece;
 
     int bonus =
       std::min(128 * depth - 77, 1529) + 353 * (bestMove == ttMove) + (ss - 1)->statScore / 32;
@@ -1862,7 +1861,7 @@ void update_all_stats(const Position& pos,
     else
     {
         // Increase stats for the best move in case it was a capture move
-        capturedPiece = type_of(pos.piece_on(bestMove.to_sq()));
+        PieceType capturedPiece = type_of(pos.piece_on(bestMove.to_sq()));
         captureHistory[movedPiece][bestMove.to_sq()][capturedPiece] << bonus * 1286 / 1024;
     }
 
@@ -1874,8 +1873,8 @@ void update_all_stats(const Position& pos,
     // Decrease stats for all non-best capture moves
     for (Move move : capturesSearched)
     {
-        movedPiece    = pos.moved_piece(move);
-        capturedPiece = type_of(pos.piece_on(move.to_sq()));
+        movedPiece              = pos.moved_piece(move);
+        PieceType capturedPiece = type_of(pos.piece_on(move.to_sq()));
         captureHistory[movedPiece][move.to_sq()][capturedPiece] << -malus * 1559 / 1024;
     }
 }
