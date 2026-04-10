@@ -1012,7 +1012,7 @@ void Position::do_move(Move                      m,
             }
         }
 
-else if (m.type_of() == PROMOTION)
+        else if (m.type_of() == PROMOTION)
         {
             PieceType pt        = m.promotion_type();
             Piece     promotion = make_piece(us, pt);
