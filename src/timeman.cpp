@@ -111,9 +111,12 @@ void TimeManagement::init(Search::LimitsType& limits,
         double optConstant  = std::min(0.0029869 + 0.00033554 * logTimeInSec, 0.004905);
         double maxConstant  = std::max(3.3744 + 3.0608 * logTimeInSec, 3.1441);
 
-        optScale = std::min(0.012112 + std::pow(ply + 3.22713, 0.46866) * optConstant,
-                            0.19404 * limits.time[us] / timeLeft)
-                 * originalTimeAdjust;
+        double plyScale = 0.012112 + std::pow(ply + 3.22713, 0.46866) * optConstant;
+        double safetyCeiling = 0.19404 * limits.time[us] / timeLeft;
+
+        // Smoothly blend calculated scale into the safety ceiling
+        optScale = std::clamp(interpolate(plyScale, safetyCeiling * 0.8, safetyCeiling * 1.2, plyScale, safetyCeiling), 
+                              0.0, safetyCeiling) * originalTimeAdjust;
 
         maxScale = std::min(6.873, maxConstant + ply / 12.352);
     }
