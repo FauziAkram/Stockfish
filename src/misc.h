@@ -373,11 +373,13 @@ inline uint64_t mul_hi64(uint64_t a, uint64_t b) {
 #endif
 }
 
-template<typename T1, typename T2, typename T3>
-inline constexpr T3 interpolate(T1 x, T1 x0, T1 x1, T3 y0, T3 y1) {
+template<typename T1, typename T2>
+inline constexpr T2 interpolate(T1 x, T1 x0, T1 x1, T2 y0, T2 y1) {
     assert(x0 != x1);
-    // Multiply before dividing to maintain precision in integer math
-    return T3(y0 + (int64_t(y1) - y0) * (x - x0) / (x1 - x0));
+    if constexpr (std::is_floating_point_v<T2>)
+        return T2(y0 + (y1 - y0) * (double(x) - x0) / (double(x1) - x0));
+    else
+        return T2(y0 + (int64_t(y1) - y0) * (x - x0) / (x1 - x0));
 }
 
 uint64_t hash_bytes(const char*, size_t);
