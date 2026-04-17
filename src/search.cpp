@@ -1146,7 +1146,8 @@ moves_loop:  // When in check, search starts here
             && is_valid(ttData.value) && !is_decisive(ttData.value) && (ttData.bound & BOUND_LOWER)
             && ttData.depth >= depth - 3 && !is_shuffling(move, ss, pos))
         {
-            Value singularBeta  = ttData.value - (60 + 66 * (ss->ttPv && !PvNode)) * depth / 55;
+            int baseMargin = std::clamp(interpolate(int(depth), 6, 12, 50, 126), 50, 126);
+            Value singularBeta  = ttData.value - baseMargin * depth / 55;
             Depth singularDepth = newDepth / 2;
 
             ss->excludedMove = move;
