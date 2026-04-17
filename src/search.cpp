@@ -893,7 +893,8 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     {
         auto futility_margin = [&](Depth d) {
-            Value futilityMult = 76 - 21 * !ss->ttHit;
+            Value futilityMult = std::clamp(interpolate(int(d), 1, 10, 40, 76), 40, 76);
+            if (!ss->ttHit) futilityMult -= 21;
 
             return futilityMult * d
                  - (2686 * improving + 362 * opponentWorsening) * futilityMult / 1024  //
