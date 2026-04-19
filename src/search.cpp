@@ -58,7 +58,7 @@ xx92=7,xx93=218,xx94=223,xx95=131,xx96=167,xx97=34,xx98=4097,xx99=71,xx100=42,xx
 xx121=92,xx122=45,xx123=424,xx124=107,xx125=3375,xx126=2819,xx127=973,xx128=905,xx129=935,xx130=959,xx131=691,xx132=65,xx133=25600,xx134=3611,xx135=985,xx136=1054,xx137=251,xx138=1124,xx139=1042,xx140=2239,xx141=863,xx142=428,xx143=273,xx144=260,xx145=48,xx146=9,xx147=1426,
 xx148=1057,xx149=4628,xx150=5772,xx151=14,xx152=805,xx153=787,xx154=232,xx155=108,xx156=59,xx157=454,xx158=169,xx159=145,xx160=110,xx161=154,xx162=73,xx163=135,xx164=80,xx165=1400,xx166=221,xx167=235,xx168=290,xx169=1018,xx170=12,xx171=17,xx172=1069,xx173=328,xx174=73,
 xx175=585,xx176=206,xx177=1133,xx178=128,xx179=77,xx180=1529,xx181=353,xx182=32,xx183=882,xx184=204,xx185=2122,xx186=806,xx187=1113,xx188=977,xx189=1286,xx190=616,xx191=1559,xx192=1071,xx193=753,xx194=329,xx195=539,xx196=124,xx197=434,xx198=96,xx199=100,xx200=100,xx201=100,
-xx202=115,xx203=118,xx204=129,xx205=73,xx206=682,xx207=894,xx208=0,xx209=974,xx210=543,=0,xx212=0,xx213=0;
+xx202=115,xx203=118,xx204=129,xx205=73,xx206=682,xx207=894,xx208=0,xx209=974,xx210=543,=0,xx211=0,xx212=0,xx213=0;
 
 TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23,xx24,xx25,xx26,xx27,xx28,xx29,xx30,xx31,xx32,xx33,xx34,xx35,xx36,xx37,xx38,xx39,xx40,xx41,xx42,xx43,xx44,xx45,xx46,xx47,xx48,xx49,xx50,xx51,xx52,xx53);
 TUNE(SetRange(-128, 128), xx54);
@@ -346,7 +346,6 @@ bool Search::Worker::iterative_deepening() {
     for (Color c : {WHITE, BLACK})
         for (int i = 0; i < UINT_16_HISTORY_SIZE; i++)
             mainHistory[c][i] = (mainHistory[c][i] - xx54) * xx30 / 1024;
-
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
