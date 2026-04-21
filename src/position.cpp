@@ -880,8 +880,9 @@ void Position::do_move(Move                      m,
         Square rfrom, rto;
         do_castling<true>(us, from, to, rfrom, rto, &dts, &dp);
 
-        k ^= Zobrist::psq[captured][rfrom] ^ Zobrist::psq[captured][rto];
-        st->nonPawnKey[us] ^= Zobrist::psq[captured][rfrom] ^ Zobrist::psq[captured][rto];
+        Key rookZobrist = Zobrist::psq[captured][rfrom] ^ Zobrist::psq[captured][rto];
+        k ^= rookZobrist;
+        st->nonPawnKey[us] ^= rookZobrist;
         captured = NO_PIECE;
     }
     else if (captured)
