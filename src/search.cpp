@@ -52,8 +52,8 @@
 
 namespace Stockfish {
 
-static constexpr std::array<int, 16> lmrDivisor = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
-                                                   2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
+static constexpr std::array<int, 16> lmrDivisor = {3607, 2868, 2854, 2946, 3206, 3522, 3153, 2618,
+                                                   2796, 2847, 2763, 3338, 3333, 2463, 3034, 3987};
 
 namespace TB = Tablebases;
 
