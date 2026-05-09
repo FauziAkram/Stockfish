@@ -52,6 +52,11 @@
 
 namespace Stockfish {
 
+TUNE(SetRange(1, 4001), AdjDepthBase);
+TUNE(SetRange(1, 4001), AdjFailHigh);
+TUNE(SetRange(1, 3001), AdjSearchAgainWt);
+TUNE(SetRange(1, 3001), AdjSearchAgainOff);
+
 static constexpr std::array<int, 16> lmrDivisor = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
                                                    2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
 
@@ -312,6 +317,30 @@ bool Search::Worker::iterative_deepening() {
 
     multiPV = std::min(multiPV, rootMoves.size());
 
+    constexpr std::array<int, 32> AdjDepthBase = {
+        1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024,
+        1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024,
+        1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024,
+        1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024};
+
+    constexpr std::array<int, 32> AdjFailHigh = {
+        1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024,
+        1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024,
+        2048, 2048, 2048, 2048, 2048, 2048, 2048, 2048,
+        2048, 2048, 2048, 2048, 2048, 2048, 2048, 2048};
+
+    constexpr std::array<int, 32> AdjSearchAgainWt = {
+        768, 768, 768, 768, 768, 768, 768, 768,
+        768, 768, 768, 768, 768, 768, 768, 768,
+        768, 768, 768, 768, 768, 768, 768, 768,
+        768, 768, 768, 768, 768, 768, 768, 768};
+
+    constexpr std::array<int, 32> AdjSearchAgainOff = {
+        768, 768, 768, 768, 768, 768, 768, 768,
+        768, 768, 768, 768, 768, 768, 768, 768,
+        768, 768, 768, 768, 768, 768, 768, 768,
+        768, 768, 768, 768, 768, 768, 768, 768};
+
     int  searchAgainCounter = 0;
     bool uciPvSent          = false;
 
@@ -377,8 +406,12 @@ bool Search::Worker::iterative_deepening() {
             {
                 // Adjust the effective depth searched, but ensure at least one
                 // effective increment for every four searchAgain steps (see issue #2717).
+                int d = std::clamp(int(rootDepth), 0, 31);
                 Depth adjustedDepth =
-                  std::max(1, rootDepth - failedHighCnt - 3 * (searchAgainCounter + 1) / 4);
+                  std::max(1, 
+                           (AdjDepthBase[d] * rootDepth) / 1024 
+                             - (AdjFailHigh[d] * failedHighCnt) / 1024 
+                             - (AdjSearchAgainWt[d] * searchAgainCounter + AdjSearchAgainOff[d]) / 1024);
                 rootDelta = beta - alpha;
                 bestValue = search<Root>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
