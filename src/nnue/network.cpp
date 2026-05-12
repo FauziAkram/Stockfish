@@ -115,31 +115,19 @@ void Network::load(const std::string& rootDirectory, std::string evalfilePath) {
 
 
 bool Network::save(const std::optional<std::string>& filename) const {
-    std::string actualFilename;
-    std::string msg;
+    std::string actualFilename = filename.value_or(std::string(evalFile.defaultName));
 
-    if (filename.has_value())
-        actualFilename = filename.value();
-    else
+    if (!filename && std::string(evalFile.current) != std::string(evalFile.defaultName))
     {
-        if (std::string(evalFile.current) != std::string(evalFile.defaultName))
-        {
-            msg = "Failed to export a net. "
-                  "A non-embedded net can only be saved if the filename is specified";
-
-            sync_cout << msg << sync_endl;
-            return false;
-        }
-
-        actualFilename = evalFile.defaultName;
+        sync_cout << "Failed to export a net. "
+                     "A non-embedded net can only be saved if the filename is specified" << sync_endl;
+        return false;
     }
 
     std::ofstream stream(actualFilename, std::ios_base::binary);
     bool          saved = save(stream, evalFile.current, evalFile.netDescription);
 
-    msg = saved ? "Network saved successfully to " + actualFilename : "Failed to export a net";
-
-    sync_cout << msg << sync_endl;
+    sync_cout << (saved ? "Network saved successfully to " + actualFilename : "Failed to export a net") << sync_endl;
     return saved;
 }
 
