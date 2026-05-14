@@ -403,6 +403,7 @@ bool Search::Worker::iterative_deepening() {
             {
                 // Adjust the effective depth searched, but ensure at least one
                 // effective increment for every four searchAgain steps (see issue #2717).
+                int d = std::clamp(int(rootDepth), 0, 31);
                 Depth adjustedDepth =
                   std::max(1, 
                            (AdjDepthBase[d] * rootDepth) / 1024 
