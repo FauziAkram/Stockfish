@@ -314,6 +314,30 @@ bool Search::Worker::iterative_deepening() {
 
     multiPV = std::min(multiPV, rootMoves.size());
 
+    static constexpr std::array<int, 32> AdjDepthBase = {
+        933, 929, 1274, 1098, 1375, 1174, 1273, 1638,
+        1985, 1782, 1609, 1479, 1385, 1297, 1251, 1133,
+        1243, 1100, 1113, 758, 1225, 936, 676, 1048,
+        1171, 1309, 800, 697, 983, 1112, 941, 1150};
+
+    static constexpr std::array<int, 32> AdjFailHigh = {
+        1383, 778, 1342, 1093, 1114, 772, 678, 955,
+        1284, 1483, 1260, 1501, 1308, 1259, 1035, 1140,
+        2324, 1809, 2219, 2453, 1834, 1866, 2096, 2201,
+        1839, 2050, 2285, 2325, 1696, 1666, 1902, 2215};
+
+    static constexpr std::array<int, 32> AdjSearchAgainWt = {
+        721, 679, 874, 880, 682, 1152, 1018, 442,
+        678, 891, 667, 954, 616, 999, 652, 779,
+        899, 896, 827, 889, 841, 693, 802, 787,
+        664, 810, 936, 1121, 734, 907, 615, 666};
+
+    static constexpr std::array<int, 32> AdjSearchAgainOff = {
+        946, 973, 514, 694, 844, 952, 539, 872,
+        405, 866, 1094, 578, 1099, 674, 1228, 858,
+        806, 917, 600, 546, 884, 919, 618, 783,
+        751, 453, 586, 1191, 841, 430, 778, 718};
+
     int  searchAgainCounter = 0;
     bool uciPvSent          = false;
 
@@ -380,7 +404,10 @@ bool Search::Worker::iterative_deepening() {
                 // Adjust the effective depth searched, but ensure at least one
                 // effective increment for every four searchAgain steps (see issue #2717).
                 Depth adjustedDepth =
-                  std::max(1, rootDepth - failedHighCnt - 3 * (searchAgainCounter + 1) / 4);
+                  std::max(1, 
+                           (AdjDepthBase[d] * rootDepth) / 1024 
+                             - (AdjFailHigh[d] * failedHighCnt) / 1024 
+                             - (AdjSearchAgainWt[d] * searchAgainCounter + AdjSearchAgainOff[d]) / 1024);
                 rootDelta = beta - alpha;
                 bestValue = search<Root>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
