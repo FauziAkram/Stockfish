@@ -1715,12 +1715,8 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
                 }
             }
 
-            // Skip non-captures
-            if (!capture)
-                continue;
-
-            // Do not search moves with bad enough SEE values
-            if (!pos.see_ge(move, -74))
+            // Skip non-captures and moves with bad enough SEE values
+            if (!capture || !pos.see_ge(move, -74))
                 continue;
         }
 
