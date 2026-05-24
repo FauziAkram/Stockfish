@@ -42,15 +42,15 @@ class TimeManagement {
               const OptionsMap&   options,
               double&             originalTimeAdjust);
 
-    TimePoint optimum() const;
-    TimePoint maximum() const;
+    TimePoint optimum() const { return optimumTime; }
+    TimePoint maximum() const { return maximumTime; }
     template<typename FUNC>
     TimePoint elapsed(FUNC nodes) const {
         return useNodesTime ? TimePoint(nodes()) : elapsed_time();
     }
     TimePoint elapsed_time() const { return now() - startTime; };
 
-    void clear();
+    void clear() { availableNodes = -1; }
     void advance_nodes_time(std::int64_t nodes);
 
    private:
