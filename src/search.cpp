@@ -1560,7 +1560,6 @@ template<NodeType nodeType>
 Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta) {
 
     static_assert(nodeType != Root);
-    constexpr bool PvNode = nodeType == PV;
     const bool pseudoPvNode = beta - alpha > 1;
 
     assert(alpha >= -VALUE_INFINITE && alpha < beta && beta <= VALUE_INFINITE);
