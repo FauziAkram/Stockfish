@@ -1059,6 +1059,7 @@ moves_loop:  // When in check, search starts here
     value = bestValue;
 
     int moveCount = 0;
+    const bool pseudoPvNode = beta - alpha > 1;
 
     // Step 13. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1193,7 +1194,8 @@ moves_loop:  // When in check, search starts here
         {
             Value singularBeta  = ttData.value - (60 + 70 * (ss->ttPv && !PvNode)) * depth / 59;
             Depth singularDepth = newDepth / 2;
-
+if (PvNode) {dbg_hit_on(pseudoPvNode, 0);}
+if (pseudoPvNode) {dbg_hit_on(PvNode, 1);}
             ss->excludedMove = move;
             value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
             ss->excludedMove = Move::none();
