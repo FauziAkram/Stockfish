@@ -50,6 +50,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1024, xx2=0, xx3=0, xx4=0, xx5=1024, xx6=236, xx7=1079, xx8=2048, xx9=1143, xx10=10, xx11=2016, xx12=150;
+
+
 
 static constexpr std::array<int, 16> lmrDivisor = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
                                                    2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
@@ -1291,12 +1294,12 @@ moves_loop:  // When in check, search starts here
             r += 1039;
 
         // Increase reduction if next ply has a lot of fail high
-        if ((ss + 1)->cutoffCnt > 1)
-            r += 236 + 1079 * ((ss + 1)->cutoffCnt > 2) + 1143 * allNode;
+        if ((ss + 1)->cutoffCnt > xx4)
+            r += xx5 + xx6 * ((ss + 1)->cutoffCnt > xx7) + xx8 * allNode;
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
-            r = std::max(-10, r - 2016 + 150 * cutNode);
+            r = std::max(-xx9, r - xx10 + xx11 * cutNode);
 
         if (capture)
             ss->statScore = 809 * int(PieceValue[pos.captured_piece()]) / 128
@@ -1457,7 +1460,7 @@ moves_loop:  // When in check, search starts here
                 if (value >= beta)
                 {
                     // (*Scaler) Infrequent and small updates scale well
-                    ss->cutoffCnt += (extension < 2) || PvNode;
+                    ss->cutoffCnt += xx1 * (extension < 2) || PvNode + xx2 * (extension < 2) + xx3 * PvNode + xx3 * !ttData.move;
                     assert(value >= beta);  // Fail high
                     break;
                 }
