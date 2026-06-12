@@ -1466,7 +1466,7 @@ moves_loop:  // When in check, search starts here
                 if (value >= beta)
                 {
                     // (*Scaler) Infrequent and small updates scale well
-                    ss->cutoffCnt += xx1 * (extension < 2) || PvNode + xx2 * (extension < 2) + xx3 * PvNode + xx4 * !ttData.move;
+                    ss->cutoffCnt += xx1 * ((extension < 2) || PvNode) + xx2 * (extension < 2) + xx3 * PvNode + xx4 * !ttData.move;
                     assert(value >= beta);  // Fail high
                     break;
                 }
