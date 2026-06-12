@@ -51,6 +51,16 @@
 
 namespace Stockfish {
 int xx1=1024, xx2=0, xx3=0, xx4=0, xx5=1024, xx6=236, xx7=1079, xx8=2048, xx9=1143, xx10=10, xx11=2016, xx12=150;
+TUNE(SetRange(-1024, 3078), xx1,xx2,xx3,xx4);
+TUNE(SetRange(0, 1000), xx5);
+TUNE(SetRange(-1024, 3078), xx6);
+TUNE(SetRange(0, 5000), xx7);
+TUNE(SetRange(0, 4096), xx8);
+TUNE(SetRange(-512, 512), xx9);
+TUNE(SetRange(0, 5000), xx10);
+TUNE(SetRange(0, 600), xx11);
+TUNE(SetRange(0, 600), xx12);
+
 
 
 
@@ -1294,12 +1304,12 @@ moves_loop:  // When in check, search starts here
             r += 1039;
 
         // Increase reduction if next ply has a lot of fail high
-        if ((ss + 1)->cutoffCnt > xx4)
-            r += xx5 + xx6 * ((ss + 1)->cutoffCnt > xx7) + xx8 * allNode;
+        if ((ss + 1)->cutoffCnt > xx5)
+            r += xx6 + xx7 * ((ss + 1)->cutoffCnt > xx8) + xx9 * allNode;
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
-            r = std::max(-xx9, r - xx10 + xx11 * cutNode);
+            r = std::max(-xx10, r - xx11 + xx12 * cutNode);
 
         if (capture)
             ss->statScore = 809 * int(PieceValue[pos.captured_piece()]) / 128
@@ -1460,7 +1470,7 @@ moves_loop:  // When in check, search starts here
                 if (value >= beta)
                 {
                     // (*Scaler) Infrequent and small updates scale well
-                    ss->cutoffCnt += xx1 * (extension < 2) || PvNode + xx2 * (extension < 2) + xx3 * PvNode + xx3 * !ttData.move;
+                    ss->cutoffCnt += xx1 * (extension < 2) || PvNode + xx2 * (extension < 2) + xx3 * PvNode + xx4 * !ttData.move;
                     assert(value >= beta);  // Fail high
                     break;
                 }
