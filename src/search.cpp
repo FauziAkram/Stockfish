@@ -51,18 +51,14 @@
 
 namespace Stockfish {
 int xx1=1024, xx2=0, xx3=0, xx4=0, xx5=1024, xx6=236, xx7=1079, xx8=2048, xx9=1143, xx10=10, xx11=2016, xx12=150;
-TUNE(SetRange(-1024, 3078), xx1,xx2,xx3,xx4);
-TUNE(SetRange(0, 1000), xx5);
-TUNE(SetRange(-1024, 3078), xx6);
-TUNE(SetRange(0, 5000), xx7);
-TUNE(SetRange(0, 4096), xx8);
-TUNE(SetRange(-512, 512), xx9);
-TUNE(SetRange(0, 5000), xx10);
-TUNE(SetRange(0, 600), xx11);
+TUNE(SetRange(-1024, 3078), xx1,xx2,xx3,xx4,xx5);
+TUNE(SetRange(0, 1000), xx6);
+TUNE(SetRange(-1024, 3078), xx7);
+TUNE(SetRange(0, 5000), xx8);
+TUNE(SetRange(0, 4096), xx9);
+TUNE(SetRange(-512, 512), xx10);
+TUNE(SetRange(0, 5000), xx11);
 TUNE(SetRange(0, 600), xx12);
-
-
-
 
 static constexpr std::array<int, 16> lmrDivisor = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
                                                    2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
