@@ -1958,19 +1958,14 @@ void update_all_stats(const Position& pos,
 // Updates the continuation histories for the move pairs formed by
 // the current move and the moves played in previous plies.
 void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
-    static constexpr std::array<ConthistBonus, 6> conthist_bonuses = {
-      {{1, 1040}, {2, 780}, {3, 300}, {4, 537}, {5, 129}, {6, 423}}};
+    static constexpr int weights[] = {0, 1040, 780, 300, 537, 129, 423};
 
     // Multipliers for positive history consistency
     constexpr int CMHCMultipliers[] = {96, 113, 101, 105, 127, 121, 126};
     int           positiveCount     = 0;
 
-    for (const auto [i, weight] : conthist_bonuses)
+    for (int i = 1; i <= (ss->inCheck ? 2 : 6); ++i)
     {
-        // Only update the first 2 continuation histories if we are in check
-        if (ss->inCheck && i > 2)
-            break;
-
         if (((ss - i)->currentMove).is_ok())
         {
             auto& historyEntry = (*(ss - i)->continuationHistory)[pc][to];
@@ -1978,7 +1973,7 @@ void update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus) {
                 positiveCount++;
 
             int multiplier = CMHCMultipliers[positiveCount];
-            historyEntry << (bonus * weight * multiplier / 131072) + 71 * (i < 2);
+            historyEntry << (bonus * weights[i] * multiplier / 131072) + 71 * (i == 1);
         }
     }
 }
