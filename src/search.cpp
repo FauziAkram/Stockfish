@@ -1346,9 +1346,7 @@ moves_loop:  // When in check, search starts here
                 const bool doDeeperSearch    = d < newDepth && value > bestValue + 52;
                 const bool doShallowerSearch = value < bestValue + 9;
 
-                newDepth += doDeeperSearch - doShallowerSearch;
-dbg_mean_of(r);
-dbg_extremes_of(r);
+                newDepth += doDeeperSearch - doShallowerSearch + (r<-5000);
 
                 if (newDepth > d)
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
