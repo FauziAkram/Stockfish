@@ -50,6 +50,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=9, xx2=341;
+TUNE(SetRange(0, 30), xx1);
+TUNE(SetRange(0, 1030), xx2);
 
 static constexpr std::array<int, 16> lmrDivisor = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
                                                    2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
@@ -1344,7 +1347,7 @@ moves_loop:  // When in check, search starts here
                 // Adjust full-depth search based on LMR results - if the result was
                 // good enough search deeper, if it was bad enough search shallower.
                 const bool doDeeperSearch    = d < newDepth && value > bestValue + 52;
-                const bool doShallowerSearch = value < bestValue + 9;
+                const bool doShallowerSearch = value < bestValue + xx1 - xx2 * depth / 1024;
 
                 newDepth += doDeeperSearch - doShallowerSearch;
 
