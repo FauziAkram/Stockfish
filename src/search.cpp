@@ -576,15 +576,15 @@ bool Search::Worker::iterative_deepening() {
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction =
-              std::clamp(interpolate(double(rootDepth - lastBestMoveDepth), 5.0, 18.0, 0.65, 1.55),
-                         0.65, 1.55);
+              std::clamp(interpolate(double(rootDepth - lastBestMoveDepth), (xx21/100.0), (xx22/100.0), (xx23/1000.0), (xx24/1000.0)),
+                        (xx25/1000.0), (xx26/1000.0));
 
-            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.157 * timeReduction);
+            double reduction = ((xx27/1000.0) + mainThread->previousTimeReduction) / ((xx28/1000.0) * timeReduction);
 
-            double bestMoveInstability = 1.096 + 2.29 * totBestMoveChanges / threads.size();
+            double bestMoveInstability = (xx29/1000.0) + (xx30/1000.0) * totBestMoveChanges / threads.size();
 
             double highBestMoveEffort = std::clamp(
-              interpolate(i64(nodesEffort), i64(79219), i64(101822), 0.924, 0.71), 0.71, 0.924);
+              interpolate(i64(nodesEffort), i64(xx31/1.0), i64(xx32/1.0), (xx33/1000.0), (xx34/1000.0)), (xx35/1000.0), (xx36/1000.0));
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * highBestMoveEffort;
