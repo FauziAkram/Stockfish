@@ -51,8 +51,9 @@
 
 namespace Stockfish {
 
-static constexpr std::array<int, 16> lmrDivisor = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
-                                                   2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
+int lmrDivisor[] = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
+                           2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
+TUNE(SetRange(0, 5000), lmrDivisor);
 
 namespace TB = Tablebases;
 
@@ -90,12 +91,12 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
     const int   bnpcv  = shared.nonpawn_correction_entry<BLACK>(pos)[us].nonPawnBlack;
     const int   cntcv =
       m.is_ok()
-          ? 8363
+          ? xx1
             * ((*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
                + (*(ss - 4)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()])
-          : 64549;
+          : xx2;
 
-    return 13345 * pcv + 9280 * micv + 11840 * (wnpcv + bnpcv) + cntcv;
+    return xx3 * pcv + xx4 * micv + xx5 * (wnpcv + bnpcv) + cntcv;
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation
@@ -115,7 +116,7 @@ void update_correction_history(const Position& pos,
     auto&         shared        = workerThread.sharedHistory;
 
     shared.pawn_correction_entry(pos)[us].pawn << bonus;
-    shared.minor_piece_correction_entry(pos)[us].minor << bonus * 152 / 128;
+    shared.minor_piece_correction_entry(pos)[us].minor << bonus * xx6 / 128;
     shared.nonpawn_correction_entry<WHITE>(pos)[us].nonPawnWhite << bonus * nonPawnWeight / 128;
     shared.nonpawn_correction_entry<BLACK>(pos)[us].nonPawnBlack << bonus * nonPawnWeight / 128;
 
@@ -123,8 +124,8 @@ void update_correction_history(const Position& pos,
     {
         const Square to = m.to_sq();
         const Piece  pc = pos.piece_on(to);
-        (*(ss - 2)->continuationCorrectionHistory)[pc][to] << bonus * 136 / 128;
-        (*(ss - 4)->continuationCorrectionHistory)[pc][to] << bonus * 68 / 128;
+        (*(ss - 2)->continuationCorrectionHistory)[pc][to] << bonus * xx7 / 128;
+        (*(ss - 4)->continuationCorrectionHistory)[pc][to] << bonus * xx8 / 128;
     }
 }
 
@@ -319,11 +320,11 @@ bool Search::Worker::iterative_deepening() {
     int  searchAgainCounter = 0;
     bool uciPvSent          = false;
 
-    lowPlyHistory.fill(100);
+    lowPlyHistory.fill(xx9);
 
     for (Color c : {WHITE, BLACK})
         for (int i = 0; i < UINT_16_HISTORY_SIZE; i++)
-            mainHistory[c][i] = mainHistory[c][i] * 789 / 1024;
+            mainHistory[c][i] = mainHistory[c][i] * xx10 / 1024;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (rootDepth + 1 < MAX_PLY && !threads.stop
@@ -370,13 +371,13 @@ bool Search::Worker::iterative_deepening() {
             selDepth = 0;
 
             // Reset aspiration window starting size
-            delta     = 5 + threadIdx % 8 + std::abs(rootMoves[pvIdx].meanSquaredScore) / 10588;
+            delta     = xx11 + threadIdx % 8 + std::abs(rootMoves[pvIdx].meanSquaredScore) / xx12;
             Value avg = rootMoves[pvIdx].averageScore;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore
-            optimism[us]  = 137 * avg / (std::abs(avg) + 81);
+            optimism[us]  = xx13 * avg / (std::abs(avg) + xx14);
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail
@@ -433,7 +434,7 @@ bool Search::Worker::iterative_deepening() {
                 else
                     break;
 
-                delta += 44 * delta / 128;
+                delta += xx15 * delta / 128;
 
                 assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
             }
@@ -567,10 +568,11 @@ bool Search::Worker::iterative_deepening() {
         {
             u64 nodesEffort = rootMoves[0].effort * 100000 / std::max(u64(1), u64(nodes));
 
-            double fallingEval = (11.87 + 2.21 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 1.0 * (mainThread->iterValue[iterIdx] - bestValue))
+            double fallingEval = ((xx16/100.0) + (xx17/1000.0) * (mainThread->bestPreviousAverageScore - bestValue)
+                                  + (xx18/100.0) * (mainThread->iterValue[iterIdx] - bestValue))
                                / 100.0;
-            fallingEval = std::clamp(fallingEval, 0.572, 1.708);
+          
+            fallingEval = std::clamp(fallingEval, (xx19/1000.0), (xx20/1000.0));
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction =
@@ -1179,7 +1181,7 @@ moves_loop:  // When in check, search starts here
             }
             else if (!ss->followPV || !PvNode)
             {
-                int dIndex  = std::min(int(depth), int(lmrDivisor.size())) - 1;
+                int dIndex  = std::min(int(depth), int(std::size(lmrDivisor))) - 1;
                 int history = (*contHist[0])[movedPiece][move.to_sq()]
                             + (*contHist[1])[movedPiece][move.to_sq()]
                             + sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
