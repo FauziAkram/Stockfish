@@ -50,6 +50,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0,xx2=0,xx3=0,xx4=0,xx5=0,xx6=0,xx7=0;
+TUNE(SetRange(-2000, 2000), xx1,xx2,xx3,xx4,xx5,xx6,xx7);
 
 static constexpr std::array<int, 16> lmrDivisor = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
                                                    2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
@@ -1286,6 +1288,14 @@ moves_loop:  // When in check, search starts here
 
         // Add extension to new depth
         newDepth += extension;
+
+if (extension == -3) r+= xx1;
+if (extension == -2) r+= xx2;
+if (extension == -1) r+= xx3;
+if (extension == 0) r+= xx4;
+if (extension == 1) r+= xx5;
+if (extension == 2) r+= xx6;
+if (extension == 3) r+= xx7;
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
