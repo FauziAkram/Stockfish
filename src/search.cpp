@@ -1143,6 +1143,8 @@ moves_loop:  // When in check, search starts here
         // Larger values scale well
         if (ss->ttPv)
             r += 1006;
+dbg_mean_of(extension,0);
+dbg_extremes_of(extension,0);
 
         // Step 14. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
@@ -1286,7 +1288,10 @@ moves_loop:  // When in check, search starts here
 
         // Add extension to new depth
         newDepth += extension;
-
+dbg_mean_of(extension,1);
+dbg_extremes_of(extension,1);
+dbg_mean_of(newDepth,2);
+dbg_extremes_of(newDepth,2);
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
             r -= 2766 + PvNode * 1017 + (ttData.value > alpha) * 838
