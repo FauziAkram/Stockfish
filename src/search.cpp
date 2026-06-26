@@ -1312,6 +1312,9 @@ moves_loop:  // When in check, search starts here
         else if (move == ttData.move)
             r = std::max(0, r - 2016);
 
+        else if ((ss - 1)->moveCount > 8)
+            r -= 512;
+
         if (capture)
             ss->statScore = 809 * int(PieceValue[pos.captured_piece()]) / 128
                           + captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())];
