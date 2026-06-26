@@ -50,6 +50,29 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0,xx2=0,xx3=0,xx4=0,xx5=0,xx6=0,xx7=0,xx8=0,xx9=0,xx10=0,xx11=0,xx12=0,xx13=0,xx14=0,xx15=0,xx16=0,xx17=0,xx18=0,xx19=0,xx20=0,xx21=0;
+
+TUNE(SetRange(-1024, 1024), xx1);
+TUNE(SetRange(-1024, 1024), xx2);
+TUNE(SetRange(-1024, 1024), xx3);
+TUNE(SetRange(-1024, 1024), xx4);
+TUNE(SetRange(-1024, 1024), xx5);
+TUNE(SetRange(-256, 256), xx6);
+TUNE(SetRange(-128, 128), xx7);
+TUNE(SetRange(-1024, 1024), xx8);
+TUNE(SetRange(-1024, 1024), xx9);
+TUNE(SetRange(-1024, 1024), xx10);
+TUNE(SetRange(-1024, 1024), xx11);
+TUNE(SetRange(-1024, 1024), xx12);
+TUNE(SetRange(-256, 256), xx13);
+TUNE(SetRange(-128, 128), xx14);
+TUNE(SetRange(-102400, 102400), xx15);
+TUNE(SetRange(-102400, 102400), xx16);
+TUNE(SetRange(-102400, 102400), xx17);
+TUNE(SetRange(-102400, 102400), xx18);
+TUNE(SetRange(-102400, 102400), xx19);
+TUNE(SetRange(-10240, 10240), xx20);
+TUNE(SetRange(-2048, 2048), xx21);
 
 static constexpr std::array<int, 16> lmrDivisor = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
                                                    2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
@@ -1272,34 +1295,34 @@ moves_loop:  // When in check, search starts here
             // If the ttMove is assumed to fail high over current beta
             else if (ttData.value >= beta || cutNode)
             {
-                int baseExt = -2
-                            + 0 * PvNode
-                            + 0 * !ttCapture
-                            - 0 * (std::abs(correctionValue) / 194822)
-                            - 0 * ttMoveHistory / 117824
-                            - 0 * (ss->ply > rootDepth)
-                            - 0 * depth
-                            - 0 * (ss->staticEval - beta);
+                int baseExt = -2048
+                            + xx1 * PvNode
+                            + xx2 * !ttCapture
+                            - xx3 * (std::abs(correctionValue) / 194822)
+                            - xx4 * ttMoveHistory / 117824
+                            - xx5 * (ss->ply > rootDepth)
+                            - xx6 * depth
+                            - xx7 * (ss->staticEval - beta);
 
-                int bonusExt = -1
-                             + 0 * PvNode
-                             + 0 * !ttCapture
-                             - 0 * (std::abs(correctionValue) / 194822)
-                             - 0 * ttMoveHistory / 117824
-                             - 0 * (ss->ply > rootDepth)
-                             - 0 * depth
-                             - 0 * (ss->staticEval - beta);
+                int bonusExt = -1024
+                             + xx8 * PvNode
+                             + xx9 * !ttCapture
+                             - xx10 * (std::abs(correctionValue) / 194822)
+                             - xx11 * ttMoveHistory / 117824
+                             - xx12 * (ss->ply > rootDepth)
+                             - xx13 * depth
+                             - xx14 * (ss->staticEval - beta);
 
                 int negMargin = 0
-                              + 0 * PvNode
-                              - 0 * !ttCapture
-                              - 0 * (std::abs(correctionValue) / 194822)
-                              - 0 * ttMoveHistory / 117824
-                              - 0 * (ss->ply > rootDepth)
-                              - 0 * depth
-                              - 0 * (ss->staticEval - beta);
+                              + xx15 * PvNode
+                              - xx16 * !ttCapture
+                              - xx17 * (std::abs(correctionValue) / 194822)
+                              - xx18 * ttMoveHistory / 117824
+                              - xx19 * (ss->ply > rootDepth)
+                              - xx20 * depth
+                              - xx21 * (ss->staticEval - beta);
 
-                extension = baseExt + bonusExt * (ttData.value >= beta + negMargin);
+                extension = (baseExt + bonusExt * (ttData.value >= beta + negMargin / 1024)) / 1024;
             }
         }
 
