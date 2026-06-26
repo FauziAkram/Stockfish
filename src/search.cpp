@@ -1270,13 +1270,37 @@ moves_loop:  // When in check, search starts here
             // ttMove in favor of other moves based on some conditions:
 
             // If the ttMove is assumed to fail high over current beta
-            else if (ttData.value >= beta)
-                extension = -3;
+            else if (ttData.value >= beta || cutNode)
+            {
+                int baseExt = -2
+                            + 0 * PvNode
+                            + 0 * !ttCapture
+                            - 0 * (std::abs(correctionValue) / 194822)
+                            - 0 * ttMoveHistory / 117824
+                            - 0 * (ss->ply > rootDepth)
+                            - 0 * depth
+                            - 0 * (ss->staticEval - beta);
 
-            // If we are on a cutNode but the ttMove is not assumed to fail high
-            // over current beta
-            else if (cutNode)
-                extension = -2;
+                int bonusExt = -1
+                             + 0 * PvNode
+                             + 0 * !ttCapture
+                             - 0 * (std::abs(correctionValue) / 194822)
+                             - 0 * ttMoveHistory / 117824
+                             - 0 * (ss->ply > rootDepth)
+                             - 0 * depth
+                             - 0 * (ss->staticEval - beta);
+
+                int negMargin = 0
+                              + 0 * PvNode
+                              - 0 * !ttCapture
+                              - 0 * (std::abs(correctionValue) / 194822)
+                              - 0 * ttMoveHistory / 117824
+                              - 0 * (ss->ply > rootDepth)
+                              - 0 * depth
+                              - 0 * (ss->staticEval - beta);
+
+                extension = baseExt + bonusExt * (ttData.value >= beta + negMargin);
+            }
         }
 
         u64 nodeCount = rootNode ? u64(nodes) : 0;
