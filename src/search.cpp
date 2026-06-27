@@ -1265,25 +1265,53 @@ moves_loop:  // When in check, search starts here
             // Negative extensions
 else if (ttData.value >= beta || cutNode)
             {
-                // Telemetry for Boolean States
-                dbg_hit_on(improving, 0);
-                dbg_hit_on(opponentWorsening, 1);
-                dbg_hit_on(priorCapture, 2);
+                // Telemetry for Boolean States (dbg_hit_on)
+                dbg_hit_on(PvNode, 0);
+                dbg_hit_on(!ttCapture, 1);
+                dbg_hit_on(ss->ply > rootDepth, 2);
+                dbg_hit_on(improving, 3);
+                dbg_hit_on(opponentWorsening, 4);
+                dbg_hit_on(priorCapture, 5);
+                dbg_hit_on(ss->ttHit, 6);
+                dbg_hit_on(ss->inCheck, 7);
+                dbg_hit_on((ttData.bound & BOUND_LOWER), 8);
+                dbg_hit_on(pos.checkers().more_than_one(), 9);
 
-                // Telemetry for Continuous Variables
-                dbg_mean_of(pos.rule50_count(), 3);
-                dbg_extremes_of(pos.rule50_count(), 3);
+                // Telemetry for Continuous/Integer Variables (dbg_mean_of & dbg_extremes_of)
+                dbg_mean_of(ttMoveHistory, 10);
+                dbg_extremes_of(ttMoveHistory, 10);
 
-                dbg_mean_of(pos.count<ALL_PIECES>(), 4);
-                dbg_extremes_of(pos.count<ALL_PIECES>(), 4);
+                dbg_mean_of(std::abs(correctionValue), 11);
+                dbg_extremes_of(std::abs(correctionValue), 11);
 
-                dbg_mean_of(ttData.depth - depth, 5);
-                dbg_extremes_of(ttData.depth - depth, 5);
+                dbg_mean_of(depth, 12);
+                dbg_extremes_of(depth, 12);
 
-                dbg_mean_of(ss->staticEval, 6);
-                dbg_extremes_of(ss->staticEval, 6);
+                dbg_mean_of(ss->staticEval - beta, 13);
+                dbg_extremes_of(ss->staticEval - beta, 13);
 
-                // Existing original logic (kept non-functional during telemetry collection)
+                dbg_mean_of(pos.rule50_count(), 14);
+                dbg_extremes_of(pos.rule50_count(), 14);
+
+                dbg_mean_of(pos.count<ALL_PIECES>(), 15);
+                dbg_extremes_of(pos.count<ALL_PIECES>(), 15);
+
+                dbg_mean_of(ttData.depth - depth, 16);
+                dbg_extremes_of(ttData.depth - depth, 16);
+
+                dbg_mean_of(ss->staticEval, 17);
+                dbg_extremes_of(ss->staticEval, 17);
+
+                dbg_mean_of((ss - 1)->reduction, 18);
+                dbg_extremes_of((ss - 1)->reduction, 18);
+
+                dbg_mean_of((ss - 1)->staticEval, 19);
+                dbg_extremes_of((ss - 1)->staticEval, 19);
+
+                dbg_mean_of(std::abs(ss->staticEval - (ss - 2)->staticEval), 20);
+                dbg_extremes_of(std::abs(ss->staticEval - (ss - 2)->staticEval), 20);
+
+                // Original logic (kept active and unmodified for telemetry run)
                 if (ttData.value >= beta)
                     extension = -3;
                 else if (cutNode)
