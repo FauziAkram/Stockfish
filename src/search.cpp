@@ -1275,7 +1275,7 @@ else if (ttData.value >= beta || cutNode)
                 dbg_hit_on(ss->ttHit, 6);
                 dbg_hit_on(ss->inCheck, 7);
                 dbg_hit_on((ttData.bound & BOUND_LOWER), 8);
-                dbg_hit_on(pos.checkers().more_than_one(), 9);
+                dbg_hit_on(more_than_one(pos.checkers()), 9); // Corrected syntax
 
                 // Telemetry for Continuous/Integer Variables (dbg_mean_of & dbg_extremes_of)
                 dbg_mean_of(ttMoveHistory, 10);
