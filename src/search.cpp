@@ -50,6 +50,28 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0,xx2=0,xx3=0,xx4=0,xx5=0,xx6=0,xx7=0,xx8=0,xx9=0,xx10=0,xx11=0,xx12=0,xx13=0,xx14=0,xx15=0,xx16=0,xx17=0,xx18=0,xx19=0,xx20=0,xx21=0;
+TUNE(SetRange(-512, 512), xx1);
+TUNE(SetRange(-16, 16), xx2);
+TUNE(SetRange(-2048, 2048), xx3);
+TUNE(SetRange(-512, 512), xx4);
+TUNE(SetRange(-64, 64), xx5);
+TUNE(SetRange(-8, 8), xx6);
+TUNE(SetRange(-512, 512), xx7);
+TUNE(SetRange(-512, 512), xx8);
+TUNE(SetRange(-512, 512), xx9);
+TUNE(SetRange(-16, 16), xx10);
+TUNE(SetRange(-2048, 2048), xx11);
+TUNE(SetRange(-512, 512), xx12);
+TUNE(SetRange(-64, 64), xx13);
+TUNE(SetRange(-64, 64), xx14);
+TUNE(SetRange(-51200, 51200), xx15);
+TUNE(SetRange(-512, 512), xx16);
+TUNE(SetRange(-512000, 512000), xx17);
+TUNE(SetRange(-512, 512), xx18);
+TUNE(SetRange(-51200, 51200), xx19);
+TUNE(SetRange(-2048, 2048), xx20);
+TUNE(SetRange(-2048, 2048), xx21);
 
 static constexpr std::array<int, 16> lmrDivisor = {3307, 2930, 2874, 2818, 3215, 3225, 3224, 2782,
                                                    2858, 2919, 3088, 3275, 3180, 2868, 3006, 3599};
@@ -1263,20 +1285,39 @@ moves_loop:  // When in check, search starts here
             }
 
             // Negative extensions
-            // If other moves failed high over (ttValue - margin) without the
-            // ttMove on a reduced search, but we cannot do multi-cut because
-            // (ttValue - margin) is lower than the original beta, we do not know
-            // if the ttMove is singular or can do a multi-cut, so we reduce the
-            // ttMove in favor of other moves based on some conditions:
+            else if (ttData.value >= beta || cutNode)
+            {
+                int baseExt = -2048
+                            + xx1 * !ttCapture
+                            - xx2 * (std::abs(correctionValue) / 194822)
+                            - xx3 * ttMoveHistory / 117824
+                            - xx4 * (ss->ply > rootDepth)
+                            - xx5 * depth
+                            - xx6 * (ss->staticEval - beta) / 128
+                            + xx7 * improving
+                            + xx8 * opponentWorsening;
 
-            // If the ttMove is assumed to fail high over current beta
-            else if (ttData.value >= beta)
-                extension = -3;
+                int bonusExt = -1024
+                             + xx9 * !ttCapture
+                             - xx10 * (std::abs(correctionValue) / 194822)
+                             - xx11 * ttMoveHistory / 117824
+                             - xx12 * (ss->ply > rootDepth)
+                             - xx13 * depth
+                             + xx14 * (ttData.depth - depth);
 
-            // If we are on a cutNode but the ttMove is not assumed to fail high
-            // over current beta
-            else if (cutNode)
-                extension = -2;
+                int negMargin = 0
+                              + xx15 * !ttCapture
+                              - xx16 * (std::abs(correctionValue) / 194822)
+                              - xx17 * ttMoveHistory / 117824
+                              - xx18 * (ss->staticEval - beta) / 128
+                              + xx19 * improving
+                              - xx20 * depth
+                              - xx21 * std::abs(ss->staticEval - (ss - 2)->staticEval) / 1024;
+
+                extension = (baseExt + bonusExt * (ttData.value >= beta + negMargin / 1024)) / 1024;
+                
+                extension = std::clamp(extension, -7, 2);
+            }
         }
 
         u64 nodeCount = rootNode ? u64(nodes) : 0;
