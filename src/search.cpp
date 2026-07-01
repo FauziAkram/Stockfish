@@ -1309,8 +1309,8 @@ moves_loop:  // When in check, search starts here
             r += 236 + 1079 * ((ss + 1)->cutoffCnt > 2) + 1143 * allNode;
 
         // For first picked move (ttMove) reduce reduction
-        else if (move == ttData.move)
-            r = std::max(0, r - 2016);
+        if (move == ttData.move)
+            r -= 2016;
 
         if (capture)
             ss->statScore = 809 * int(PieceValue[pos.captured_piece()]) / 128
