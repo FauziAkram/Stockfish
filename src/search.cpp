@@ -52,7 +52,7 @@
 namespace Stockfish {
 int xx1=8363,xx2=64549,xx3=13345,xx4=9280,xx5=11840,xx6=152,xx7=136,xx8=68,xx9=100,xx10=789,xx11=5,xx12=10588,xx13=137,xx14=81,xx15=44,xx16=1187,xx17=2210,xx18=100,xx19=572,xx20=1708,xx21=500,xx22=1800,xx23=650,
 xx24=1550,xx25=650,xx26=1550,xx27=1480,xx28=2157,xx29=1096,xx30=2290,xx31=79219,xx32=101822,xx33=924,xx34=710,xx35=710,xx36=924,xx37=5,xx38=699,xx39=6,xx40=1262,xx41=5,xx42=552,xx43=2834,xx44=173,xx45=4,xx46=114,
-xx47=724,xx48=5,xx49=2187,xx50=5,xx51=183,xx52=180,xx53=62,xx54=10,xx55=13,xx56=465,xx57=300,xx58=17,xx59=40,xx60=4,xx61=80,xx62=20,xx63=2934,xx64=343,xx65=182069,xx66=0,xx67=14,xx68=45,xx69=374,xx70=7,xx71=6,
+xx47=724,xx48=4,xx49=2187,xx50=5,xx51=183,xx52=180,xx53=62,xx54=10,xx55=13,xx56=465,xx57=300,xx58=17,xx59=40,xx60=4,xx61=80,xx62=20,xx63=2934,xx64=343,xx65=182069,xx66=0,xx67=14,xx68=45,xx69=374,xx70=7,xx71=6,
 xx72=214,xx73=59,xx74=5,xx75=4,xx76=428,xx77=1006,xx78=7,xx79=231,xx80=232,xx81=131,xx82=175,xx83=34,xx84=4313,xx85=64,xx86=40,xx87=138,xx88=117,xx89=90,xx90=12,xx91=25,xx92=60,xx93=70,xx94=59,xx95=194822,xx96=3,
 xx97=201,xx98=157,xx99=1081,xx100=117824,xx101=41,xx102=72,xx103=306,xx104=188,xx105=84,xx106=45,xx107=442,xx108=108,xx109=3,xx110=2,xx111=2766,xx112=1017,xx113=838,xx114=923,xx115=955,xx116=714,xx117=62,xx118=26131,
 xx119=3995,xx120=1059,xx121=1039,xx122=236,xx123=1079,xx124=1143,xx125=0,xx126=2016,xx127=809,xx128=2048,xx129=1024,xx130=1024,xx131=445,xx132=272,xx133=285,xx134=2,xx135=52,xx136=9,xx137=1415,xx138=1085,xx139=5039,
@@ -68,7 +68,9 @@ TUNE(xx40);
 TUNE(SetRange(0, 16), xx41);
 TUNE(xx42,xx43,xx44);
 TUNE(SetRange(1, 11), xx45);
-TUNE(xx46,xx47,xx48,xx49,xx50,xx51,xx52,xx53,xx54,xx55,xx56,xx57,xx58,xx59,xx60,xx61,xx62,xx63,xx64,xx65);
+TUNE(xx46,xx47);
+TUNE(SetRange(1, 11), xx48);
+TUNE(xx49,xx50,xx51,xx52,xx53,xx54,xx55,xx56,xx57,xx58,xx59,xx60,xx61,xx62,xx63,xx64,xx65);
 TUNE(SetRange(-520, 520), xx66);
 TUNE(xx67,xx68,xx69,xx70,xx71,xx72,xx73,xx74,xx75,xx76,xx77,xx78,xx79,xx80,xx81,xx82,xx83,xx84,xx85,xx86,xx87,xx88,xx89,xx90,xx91,xx92,xx93);
 TUNE(SetRange(1, 129), xx94);
@@ -718,7 +720,7 @@ void Search::Worker::undo_null_move(Position& pos) { pos.undo_null_move(); }
 // Reset histories, usually before a new game
 void Search::Worker::clear() {
     mainHistory.fill(-xx37);
-    captureHistory.fill(-xx39);
+    captureHistory.fill(-xx38);
 
     // Each thread is responsible for clearing their part of shared history
     sharedHistory.correctionHistory.clear_range(-xx39, numaThreadIdx, numaTotal);
@@ -910,7 +912,7 @@ Value Search::Worker::search(
                 update_quiet_histories(pos, ss, *this, ttData.move, std::min(xx46 * depth, xx47));
 
             // Extra penalty for early quiet moves of the previous ply
-            if (prevSq != SQ_NONE && (ss - 1)->moveCount <= xx48 && !priorCapture)
+            if (prevSq != SQ_NONE && (ss - 1)->moveCount < xx48 && !priorCapture)
                 update_continuation_histories(ss - 1, pos.piece_on(prevSq), prevSq, -xx49);
         }
 
@@ -1367,7 +1369,7 @@ moves_loop:  // When in check, search starts here
                           + xx130 * (*contHist[1])[movedPiece][move.to_sq()]) / 1024;
 
         // Decrease/increase reduction for moves with a good/bad history
-        r -= ss->statScore * 445 / 4096;
+        r -= ss->statScore * xx131 / 4096;
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
