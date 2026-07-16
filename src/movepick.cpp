@@ -27,6 +27,9 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=1024, xx2=7168, xx3=2048, xx4=2048, xx5=1024, xx6=1024, xx7=1024, xx8=1024, xx9=75, xx10=8, xx11=20, xx12=20, xx13=14000, xx14=3560, xx15=0;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14);
+TUNE(SetRange(-4000, 6000), xx15);
 
 namespace {
 
@@ -222,31 +225,36 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
         const Piece     capturedPiece = pos.piece_on(to);
 
         if constexpr (Type == CAPTURES)
-            m.value = (*captureHistory)[pc][to][type_of(capturedPiece)]
-                    + 7 * int(PieceValue[capturedPiece]);
+            m.value = (xx1 * (*captureHistory)[pc][to][type_of(capturedPiece)]
+                    + xx2 * int(PieceValue[capturedPiece])) / 1024;
 
         else if constexpr (Type == QUIETS)
         {
             // histories
-            m.value = 2 * (*mainHistory)[us][m.raw()];
-            m.value += 2 * sharedHistory->pawn_entry(pos)[pc][to];
-            m.value += (*continuationHistory[0])[pc][to];
-            m.value += (*continuationHistory[1])[pc][to];
-            m.value += (*continuationHistory[2])[pc][to];
-            m.value += (*continuationHistory[3])[pc][to];
-            m.value += (*continuationHistory[5])[pc][to];
+            m.value = (xx3 * (*mainHistory)[us][m.raw()] +
+            xx4 * sharedHistory->pawn_entry(pos)[pc][to] +
+            xx5 * (*continuationHistory[0])[pc][to] +
+            xx6 * (*continuationHistory[1])[pc][to] +
+            xx7 * (*continuationHistory[2])[pc][to] +
+            xx8 * (*continuationHistory[3])[pc][to] +
+            xx9 * (*continuationHistory[5])[pc][to]) / 1024;
 
             // bonus for checks
-            m.value += ((pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
+            m.value += ((pos.check_squares(pt) & to) && pos.see_ge(m, -xx10)) * 16384;
 
-            // penalty for moving to a square threatened by a lesser piece
-            // or bonus for escaping an attack by a lesser piece.
-            int v = 20 * (bool(threatByLesser[pt] & from) - bool(threatByLesser[pt] & to));
-            m.value += PieceValue[pt] * v;
+            int v = 0;
+
+            if (threatByLesser[pt] & from)
+                v += xx11;
+
+            if (threatByLesser[pt] & to)
+                v -= xx12;
+
+m.value += PieceValue[pt] * v;
 
 
             if (ply < LOW_PLY_HISTORY_SIZE)
-                m.value += 8 * (*lowPlyHistory)[ply][m.raw()] / (1 + ply);
+                m.value += xx13 * (*lowPlyHistory)[ply][m.raw()] / (1 + ply);
         }
 
         else  // Type == EVASIONS
@@ -277,7 +285,7 @@ Move MovePicker::select(Pred filter) {
 // picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move() {
 
-    constexpr int goodQuietThreshold = -14000;
+    constexpr int goodQuietThreshold = -xx14;
 top:
     switch (stage)
     {
@@ -321,7 +329,7 @@ top:
 
             endCur = endGenerated = score<QUIETS>(ml);
 
-            partial_insertion_sort(cur, endCur, -3560 * depth);
+            partial_insertion_sort(cur, endCur, -xx15 * depth - xx16);
         }
 
         ++stage;
