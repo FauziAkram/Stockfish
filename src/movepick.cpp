@@ -27,9 +27,9 @@
 #include "position.h"
 
 namespace Stockfish {
-int xx1=1024, xx2=7168, xx3=2048, xx4=2048, xx5=1024, xx6=1024, xx7=1024, xx8=1024, xx9=75, xx10=8, xx11=20, xx12=20, xx13=14000, xx14=3560, xx15=0;
-TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14);
-TUNE(SetRange(-4000, 6000), xx15);
+int xx1=1024, xx2=7168, xx3=2048, xx4=2048, xx5=1024, xx6=1024, xx7=1024, xx8=1024, xx9-1024, xx10=75, xx11=20, xx12=20, xx13=8, xx14=14000, xx15=3560, xx16=0;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15);
+TUNE(SetRange(-4000, 6000), xx16);
 
 namespace {
 
@@ -285,7 +285,7 @@ Move MovePicker::select(Pred filter) {
 // picking the move with the highest score from a list of generated moves.
 Move MovePicker::next_move() {
 
-    constexpr int goodQuietThreshold = -xx14;
+    int goodQuietThreshold = -xx14;
 top:
     switch (stage)
     {
