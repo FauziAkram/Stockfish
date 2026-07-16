@@ -27,7 +27,7 @@
 #include "position.h"
 
 namespace Stockfish {
-int xx1=1024, xx2=7168, xx3=2048, xx4=2048, xx5=1024, xx6=1024, xx7=1024, xx8=1024, xx9-1024, xx10=75, xx11=20, xx12=20, xx13=8, xx14=14000, xx15=3560, xx16=0;
+int xx1=1024, xx2=7168, xx3=2048, xx4=2048, xx5=1024, xx6=1024, xx7=1024, xx8=1024, xx9=1024, xx10=75, xx11=20, xx12=20, xx13=8, xx14=14000, xx15=3560, xx16=0;
 TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15);
 TUNE(SetRange(-4000, 6000), xx16);
 
@@ -250,7 +250,7 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
             if (threatByLesser[pt] & to)
                 v -= xx12;
 
-m.value += PieceValue[pt] * v;
+            m.value += PieceValue[pt] * v;
 
 
             if (ply < LOW_PLY_HISTORY_SIZE)
