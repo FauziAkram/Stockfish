@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1127, xx2=256);
+TUNE(SetRange(0, 2500), xx1);
+TUNE(SetRange(0, 1080), xx2);
 
 static constexpr std::array<int, 16> lmrDivisor = {3637, 2787, 2761, 2939, 3171, 3347, 3147, 2762,
                                                    2772, 3106, 3107, 3060, 3112, 2991, 3090, 3542};
@@ -1368,9 +1371,8 @@ moves_loop:  // When in check, search starts here
         // Step 18. Full-depth search when LMR is skipped
         else if (!PvNode || moveCount > 1)
         {
-dbg_hit_on(1127 * (!ttData.move) > 256 * (ss+1)->cutoffCnt);
             // Increase reduction if ttMove is not present
-            r += std::max(1127 * (!ttData.move), 256 * (ss+1)->cutoffCnt);
+            r += std::max(xx1 * (!ttData.move), xx2 * (ss+1)->cutoffCnt);
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
