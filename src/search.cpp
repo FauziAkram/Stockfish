@@ -51,7 +51,7 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-int xx1=1127, xx2=256);
+int xx1=1127, xx2=256;
 TUNE(SetRange(0, 2500), xx1);
 TUNE(SetRange(0, 1080), xx2);
 
