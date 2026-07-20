@@ -1368,9 +1368,9 @@ moves_loop:  // When in check, search starts here
         // Step 18. Full-depth search when LMR is skipped
         else if (!PvNode || moveCount > 1)
         {
+dbg_hit_on(1127 * (!ttData.move) > 256 * (ss+1)->cutoffCnt);
             // Increase reduction if ttMove is not present
-            if (!ttData.move)
-                r += 1127;
+            r += std::max(1127 * (!ttData.move), 256 * (ss+1)->cutoffCnt);
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
