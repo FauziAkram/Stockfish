@@ -1369,8 +1369,7 @@ moves_loop:  // When in check, search starts here
         else if (!PvNode || moveCount > 1)
         {
             // Increase reduction if ttMove is not present
-            if (!ttData.move)
-                r += 1127;
+            r += std::max(1176 * (!ttData.move), 266 * (ss+1)->cutoffCnt);
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
