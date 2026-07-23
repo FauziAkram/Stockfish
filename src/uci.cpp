@@ -144,7 +144,8 @@ void UCIEngine::loop() {
         {
             if (auto err = engine.flip())
             {
-                terminate_on_critical_error(err->what());
+                hasValidPosition = false;
+                report_error(err->what());
             }
         }
         else if (token == "bench")
@@ -152,9 +153,19 @@ void UCIEngine::loop() {
         else if (token == BenchmarkCommand)
             benchmark(is);
         else if (token == "d")
-            sync_cout << engine.visualize() << sync_endl;
+        {
+            if (!hasValidPosition)
+                sync_cout << "info string Error: No valid position set." << sync_endl;
+            else
+                sync_cout << engine.visualize() << sync_endl;
+        }
         else if (token == "eval")
-            engine.trace_eval();
+        {
+            if (!hasValidPosition)
+                sync_cout << "info string Error: No valid position set." << sync_endl;
+            else
+                engine.trace_eval();
+        }
         else if (token == "compiler")
             sync_cout << compiler_info() << sync_endl;
         else if (token == "export_net")
@@ -224,13 +235,23 @@ Search::LimitsType UCIEngine::parse_limits(std::istream& is) {
             limits.ponderMode = true;
 
         if (is.fail())
-            terminate_on_critical_error("Invalid argument for '" + token + "'");
+        {
+            report_error("Invalid argument for '" + token + "'");
+            break;
+        }
     }
 
     return limits;
 }
 
 void UCIEngine::go(std::istringstream& is) {
+
+    if (!hasValidPosition)
+    {
+        sync_cout << "info string Error: No valid position set." << sync_endl;
+        sync_cout << "bestmove (none)" << sync_endl;
+        return;
+    }
 
     Search::LimitsType limits = parse_limits(is);
 
@@ -473,9 +494,18 @@ void UCIEngine::setoption(std::istringstream& is) {
 }
 
 u64 UCIEngine::perft(const Search::LimitsType& limits) {
+    if (!hasValidPosition)
+    {
+        sync_cout << "info string Error: No valid position set." << sync_endl;
+        return 0;
+    }
+
     auto result = engine.perft(engine.fen(), limits.perft, engine.get_options()["UCI_Chess960"]);
     if (auto err = std::get_if<PositionSetError>(&result))
-        terminate_on_critical_error(err->what());
+    {
+        report_error(err->what());
+        return 0;
+    }
 
     auto nodes = std::get<u64>(result);
     sync_cout << "\nNodes searched: " << nodes << "\n" << sync_endl;
@@ -510,7 +540,12 @@ void UCIEngine::position(std::istringstream& is) {
     auto err = engine.set_position(fen, moves);
     if (err.has_value())
     {
-        terminate_on_critical_error(err->what());
+        hasValidPosition = false;
+        report_error(err->what());
+    }
+    else
+    {
+        hasValidPosition = true;
     }
 }
 
@@ -681,11 +716,10 @@ void UCIEngine::on_bestmove(std::string_view bestmove, std::string_view ponder) 
     std::cout << sync_endl;
 }
 
-void UCIEngine::terminate_on_critical_error(const std::string& message) {
+void UCIEngine::report_error(const std::string& message) {
     sync_cout << "info string CRITICAL ERROR: Command `" << currentCmd
               << "` failed. Reason: " << message << '\n'
               << sync_endl;
-    std::exit(1);
 }
 
 }  // namespace Stockfish
