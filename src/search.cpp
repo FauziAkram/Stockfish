@@ -1008,10 +1008,9 @@ Value Search::Worker::search(
         // Null move dynamic reduction based on depth
         Depth R = 7 + depth / 3;
         do_null_move(pos, st, ss);
-dbg_extremes_of(nullValue, 6);
 
         Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, false);
-
+dbg_extremes_of(nullValue, 6);
         undo_null_move(pos);
 
         // Do not return unproven mate or TB scores
