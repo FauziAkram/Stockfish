@@ -144,7 +144,6 @@ void update_all_stats(const Position& pos,
                       SearchedList&   quietsSearched,
                       SearchedList&   capturesSearched,
                       Depth           depth,
-                      Move            ttMove,
                       bool            PvNode);
 
 // Detect shuffling moves in order to limit search explosions
@@ -1540,7 +1539,7 @@ moves_loop:  // When in check, search starts here
     else if (bestMove)
     {
         update_all_stats(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth,
-                         ttData.move, PvNode);
+                         PvNode);
         if (!PvNode)
             ttMoveHistory << (bestMove == ttData.move ? 918 : -747);
     }
@@ -1928,7 +1927,6 @@ void update_all_stats(const Position& pos,
                       SearchedList&   quietsSearched,
                       SearchedList&   capturesSearched,
                       Depth           depth,
-                      Move            ttMove,
                       bool            PvNode) {
 
     CapturePieceToHistory& captureHistory = workerThread.captureHistory;
@@ -1936,7 +1934,7 @@ void update_all_stats(const Position& pos,
     PieceType              capturedPiece;
 
     int bonus =
-      std::min(133 * depth - 81, 1487) + 364 * (bestMove == ttMove) + (ss - 1)->statScore / 28;
+      std::min(133 * depth + 83, 1651) + (ss - 1)->statScore / 28;
     int malus = std::min(968 * depth - 235, 2244);
 
     if (!PvNode)
