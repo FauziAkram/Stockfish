@@ -36,6 +36,9 @@
 #include "nnue/nnue_accumulator.h"
 
 namespace Stockfish {
+int xx1=476, xx2=18236, xx3=534, xx4=77871, xx5=7191, xx6=199;
+TUNE(xx1,xx2,xx3,xx4,xx5);
+TUNE(SetRange(1, 401), xx6);
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
@@ -53,14 +56,14 @@ Value Eval::evaluate(const Eval::NNUE::Network&     network,
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * i64(nnueComplexity) / 476;
-    nnue -= nnue * i64(nnueComplexity) / 18236;
+    optimism += optimism * i64(nnueComplexity) / xx1;
+    nnue -= nnue * i64(nnueComplexity) / xx2;
 
-    int material = 534 * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (nnue * i64(77871 + material) + optimism * i64(7191 + material)) / 77871;
+    int material = xx3 * pos.count<PAWN>() + pos.non_pawn_material();
+    int v        = (nnue * i64(xx4 + material) + optimism * i64(xx5 + material)) / xx4;
 
     // Damp down the evaluation linearly when shuffling
-    v -= v * pos.rule50_count() / 199;
+    v -= v * pos.rule50_count() / xx6;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
