@@ -228,16 +228,16 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
         else if constexpr (Type == QUIETS)
         {
             // histories
-            m.value = 2 * (*mainHistory)[us][m.raw()];
-            m.value += 2 * sharedHistory->pawn_entry(pos)[pc][to];
-            m.value += (*continuationHistory[0])[pc][to];
-            m.value += (*continuationHistory[1])[pc][to];
-            m.value += (*continuationHistory[2])[pc][to];
-            m.value += (*continuationHistory[3])[pc][to];
-            m.value += (*continuationHistory[5])[pc][to];
+            m.value = (2034 * (*mainHistory)[us][m.raw()] +
+            2026 * sharedHistory->pawn_entry(pos)[pc][to] +
+            1072 * (*continuationHistory[0])[pc][to] +
+            851 * (*continuationHistory[1])[pc][to] +
+            1091 * (*continuationHistory[2])[pc][to] +
+            1016 * (*continuationHistory[3])[pc][to] +
+            1003 * (*continuationHistory[5])[pc][to]) / 1024;
 
             // bonus for checks
-            m.value += ((pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
+            m.value += ((pos.check_squares(pt) & to) && pos.see_ge(m, -79)) * 15828;
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
