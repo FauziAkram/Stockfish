@@ -1137,17 +1137,23 @@ moves_loop:  // When in check, search starts here
         movedPiece = pos.moved_piece(move);
         givesCheck = pos.gives_check(move);
 
-        // Calculate new depth for this move
+// Calculate new depth for this move
         newDepth = depth - 1;
 
         int delta = beta - alpha;
 
         int r = reduction(improving, depth, moveCount, delta);
+        dbg_mean_of(r, 0);
+        dbg_extremes_of(r, 0);
 
         // Increase reduction for ttPv nodes (*Scaler)
         // Larger values scale well
         if (ss->ttPv)
+        {
             r += 929;
+            dbg_mean_of(r, 1);
+            dbg_extremes_of(r, 1);
+        }
 
         // Step 14. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
@@ -1299,28 +1305,56 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
+        {
             r -= 3023 + PvNode * 1004 + (ttData.value > alpha) * 885
                + (ttData.depth >= depth) * (816 + cutNode * 940);
+            dbg_mean_of(r, 2);
+            dbg_extremes_of(r, 2);
+        }
 
         r += 697;  // Base reduction offset to compensate for other tweaks
+        dbg_mean_of(r, 3);
+        dbg_extremes_of(r, 3);
+
         r -= moveCount * 65;
+        dbg_mean_of(r, 4);
+        dbg_extremes_of(r, 4);
+
         r -= std::abs(correctionValue) / 26310;
+        dbg_mean_of(r, 5);
+        dbg_extremes_of(r, 5);
 
         // Increase reduction for cut nodes
         if (cutNode)
+        {
             r += 4026 + 933 * !ttData.move;
+            dbg_mean_of(r, 6);
+            dbg_extremes_of(r, 6);
+        }
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
+        {
             r += 1079;
+            dbg_mean_of(r, 7);
+            dbg_extremes_of(r, 7);
+        }
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
+        {
             r += 264 + 1095 * ((ss + 1)->cutoffCnt > 2) + 1138 * allNode;
+            dbg_mean_of(r, 8);
+            dbg_extremes_of(r, 8);
+        }
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
+        {
             r -= 2179;
+            dbg_mean_of(r, 9);
+            dbg_extremes_of(r, 9);
+        }
 
         if (capture)
             ss->statScore = 873 * int(PieceValue[pos.captured_piece()]) / 128
@@ -1333,10 +1367,16 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * 439 / 4096;
+        dbg_mean_of(r, 10);
+        dbg_extremes_of(r, 10);
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
+        {
             r += r * 276 / (256 * depth + 268);
+            dbg_mean_of(r, 11);
+            dbg_extremes_of(r, 11);
+        }
 
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
@@ -1376,7 +1416,11 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present
             if (!ttData.move)
+            {
                 r += 1127;
+                dbg_mean_of(r, 12);
+                dbg_extremes_of(r, 12);
+            }
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
