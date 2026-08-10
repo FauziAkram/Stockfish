@@ -59,8 +59,8 @@
 
     // Enforce minimum GCC version
     #if defined(__GNUC__) && !defined(__clang__) \
-      && (__GNUC__ < 9 || (__GNUC__ == 9 && __GNUC_MINOR__ < 3))
-        #error "Stockfish requires GCC 9.3 or later for correct compilation"
+      && (__GNUC__ < 10 || (__GNUC__ == 10 && __GNUC_MINOR__ < 2))
+        #error "Stockfish requires GCC 10.2 or later for correct compilation"
     #endif
 
     // Enforce minimum Clang version

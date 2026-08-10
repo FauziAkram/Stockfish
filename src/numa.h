@@ -981,11 +981,7 @@ class NumaConfig {
         customAffinity(false) {}
 
     void remove_empty_numa_nodes() {
-        std::vector<std::set<CpuIndex>> newNodes;
-        for (auto&& cpus : nodes)
-            if (!cpus.empty())
-                newNodes.emplace_back(std::move(cpus));
-        nodes = std::move(newNodes);
+        std::erase_if(nodes, [](const auto& cpus) { return cpus.empty(); });
     }
 
     // Returns true if successful

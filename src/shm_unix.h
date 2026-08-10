@@ -74,8 +74,7 @@ class SharedMemoryRegistry {
     static void unlink_socket_path(const std::string& path) {
         std::scoped_lock lock(socket_paths_mutex_);
         unlink(path.c_str());
-        socket_paths_.erase(std::remove(socket_paths_.begin(), socket_paths_.end(), path),
-                            socket_paths_.end());
+        std::erase(socket_paths_, path);
     }
 
     static void cleanup_at_exit() noexcept {
