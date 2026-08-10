@@ -1258,6 +1258,15 @@ moves_loop:  // When in check, search starts here
             && is_valid(ttData.value) && !is_decisive(ttData.value) && (ttData.bound & BOUND_LOWER)
             && ttData.depth >= depth - 3 && !is_shuffling(move, ss, pos))
         {
+            if (rootMoves[0].averageScore != -VALUE_INFINITE)
+            {
+                i64 avg = rootMoves[0].averageScore;
+                i64 meanSq = rootMoves[0].meanSquaredScore;
+                i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
+                dbg_mean_of(rootVar, 1);
+                dbg_extremes_of(rootVar, 1);
+            }
+
             Value singularBeta  = ttData.value - (59 + 66 * (ss->ttPv && !PvNode)) * depth / 63;
             Depth singularDepth = newDepth / 2;
 
@@ -1365,6 +1374,15 @@ moves_loop:  // When in check, search starts here
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
         {
+            if (rootMoves[0].averageScore != -VALUE_INFINITE)
+            {
+                i64 avg = rootMoves[0].averageScore;
+                i64 meanSq = rootMoves[0].meanSquaredScore;
+                i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
+                dbg_mean_of(rootVar, 0);
+                dbg_extremes_of(rootVar, 0);
+            }
+          
             // In general we want to cap the LMR depth search at newDepth, but when
             // reduction is negative, we allow this move a limited search extension
             // beyond the first move depth.
