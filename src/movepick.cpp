@@ -235,6 +235,10 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
             m.value += (*continuationHistory[2])[pc][to];
             m.value += (*continuationHistory[3])[pc][to];
             m.value += (*continuationHistory[5])[pc][to];
+          if (pos.see_ge(m, -75)){
+dbg_hit_on((pos.check_squares(pt) & to), 0);}
+          if ((pos.check_squares(pt) & to)){
+dbg_hit_on((pos.see_ge(m, -75)), 1);}
 
             // bonus for checks
             m.value += ((pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
