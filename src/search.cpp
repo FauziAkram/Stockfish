@@ -158,6 +158,19 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
         && (ss - 2)->currentMove.from_sq() == (ss - 4)->currentMove.to_sq();
 }
 
+// Look up the futility pruning cutoff depth. This function is important for mate finding.
+inline int futility_depth(Value eval, Value beta) {
+    // LUT values obtained from:
+    //      depth = 13 + int(0.5 + 6 / int(1 + pow(abs(eval) + abs(beta), 3) / 50'000'000'000))
+    static constexpr std::array Lut{Value(1657), 2555, 3294, 4122, 5314, 8194, VALUE_INFINITE * 2};
+    const Value                 prob  = std::abs(eval) + std::abs(beta);
+    int                         depth = 0;
+    while (Lut[depth] < prob)
+        ++depth;
+
+    return 19 - depth;
+}
+
 }  // namespace
 
 Search::Worker::Worker(SharedState&                    sharedState,
@@ -168,7 +181,7 @@ Search::Worker::Worker(SharedState&                    sharedState,
                        NumaReplicatedAccessToken       token) :
     // Unpack the SharedState struct into member variables
     sharedHistory(sharedState.sharedHistories.at(token.get_numa_index())),
-    continuationHistory(sharedHistory.continuationHistory),
+    continuationHistory(sharedHistory.continuationHistory()),
     threadIdx(threadId),
     numaThreadIdx(numaThreadId),
     numaTotal(numaTotalThreads),
@@ -638,11 +651,22 @@ void Search::Worker::do_move(Position& pos, const Move move, StateInfo& st, Stac
 
 void Search::Worker::do_move(
   Position& pos, const Move move, StateInfo& st, const bool givesCheck, Stack* const ss) {
-    // prefetch_key does not model castling, en passant or promotion keys
-    // exactly; for rare moves the prefetch lands on an unused line.
+    // prefetch_key does not model castling, en passant or promotion exactly.
+    // The correction-history prefetches also approximate castling and promotion;
+    // for these rare moves the prefetches land on unused lines.
     prefetch(tt.first_entry(pos.prefetch_key(move)));
 
     bool capture = pos.capture_stage(move);
+
+    if (ss != nullptr)
+    {
+        const Piece  pc = pos.moved_piece(move);
+        const Square to = move.to_sq();
+
+        prefetch(&(*(ss - 1)->continuationCorrectionHistory)[pc][to]);
+        prefetch(&(*(ss - 3)->continuationCorrectionHistory)[pc][to]);
+    }
+
     ++nodes;
 
     Dirties& dirties = accumulatorStack.push();
@@ -977,9 +1001,9 @@ Value Search::Worker::search(
         return qsearch<NonPV>(pos, ss, alpha, beta);
 
     // Step 8. Futility pruning: child node
-    // The depth condition is important for mate finding.
-    if (!ss->ttPv && depth < 19 && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta)
-        && !is_win(eval))
+    // The depth condition is important for mate finding. It shouldn't be tuned.
+    if (!ss->ttPv && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval)
+        && depth < futility_depth(eval, beta))
     {
         Value futilityMult = std::min(45 + depth * 4, 85);
         futilityMult -= 20 * !ss->ttHit;
