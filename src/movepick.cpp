@@ -27,6 +27,9 @@
 #include "position.h"
 
 namespace Stockfish {
+int xx1=16384, xx2=0, xx3=75;
+TUNE(SetRange(-16384, 32768), xx1,xx2);
+TUNE(SetRange(0, 225), xx3);
 
 namespace {
 
@@ -237,7 +240,8 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += ((pos.check_squares(pt) & to) && pos.see_ge(m, -75)) * 16384;
+            if ((pos.check_squares(pt) & to))
+            m.value += xx1 + xx2 * pos.see_ge(m, -xx3));
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
