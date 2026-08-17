@@ -242,7 +242,7 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
                 if (pos.see_ge(m, -75))
                     m.value += 16384;
                 else if (pos.see_ge(m, -220))
-                    m.value += 8192;
+                    m.value += 4096;
             }
 
             // penalty for moving to a square threatened by a lesser piece
