@@ -237,7 +237,7 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
             m.value += (*continuationHistory[5])[pc][to];
 
             // bonus for checks
-            m.value += ((pos.check_squares(pt) & to) * 17658;
+            m.value += (pos.check_squares(pt) & to) * 17658;
 
             // penalty for moving to a square threatened by a lesser piece
             // or bonus for escaping an attack by a lesser piece.
