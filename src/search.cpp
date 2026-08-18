@@ -54,7 +54,8 @@ namespace Stockfish {
 
 inline int lmr_divisor(int depth) {
     int d = std::min(depth, 16);
-    return 3000 + 7 * (d - 8) * (d - 8);
+    return int(2850 + 6 * (d - 9) * (d - 9) + 15 * d
+               + (750.0 / std::sqrt(d)) * std::cos(1.18 * (d - 1)));
 }
 
 namespace TB = Tablebases;
