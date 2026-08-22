@@ -286,9 +286,9 @@ bool Search::Worker::iterative_deepening() {
 
     PVMoves pv;
 
-    PVMoves lastBestMovePV;
-    Depth   lastBestMoveDepth = 0;
-    Value   lastBestMoveScore = -VALUE_INFINITE;
+    RootPVMoves lastBestMovePV;
+    Depth       lastBestMoveDepth = 0;
+    Value       lastBestMoveScore = -VALUE_INFINITE;
 
     Value  alpha, beta;
     Value  bestValue     = -VALUE_INFINITE;
@@ -703,21 +703,23 @@ void Search::Worker::clear() {
     mainHistory.fill(-5);
     captureHistory.fill(-742);
 
-    // Each thread is responsible for clearing their part of shared history
+    // Each thread clears its part of the dynamically-sized shared histories.
+    // The constant-size continuation history is initialized by thread 0 of each NUMA node.
     sharedHistory.correctionHistory.clear_range(-5, numaThreadIdx, numaTotal);
     sharedHistory.pawnHistory.clear_range(-1338, numaThreadIdx, numaTotal);
+
+    if (numaThreadIdx == 0)
+        for (bool inCheck : {false, true})
+            for (StatsType c : {NoCaptures, Captures})
+                for (auto& to : continuationHistory[inCheck][c])
+                    for (auto& h : to)
+                        h.fill(-586);
 
     ttMoveHistory = 0;
 
     for (auto& to : continuationCorrectionHistory)
         for (auto& h : to)
             h.fill(5);
-
-    for (bool inCheck : {false, true})
-        for (StatsType c : {NoCaptures, Captures})
-            for (auto& to : continuationHistory[inCheck][c])
-                for (auto& h : to)
-                    h.fill(-586);
 
     for (usize i = 1; i < reductions.size(); ++i)
         reductions[i] = int(2872 / 128.0 * std::log(i));
@@ -997,7 +999,7 @@ Value Search::Worker::search(
     // Step 7. Razoring
     // If eval is really low, skip search entirely and return the qsearch value.
     // For PvNodes, we must have a guard against mates being returned.
-    if (!PvNode && eval < alpha - 483 - 318 * depth * depth)
+    if (!PvNode && eval < alpha - 482 * depth * depth)
         return qsearch<NonPV>(pos, ss, alpha, beta);
 
     // Step 8. Futility pruning: child node
@@ -1357,6 +1359,9 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * 439 / 4096;
+
+        if (!capture && !is_decisive(alpha))
+            r += 3 * std::clamp(alpha - eval, -64, 96);
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
