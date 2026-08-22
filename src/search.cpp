@@ -1371,10 +1371,9 @@ moves_loop:  // When in check, search starts here
             i64 avg = rootMoves[0].averageScore;
             i64 meanSq = rootMoves[0].meanSquaredScore;
             i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
-            i64 clampedVar = std::clamp(rootVar, i64(0), i64(200000));
 
-            int deltaR = 512 - int(clampedVar * 1024 / 200000);
-            r += deltaR;
+            if      (rootVar < 10000)  r += 512;
+            else if (rootVar > 200000) r -= 512;
         }
               
         // Step 17. Late moves reduction / extension (LMR)
