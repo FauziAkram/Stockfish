@@ -1367,6 +1367,15 @@ moves_loop:  // When in check, search starts here
         if (allNode)
             r += r * 276 / (256 * depth + 268);
 
+        if (rootMoves[0].averageScore != -VALUE_INFINITE) {
+            i64 avg = rootMoves[0].averageScore;
+            i64 meanSq = rootMoves[0].meanSquaredScore;
+            i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
+
+            if (rootVar < 10000)      r += 1024;
+            else if (rootVar > 200000) r -= 512;
+        }
+
         // Step 17. Late moves reduction / extension (LMR)
         if (depth >= 2 && moveCount > 1)
         {
