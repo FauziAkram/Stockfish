@@ -1026,6 +1026,15 @@ Value Search::Worker::search(
 
         // Null move dynamic reduction based on depth
         Depth R = 7 + depth / 3 + std::max((ss->staticEval - beta) / 256, 0);
+
+        if (rootMoves[0].averageScore != -VALUE_INFINITE) {
+            i64 avg = rootMoves[0].averageScore;
+            i64 meanSq = rootMoves[0].meanSquaredScore;
+            i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
+
+            if (rootVar < 10000) R += 1;
+        }
+
         do_null_move(pos, st, ss);
 
         Value nullValue = -search<NonPV>(pos, ss + 1, -beta, -beta + 1, depth - R, false);
