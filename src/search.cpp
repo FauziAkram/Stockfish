@@ -387,6 +387,16 @@ bool Search::Worker::iterative_deepening() {
 
             // Reset aspiration window starting size
             delta     = 5 + threadIdx % 8 + std::abs(rootMoves[pvIdx].meanSquaredScore) / 10193;
+          
+            if (rootMoves[pvIdx].averageScore != -VALUE_INFINITE) {
+                i64 avgVal = rootMoves[pvIdx].averageScore;
+                i64 meanSq = rootMoves[pvIdx].meanSquaredScore;
+                i64 rootVar = std::max(i64(0), meanSq - (avgVal * std::abs(avgVal)));
+
+                if (rootVar < 10000)       delta = std::max(5, delta - 10);
+                else if (rootVar > 200000) delta += 15;
+            }
+          
             Value avg = rootMoves[pvIdx].averageScore;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
