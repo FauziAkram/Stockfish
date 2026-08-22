@@ -1261,6 +1261,16 @@ moves_loop:  // When in check, search starts here
             && ttData.depth >= depth - 3 && !is_shuffling(move, ss, pos))
         {
             Value singularBeta  = ttData.value - (59 + 66 * (ss->ttPv && !PvNode)) * depth / 63;
+
+            if (rootMoves[0].averageScore != -VALUE_INFINITE) {
+                i64 avg = rootMoves[0].averageScore;
+                i64 meanSq = rootMoves[0].meanSquaredScore;
+                i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
+
+                if (rootVar > 300000)     singularBeta += 16;
+                else if (rootVar < 50000) singularBeta -= 12;
+            }
+          
             Depth singularDepth = newDepth / 2;
 
             ss->excludedMove = move;
