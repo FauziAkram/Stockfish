@@ -1065,6 +1065,15 @@ Value Search::Worker::search(
     // If we have a good enough capture (or queen promotion) and a reduced search
     // returns a value much above beta, we can (almost) safely prune the previous move.
     probCutBeta = beta + 241 - 64 * improving;
+
+    if (rootMoves[0].averageScore != -VALUE_INFINITE) {
+        i64 avg = rootMoves[0].averageScore;
+        i64 meanSq = rootMoves[0].meanSquaredScore;
+        i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
+
+        if (rootVar < 10000) probCutBeta -= 30;
+    }
+      
     if (depth >= 3
         && !is_decisive(beta)
         // If value from transposition table is lower than probCutBeta, don't attempt
