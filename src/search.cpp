@@ -1032,7 +1032,7 @@ Value Search::Worker::search(
             i64 meanSq = rootMoves[0].meanSquaredScore;
             i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
 
-            if (rootVar < 10000) R += 1;
+            if (rootVar < 8000) R += 1;
         }
 
         do_null_move(pos, st, ss);
