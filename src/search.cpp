@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0, xx3=0, xx4=0, xx5=0, xx6=0, xx7=0, xx8=0, xx9=0;
+TUNE(SetRange(-60, 60), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9);
 
 static constexpr std::array<int, 16> lmrDivisor = {3637, 2787, 2761, 2939, 3171, 3347, 3147, 2762,
                                                    2772, 3106, 3107, 3060, 3112, 2991, 3090, 3542};
@@ -1261,6 +1263,23 @@ moves_loop:  // When in check, search starts here
             && ttData.depth >= depth - 3 && !is_shuffling(move, ss, pos))
         {
             Value singularBeta  = ttData.value - (59 + 66 * (ss->ttPv && !PvNode)) * depth / 63;
+
+            if (rootMoves[0].averageScore != -VALUE_INFINITE) {
+                i64 avg = rootMoves[0].averageScore;
+                i64 meanSq = rootMoves[0].meanSquaredScore;
+                i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
+
+                if (rootVar == 0)        singularBeta += xx1;
+                else if (rootVar < 350)  singularBeta += xx2;
+                else if (rootVar < 510)  singularBeta += xx3;
+                else if (rootVar < 780)  singularBeta += xx4;
+                else if (rootVar < 1200) singularBeta += xx5;
+                else if (rootVar < 2300) singularBeta += xx6;
+                else if (rootVar < 4250) singularBeta += xx7;
+                else if (rootVar < 9750) singularBeta += xx8;
+                else                     singularBeta += xx9;
+            }
+              
             Depth singularDepth = newDepth / 2;
 
             ss->excludedMove = move;
