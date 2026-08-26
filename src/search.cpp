@@ -1359,6 +1359,16 @@ moves_loop:  // When in check, search starts here
         if (allNode)
             r += r * 276 / (256 * depth + 268);
 
+        if (rootMoves[0].averageScore != -VALUE_INFINITE) {
+            i64 avg = rootMoves[0].averageScore;
+            i64 meanSq = rootMoves[0].meanSquaredScore;
+            i64 rootVar = std::max(i64(0), meanSq - (avg * std::abs(avg)));
+            i64 clampedVar = std::clamp(rootVar, i64(0), i64(200000));
+
+            int deltaR = 512 - int(clampedVar * 1024 / 200000);
+            r += deltaR;
+        }
+
         // Apply the computed LMR
         if (depth >= 2 && moveCount > 1)
         {
