@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0,xx2=0,xx3=0,xx4=0,xx5=0,xx6=0,xx7=0,xx8=0,xx9=0,xx10=0,xx11=0,xx12=0,xx13=0,xx14=0;
+TUNE(SetRange(-3200, 3200), xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14);
 
 static constexpr std::array<int, 16> lmrDivisor = {3637, 2787, 2761, 2939, 3171, 3347, 3147, 2762,
                                                    2772, 3106, 3107, 3060, 3112, 2991, 3090, 3542};
@@ -1157,11 +1159,17 @@ moves_loop:  // When in check, search starts here
         int delta = beta - alpha;
 
         int r = reduction(improving, depth, moveCount, delta);
+        if (r > 2688)
+            r += xx1;
 
         // Increase reduction for ttPv nodes (*Scaler)
         // Larger values scale well
         if (ss->ttPv)
+        {
             r += 929;
+            if (r > 4003)
+                r += xx2;
+        }
 
         // Step 15. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
@@ -1313,32 +1321,60 @@ moves_loop:  // When in check, search starts here
         // Add extension to new depth
         newDepth += extension;
 
-        // Step 18. Compute and apply late moves reduction (LMR) (or possibly extension)
+// Step 18. Compute and apply late moves reduction (LMR) (or possibly extension)
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
+        {
             r -= 3023 + PvNode * 1004 + (ttData.value > alpha) * 885
                + (ttData.depth >= depth) * (816 + cutNode * 940);
+            if (r > -1022)
+                r += xx3;
+        }
 
         r += 697;  // Base reduction offset to compensate for other tweaks
+        if (r > 1740)
+            r += xx4;
+
         r -= moveCount * 65;
+        if (r > 1413)
+            r += xx5;
+
         r -= std::abs(correctionValue) / 26310;
+        if (r > 988)
+            r += xx6;
 
         // Increase reduction for cut nodes
         if (cutNode)
+        {
             r += 4026 + 933 * !ttData.move;
+            if (r > 5282)
+                r += xx7;
+        }
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
+        {
             r += 1079;
+            if (r > 3499)
+                r += xx8;
+        }
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
+        {
             r += 264 + 1095 * ((ss + 1)->cutoffCnt > 2) + 1138 * allNode;
+            if (r > 4241)
+                r += xx9;
+        }
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
+        {
             r -= 2179;
+            if (r > 1041)
+                r += xx10;
+        }
 
         if (capture)
             ss->statScore = 873 * int(PieceValue[pos.captured_piece()]) / 128
@@ -1351,13 +1387,23 @@ moves_loop:  // When in check, search starts here
 
         // Decrease/increase reduction for moves with a good/bad history
         r -= ss->statScore * 439 / 4096;
+        if (r > 3116)
+            r += xx11;
 
         if (!capture && !is_decisive(alpha))
+        {
             r += 3 * std::clamp(alpha - eval, -64, 96);
+            if (r > 3358)
+                r += xx12;
+        }
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
+        {
             r += r * 276 / (256 * depth + 268);
+            if (r > 3215)
+                r += xx13;
+        }
 
         // Apply the computed LMR
         if (depth >= 2 && moveCount > 1)
@@ -1397,7 +1443,11 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present
             if (!ttData.move)
+            {
                 r += 1127;
+                if (r > 4183)
+                    r += xx14;
+            }
 
             // Note that if expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
