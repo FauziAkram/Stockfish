@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=3072, xx2=3072, xx3=192, xx4=288;
+TUNE(SetRange(0, 12288), xx1,xx2);
+TUNE(SetRange(0, 1152), xx3,xx4);
 
 static constexpr std::array<int, 16> lmrDivisor = {3637, 2787, 2761, 2939, 3171, 3347, 3147, 2762,
                                                    2772, 3106, 3107, 3060, 3112, 2991, 3090, 3542};
@@ -1352,7 +1355,7 @@ moves_loop:  // When in check, search starts here
         r -= ss->statScore * 439 / 4096;
 
         if (!capture && !is_decisive(alpha))
-            r += std::clamp((3072 * alpha - 3072 * eval) / 1024, -192, 288);
+            r += std::clamp((xx1 * alpha - xx2 * eval) / 1024, -xx3, xx4);
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
