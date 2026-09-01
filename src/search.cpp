@@ -1155,11 +1155,17 @@ moves_loop:  // When in check, search starts here
         int delta = beta - alpha;
 
         int r = reduction(improving, depth, moveCount, delta);
+        if (r > 2688)
+            r -= 130;
 
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
         if (ss->ttPv)
+        {
             r += 929;
+            if (r > 4003)
+                r += 127;
+        }
 
         // Step 15. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
@@ -1319,9 +1325,16 @@ moves_loop:  // When in check, search starts here
 
         // Base reduction offset to compensate for other tweaks
         r += 697;
+        if (r > 1740)
+            r -= 309;
 
         r -= moveCount * 65;
+        if (r > 1413)
+            r += 305;
+
         r -= std::abs(correctionValue) / 26310;
+        if (r > 988)
+            r += 232;
 
         // Increase reduction for cut nodes
         if (cutNode)
@@ -1329,15 +1342,27 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
+        {
             r += 1079;
+            if (r > 3499)
+                r -= 247;
+        }
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
+        {
             r += 264 + 1095 * ((ss + 1)->cutoffCnt > 2) + 1138 * allNode;
+            if (r > 4241)
+                r -= 110;
+        }
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
+        {
             r -= 2179;
+            if (r > 1041)
+                r += 120;
+        }
 
         if (capture)
             ss->statScore = 873 * int(PieceValue[pos.captured_piece()]) / 128
@@ -1352,11 +1377,19 @@ moves_loop:  // When in check, search starts here
         r -= ss->statScore * 439 / 4096;
 
         if (!capture && !is_decisive(alpha))
+        {
             r += 3 * std::clamp(alpha - eval, -64, 96);
+            if (r > 3358)
+                r -= 206;
+        }
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
+        {
             r += r * 276 / (256 * depth + 268);
+            if (r > 3215)
+                r += 107;
+        }
 
         // Apply the computed LMR
         if (depth >= 2 && moveCount > 1)
