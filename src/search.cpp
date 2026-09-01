@@ -1352,7 +1352,7 @@ moves_loop:  // When in check, search starts here
         r -= ss->statScore * 439 / 4096;
 
         if (!capture && !is_decisive(alpha))
-            r += std::clamp((3072 * alpha - 3072 * eval) / 1024), -192, 288);
+            r += std::clamp((3072 * alpha - 3072 * eval) / 1024, -192, 288);
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
