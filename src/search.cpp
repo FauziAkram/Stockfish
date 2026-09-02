@@ -51,6 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1024, xx2=959, xx3=1074;
+TUNE(SetRange(0, 2150), xx1,xx2,xx3);
+
 
 static constexpr std::array<int, 16> lmrDivisor = {3637, 2787, 2761, 2939, 3171, 3347, 3147, 2762,
                                                    2772, 3106, 3107, 3060, 3112, 2991, 3090, 3542};
@@ -1247,7 +1250,11 @@ moves_loop:  // When in check, search starts here
             && is_valid(ttData.value) && !is_decisive(ttData.value) && (ttData.bound & BOUND_LOWER)
             && ttData.depth >= depth - 3 && !is_shuffling(move, ss, pos) && !seekMate)
         {
-            Value singularBeta  = ttData.value - (59 + 66 * (ss->ttPv && !PvNode)) * depth / 63;
+            Value singularBeta =
+            (xx1 * ttData.value
+            - xx2 * depth
+            - xx3 * (ss->ttPv && !PvNode) * depth)
+            / 1024;
             Depth singularDepth = newDepth / 2;
 
             ss->excludedMove = move;
