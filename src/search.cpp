@@ -1159,7 +1159,7 @@ moves_loop:  // When in check, search starts here
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
         if (ss->ttPv)
-            r += 929;
+            r += 929 + 256 * (r > 4003);
 
         // Step 15. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
@@ -1314,7 +1314,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 3023 + PvNode * 1004 + (ttData.value > alpha) * 885
+            r -= 3023 + (r > -1022) * 256 + PvNode * 1004 + (ttData.value > alpha) * 885
                + (ttData.depth >= depth) * (816 + cutNode * 940);
 
         // Base reduction offset to compensate for other tweaks
