@@ -1325,7 +1325,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 4000 + 930 * !ttData.move + 1024 * std::max(0, std::min(depth - ttData.depth, 3);
+            r += 4000 + 930 * !ttData.move + 1024 * (std::max(0, std::min(depth - ttData.depth, 3)));
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
