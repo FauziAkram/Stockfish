@@ -750,7 +750,7 @@ Value Search::Worker::search(
     StateInfo st;
 
     Key   posKey;
-    Move  move, excludedMove, bestMove;
+    Move  move, excludedMove, bestMove, notTheBestMove;
     Depth extension, newDepth;
     Value bestValue, value, eval, maxValue, probCutBeta;
     bool  givesCheck, improving, priorCapture, opponentWorsening;
@@ -803,7 +803,7 @@ Value Search::Worker::search(
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
     Square prevSq  = ((ss - 1)->currentMove).is_ok() ? ((ss - 1)->currentMove).to_sq() : SQ_NONE;
-    bestMove       = Move::none();
+    bestMove       = notTheBestMove = Move::none();
     priorReduction = (ss - 1)->reduction;
     (ss - 1)->reduction = 0;
     ss->statScore       = 0;
@@ -1114,6 +1114,7 @@ moves_loop:  // When in check, search starts here
     value = bestValue;
 
     int moveCount = 0;
+    bool singularTTMove = false;
 
     // Step 14. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1265,6 +1266,7 @@ moves_loop:  // When in check, search starts here
                 extension =
                   1 + (value < singularBeta - doubleMargin) + (value < singularBeta - tripleMargin);
 
+                singularTTMove = true;
                 depth++;
             }
 
@@ -1330,6 +1332,9 @@ moves_loop:  // When in check, search starts here
         // Increase reduction if ttMove is a capture
         if (ttCapture)
             r += 1079;
+
+        if (singularTTMove && notTheBestMove == ttData.move && ttData.value < alpha)
+            r += 512;
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
@@ -1514,6 +1519,7 @@ moves_loop:  // When in check, search starts here
         if (value + inc > bestValue)
         {
             bestValue = value;
+            notTheBestMove = move;
 
             if (value + inc > alpha)
             {
