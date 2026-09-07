@@ -1327,6 +1327,10 @@ moves_loop:  // When in check, search starts here
         if (cutNode)
             r += 4026 + 933 * !ttData.move;
 
+        // Decrease reduction if opponent's move count is high
+        if ((ss - 1)->moveCount > 7)
+            r -= 512;
+
         // Increase reduction if ttMove is a capture
         if (ttCapture)
             r += 1079;
