@@ -1302,6 +1302,10 @@ moves_loop:  // When in check, search starts here
                 extension = -3;
         }
 
+        // Check extensions
+        else if (givesCheck && depth > 10)
+            extension = 1;
+
         u64 nodeCount = rootNode ? u64(nodes) : 0;
 
         // Step 17. Make the move
