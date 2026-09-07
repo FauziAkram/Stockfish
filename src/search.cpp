@@ -1302,6 +1302,11 @@ moves_loop:  // When in check, search starts here
                 extension = -3;
         }
 
+        // Recapture extensions
+        else if (PvNode && move == ttData.move && move.to_sq() == prevSq
+                 && captureHistory[movedPiece][move.to_sq()][type_of(pos.piece_on(move.to_sq()))] > 4484)
+            extension = 1;
+
         u64 nodeCount = rootNode ? u64(nodes) : 0;
 
         // Step 17. Make the move
