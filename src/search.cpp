@@ -1318,7 +1318,7 @@ moves_loop:  // When in check, search starts here
                + (ttData.depth >= depth) * (816 + cutNode * 940);
 
         // Base reduction offset to compensate for other tweaks
-        r += 650;
+        r += 600;
 
         r -= moveCount * 65;
         r -= std::abs(correctionValue) / 26310;
@@ -1333,7 +1333,7 @@ moves_loop:  // When in check, search starts here
 
         // Increase reduction on repetition
         if (move == (ss - 4)->currentMove && pos.has_repeated())
-            r += 1536;
+            r += 2048;
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
