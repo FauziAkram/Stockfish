@@ -872,7 +872,7 @@ Value Search::Worker::search(
 
     // Step 6. At non-PV nodes we check for an early TT cutoff. Note that we
     //         always check the validity of the TT value because of access races.
-    if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
+    if (!PvNode && !excludedMove && ttData.depth > depth - 2 * (ttData.value <= beta)
         && is_valid(ttData.value)
         && (ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER))
         && (cutNode == (ttData.value >= beta) || depth > 4))
@@ -912,7 +912,7 @@ Value Search::Worker::search(
                 return ttData.value;
         }
     }  // No cutoff, but why? Compare the aspiration window to the inexact bound
-    else if (!PvNode && !excludedMove && ttData.depth > depth - (ttData.value <= beta)
+    else if (!PvNode && !excludedMove && ttData.depth > depth - 2 * (ttData.value <= beta)
              && is_valid(ttData.value) && ttData.bound != BOUND_EXACT
              && ttData.bound & (ttData.value >= beta ? BOUND_UPPER : BOUND_LOWER) && depth > 5)
     {
