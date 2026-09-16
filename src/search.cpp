@@ -1346,6 +1346,10 @@ moves_loop:  // When in check, search starts here
         if (ttCapture)
             r += 1079;
 
+        // Increase reduction for good captures
+        if (mp.stage == 2)
+            r += 512;
+
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
             r += 264 + 1095 * ((ss + 1)->cutoffCnt > 2) + 1138 * allNode;
