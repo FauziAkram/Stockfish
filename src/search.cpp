@@ -55,6 +55,19 @@ namespace Stockfish {
 static constexpr std::array<int, 16> lmrDivisor = {3637, 2787, 2761, 2939, 3171, 3347, 3147, 2762,
                                                    2772, 3106, 3107, 3060, 3112, 2991, 3090, 3542};
 
+static constexpr std::array<int, 10> stageReductions = {
+  0,  // [0] MAIN_TT        - DO NOT TUNE (never hits)
+  -64,  // [1] TT Move      - TUNE (~9.6% of moves)
+  390,  // [2] Good Capture - TUNE (~8.6% of moves)
+  0,  // [3] QUIET_INIT     - DO NOT TUNE (never hits)
+  -6,  // [4] Good Quiet    - TUNE (~42.6% of moves)
+  32,  // [5] Bad Capture   - TUNE (~3.3% of moves)
+  -130,  // [6] Bad Quiet   - TUNE (~24.3% of moves)
+  0,  // [7] EVASION_TT     - DO NOT TUNE (never hits)
+  166,  // [8] Evasion TT   - TUNE (~2.9% of moves)
+  -202   // [9] Evasion     - TUNE (~8.8% of moves)
+};
+
 namespace TB = Tablebases;
 
 void syzygy_extend_pv(const OptionsMap&            options,
@@ -1345,6 +1358,9 @@ moves_loop:  // When in check, search starts here
         // Increase reduction if ttMove is a capture
         if (ttCapture)
             r += 1079;
+
+        // General stage-based reduction adjustment
+        r += stageReductions[mp.stage];
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
