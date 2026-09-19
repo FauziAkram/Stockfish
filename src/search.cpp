@@ -87,7 +87,7 @@ TUNE(xx185,xx186,xx187,xx188);
 TUNE(SetRange(-500, 500), xx189);
 TUNE(xx190);
 
-int lmr_divisor(int depth) {
+inline int lmr_divisor(int depth) {
     int d = std::min(depth, xx188);
     return xx1 + xx2 * (d - xx3) * (d - xx4);
 }
