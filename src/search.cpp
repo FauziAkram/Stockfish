@@ -53,12 +53,12 @@
 namespace Stockfish {
 int xx1=3000,xx2=7,xx3=8,xx4=8,xx5=7885,xx6=7885,xx7=6307,xx8=80695,xx9=13806,xx10=9512,xx11=11615,xx12=186,xx13=150,xx14=130,xx15=70,xx16=35,xx17=102,xx18=729,xx19=5,xx20=10193,xx21=114,xx22=85,xx23=47,xx24=5,xx25=742,xx26=5,xx27=1338,
 xx28=586,xx29=5,xx30=2872,xx31=166,xx32=131,xx33=2210,xx34=189,xx35=194,xx36=60,xx37=11,xx38=13,xx39=342,xx40=45,xx41=4,xx42=85,xx43=20,xx44=2789,xx45=335,xx46=198435,xx47=0,xx48=50,xx49=13,xx50=47,xx51=365,xx52=2000,xx53=7,xx54=256,xx55=6,
-xx56=241,xx57=64,xx58=5,xx59=3,xx60=428,xx61=512,xx62=929,xx63=8,xx64=234,xx65=247,xx66=134,xx67=177,xx68=34,xx69=1024,xx70=1024,xx71=1024,xx72=4136,xx73=69,xx74=119,xx75=90,xx76=164,xx77=12,xx78=23,xx79=1024,xx80=959,xx81=1074,xx82=198368,
+xx56=241,xx57=64,xx58=5,xx59=3,xx60=428,xx62=929,xx63=8,xx64=234,xx65=247,xx66=134,xx67=177,xx68=34,xx69=1024,xx70=1024,xx71=1024,xx72=4136,xx73=69,xx74=119,xx75=90,xx76=164,xx77=12,xx78=23,xx79=1024,xx80=959,xx81=1074,xx82=198368,
 xx83=2,xx84=204,xx85=152,xx86=1175,xx87=114178,xx88=38,xx89=70,xx90=279,xx91=188,xx92=81,xx93=43,xx94=421,xx95=110,xx96=177,xx97=3023,xx98=1004,xx99=885,xx100=816,xx101=940,xx102=697,xx103=65,xx104=26310,xx105=4026,xx106=933,xx107=1079,
 xx108=264,xx109=1095,xx110=1138,xx111=2179,xx112=873,xx113=128,xx114=2252,xx115=1126,xx116=1093,xx117=439,xx118=3,xx119=64,xx120=96,xx121=276,xx122=268,xx123=53,xx124=8,xx125=1334,xx126=1127,xx127=5234,xx128=5487,xx129=918,xx130=747,
 xx131=241,xx132=98,xx133=59,xx134=420,xx135=186,xx136=9,xx137=142,xx138=106,xx139=159,xx140=68,xx141=150,xx142=85,xx143=1337,xx144=263,xx145=215,xx146=324,xx147=892,xx148=12,xx149=18,xx150=1061,xx151=0,xx152=306,xx153=74,xx154=0,xx155=197,
 xx156=948,xx157=133,xx158=81,xx159=1487,xx160=364,xx161=37,xx162=899,xx163=1159,xx164=921,xx165=1427,xx166=713,xx167=1489,xx168=520,xx169=390,xx170=145,xx171=251,xx172=66,xx173=209,xx174=94,xx175=103,xx176=110,xx177=106,xx178=119,xx179=126,
-xx180=121,xx181=73,xx182=712,xx183=750,xx184=4,xx185=1104,xx186=459,xx187=1024,xx188=17;
+xx180=121,xx181=73,xx182=712,xx183=750,xx184=4,xx185=1104,xx186=459,xx187=1024,xx188=17,xx189=0,xx190=577;
 
 TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21,xx22,xx23);
 TUNE(SetRange(0, 16), xx24);
@@ -72,7 +72,7 @@ TUNE(xx48,xx49,xx50,xx51,xx52,xx53);
 TUNE(SetRange(1, 513), xx54);
 TUNE(xx55,xx56,xx57);
 TUNE(SetRange(0, 11), xx58,xx59);
-TUNE(xx60,xx61,xx62,xx63,xx64,xx65,xx66,xx67,xx68,xx69,xx70,xx71,xx72,xx73,xx74,xx75,xx76,xx77,xx78,xx79,xx80,xx81,xx82);
+TUNE(xx60,xx62,xx63,xx64,xx65,xx66,xx67,xx68,xx69,xx70,xx71,xx72,xx73,xx74,xx75,xx76,xx77,xx78,xx79,xx80,xx81,xx82);
 TUNE(SetRange(-2, 12), xx83);
 TUNE(xx84,xx85,xx86,xx87,xx88,xx89,xx90,xx91,xx92,xx93,xx94,xx95,xx96,xx97,xx98,xx99,xx100,xx101,xx102,xx103,xx104,xx105,xx106,xx107,xx108,xx109,xx110,xx111,xx112,xx113,xx114);
 TUNE(xx115,xx116,xx117,xx118,xx119,xx120,xx121,xx122,xx123,xx124,xx125,xx126,xx127,xx128,xx129,xx130,xx131);
@@ -84,6 +84,8 @@ TUNE(SetRange(-500, 500), xx154);
 TUNE(xx155,xx156,xx157,xx158,xx159,xx160,xx161,xx162,xx163,xx164,xx165,xx166,xx167,xx168,xx169,xx170,xx171,xx172,xx173,xx174,xx175,xx176,xx177,xx178,xx179,xx180,xx181,xx182,xx183);
 TUNE(SetRange(-50, 60), xx184);
 TUNE(xx185,xx186,xx187,xx188);
+TUNE(SetRange(-500, 500), xx189);
+TUNE(xx190);
 
 int lmr_divisor(int depth) {
     int d = std::min(depth, xx188);
@@ -430,6 +432,7 @@ bool Search::Worker::iterative_deepening() {
                 // effective increment for every four searchAgain steps (see issue #2717).
                 Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - failHighRecovery
                                                     - 3 * (searchAgainCounter + 1) / 4);
+                rootDelta           = beta - alpha;
                 bestValue           = search<Root>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
                 // Bring the best move to the front. It is critical that sorting
@@ -746,7 +749,7 @@ void Search::Worker::clear() {
                     for (auto& h : to)
                         h.fill(-xx28);
 
-    ttMoveHistory = 0;
+    ttMoveHistory = xx189;
 
     for (auto& to : continuationCorrectionHistory)
         for (auto& h : to)
@@ -1206,11 +1209,9 @@ moves_loop:  // When in check, search starts here
         // Calculate new depth for this move
         newDepth = depth - 1;
 
-        int r = reduction(improving, depth, moveCount);
+        int delta = beta - alpha;
 
-        // Decrease reduction for PvNodes
-        if (PvNode)
-            r -= xx61;
+        int r = reduction(improving, depth, moveCount, delta);
 
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
@@ -1941,9 +1942,9 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     return bestValue;
 }
 
-int Search::Worker::reduction(bool i, Depth d, int mn) const {
+int Search::Worker::reduction(bool i, Depth d, int mn, int delta) const {
     int reductionScale = reductions[d] * reductions[mn];
-    return reductionScale + !i * reductionScale * xx155 / 512 + xx156;
+    return reductionScale - delta * xx190 / rootDelta + !i * reductionScale * xx155 / 512 + xx156;
 }
 
 // elapsed() returns the time elapsed since the search started. If the
