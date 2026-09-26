@@ -1410,6 +1410,15 @@ moves_loop:  // When in check, search starts here
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates
+
+dbg_mean_of(value, 0);
+dbg_extremes_of(value, 0);
+dbg_mean_of(beta, 1);
+dbg_extremes_of(beta, 1);
+dbg_mean_of(value-beta, 2);
+dbg_extremes_of(value-beta, 2);
+dbg_hit_on((value >= beta), 0);
+
                 update_continuation_histories(ss, movedPiece, move.to_sq(), 1334);
             }
         }
