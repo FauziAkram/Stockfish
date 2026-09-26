@@ -1410,8 +1410,8 @@ moves_loop:  // When in check, search starts here
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates
-                int bonus = 1337 + std::clamp((value - beta), -200, 0;
-                update_continuation_histories(ss, movedPiece, move.to_sq(), bonus;
+                int bonus = 1337 + std::clamp((value - beta), -200, 0);
+                update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
             }
         }
 
