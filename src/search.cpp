@@ -1411,7 +1411,7 @@ moves_loop:  // When in check, search starts here
 
                 // Post LMR continuation history updates
                 int bonus = 1300 + std::clamp((value - beta), -200, 200);
-                update_continuation_histories(ss, movedPiece, move.to_sq(), bonus;
+                update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
             }
         }
 
