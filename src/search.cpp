@@ -1224,9 +1224,9 @@ moves_loop:  // When in check, search starts here
             }
             else if (!ss->followPV || !PvNode)
             {
-                int history = 958 * (*contHist[0])[movedPiece][move.to_sq()]
-                            + 963 * (*contHist[1])[movedPiece][move.to_sq()]
-                            + 967 * sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()];
+                int history = (958 * (*contHist[0])[movedPiece][move.to_sq()]
+                             + 963 * (*contHist[1])[movedPiece][move.to_sq()]
+                             + 967 * sharedHistory.pawn_entry(pos)[movedPiece][move.to_sq()]) / 1024;
 
                 // Continuation history based pruning
                 if (history < -4180 * depth)
