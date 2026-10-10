@@ -938,7 +938,7 @@ Value Search::Worker::search(
         else if (depth > 5)
         {
             assert(!(ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER)));
-          
+
             // If such a mismatch is the only reason cutoff failed, the TT entry is now useless
             ttWriter.penalize(1);
         }
@@ -1169,10 +1169,9 @@ moves_loop:  // When in check, search starts here
         ss->moveCount = ++moveCount;
 
         if (rootNode && is_mainthread() && nodes > NODES_LIMIT_OUTPUT)
-        {
             main_manager()->updates.onIter(
               {depth, UCIEngine::move(move, pos.is_chess960()), moveCount + pvIdx});
-        }
+
         if (PvNode)
             (ss + 1)->pv = nullptr;
 
@@ -1189,7 +1188,7 @@ moves_loop:  // When in check, search starts here
         // Decrease reduction for PvNodes
         if (PvNode)
             r -= 512;
-      
+
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
         if (ss->ttPv)
@@ -1637,7 +1636,7 @@ moves_loop:  // When in check, search starts here
     else if (prevSq != SQ_NONE)
     {
         assert(priorCapture);
-      
+
         Piece capturedPiece = pos.captured_piece();
         assert(capturedPiece != NO_PIECE);
         captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)] << 816;
