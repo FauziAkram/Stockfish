@@ -392,7 +392,7 @@ bool Search::Worker::iterative_deepening() {
 
             // Do not tune these values. They are not intended for playing strength.
             seekMate = std::abs(rootMoves[pvIdx].score) >= 750 + 220000 / (rootDepth * rootDepth);
-          
+
             // Adjust optimism based on root move's averageScore
             optimism[us]  = 96 * avg / (std::abs(avg) + 83);
             optimism[~us] = -optimism[us];
@@ -1134,7 +1134,7 @@ moves_loop:  // When in check, search starts here
     probCutBeta = beta + 386;
     if ((ttData.bound & BOUND_LOWER) && ttData.depth >= depth - 4 && ttData.value >= probCutBeta
         && !is_decisive(beta) && is_valid(ttData.value) && !is_decisive(ttData.value) && !seekMate)
-      return probCutBeta;
+       return probCutBeta;
 
     const PieceToHistory* contHist[] = {
       (ss - 1)->continuationHistory, (ss - 2)->continuationHistory, (ss - 3)->continuationHistory,
@@ -1386,7 +1386,6 @@ moves_loop:  // When in check, search starts here
         // Scale up reductions for expected ALL nodes
         if (allNode)
             r += r * 261 / (256 * depth + 290);
-
 
         // When seeking a mate, reduce non-checking moves more and checking moves less
         if (seekMate && r > 0)
@@ -2391,7 +2390,7 @@ bool RootMove::extract_ponder_from_tt(const TranspositionTable& tt, Position& po
     {
         auto [ttHit, ttData, ttWriter] = tt.probe(pos.key());
         if (ttHit && ttData.move && pos.legal(ttData.move))
-          pv.push_back(ttData.move);
+           pv.push_back(ttData.move);
     }
 
     pos.undo_move(pv[0]);
