@@ -51,6 +51,10 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=1280, xx2=0, xx3=200;
+TUNE(SetRange(0, 3000), xx1);
+TUNE(SetRange(-200, 450), xx2,xx3);
+
 
 inline int lmr_divisor(int depth) {
     int d = std::min(depth, 16);
@@ -1418,7 +1422,8 @@ moves_loop:  // When in check, search starts here
                     value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha, newDepth, !cutNode);
 
                 // Post LMR continuation history updates
-                update_continuation_histories(ss, movedPiece, move.to_sq(), 1334);
+                int bonus = xx1 + std::clamp((value - beta), xx2, xx3);
+                update_continuation_histories(ss, movedPiece, move.to_sq(), bonus);
             }
         }
 
