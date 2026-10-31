@@ -51,6 +51,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int xx1=0, xx2=0, xx3=0, xx4=0, xx5=929, xx6=512;
+TUNE(SetRange(-2000, 3000), xx1,xx2,xx3,xx4,xx5,xx6);
 
 inline int lmr_divisor(int depth) {
     int d = std::min(depth, 16);
@@ -1184,14 +1186,9 @@ moves_loop:  // When in check, search starts here
 
         int r = reduction(improving, depth, moveCount);
 
-        // Decrease reduction for PvNodes
-        if (PvNode)
-            r -= 512;
-
-        // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
         if (ss->ttPv)
-            r += 929;
+            r += xx1 + xx2 * (cutNode) + xx3 * (allNode) + xx4 * (move == ttData.move) + xx5 * (ss->ttPv) - xx6 * (PvNode);
 
         // Step 15. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
