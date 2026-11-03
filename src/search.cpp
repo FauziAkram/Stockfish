@@ -1184,7 +1184,7 @@ moves_loop:  // When in check, search starts here
 
         int r = reduction(improving, depth, moveCount);
 
-            r -= 673 * PvNode - 128 * cutNode;
+            r -= 673 * PvNode + 128 * cutNode;
 
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
