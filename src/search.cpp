@@ -1184,14 +1184,12 @@ moves_loop:  // When in check, search starts here
 
         int r = reduction(improving, depth, moveCount);
 
-        // Decrease reduction for PvNodes
-        if (PvNode)
-            r -= 512;
+            r -= 673 * PvNode - 128 * cutNode;
 
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
         if (ss->ttPv)
-            r += 929;
+            r += 900;
 
         // Step 15. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
