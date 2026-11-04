@@ -51,7 +51,9 @@
 #include "ucioption.h"
 
 namespace Stockfish {
-
+int xx1=0, xx2=178, xx3=34, xx4=2048;
+TUNE(SetRange(-600, 600), xx1);
+TUNE(xx2,xx3,xx4);
 inline int lmr_divisor(int depth) {
     int d = std::min(depth, 16);
     return 3000 + 7 * (d - 8) * (d - 8);
@@ -1221,7 +1223,9 @@ moves_loop:  // When in check, search starts here
 
                 // SEE based pruning for captures and checks.
                 // Avoid pruning sacrifices of our last piece for stalemate.
-                int margin = 177 * depth + captHist * 34 / 1024;
+                int margin = xx1 + xx2 * depth + captHist * xx3 / 1024;
+                if (ss->inCheck)
+                    margin = std::min(margin, xx4);
                 if ((alpha >= VALUE_DRAW || pos.non_pawn_material(us) != PieceValue[movedPiece])
                     && !pos.see_ge(move, -margin))
                     continue;
