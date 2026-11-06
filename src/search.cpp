@@ -1221,7 +1221,9 @@ moves_loop:  // When in check, search starts here
 
                 // SEE based pruning for captures and checks.
                 // Avoid pruning sacrifices of our last piece for stalemate.
-                int margin = 177 * depth + captHist * 34 / 1024;
+                int margin = 179 * depth + captHist * 35 / 1024;
+                if (ss->inCheck)
+                    margin = std::min(margin, 2098);
                 if ((alpha >= VALUE_DRAW || pos.non_pawn_material(us) != PieceValue[movedPiece])
                     && !pos.see_ge(move, -margin))
                     continue;
