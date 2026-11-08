@@ -786,8 +786,12 @@ Value Search::Worker::search(
     int   legalMovesCount = MAX_MOVES;
     auto countLegal = [&legalMovesCount, &pos]() {
       if (legalMovesCount == MAX_MOVES)
-          legalMovesCount = MoveList<LEGAL>(pos).size();
-      return legalMovesCount;
+      {
+          legalMovesCount = 0;
+          for (const auto& m : MoveList<ALL>(pos))
+              if (pos.legal(m))
+                  ++legalMovesCount;
+      }      return legalMovesCount;
     };
 
     SearchedList capturesSearched;
