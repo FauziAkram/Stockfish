@@ -54,7 +54,7 @@ namespace Stockfish {
 int xx1=3000,xx2=7,xx3=8,xx4=8,xx5=7885,xx6=7885,xx7=6307,xx8=80695,xx9=13806,xx10=9512,xx11=11615,xx12=186,xx13=150,xx14=130,xx15=70,xx16=35,xx17=102,xx18=729,xx19=5,xx20=10193,xx21=114,xx22=85,xx23=47,xx24=5,xx25=742,xx26=5,xx27=1338,
 xx28=586,xx29=5,xx30=2872,xx31=166,xx32=131,xx33=2210,xx34=189,xx35=194,xx36=60,xx37=11,xx38=13,xx39=342,xx40=45,xx41=4,xx42=85,xx43=20,xx44=2789,xx45=335,xx46=198435,xx47=0,xx48=50,xx49=13,xx50=47,xx51=365,xx52=2000,xx53=7,xx54=256,xx55=6,
 xx56=241,xx57=64,xx58=5,xx59=3,xx60=428,xx62=929,xx63=8,xx64=234,xx65=247,xx66=134,xx67=177,xx68=34,xx69=1024,xx70=1024,xx71=1024,xx72=4136,xx73=69,xx74=119,xx75=90,xx76=164,xx77=12,xx78=23,xx79=512,xx80=959,xx81=1074,xx82=198368,
-xx83=2,xx84=204,xx85=152,xx86=1175,xx87=114178,xx88=38,xx89=70,xx90=279,xx91=188,xx92=81,xx93=43,xx94=421,xx95=110,xx96=177,xx97=3023,xx98=1004,xx99=885,xx100=816,xx101=940,xx102=697,xx103=65,xx104=26310,xx105=4026,xx106=933,xx107=1079,
+xx83=2,xx84=204,xx85=152,xx86=1175,xx87=114178,xx88=38,xx89=70,xx90=279,xx91=188,xx92=81,xx93=43,xx94=421,xx95=110,xx96=664,xx97=3023,xx98=1004,xx99=885,xx100=816,xx101=940,xx102=697,xx103=65,xx104=26310,xx105=4026,xx106=933,xx107=1079,
 xx108=264,xx109=1095,xx110=1138,xx111=2179,xx112=873,xx113=128,xx114=2252,xx115=1126,xx116=1093,xx117=439,xx118=3,xx119=64,xx120=96,xx121=276,xx122=268,xx123=53,xx124=8,xx125=1334,xx126=1127,xx127=5234,xx128=5487,xx129=918,xx130=747,
 xx131=241,xx132=98,xx133=59,xx134=420,xx135=186,xx136=9,xx137=142,xx138=106,xx139=159,xx140=68,xx141=150,xx142=85,xx143=1337,xx144=263,xx145=215,xx146=324,xx147=892,xx148=12,xx149=18,xx150=1061,xx151=0,xx152=306,xx153=74,xx154=0,xx155=197,
 xx156=982,xx157=133,xx158=81,xx159=1487,xx160=364,xx161=37,xx162=899,xx163=1159,xx164=921,xx165=1427,xx166=713,xx167=1489,xx168=520,xx169=390,xx170=145,xx171=251,xx173=209,xx174=94,xx175=103,xx176=110,xx177=106,xx178=119,xx179=126,xx181=73,xx182=712,xx183=750,xx184=4,xx185=1104,xx186=459,xx187=1024,xx188=17,xx189=0;
@@ -425,7 +425,7 @@ bool Search::Worker::iterative_deepening() {
 
             seekMate = rootMoves[pvIdx].previousScore != -VALUE_INFINITE
                     && std::abs(rootMoves[pvIdx].previousScore) >= seekMateThreshold;
-          
+
             // Adjust optimism based on root move's averageScore
             optimism[us]  = xx21 * avg / (std::abs(avg) + xx22);
             optimism[~us] = -optimism[us];
@@ -677,6 +677,7 @@ bool Search::Worker::iterative_deepening() {
     mainThread->previousTimeReduction = timeReduction;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
+    if (skill.enabled())
     {
         Move pick = skill.best ? skill.best : skill.pick_best(rootMoves, multiPV);
         if (pick != rootMoves[0].pv[0])
@@ -689,14 +690,12 @@ bool Search::Worker::iterative_deepening() {
     return uciPvSent;
 }
 
-
 void Search::Worker::do_move(Position&    pos,
                              const Move   move,
                              StateInfo&   st,
                              const bool   givesCheck,
                              const bool   capture,
                              Stack* const ss) {
-
     // prefetch_key() does not model castling, en passant or promotion exactly.
     // The correction-history prefetches also approximate castling and promotion.
     // For these rare moves the prefetches land on unused lines.
@@ -971,7 +970,7 @@ Value Search::Worker::search(
         else if (depth > 5)
         {
             assert(!(ttData.bound & (ttData.value >= beta ? BOUND_LOWER : BOUND_UPPER)));
-          
+
             // If such a mismatch is the only reason cutoff failed, the TT entry is now useless
             // (*Scaler) This is very close to secondary aging, a known antiscaler. The depth
             // and window conditions seem to be key to decent scaling.
@@ -1312,9 +1311,9 @@ moves_loop:  // When in check, search starts here
             && ttData.depth >= depth - 3 && !is_shuffling(move, ss, pos) && !seekMate)
         {
             Value singularBeta =
-            ttData.value +
-            (- xx80 * depth
-            - xx81 * (ss->ttPv && !PvNode) * depth)
+            ttData.value -
+            (xx80 * depth
+            + xx81 * (ss->ttPv && !PvNode) * depth)
             / 1024;
             Depth singularDepth = newDepth / 2;
 
@@ -1349,7 +1348,7 @@ moves_loop:  // When in check, search starts here
                 if (!ss->inCheck && value > ss->staticEval)
                 {
                     const int bonus =
-                      std::clamp(int(value - ss->staticEval) * singularDepth * xx96 / 1024,
+                      std::clamp(int(value - ss->staticEval) * xx96 / 1024,
                                  -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
                     update_correction_history(pos, ss, *this, xx187 * bonus / 1024);
                 }
@@ -1814,7 +1813,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         if (bestValue >= beta)
         {
             assert(!is_decisive(bestValue));
-                bestValue = ((441 + xx151) * bestValue + (583 - xx151) * beta) / 1024;
+            bestValue = ((441 + xx151) * bestValue + (583 - xx151) * beta) / 1024;
 
             if (!ss->ttHit)
                 ttWriter.write(posKey, VALUE_NONE, false, BOUND_LOWER, DEPTH_UNSEARCHED,
