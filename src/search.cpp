@@ -2006,6 +2006,10 @@ void update_all_stats(const Position& pos,
         // Important: don't remove the cast to a 64-bit number else the multiplication
         // can overflow on 32-bit platforms which would change the bench signature
         bonus += int(bonus * u64(quietsSearched.size() + capturesSearched.size()) / 256);
+dbg_mean_of(int(bonus * u64(quietsSearched.size() + capturesSearched.size()) / 256),0);
+dbg_extremes_of(int(bonus * u64(quietsSearched.size() + capturesSearched.size()) / 256),0);
+dbg_mean_of(bonus,1);
+dbg_extremes_of(bonus,1);
 
     if (!pos.capture_stage(bestMove))
     {
