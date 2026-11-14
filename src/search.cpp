@@ -1636,7 +1636,7 @@ moves_loop:  // When in check, search starts here
 
         Piece capturedPiece = pos.captured_piece();
         assert(capturedPiece != NO_PIECE);
-        captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)] << 892;
+        captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)] << std::min(300 * depth - 182, 1024);
     }
 
     if (PvNode)
@@ -1997,7 +1997,7 @@ void update_all_stats(const Position& pos,
     PieceType              capturedPiece;
 
     int bonus =
-      std::min(133 * depth - 81, 1487) + 364 * (bestMove == ttMove) + (ss - 1)->statScore / 28;
+      std::min(133 * depth - 81, ) + 364 * (bestMove == ttMove) + (ss - 1)->statScore / 28;
     int malus = std::min(968 * depth - 235, 2244);
 
     // Important: don't remove the cast to a 64-bit number else the multiplication
