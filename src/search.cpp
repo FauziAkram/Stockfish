@@ -1636,11 +1636,10 @@ moves_loop:  // When in check, search starts here
         {
             Piece capturedPiece = pos.captured_piece();
             assert(capturedPiece != NO_PIECE);
-            captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)]
-              << std::min(133 * depth - 81, 1487);
+            captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)] << 892;
         }
         if (ttData.move && !allNode)
-            mainHistory[us][ttData.move.raw()] << std::min(33 * depth - 20, 372);
+            mainHistory[us][ttData.move.raw()] << 256;
     }
 
     if (PvNode)
