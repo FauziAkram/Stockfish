@@ -1630,13 +1630,17 @@ moves_loop:  // When in check, search starts here
     }
 
     // Bonus for prior capture countermove that caused the fail low
-    else if (prevSq != SQ_NONE)
+    else
     {
-        assert(priorCapture);
-
-        Piece capturedPiece = pos.captured_piece();
-        assert(capturedPiece != NO_PIECE);
-        captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)] << 892;
+        if (priorCapture && prevSq != SQ_NONE)
+        {
+            Piece capturedPiece = pos.captured_piece();
+            assert(capturedPiece != NO_PIECE);
+            captureHistory[pos.piece_on(prevSq)][prevSq][type_of(capturedPiece)]
+              << std::min(133 * depth - 81, 1487);
+        }
+        if (ttData.move && !allNode)
+            mainHistory[us][ttData.move.raw()] << std::min(33 * depth - 20, 372);
     }
 
     if (PvNode)
