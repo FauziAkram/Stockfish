@@ -1640,7 +1640,7 @@ moves_loop:  // When in check, search starts here
               << std::min(133 * depth - 81, 1487);
         }
         if (ttData.move && !allNode)
-            mainHistory[us][ttData.move.raw()] << std::min(33 * depth - 20, 372);
+            mainHistory[us][ttData.move.raw()] << 256;
     }
 
     if (PvNode)
