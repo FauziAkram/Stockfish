@@ -52,6 +52,11 @@
 
 namespace Stockfish {
 
+int xx1=512,xx2=929,xx3=3023,xx4=1004,xx5=885,xx6=816,xx7=940,xx8=65,xx9=26310,xx10=4026,xx11=933,xx12=1079,xx13=264,xx14=1095,xx15=1138,xx16=2179,xx17=873,xx18=2252,xx19=1126,xx20=1093,xx21=439,xx22=3,xx23=64,xx24=96,xx25=1127;
+TUNE(xx1,xx2,xx3,xx4,xx5,xx6,xx7,xx8,xx9,xx10,xx11,xx12,xx13,xx14,xx15,xx16,xx17,xx18,xx19,xx20,xx21);
+TUNE(SetRange(-3, 8), xx22);
+TUNE(xx23,xx24,xx25);
+
 inline int lmr_divisor(int depth) {
     int d = std::min(depth, 16);
     return 3000 + 7 * (d - 8) * (d - 8);
@@ -1185,12 +1190,12 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes
         if (PvNode)
-            r -= 512;
+            r -= ((depth < 5)? xx1: 512);
 
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.
         if (ss->ttPv)
-            r += 929;
+            r += ((depth < 5)? xx2: 929);
 
         // Step 15. Pruning at shallow depths.
         // Depth conditions are important for mate finding.
@@ -1344,45 +1349,45 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 3023 + PvNode * 1004 + (ttData.value > alpha) * 885
-               + (ttData.depth >= depth) * (816 + cutNode * 940);
+            r -= ((depth < 5)? xx3: 3023) + PvNode * ((depth < 5)? xx4: 1004) + (ttData.value > alpha) * ((depth < 5)? xx5: 885)
+               + (ttData.depth >= depth) * (((depth < 5)? xx6: 816) + cutNode * ((depth < 5)? xx7: 940));
 
         // Base reduction offset to compensate for other tweaks
         r += 697;
 
-        r -= moveCount * 65;
-        r -= std::abs(correctionValue) / 26310;
+        r -= moveCount * ((depth < 5)? xx8: 65);
+        r -= std::abs(correctionValue) / ((depth < 5)? xx9: 26310);
 
         // Increase reduction for cut nodes
         if (cutNode)
-            r += 4026 + 933 * !ttData.move;
+            r += ((depth < 5)? xx10: 4026) + ((depth < 5)? xx11: 933) * !ttData.move;
 
         // Increase reduction if ttMove is a capture
         if (ttCapture)
-            r += 1079;
+            r += ((depth < 5)? xx12: 1079);
 
         // Increase reduction if next ply has a lot of fail high
         if ((ss + 1)->cutoffCnt > 1)
-            r += 264 + 1095 * ((ss + 1)->cutoffCnt > 2) + 1138 * allNode;
+            r += ((depth < 5)? xx13: 264) + ((depth < 5)? xx14: 1095) * ((ss + 1)->cutoffCnt > 2) + ((depth < 5)? xx15: 1138) * allNode;
 
         // For first picked move (ttMove) reduce reduction
         else if (move == ttData.move)
-            r -= 2179;
+            r -= ((depth < 5)? xx16: 2179);
 
         if (capture)
-            ss->statScore = 873 * int(PieceValue[pos.captured_piece()]) / 128
+            ss->statScore = ((depth < 5)? xx17: 873) * int(PieceValue[pos.captured_piece()]) / 128
                           + captureHistory[movedPiece][move.to_sq()][type_of(pos.captured_piece())];
         else
             ss->statScore =
-              (2252 * mainHistory[us][move.raw()] + 1126 * (*contHist[0])[movedPiece][move.to_sq()]
-               + 1093 * (*contHist[1])[movedPiece][move.to_sq()])
+              (((depth < 5)? xx18: 2252) * mainHistory[us][move.raw()] + ((depth < 5)? xx19: 1126) * (*contHist[0])[movedPiece][move.to_sq()]
+               + ((depth < 5)? xx20: 1093) * (*contHist[1])[movedPiece][move.to_sq()])
               / 1024;
 
         // Decrease/increase reduction for moves with a good/bad history
-        r -= ss->statScore * 439 / 4096;
+        r -= ss->statScore * ((depth < 5)? xx21: 439) / 4096;
 
         if (!capture && !is_decisive(alpha))
-            r += 3 * std::clamp(alpha - eval, -64, 96);
+            r += ((depth < 5)? xx22: 3) * std::clamp(alpha - eval, -((depth < 5)? xx23: 64), ((depth < 5)? xx24: 96));
 
         // Scale up reductions for expected ALL nodes
         if (allNode)
@@ -1430,7 +1435,7 @@ moves_loop:  // When in check, search starts here
         {
             // Increase reduction if ttMove is not present
             if (!ttData.move)
-                r += 1127;
+                r += ((depth < 5)? xx25: 1127);
 
             // If expected reduction is high, we reduce search depth here
             value = -search<NonPV>(pos, ss + 1, -(alpha + 1), -alpha,
