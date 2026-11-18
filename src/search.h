@@ -377,6 +377,7 @@ class Worker {
 
     usize              pvIdx, pvLast;
     RelaxedAtomic<u64> nodes, tbHits, bestMoveChanges;
+    RelaxedAtomic<u64> liveConsensus{0};
     int                selDepth, nmpMinPly;
 
     Value optimism[COLOR_NB];
