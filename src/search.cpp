@@ -102,13 +102,13 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
     const int   bnpcv  = shared.nonpawn_correction_entry<BLACK>(pos)[us].nonPawnBlack;
     const int   cntcv =
       m.is_ok()
-          ? 7885
+          ? 6702
               * ((*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
                  + (*(ss - 4)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()])
-            + 6307 * (*(ss - 6)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
+            + 5361 * (*(ss - 6)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
           : 80695;
 
-    return 13806 * pcv + 9512 * micv + 11615 * (wnpcv + bnpcv) + cntcv;
+    return 11735 * pcv + 8085 * micv + 9873 * (wnpcv + bnpcv) + cntcv;
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation
@@ -1312,7 +1312,7 @@ moves_loop:  // When in check, search starts here
                 {
                     const int bonus =
                       std::clamp(int(value - ss->staticEval) * 664 / 1024,
-                                 -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+                                 -CORRECTION_HISTORY_LIMIT / 6, CORRECTION_HISTORY_LIMIT / 6);
                     update_correction_history(pos, ss, *this, bonus);
                 }
 
@@ -1664,7 +1664,7 @@ moves_loop:  // When in check, search starts here
     {
         auto bonus =
           std::clamp(int(bestValue - ss->staticEval) * depth * (bestMove ? 12 : 18) / 128,
-                     -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
+                     -CORRECTION_HISTORY_LIMIT / 6, CORRECTION_HISTORY_LIMIT / 6);
         update_correction_history(pos, ss, *this, 1061 * bonus / 1024);
     }
 
