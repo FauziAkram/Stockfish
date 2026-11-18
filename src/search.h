@@ -335,6 +335,7 @@ class Worker {
     CorrectionHistory<Continuation> continuationCorrectionHistory;
 
     TTMoveHistory    ttMoveHistory;
+    std::array<i32, 8> tttWeights{};
     SharedHistories& sharedHistory;
     ContinuationHistory (&continuationHistory)[2][2];
 
