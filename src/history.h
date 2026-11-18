@@ -168,6 +168,23 @@ struct CorrectionBundle {
     }
 };
 
+struct alignas(64) CorrectionCluster {
+    MultiArray<CorrectionBundle<i16, CORRECTION_HISTORY_LIMIT>, COLOR_NB> slot[4];
+
+    void fill(int val) {
+        for (auto& s : slot)
+            s.fill(val);
+    }
+
+    static std::pair<usize, usize> probe_indices(Key k) {
+        const usize s1 = (k >> 20) & 3;
+        const usize s2 = s1 ^ (1 + ((k >> 22) & 1));
+        return {s1, s2};
+    }
+};
+
+static_assert(sizeof(CorrectionCluster) == 64, "CorrectionCluster must fit one cache line");
+
 namespace Detail {
 
 template<CorrHistType>
@@ -185,9 +202,7 @@ struct CorrHistTypedef<Continuation> {
 
 }
 
-using UnifiedCorrectionHistory =
-  DynStats<MultiArray<CorrectionBundle<i16, CORRECTION_HISTORY_LIMIT>, COLOR_NB>,
-           CORRHIST_BASE_SIZE>;
+using UnifiedCorrectionHistory = DynStats<CorrectionCluster, CORRHIST_BASE_SIZE / 4>;
 
 template<CorrHistType T>
 using CorrectionHistory = typename Detail::CorrHistTypedef<T>::type;
