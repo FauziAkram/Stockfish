@@ -151,6 +151,7 @@ using PawnHistory = DynStats<AtomicStats<i16, 8192, PIECE_NB, SQUARE_NB>, PAWN_H
 enum CorrHistType {
     PieceTo,       // By [piece][to] move
     Continuation,  // Combined history of move pairs
+    FromTo,        // By [color][from_to] of previous move
 };
 
 template<typename T, int D>
@@ -181,6 +182,11 @@ struct CorrHistTypedef<PieceTo> {
 template<>
 struct CorrHistTypedef<Continuation> {
     using type = MultiArray<CorrHistTypedef<PieceTo>::type, PIECE_NB, SQUARE_NB>;
+};
+
+template<>
+struct CorrHistTypedef<FromTo> {
+    using type = Stats<i16, CORRECTION_HISTORY_LIMIT, COLOR_NB, usize(SQUARE_NB) * usize(SQUARE_NB)>;
 };
 
 }
