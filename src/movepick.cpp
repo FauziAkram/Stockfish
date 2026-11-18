@@ -256,6 +256,8 @@ ExtMove* MovePicker::generate_and_score() {
                 value += 16384;
 
             m.value = value;
+            if (move != ttMove)
+                topQuietScore = std::max(topQuietScore, value);
         }
 
         else  // Type == EVASIONS
@@ -276,8 +278,10 @@ Move MovePicker::select(Pred filter) {
 
     for (; cur < endCur; ++cur)
         if (*cur != ttMove && filter())
+        {
+            lastScore = cur->value;
             return *cur++;
-
+        }
     return Move::none();
 }
 
