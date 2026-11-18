@@ -26,6 +26,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <limits>
 #include <type_traits>  // IWYU pragma: keep
 
@@ -74,6 +75,54 @@ struct StatsEntry {
         *this            = val + clampedBonus - val * std::abs(clampedBonus) / D;
 
         assert(std::abs(T(*this)) <= D);
+    }
+};
+
+template<int OutLimit, int InternalLimit = 2048, int Prior = 1024>
+struct CocobStatsEntry {
+   private:
+    struct Packed {
+        i16 g;
+        u16 v;
+    };
+
+    RelaxedAtomic<u32> packed;
+
+    static u32 encode(i16 g, u16 v) {
+        Packed p{g, v};
+        u32    raw;
+        std::memcpy(&raw, &p, sizeof(raw));
+        return raw;
+    }
+
+    static Packed decode(u32 raw) {
+        Packed p;
+        std::memcpy(&p, &raw, sizeof(p));
+        return p;
+    }
+
+   public:
+    void operator=(const i16& val) {
+        const i16 clamped = static_cast<i16>(std::clamp(int(val), -InternalLimit, InternalLimit));
+        packed            = encode(clamped, static_cast<u16>(std::abs(clamped)));
+    }
+
+    operator i16() const {
+        const auto [g, v] = decode(packed);
+        return static_cast<i16>(int(g) * OutLimit / (Prior + int(v)));
+    }
+
+    void operator<<(int bonus) {
+        const int  b      = std::clamp(bonus, -OutLimit, OutLimit);
+        const int  absB   = std::abs(b);
+        const auto [g, v] = decode(packed);
+
+        const int gNew = std::clamp(int(g) + b - int(g) * absB / InternalLimit,
+                                    -InternalLimit, InternalLimit);
+        const int vNew = std::clamp(int(v) + absB - int(v) * absB / InternalLimit,
+                                    0, InternalLimit);
+
+        packed = encode(static_cast<i16>(gNew), static_cast<u16>(vNew));
     }
 };
 
@@ -155,10 +204,10 @@ enum CorrHistType {
 
 template<typename T, int D>
 struct CorrectionBundle {
-    StatsEntry<T, D, true> pawn;
-    StatsEntry<T, D, true> minor;
-    StatsEntry<T, D, true> nonPawnWhite;
-    StatsEntry<T, D, true> nonPawnBlack;
+    CocobStatsEntry<D> pawn;
+    CocobStatsEntry<D> minor;
+    CocobStatsEntry<D> nonPawnWhite;
+    CocobStatsEntry<D> nonPawnBlack;
 
     void operator=(T val) {
         pawn         = val;
