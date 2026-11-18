@@ -538,6 +538,11 @@ bool Search::Worker::iterative_deepening() {
                 lastBestMovePV    = rootMoves[0].pv;
                 lastBestMoveScore = rootMoves[0].score;
             }
+            int margin = 0;
+            if (rootMoves.size() > 1 && rootMoves[1].previousScore != -VALUE_INFINITE)
+                margin = std::clamp(int(rootMoves[0].score - rootMoves[1].previousScore), 0, 32000);
+            liveConsensus = (u64(u16(rootDepth)) << 32) | (u64(u16(margin)) << 16)
+                          | u64(rootMoves[0].pv[0].raw());
         }
 
         const bool abortedLossSearch = threads.stop && !pvIdx && rootMoves[0].is_exact_loss();
@@ -609,8 +614,39 @@ bool Search::Worker::iterative_deepening() {
             double highBestMoveEffort = std::clamp(
               interpolate(i64(nodesEffort), i64(75800), i64(104510), 0.969, 0.714), 0.693, 0.838);
 
+            double consensusFactor = 1.0;
+            if (threads.size() > 1)
+            {
+                double evidence = 0.0;
+                int    active   = 0;
+                const Move mainBest = rootMoves[0].pv[0];
+
+                for (auto&& th : threads)
+                {
+                    if (th->worker.get() == this)
+                        continue;
+
+                    const u64  packed = th->worker->liveConsensus;
+                    const int  d      = int(u16(packed >> 32));
+                    const int  margin = int(u16((packed >> 16) & 0xFFFF));
+                    const Move mv     = Move(u16(packed & 0xFFFF));
+
+                    if (mv != Move::none() && d >= rootDepth - 2)
+                    {
+                        ++active;
+                        if (mv == mainBest)
+                            evidence += 0.25 + std::min(margin, 200) / 400.0;
+                        else
+                            evidence -= 0.75;
+                    }
+                }
+
+                if (active > 0)
+                    consensusFactor = std::clamp(1.0 - 0.35 * (evidence / active), 0.75, 1.30);
+            }
+
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * highBestMoveEffort;
+                             * bestMoveInstability * highBestMoveEffort * consensusFactor;
 
             if (rootMoves.size() == 1)
                 // Cap used time to 0.5s for a better viewer experience
