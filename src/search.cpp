@@ -385,7 +385,7 @@ bool Search::Worker::iterative_deepening() {
             selDepth = 0;
 
             // Reset aspiration window starting size
-            delta     = 5 + threadIdx % 8 + std::abs(rootMoves[pvIdx].meanSquaredScore) / 10193;
+            delta     = rootMoves[pvIdx].conformalDelta + int(threadIdx % 8);
             Value avg = rootMoves[pvIdx].averageScore;
             alpha     = std::max(avg - delta, -VALUE_INFINITE);
             beta      = std::min(avg + delta, VALUE_INFINITE);
@@ -400,6 +400,7 @@ bool Search::Worker::iterative_deepening() {
             // Start with a small aspiration window and, in the case of a fail
             // high/low, enlarge the window progressively.
             int failedHighCnt = 0;
+            bool failedInitially = false;
             if (!pvIdx)
                 failHighRecovery = std::max(0, failHighRecovery - 2);
             while (true)
@@ -441,12 +442,14 @@ bool Search::Worker::iterative_deepening() {
                     failedHighCnt = 0;
                     if (mainThread)
                         mainThread->stopOnPonderhit = false;
+                    failedInitially = true;
                 }
                 else if (bestValue >= beta)
                 {
                     alpha = std::max(beta - delta, alpha);
                     beta  = std::min(bestValue + delta, VALUE_INFINITE);
                     ++failedHighCnt;
+                    failedInitially = true;
                 }
                 else
                     break;
@@ -454,6 +457,19 @@ bool Search::Worker::iterative_deepening() {
                 delta += 47 * delta / 128;
 
                 assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
+            }
+            if (!threads.stop && avg != -VALUE_INFINITE)
+            {
+                auto& rm       = rootMoves[pvIdx];
+                int   residual = std::abs(bestValue - avg);
+                if (failedInitially)
+                    rm.conformalDelta = std::clamp(
+                      rm.conformalDelta + std::max(3, (residual - rm.conformalDelta) / 2),
+                      4, 150);
+                else
+                    rm.conformalDelta = std::clamp(
+                      rm.conformalDelta - std::max(1, (rm.conformalDelta - residual) / 4),
+                      4, 150);
             }
 
             // Gradually increase depth after reduced depth search
