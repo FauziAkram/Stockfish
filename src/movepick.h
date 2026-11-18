@@ -19,6 +19,9 @@
 #ifndef MOVEPICK_H_INCLUDED
 #define MOVEPICK_H_INCLUDED
 
+#include <algorithm>
+#include <limits>
+
 #include "history.h"
 #include "misc.h"
 #include "movegen.h"
@@ -54,6 +57,12 @@ class MovePicker {
     Move next_move();
     void skip_quiet_moves();
 
+    int  quiet_deficit() const {
+        return topQuietScore != std::numeric_limits<int>::min()
+               ? std::max(0, topQuietScore - lastScore)
+               : -1;
+    }
+
    private:
     template<typename Pred>
     Move select(Pred);
@@ -74,6 +83,8 @@ class MovePicker {
     Depth                        depth;
     int                          ply;
     bool                         skipQuiets = false;
+    int                          topQuietScore = std::numeric_limits<int>::min();
+    int                          lastScore     = 0;
     ExtMove                      moves[MAX_MOVES];
 };
 
