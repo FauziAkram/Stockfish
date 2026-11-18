@@ -92,6 +92,20 @@ const std::array<int, MAX_MOVES> reductions = [] {
 // (*Scaler) All tuned parameters at time controls shorter than
 // optimized for require verifications at longer time controls.
 
+std::array<int, 8> ttt_features(const Position& pos) {
+    const Color us = pos.side_to_move();
+    return {
+      1,
+      pos.count<PAWN>(us) - pos.count<PAWN>(~us),
+      pos.count<KNIGHT>(us) - pos.count<KNIGHT>(~us),
+      pos.count<BISHOP>(us) - pos.count<BISHOP>(~us),
+      pos.count<ROOK>(us) - pos.count<ROOK>(~us),
+      pos.count<QUEEN>(us) - pos.count<QUEEN>(~us),
+      int(pos.count<BISHOP>(us) >= 2) - int(pos.count<BISHOP>(~us) >= 2),
+      (pos.count<PAWN>() - 8) / 2,
+    };
+}
+
 int correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
     const Color us     = pos.side_to_move();
     const auto  m      = (ss - 1)->currentMove;
@@ -108,7 +122,12 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
             + 6307 * (*(ss - 6)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
           : 80695;
 
-    return 13806 * pcv + 9512 * micv + 11615 * (wnpcv + bnpcv) + cntcv;
+    const auto phi = ttt_features(pos);
+    int        ttt = 0;
+    for (usize i = 0; i < phi.size(); ++i)
+        ttt += w.tttWeights[i] * phi[i];
+
+    return 13806 * pcv + 9512 * micv + 11615 * (wnpcv + bnpcv) + cntcv + ttt * 512;
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation
@@ -140,6 +159,17 @@ void update_correction_history(const Position& pos,
         (*(ss - 4)->continuationCorrectionHistory)[pc][to] << bonus * 70 / 128;
         (*(ss - 6)->continuationCorrectionHistory)[pc][to] << bonus * 35 / 128;
     }
+
+    const auto phi    = ttt_features(pos);
+    int        normSq = 0;
+    for (int f : phi)
+        normSq += f * f;
+
+    const int step = (bonus * 8) / (normSq + 16);
+    for (usize i = 0; i < phi.size(); ++i)
+        workerThread.tttWeights[i] = std::clamp(
+          workerThread.tttWeights[i] - workerThread.tttWeights[i] / 256 + step * phi[i],
+          -8192, 8192);
 }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -731,6 +761,8 @@ void Search::Worker::clear() {
     for (auto& to : continuationCorrectionHistory)
         for (auto& h : to)
             h.fill(5);
+  
+    tttWeights.fill(0);
 
     refreshTable.clear(network[numaAccessToken]);
 }
