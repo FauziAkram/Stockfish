@@ -92,14 +92,33 @@ const std::array<int, MAX_MOVES> reductions = [] {
 // (*Scaler) All tuned parameters at time controls shorter than
 // optimized for require verifications at longer time controls.
 
+inline int cm_read(int a, int b) {
+    if ((a ^ b) < 0)
+        return 0;
+    return std::abs(a) <= std::abs(b) ? a : b;
+}
+
 int correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
     const Color us     = pos.side_to_move();
     const auto  m      = (ss - 1)->currentMove;
     const auto& shared = w.sharedHistory;
-    const int   pcv    = shared.pawn_correction_entry(pos)[us].pawn;
-    const int   micv   = shared.minor_piece_correction_entry(pos)[us].minor;
-    const int   wnpcv  = shared.nonpawn_correction_entry<WHITE>(pos)[us].nonPawnWhite;
-    const int   bnpcv  = shared.nonpawn_correction_entry<BLACK>(pos)[us].nonPawnBlack;
+    const auto& pCluster = shared.pawn_correction_entry(pos);
+    const auto [ps1, ps2] = CorrectionCluster::probe_indices(pos.pawn_key());
+    const int   pcv       = cm_read(pCluster.slot[ps1][us].pawn, pCluster.slot[ps2][us].pawn);
+
+    const auto& mCluster = shared.minor_piece_correction_entry(pos);
+    const auto [ms1, ms2] = CorrectionCluster::probe_indices(pos.minor_piece_key());
+    const int   micv      = cm_read(mCluster.slot[ms1][us].minor, mCluster.slot[ms2][us].minor);
+
+    const auto& wCluster = shared.nonpawn_correction_entry<WHITE>(pos);
+    const auto [ws1, ws2] = CorrectionCluster::probe_indices(pos.non_pawn_key(WHITE));
+    const int   wnpcv =
+      cm_read(wCluster.slot[ws1][us].nonPawnWhite, wCluster.slot[ws2][us].nonPawnWhite);
+
+    const auto& bCluster = shared.nonpawn_correction_entry<BLACK>(pos);
+    const auto [bs1, bs2] = CorrectionCluster::probe_indices(pos.non_pawn_key(BLACK));
+    const int   bnpcv =
+      cm_read(bCluster.slot[bs1][us].nonPawnBlack, bCluster.slot[bs2][us].nonPawnBlack);
     const int   cntcv =
       m.is_ok()
           ? 7885
@@ -127,10 +146,25 @@ void update_correction_history(const Position& pos,
     constexpr int nonPawnWeight = 186;
     auto&         shared        = workerThread.sharedHistory;
 
-    shared.pawn_correction_entry(pos)[us].pawn << bonus;
-    shared.minor_piece_correction_entry(pos)[us].minor << bonus * 150 / 128;
-    shared.nonpawn_correction_entry<WHITE>(pos)[us].nonPawnWhite << bonus * nonPawnWeight / 128;
-    shared.nonpawn_correction_entry<BLACK>(pos)[us].nonPawnBlack << bonus * nonPawnWeight / 128;
+    auto& pCluster        = shared.pawn_correction_entry(pos);
+    const auto [ps1, ps2] = CorrectionCluster::probe_indices(pos.pawn_key());
+    pCluster.slot[ps1][us].pawn << bonus;
+    pCluster.slot[ps2][us].pawn << bonus;
+
+    auto& mCluster        = shared.minor_piece_correction_entry(pos);
+    const auto [ms1, ms2] = CorrectionCluster::probe_indices(pos.minor_piece_key());
+    mCluster.slot[ms1][us].minor << bonus * 150 / 128;
+    mCluster.slot[ms2][us].minor << bonus * 150 / 128;
+
+    auto& wCluster        = shared.nonpawn_correction_entry<WHITE>(pos);
+    const auto [ws1, ws2] = CorrectionCluster::probe_indices(pos.non_pawn_key(WHITE));
+    wCluster.slot[ws1][us].nonPawnWhite << bonus * nonPawnWeight / 128;
+    wCluster.slot[ws2][us].nonPawnWhite << bonus * nonPawnWeight / 128;
+
+    auto& bCluster        = shared.nonpawn_correction_entry<BLACK>(pos);
+    const auto [bs1, bs2] = CorrectionCluster::probe_indices(pos.non_pawn_key(BLACK));
+    bCluster.slot[bs1][us].nonPawnBlack << bonus * nonPawnWeight / 128;
+    bCluster.slot[bs2][us].nonPawnBlack << bonus * nonPawnWeight / 128;
 
     if (m.is_ok())
     {
