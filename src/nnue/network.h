@@ -26,6 +26,7 @@
 #include <string>
 #include <string_view>
 #include <filesystem>
+#include <utility>
 
 #include "../misc.h"
 #include "../types.h"
@@ -92,6 +93,7 @@ class Network {
     bool write_parameters(std::ostream&, const std::string&) const;
 
     int layer_stack(const Position& pos) const;
+    std::pair<int, int> layer_stack_pair(const Position& pos) const;
 
     // Input feature converter
     FeatureTransformer featureTransformer;
