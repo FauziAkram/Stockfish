@@ -79,6 +79,7 @@ void AccumulatorStack::reset() noexcept {
     new (&accumulators[0].dirtyThreats) DirtyThreats;
     new (&accumulators[0].dirtyPawnPairs) DirtyPawnPairs;
     accumulators[0].computed.fill(false);
+    accumulators[0].tttKey = 0;
     size = 1;
 }
 
@@ -86,6 +87,7 @@ Dirties& AccumulatorStack::push(const Position& pos) noexcept {
     assert(size < MaxSize);
     auto& st = accumulators[size];
     st.computed.fill(false);
+    st.tttKey = 0;
     st.blockBefore = PSQFeatureSet::block_state(pos);
     new (&st.dirtyThreats) DirtyThreats;
     new (&st.dirtyPawnPairs) DirtyPawnPairs;
@@ -96,6 +98,27 @@ Dirties& AccumulatorStack::push(const Position& pos) noexcept {
 void AccumulatorStack::pop() noexcept {
     assert(size > 1);
     size--;
+}
+
+void AccumulatorStack::update_ttt(Key posKey, int bonus) noexcept {
+    const auto& st = latest();
+    if (st.tttKey != posKey)
+        return;
+
+    int normSq = 0;
+    for (usize i = 0; i < TTTDim; ++i)
+    {
+        const int phi = st.tttLatent[i];
+        normSq += phi * phi;
+    }
+
+    for (usize i = 0; i < TTTDim; ++i)
+    {
+        const int phi  = st.tttLatent[i];
+        const int grad = (bonus * phi * 256) / (normSq + 4096);
+        tttWeights[i]  = static_cast<i16>(
+          std::clamp(int(tttWeights[i]) - int(tttWeights[i]) / 256 + grad, -4096, 4096));
+    }
 }
 
 void AccumulatorStack::evaluate(const Position&           pos,
