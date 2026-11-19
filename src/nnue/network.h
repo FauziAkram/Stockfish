@@ -65,7 +65,8 @@ class Network {
 
     Value evaluate(const Position&    pos,
                    AccumulatorStack&  accumulatorStack,
-                   AccumulatorCaches& cache) const;
+                   AccumulatorCaches& cache,
+                   int*               nnzCount = nullptr) const;
 
 
     void verify(const std::function<void(std::string_view)>& f,
