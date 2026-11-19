@@ -337,6 +337,7 @@ class Worker {
     TTMoveHistory    ttMoveHistory;
     SharedHistories& sharedHistory;
     ContinuationHistory (&continuationHistory)[2][2];
+    void update_ttt(Key posKey, int bonus) { accumulatorStack.update_ttt(posKey, bonus); }
 
    private:
     bool iterative_deepening();
