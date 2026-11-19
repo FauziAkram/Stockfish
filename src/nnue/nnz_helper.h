@@ -19,6 +19,8 @@
 #ifndef NNZ_HELPER_H_INCLUDED
 #define NNZ_HELPER_H_INCLUDED
 
+#include <cstring>
+#include "../bitboard.h"
 #include <utility>
 
 #include "nnue_common.h"
@@ -165,6 +167,22 @@ struct NNZInfo {
 
     NNZCursor make_cursor(bool perspective) { return {*this, perspective}; }
 #endif
+    int active_count() const {
+    #if defined(USE_AVX512) || defined(USE_RVV)
+        return int(count);
+    #elif (defined(USE_SSSE3) || defined(USE_LSX) || defined(USE_LASX) || (USE_NEON >= 8))
+        int total = 0;
+        for (usize i = 0; i < sizeof(bitset); i += 8)
+        {
+            u64 w;
+            std::memcpy(&w, bitset + i, sizeof(w));
+            total += popcount(w);
+        }
+        return total;
+    #else
+        return -1;
+    #endif
+    }
 };
 }  // namespace Stockfish::Eval::NNUE
 
