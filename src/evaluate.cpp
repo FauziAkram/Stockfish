@@ -43,7 +43,7 @@ static int simple_eval(const Position& pos) {
          - pos.non_pawn_material(~c);
 }
 
-Value scale_evaluation(Value nnue, int optimism, const Position& pos);
+Value scale_evaluation(Value nnue, int optimism, const Position& pos, int nnzCount = -1);
 
 Value Eval::evaluate(const Eval::NNUE::Network&     network,
                      const Position&                pos,
@@ -52,12 +52,13 @@ Value Eval::evaluate(const Eval::NNUE::Network&     network,
                      int                            optimism) {
 
     assert(!pos.checkers());
-    Value nnue = network.evaluate(pos, accumulators, caches);
-    return scale_evaluation(nnue, optimism, pos);
+    int   nnzCount = -1;
+    Value nnue     = network.evaluate(pos, accumulators, caches, &nnzCount);
+    return scale_evaluation(nnue, optimism, pos, nnzCount);
 }
 
 // Applies search-dependent scaling (optimism and rule50) to the raw NNUE eval
-Value scale_evaluation(Value nnue, int optimism, const Position& pos) {
+Value scale_evaluation(Value nnue, int optimism, const Position& pos, int nnzCount) {
     Value se = simple_eval(pos);
 
     // Normalize the raw evaluations to [-1024, 1024] to measure their correlation.
@@ -74,6 +75,13 @@ Value scale_evaluation(Value nnue, int optimism, const Position& pos) {
     // Scale the combined evaluation by total material
     int material = 521 * pos.count<PAWN>() + pos.non_pawn_material();
     v += i64(material) * v / 90649;
+
+    // Modulate optimism and eval confidence by NNUE's active L1 representation density
+    if (nnzCount >= 0)
+    {
+        v += i64(optimism) * (nnzCount - 96) / 512;
+        v += i64(v) * (nnzCount - 112) / 2048;
+    }
 
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 189;
@@ -102,8 +110,9 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Network& network) {
 
     ss << std::showpoint << std::showpos << std::fixed << std::setprecision(2) << std::setw(15);
 
-    Value nnue = network.evaluate(pos, *accumulators, *caches);
-    Value s_v  = scale_evaluation(nnue, VALUE_ZERO, pos);  // requires stm perspective
+    int   nnzCount = -1;
+    Value nnue     = network.evaluate(pos, *accumulators, *caches, &nnzCount);
+    Value s_v      = scale_evaluation(nnue, VALUE_ZERO, pos, nnzCount);  // requires stm perspective
 
     ss << "NNUE evaluation          " << nnue << " (side to move, internal units)\n";
 
