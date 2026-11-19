@@ -140,6 +140,7 @@ void update_correction_history(const Position& pos,
         (*(ss - 4)->continuationCorrectionHistory)[pc][to] << bonus * 70 / 128;
         (*(ss - 6)->continuationCorrectionHistory)[pc][to] << bonus * 35 / 128;
     }
+    workerThread.update_ttt(pos.key(), bonus);
 }
 
 // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -731,6 +732,8 @@ void Search::Worker::clear() {
     for (auto& to : continuationCorrectionHistory)
         for (auto& h : to)
             h.fill(5);
+  
+    accumulatorStack.reset_ttt();
 
     refreshTable.clear(network[numaAccessToken]);
 }
