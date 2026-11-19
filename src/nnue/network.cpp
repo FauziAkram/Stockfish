@@ -138,8 +138,13 @@ bool Network::save(const EvalFile& evalFile, const std::optional<fs::path>& file
 }
 
 int Network::layer_stack(const Position& pos) const {
+    return layer_stack_pair(pos).first;
+}
+
+std::pair<int, int> Network::layer_stack_pair(const Position& pos) const {
     const Color stm    = pos.side_to_move();
-    const int   band   = (pos.count<ALL_PIECES>() - 1) / 4;
+    const int   pieces = pos.count<ALL_PIECES>();
+    const int   band   = (pieces - 1) / 4;
     const int   queens = 2 * bool(pos.pieces(stm, QUEEN)) + bool(pos.pieces(~stm, QUEEN));
 
     // Pawn layout: 0 if pawns stand on both board halves, 1 if on one half only, 2 if there are no pawns
@@ -153,7 +158,18 @@ int Network::layer_stack(const Position& pos) const {
     };
     const bool many = std::max(officers(WHITE), officers(BLACK)) >= 2;
 
-    return layerStackIndex[((band * 4 + queens) * 3 + layout) * 2 + many];
+    const int baseIdx = (queens * 3 + layout) * 2 + many;
+    const int bucket  = layerStackIndex[band * 24 + baseIdx];
+
+    const int rem     = (pieces - 1) & 3;
+    int       altBand = band;
+    if (rem == 0 && band > 0)
+        altBand = band - 1;
+    else if (rem == 3 && band < 7)
+        altBand = band + 1;
+
+    const int altBucket = layerStackIndex[altBand * 24 + baseIdx];
+    return {bucket, altBucket};
 }
 
 Value Network::evaluate(const Position&    pos,
@@ -168,10 +184,15 @@ Value Network::evaluate(const Position&    pos,
 
     NNZInfo<L1> nnzInfo;
 
-    const int bucket = layer_stack(pos);
+    const auto [bucket, altBucket] = layer_stack_pair(pos);
 
     featureTransformer.transform(pos, accumulatorStack, cache, transformedFeatures, nnzInfo);
-    const auto positional = network[bucket].propagate(transformedFeatures, nnzInfo);
+    auto positional = network[bucket].propagate(transformedFeatures, nnzInfo);
+    if (altBucket != bucket)
+    {
+        const auto altPos = network[altBucket].propagate(transformedFeatures, nnzInfo);
+        positional        = (3 * positional + altPos) / 4;
+    }
     return static_cast<Value>(positional / OutputScale);
 }
 
