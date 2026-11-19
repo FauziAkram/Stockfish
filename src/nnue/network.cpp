@@ -158,7 +158,8 @@ int Network::layer_stack(const Position& pos) const {
 
 Value Network::evaluate(const Position&    pos,
                         AccumulatorStack&  accumulatorStack,
-                        AccumulatorCaches& cache) const {
+                        AccumulatorCaches& cache,
+                        int*               nnzCount) const {
 
     constexpr u64 alignment = CacheLineSize;
 
@@ -171,6 +172,8 @@ Value Network::evaluate(const Position&    pos,
     const int bucket = layer_stack(pos);
 
     featureTransformer.transform(pos, accumulatorStack, cache, transformedFeatures, nnzInfo);
+    if (nnzCount)
+        *nnzCount = nnzInfo.active_count();
     const auto positional = network[bucket].propagate(transformedFeatures, nnzInfo);
     return static_cast<Value>(positional / OutputScale);
 }
