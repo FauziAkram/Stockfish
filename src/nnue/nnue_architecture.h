@@ -21,7 +21,9 @@
 #ifndef NNUE_ARCHITECTURE_H_INCLUDED
 #define NNUE_ARCHITECTURE_H_INCLUDED
 
+#include <algorithm>
 #include <cstdint>
+#include <cstring>
 #include <iosfwd>
 
 #include "features/k32h3.h"
@@ -94,7 +96,9 @@ struct NetworkArchitecture {
     }
 
     i32 propagate(const TransformedFeatureType* transformedFeatures,
-                  const NNZInfo<L1>&            nnzInfo) const {
+                  const NNZInfo<L1>&            nnzInfo,
+                  const i16*                    tttWeights   = nullptr,
+                  u8*                           tttLatentOut = nullptr) const {
         struct alignas(CacheLineSize) Buffer {
             alignas(CacheLineSize) typename decltype(fc_0)::OutputBuffer fc_0_out;
             alignas(CacheLineSize) typename decltype(ac_sqr_0)::OutputType
@@ -128,8 +132,18 @@ struct NetworkArchitecture {
         static_assert(FC_0_OUTPUTS >= 2);
         i32 fwdOut = buffer.fc_2_out[0];
         i32 skip_0 = buffer.fc_0_out[FC_0_OUTPUTS - 2] - buffer.fc_0_out[FC_0_OUTPUTS - 1];
-        fwdOut += skip_0;
+        static_assert(FC_0_OUTPUTS * 2 + FC_1_OUTPUTS * 2 == 128);
+        i32 tttAdj = 0;
+        if (tttLatentOut)
+            std::memcpy(tttLatentOut, buffer.concat_buffer, 128);
+        if (tttWeights)
+        {
+            for (usize k = 0; k < 128; ++k)
+                tttAdj += i32(tttWeights[k]) * i32(buffer.concat_buffer[k]);
+            tttAdj = std::clamp(tttAdj / 128, -2048, 2048);
+        }
 
+        fwdOut += skip_0 + tttAdj;
         // fwdOut is such that 1.0 is equal to HiddenOneVal*(1<<WeightScaleBits)*2 in
         // quantized form, but we want 1.0 to be equal to 600*OutputScale
         // to make overflow impossible we cast to int64_t
