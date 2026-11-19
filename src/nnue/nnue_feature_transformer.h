@@ -280,6 +280,7 @@ class FeatureTransformer {
         [[maybe_unused]] const vec_t   FtMax = vec_set_16(FtMaxVal);
         [[maybe_unused]] constexpr int shift = 7;
 
+        constexpr u8 ActivationThreshold = 1;
         const vec_t* in0 = reinterpret_cast<const vec_t*>(&accumulation[0]);
         const vec_t* in1 = reinterpret_cast<const vec_t*>(&accumulation[HalfDimensions / 2]);
         vec_t*       out = reinterpret_cast<vec_t*>(output + offset);
@@ -336,6 +337,7 @@ class FeatureTransformer {
 
                 uint8x16x2_t uzp = vuzpq_u8(vreinterpretq_u8_u16(mul0), vreinterpretq_u8_u16(mul1));
                 uint8x16_t   pab = vshrq_n_u8(uzp.val[1], 1);
+                pab = vandq_u8(pab, vcgtq_u8(pab, vdupq_n_u8(ActivationThreshold)));
                 vec_t        result = reinterpret_cast<vec_t>(pab);
     #elif defined(USE_LSX) || defined(USE_LASX)
                 vec_t pa = vec_packus_16(acc0a, acc0b);
@@ -343,6 +345,13 @@ class FeatureTransformer {
 
                 vec_t hi     = vec_mulhi_8(pa, pb);
                 vec_t result = vec_srli_8(hi, 1);
+        #if defined(USE_LASX)
+                result = __lasx_xvand_v(
+                  result, __lasx_xvslt_b(__lasx_xvreplgr2vr_b(ActivationThreshold), result));
+        #else
+                result = __lsx_vand_v(
+                  result, __lsx_vslt_b(__lsx_vreplgr2vr_b(ActivationThreshold), result));
+        #endif
     #elif defined(__wasm__)
                 // _mm_mulhi_epi16 is lowered to 32-bit multiplies, so we take
                 // a similar approach as the NEON path.
@@ -356,6 +365,8 @@ class FeatureTransformer {
                 vec_t merged = wasm_i8x16_shuffle(low, hi, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21,
                                                   23, 25, 27, 29, 31);
                 vec_t result = wasm_u8x16_shr(merged, 1);
+                result =
+                  wasm_v128_and(result, wasm_u8x16_gt(result, wasm_u8x16_splat(ActivationThreshold)));
     #else
                 vec_t sum0a = vec_slli_16(vec_max_16(vec_min_16(acc0a, FtMax), Zero), shift);
                 vec_t sum0b = vec_slli_16(vec_max_16(vec_min_16(acc0b, FtMax), Zero), shift);
@@ -366,6 +377,16 @@ class FeatureTransformer {
                 vec_t pb = vec_mulhi_16(sum0b, sum1b);
 
                 vec_t result = vec_packus_16(pa, pb);
+        #if defined(USE_AVX512)
+                result = _mm512_maskz_mov_epi8(
+                  _mm512_cmpgt_epi8_mask(result, _mm512_set1_epi8(ActivationThreshold)), result);
+        #elif defined(USE_AVX2)
+                result = _mm256_and_si256(
+                  result, _mm256_cmpgt_epi8(result, _mm256_set1_epi8(ActivationThreshold)));
+        #elif defined(USE_SSE2)
+                result = _mm_and_si128(
+                  result, _mm_cmpgt_epi8(result, _mm_set1_epi8(ActivationThreshold)));
+        #endif
     #endif
 
                 packed[k] = out[j + k] = result;
@@ -401,6 +422,9 @@ class FeatureTransformer {
             vuint8m1_t hi     = __riscv_vmulhu(pa, pb, vl);
             vuint8m1_t result = __riscv_vsrl(hi, 1, vl);
 
+            vbool8_t keep = __riscv_vmsgtu(result, 1, vl);
+            result        = __riscv_vmerge(__riscv_vmv_v_x_u8m1(0, vl), result, keep, vl);
+
             __riscv_vse8(&output[offset + j], result, vl);
 
             vbool8_t    m   = __riscv_vmsne(result, 0, vl);
@@ -424,7 +448,8 @@ class FeatureTransformer {
             sum0 = std::clamp<BiasType>(sum0, 0, FtMaxVal);
             sum1 = std::clamp<BiasType>(sum1, 0, FtMaxVal);
 
-            output[offset + j] = static_cast<OutputType>(unsigned(sum0 * sum1) / 512);
+            const OutputType act = static_cast<OutputType>(unsigned(sum0 * sum1) / 512);
+            output[offset + j]   = act > 1 ? act : 0;
         }
 
 #endif
