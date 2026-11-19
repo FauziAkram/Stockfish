@@ -90,11 +90,25 @@ struct AccumulatorCaches {
 
 struct AccumulatorState: public Accumulator, Dirties {
     PSQFeatureSet::BlockState blockBefore;
+    std::array<u8, 128> tttLatent;
+    Key                 tttKey = 0;
 };
 
 class AccumulatorStack {
    public:
     static constexpr usize MaxSize = MAX_PLY + 1;
+    static constexpr usize TTTDim = 128;
+
+    const i16* ttt_weights() const noexcept { return tttWeights.data(); }
+
+    u8* prepare_ttt_latent(Key posKey) noexcept {
+        auto& st  = mut_latest();
+        st.tttKey = posKey;
+        return st.tttLatent.data();
+    }
+
+    void reset_ttt() noexcept { tttWeights.fill(0); }
+    void update_ttt(Key posKey, int bonus) noexcept;
 
     [[nodiscard]] const AccumulatorState& latest() const noexcept;
 
@@ -137,6 +151,7 @@ class AccumulatorStack {
 
     std::array<AccumulatorState, MaxSize> accumulators;
     usize                                 size = 1;
+    std::array<i16, TTTDim> tttWeights{};
 };
 
 }  // namespace Stockfish::Eval::NNUE
