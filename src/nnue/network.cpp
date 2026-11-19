@@ -171,8 +171,10 @@ Value Network::evaluate(const Position&    pos,
     const int bucket = layer_stack(pos);
 
     featureTransformer.transform(pos, accumulatorStack, cache, transformedFeatures, nnzInfo);
-    const auto positional = network[bucket].propagate(transformedFeatures, nnzInfo);
-    return static_cast<Value>(positional / OutputScale);
+    const auto positional =
+      network[bucket].propagate(transformedFeatures, nnzInfo, accumulatorStack.ttt_weights(),
+                                accumulatorStack.prepare_ttt_latent(pos.key()));
+  return static_cast<Value>(positional / OutputScale);
 }
 
 
