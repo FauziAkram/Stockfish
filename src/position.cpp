@@ -50,7 +50,6 @@ struct Keys {
     Key psq[PIECE_NB][SQUARE_NB];
     Key enpassant[FILE_NB];
     Key castling[CASTLING_RIGHT_NB];
-    Key side, noPawns;
 };
 
 constexpr Keys generate_keys() {
@@ -65,18 +64,16 @@ constexpr Keys generate_keys() {
     for (Piece pc : {W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING, B_PAWN, B_KNIGHT,
                      B_BISHOP, B_ROOK, B_QUEEN, B_KING})
         for (Square sq = SQ_A1; sq <= SQ_H8; ++sq)
-            k.psq[pc][sq] = next();
+            k.psq[pc][sq] = next() << 1;
     // Pawns on these squares will promote: keep the impossible placements zero
     for (Square sq = SQ_A8; sq <= SQ_H8; ++sq)
         k.psq[W_PAWN][sq] = Key(0);
     for (Square sq = SQ_A1; sq <= SQ_H1; ++sq)
         k.psq[B_PAWN][sq] = Key(0);
     for (auto& e : k.enpassant)
-        e = next();
+        e = next() << 1;
     for (auto& c : k.castling)
-        c = next();
-    k.side    = next();
-    k.noPawns = next();
+        c = next() << 1;
     return k;
 }
 
@@ -85,10 +82,11 @@ constexpr Keys keys = generate_keys();
 constexpr auto& psq       = keys.psq;
 constexpr auto& enpassant = keys.enpassant;
 constexpr auto& castling  = keys.castling;
-constexpr auto& side      = keys.side;
-constexpr auto& noPawns   = keys.noPawns;
+// The least significant bit of keys is used to store the side to move.
+// The psq, enpassant and castling keys should have that bit set to zero.
+constexpr Key side = 1ULL;
 
-// No combination of ep, castling and stm key components may cancel, so that a
+// No combination of ep and castling key components may cancel, so that a
 // matching piecePlacement and Zobrist key guarantee a unique position.
 static_assert(
   [] {
@@ -96,21 +94,33 @@ static_assert(
           for (int b = 0; b < CASTLING_RIGHT_NB; ++b)
               for (int f1 = 0; f1 <= FILE_NB; ++f1)      // 0 means no ep component
                   for (int f2 = 0; f2 <= FILE_NB; ++f2)  // 0 means no ep component
-                      for (int stm = 0; stm < 2; ++stm)
-                      {
-                          Key cr   = castling[a] ^ castling[b];
-                          Key ep   = (f1 ? enpassant[f1 - 1] : 0) ^ (f2 ? enpassant[f2 - 1] : 0);
-                          Key stmd = stm ? side : 0;
-                          if (cr == 0 && ep == 0 && stmd == 0)
-                              continue;  // identical components
-                          if ((cr ^ ep ^ stmd) == 0)
-                              return false;  // a cancellation exists
-                      }
+                  {
+                      Key cr = castling[a] ^ castling[b];
+                      Key ep = (f1 ? enpassant[f1 - 1] : 0) ^ (f2 ? enpassant[f2 - 1] : 0);
+                      if (cr == 0 && ep == 0)
+                          continue;  // identical components
+                      if ((cr ^ ep) == 0)
+                          return false;  // a cancellation exists
+                  }
       return true;
   }(),
-  "Zobrist ep/castling/stm keys must not cancel: matching piecePlacement "
+  "Zobrist ep/castling keys must not cancel: matching piecePlacement "
   "and key guarantee a unique position");
 
+// the least significant bit is reserved for the side to move
+static_assert(
+  [] {
+      bool any = false;
+      for (auto& row : psq)
+          for (Key e : row)
+              any |= (e & 1ULL);
+      for (Key e : castling)
+          any |= (e & 1ULL);
+      for (Key e : enpassant)
+          any |= (e & 1ULL);
+      return !any;
+  }(),
+  "Least significant bit of psq, castling and ep keys must be zero");
 }
 
 namespace {
@@ -185,27 +195,36 @@ std::ostream& operator<<(std::ostream& os, const Position& pos) {
 }
 
 
-// Implements Marcel van Kervinck's cuckoo algorithm to detect repetition of positions
-// for 3-fold repetition draws. The algorithm uses two hash tables with Zobrist hashes
-// to allow fast detection of recurring positions. For details see:
-// http://web.archive.org/web/20201107002606/https://marcelk.net/2013-04-06/paper/upcoming-rep-v2.pdf
+// Compile-time Robin Hood table of Zobrist hashes on top of Marcel van Kervinck's
+// upcoming repetition algorithm for reversible moves.
 
-// First and second hash functions for indexing the cuckoo tables
-constexpr int H1(Key h) { return h & 0x1fff; }
-constexpr int H2(Key h) { return (h >> 16) & 0x1fff; }
+// Robin Hood hashing is a variant of open addressing that reduces the variance of
+// probe sequence lengths by moving keys with shorter probe sequences to make room
+// for keys with longer probe sequences.
+// It's O(1) on average, and O(n) in the worst case (extremely unlikely)
 
-// constexpr-generated cuckoo tables with Zobrist hashes of valid reversible
-// moves, and the moves themselves.
-struct CuckooTables {
-    std::array<Key, 8192>  keys;
-    std::array<Move, 8192> moves;
-    int                    count;
+// References:
+//   Upcoming repetition: http://web.archive.org/web/20201107002606/https://marcelk.net/2013-04-06/paper/upcoming-rep-v2.pdf
+//   Robin hood hashing:  https://cs.uwaterloo.ca/research/tr/1986/CS-86-14.pdf
+constexpr int REPETITION_TABLE_SIZE = 8192;
+constexpr int REPETITION_TABLE_MASK = REPETITION_TABLE_SIZE - 1;
+constexpr int repetition_hash(Key key) { return key & REPETITION_TABLE_MASK; }
+
+struct RepetitionTable {
+    std::array<Key, REPETITION_TABLE_SIZE>  keys;
+    std::array<Move, REPETITION_TABLE_SIZE> moves;
+    // Similar to probe sequence length. Zero marks an empty slot; occupied distances are one-based.
+    std::array<u8, REPETITION_TABLE_SIZE> distances;
+    int                                   count;
+    int                                   maxDistance;
 };
 
-constexpr CuckooTables generate_cuckoo() {
-    std::array<Key, 8192>  c{};
-    std::array<Move, 8192> m{};
-    int                    count = 0;
+constexpr RepetitionTable generate_repetition_table() {
+    std::array<Key, REPETITION_TABLE_SIZE>  keys{};
+    std::array<Move, REPETITION_TABLE_SIZE> moves{};
+    std::array<u8, REPETITION_TABLE_SIZE>   distances{};
+    int                                     count       = 0;
+    int                                     maxDistance = 0;
     for (Piece pc : Pieces)
         for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1)
             for (Square s2 = Square(s1 + 1); s2 <= SQ_H8; ++s2)
@@ -213,28 +232,83 @@ constexpr CuckooTables generate_cuckoo() {
                 // PseudoAttacks puns slots 0-1 for the pawn-by-color attacks
                 if (type_of(pc) != PAWN && (PseudoAttacks[type_of(pc)][s1] & s2))
                 {
-                    Move move = Move(s1, s2);
-                    Key  key  = Zobrist::psq[pc][s1] ^ Zobrist::psq[pc][s2] ^ Zobrist::side;
-                    int  i    = H1(key);
+                    Move move     = Move(s1, s2);
+                    Key  key      = Zobrist::psq[pc][s1] ^ Zobrist::psq[pc][s2] ^ Zobrist::side;
+                    int  i        = repetition_hash(key);
+                    int  distance = 1;
                     while (true)
                     {
-                        swap_constexpr(c[i], key);
-                        swap_constexpr(m[i], move);
-                        if (move == Move::none())  // Arrived at empty slot?
+                        // If the distance is too large, return an invalid table
+                        if (distance > 255)
+                            return {keys, moves, distances, -1, distance};
+
+                        // If the slot is empty, insert the key and move
+                        if (distances[i] == 0)
+                        {
+                            keys[i]      = key;
+                            moves[i]     = move;
+                            distances[i] = u8(distance);
+                            maxDistance  = std::max(maxDistance, distance);
                             break;
-                        i = (i == H1(key)) ? H2(key) : H1(key);  // Push victim to alternative slot
+                        }
+
+                        // If the current slot has a smaller distance than the new key, swap the
+                        // smaller ("poorer") key and continue probing with the displaced
+                        // ("richer") key.
+                        if (distances[i] < distance)
+                        {
+                            swap_constexpr(keys[i], key);
+                            swap_constexpr(moves[i], move);
+                            int displacedDistance = distances[i];
+                            distances[i]          = u8(distance);
+                            distance              = displacedDistance;
+                            maxDistance           = std::max(maxDistance, int(distances[i]));
+                        }
+
+                        // Advance to the next slot in the probe sequence
+                        ++distance;
+                        i = (i + 1) & REPETITION_TABLE_MASK;
                     }
                     count++;
                 }
-    return {c, m, count};
+    return {keys, moves, distances, count, maxDistance};
 }
 
-constexpr CuckooTables cuckooTables = generate_cuckoo();
+constexpr RepetitionTable repetitionTable = generate_repetition_table();
 
-static_assert(cuckooTables.count == 3668, "cuckoo table insertion count must be stable");
+constexpr bool repetition_table_is_valid() {
+    int count       = 0;
+    int maxDistance = 0;
+    for (int i = 0; i < REPETITION_TABLE_SIZE; ++i)
+    {
+        int distance = repetitionTable.distances[i];
+        if (!distance)
+            continue;
 
-constexpr auto& cuckoo     = cuckooTables.keys;
-constexpr auto& cuckooMove = cuckooTables.moves;
+        ++count;
+        maxDistance       = std::max(maxDistance, distance);
+        int j             = repetition_hash(repetitionTable.keys[i]);
+        int probeDistance = 1;
+        for (; j != i; ++probeDistance)
+        {
+            if (repetitionTable.distances[j] < probeDistance
+                || repetitionTable.keys[j] == repetitionTable.keys[i])
+                return false;
+            j = (j + 1) & REPETITION_TABLE_MASK;
+        }
+
+        if (distance != probeDistance)
+            return false;
+    }
+
+    return count == repetitionTable.count && maxDistance == repetitionTable.maxDistance;
+}
+
+// Check if the repetition table is valid.
+static_assert(repetitionTable.count == 3668, "repetition table insertion count must be stable");
+static_assert(repetitionTable.maxDistance <= 255,
+              "repetition table displacement must fit in one byte");
+static_assert(repetition_table_is_valid(), "repetition table lookup invariants must hold");
 
 // Initializes the position object with the given FEN string.
 // The FEN string is strictly validated; if it is invalid or inconsistent,
@@ -568,10 +642,10 @@ void Position::compute_threats() const {
 // The function is only used when a new position is set up
 void Position::set_state() const {
 
-    st->key               = 0;
-    st->minorPieceKey     = 0;
-    st->nonPawnKey[WHITE] = st->nonPawnKey[BLACK] = 0;
-    st->pawnKey                                   = Zobrist::noPawns;
+    st->key               = sideToMove;
+    st->minorPieceKey     = 0ULL;
+    st->nonPawnKey[WHITE] = st->nonPawnKey[BLACK] = 0ULL;
+    st->pawnKey                                   = 0ULL;
     st->nonPawnMaterial[WHITE] = st->nonPawnMaterial[BLACK] = VALUE_ZERO;
     st->checkersBB = attackers_to(square<KING>(sideToMove)) & pieces(~sideToMove);
 
@@ -602,9 +676,6 @@ void Position::set_state() const {
 
     if (st->epSquare != SQ_NONE)
         st->key ^= Zobrist::enpassant[file_of(st->epSquare)];
-
-    if (sideToMove == BLACK)
-        st->key ^= Zobrist::side;
 
     st->key ^= Zobrist::castling[st->castlingRights];
     st->materialKey = compute_material_key();
@@ -1584,25 +1655,40 @@ bool Position::upcoming_repetition(int ply) const {
 
         Key moveKey = originalKey ^ stp->key;
 
-        if (int j = H1(moveKey); cuckoo[j] == moveKey || (j = H2(moveKey), cuckoo[j] == moveKey))
+        int j        = repetition_hash(moveKey);
+        int distance = 1;
+
+        // Probe the repetition table for a move with the same key and distance from the current position.
+        while (repetitionTable.distances[j] >= distance)
         {
-            Move   move = cuckooMove[j];
-            Square s1   = move.from_sq();
-            Square s2   = move.to_sq();
-
-            if (!((between_bb(s1, s2) ^ s2) & pieces()))
+            // If the keys match, check if the move is a repetition of the current position.
+            if (repetitionTable.keys[j] == moveKey)
             {
-                auto b = st->piecePlacement;
-                swap_nibble(b, s1, s2);
+                Move   move = repetitionTable.moves[j];
+                Square s1   = move.from_sq();
+                Square s2   = move.to_sq();
 
-                if (b == stp->piecePlacement)
+                // The path must be clear of pieces for a move to be legal.
+                if (!((between_bb(s1, s2) ^ s2) & pieces()))
                 {
-                    // For nodes before or at the root, check that the move is a
-                    // repetition rather than a move to the current position.
-                    if (ply > i || stp->repetition)
-                        return true;
+                    auto b = st->piecePlacement;
+                    swap_nibble(b, s1, s2);
+
+                    if (b == stp->piecePlacement)
+                    {
+                        // For nodes before or at the root, check that the move is a
+                        // repetition rather than a move to the current position.
+                        if (ply > i || stp->repetition)
+                            return true;
+                    }
                 }
+
+                break;
             }
+
+            // Advance to the next slot in the probe sequence
+            ++distance;
+            j = (j + 1) & REPETITION_TABLE_MASK;
         }
     }
     return false;
