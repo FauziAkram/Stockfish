@@ -282,9 +282,13 @@ std::tuple<bool, TTData, TTWriter> TranspositionTable::probe(const Key key) cons
     {
         static_assert(KeyBits == 21, "Index computation below assumes KeyBits == 21");
         const int i = (int(lsb(matches)) >> 4) - 1;
+        if (tte[i].is_occupied())
         // This gap is the main place for read races.
         // After `read()` completes that copy is final, but may be self-inconsistent.
-        return {tte[i].is_occupied(), tte[i].read(), TTWriter(cluster, i)};
+            return {true, tte[i].read(), TTWriter(cluster, i)};
+
+        return {false, TTData{Move::none(), VALUE_NONE, VALUE_NONE, DEPTH_NONE, BOUND_NONE, false},
+                TTWriter(cluster, i)};
     }
 
     // Find an entry to be replaced according to the replacement strategy
