@@ -2216,8 +2216,6 @@ void syzygy_extend_pv(const OptionsMap&         options,
     if (time_abort())
         return;
 
-    std::list<StateInfo> sts;
-
     // Step 0, do the rootMove, no correction allowed, as needed for MultiPV in TB
     pos.do_move(rootMove.pv[0]);
     int ply = 1;
