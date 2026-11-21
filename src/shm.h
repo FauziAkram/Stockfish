@@ -335,7 +335,9 @@ class SharedMemoryBackend {
         }
 
         DWORD wait_result = WaitForSingleObject(hMutex, INFINITE);
-        if (wait_result != WAIT_OBJECT_0)
+        // WAIT_ABANDONED also grants ownership. In that case the initialization
+        // flag below determines whether the previous owner completed its work.
+        if (wait_result != WAIT_OBJECT_0 && wait_result != WAIT_ABANDONED)
         {
             const DWORD err    = GetLastError();
             last_error_message = GetLastErrorAsString(err);
@@ -524,14 +526,10 @@ struct SystemWideSharedConstant {
         std::string shm_name = buf;
 
 #if defined(USE_UNIX_SHM)
-        // POSIX shared memory names must start with a slash
+        // POSIX shared memory names must start with a slash, hash ensures it is short enough everywhere.
         shm_name = "/sf_" + createHashString(shm_name);
 
-        // hash name and make sure it is not longer than SF_MAX_SEM_NAME_LEN
-        if (shm_name.size() > SF_MAX_SEM_NAME_LEN)
-        {
-            shm_name = shm_name.substr(0, SF_MAX_SEM_NAME_LEN - 1);
-        }
+        assert(shm_name.size() <= NAME_MAX);
 #endif
 
         SharedMemoryBackend<T> shm_backend(shm_name, value);

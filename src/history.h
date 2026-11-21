@@ -38,7 +38,7 @@ namespace Stockfish {
 
 constexpr int PAWN_HISTORY_BASE_SIZE   = 8192;  // has to be a power of 2
 constexpr int UINT_16_HISTORY_SIZE     = std::numeric_limits<u16>::max() + 1;
-constexpr int CORRHIST_BASE_SIZE       = UINT_16_HISTORY_SIZE;
+constexpr int CORRHIST_BASE_SIZE       = 2 * UINT_16_HISTORY_SIZE;
 constexpr int CORRECTION_HISTORY_LIMIT = 1024;
 constexpr int LOW_PLY_HISTORY_SIZE     = 5;
 
@@ -209,7 +209,7 @@ struct CorrectionBundle {
     CocobStatsEntry<D> nonPawnWhite;
     CocobStatsEntry<D> nonPawnBlack;
 
-    void operator=(T val) {
+    void fill(T val) {
         pawn         = val;
         minor        = val;
         nonPawnWhite = val;
@@ -235,8 +235,7 @@ struct CorrHistTypedef<Continuation> {
 }
 
 using UnifiedCorrectionHistory =
-  DynStats<MultiArray<CorrectionBundle<i16, CORRECTION_HISTORY_LIMIT>, COLOR_NB>,
-           CORRHIST_BASE_SIZE>;
+  DynStats<CorrectionBundle<i16, CORRECTION_HISTORY_LIMIT>, CORRHIST_BASE_SIZE>;
 
 template<CorrHistType T>
 using CorrectionHistory = typename Detail::CorrHistTypedef<T>::type;
@@ -266,10 +265,10 @@ struct SharedHistories {
     usize get_size() const { return sizeMinus1 + 1; }
 
     auto& pawn_entry(const Position& pos) {
-        return pawnHistory[pos.pawn_key() & pawnHistSizeMinus1];
+        return pawnHistory[pos.pawn_key() >> 1 & pawnHistSizeMinus1];
     }
     const auto& pawn_entry(const Position& pos) const {
-        return pawnHistory[pos.pawn_key() & pawnHistSizeMinus1];
+        return pawnHistory[pos.pawn_key() >> 1 & pawnHistSizeMinus1];
     }
 
     auto& pawn_correction_entry(const Position& pos) {
