@@ -1339,7 +1339,7 @@ moves_loop:  // When in check, search starts here
 
         // Decrease reduction for PvNodes (*Scaler)
         if (ss->ttPv)
-            r -= 3023 + PvNode * 1004 + (ttData.value > alpha) * 885
+            r -= 2823 + 200 * (depth > 5)  + PvNode * 1004 + (ttData.value > alpha) * 885
                + (ttData.depth >= depth) * (816 + cutNode * 940);
 
         // Base reduction offset to compensate for other tweaks
