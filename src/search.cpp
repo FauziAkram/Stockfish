@@ -1330,7 +1330,7 @@ moves_loop:  // When in check, search starts here
         u64 nodeCount = rootNode ? u64(nodes) : 0;
 
         // Step 17. Make the move
-        do_move(pos, move, st, givesCheck, capture, ss);
+        do_move(pos, move, givesCheck, capture, ss);
 
         // Add extension to new depth
         newDepth += extension;
@@ -1370,7 +1370,7 @@ moves_loop:  // When in check, search starts here
         else
             ss->statScore =
               (2252 * mainHistory[us][move.raw()] + ((depth < 5)? 1095: 1126) * (*contHist[0])[movedPiece][move.to_sq()]
-               + (1093 * (*contHist[1])[movedPiece][move.to_sq()])
+               + (1093 * (*contHist[1])[movedPiece][move.to_sq()]))
               / 1024;
 
         // Decrease/increase reduction for moves with a good/bad history
