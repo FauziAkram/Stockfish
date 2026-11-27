@@ -27,6 +27,7 @@
 #include <initializer_list>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string_view>
 
@@ -91,13 +92,13 @@ constexpr Key side = 1ULL;
 static_assert(
   [] {
       for (int a = 0; a < CASTLING_RIGHT_NB; ++a)
-          for (int b = 0; b < CASTLING_RIGHT_NB; ++b)
-              for (int f1 = 0; f1 <= FILE_NB; ++f1)      // 0 means no ep component
-                  for (int f2 = 0; f2 <= FILE_NB; ++f2)  // 0 means no ep component
+          for (int b = a; b < CASTLING_RIGHT_NB; ++b)
+              for (int f1 = 0; f1 <= FILE_NB; ++f1)  // 0 means no ep component
+                  for (int f2 = f1; f2 <= FILE_NB; ++f2)
                   {
                       Key cr = castling[a] ^ castling[b];
                       Key ep = (f1 ? enpassant[f1 - 1] : 0) ^ (f2 ? enpassant[f2 - 1] : 0);
-                      if (cr == 0 && ep == 0)
+                      if (a == b && f1 == f2)
                           continue;  // identical components
                       if ((cr ^ ep) == 0)
                           return false;  // a cancellation exists
@@ -180,13 +181,11 @@ std::ostream& operator<<(std::ostream& os, const Position& pos) {
 
     if (Tablebases::MaxCardinality >= popcount(pos.pieces()) && !pos.can_castle(ANY_CASTLING))
     {
-        StateInfo st;
-
-        Position p;
-        p.set(pos.fen(), pos.is_chess960(), &st);
+        std::unique_ptr<Position> p = std::make_unique<Position>();
+        p->set(pos.fen(), pos.is_chess960());
         Tablebases::ProbeState s1, s2;
-        Tablebases::WDLScore   wdl = Tablebases::probe_wdl(p, &s1);
-        int                    dtz = Tablebases::probe_dtz(p, &s2);
+        Tablebases::WDLScore   wdl = Tablebases::probe_wdl(*p, &s1);
+        int                    dtz = Tablebases::probe_dtz(*p, &s2);
         os << "\nTablebases WDL: " << std::setw(4) << wdl << " (" << s1 << ")"
            << "\nTablebases DTZ: " << std::setw(4) << dtz << " (" << s2 << ")";
     }
@@ -226,11 +225,16 @@ constexpr RepetitionTable generate_repetition_table() {
     int                                     count       = 0;
     int                                     maxDistance = 0;
     for (Piece pc : Pieces)
+    {
+        // only non-pawn moves are reversible relocations
+        if (type_of(pc) == PAWN)
+            continue;
+
         for (Square s1 = SQ_A1; s1 <= SQ_H8; ++s1)
+        {
+            const Bitboard attacks = attacks_bb(type_of(pc), s1);
             for (Square s2 = Square(s1 + 1); s2 <= SQ_H8; ++s2)
-                // only non-pawn moves are reversible relocations; note that
-                // PseudoAttacks puns slots 0-1 for the pawn-by-color attacks
-                if (type_of(pc) != PAWN && (PseudoAttacks[type_of(pc)][s1] & s2))
+                if (attacks & s2)
                 {
                     Move move     = Move(s1, s2);
                     Key  key      = Zobrist::psq[pc][s1] ^ Zobrist::psq[pc][s2] ^ Zobrist::side;
@@ -271,6 +275,8 @@ constexpr RepetitionTable generate_repetition_table() {
                     }
                     count++;
                 }
+        }
+    }
     return {keys, moves, distances, count, maxDistance};
 }
 
@@ -313,8 +319,7 @@ static_assert(repetition_table_is_valid(), "repetition table lookup invariants m
 // Initializes the position object with the given FEN string.
 // The FEN string is strictly validated; if it is invalid or inconsistent,
 // a PositionSetError describing the problem is returned, otherwise std::nullopt.
-std::optional<PositionSetError>
-Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
+std::optional<PositionSetError> Position::set(const string& fenStr, bool isChess960) {
     /*
    A FEN string defines a particular position using only the ASCII character set.
 
@@ -352,10 +357,10 @@ Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
 
     unsigned char      token;
     std::istringstream ss(fenStr);
-
     std::memset(reinterpret_cast<char*>(this), 0, sizeof(Position));
-    std::memset(si, 0, sizeof(StateInfo));
-    st = si;
+
+    st = &stateInfos[stateIdx];
+
 
     ss >> std::noskipws;
 
@@ -472,52 +477,32 @@ Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
         if (++num_castling_rights > 4)
             return PositionSetError("Invalid FEN. Maximum of 4 castling rights can be specified.");
 
-        Square rsq  = SQ_NONE;
-        Square ksq  = SQ_NONE;
-        Color  c    = islower(token) ? BLACK : WHITE;
-        Piece  rook = make_piece(c, ROOK);
-        Piece  king = make_piece(c, KING);
-
-        token = char(toupper(token));
-
-        if (token == 'K' || token == 'Q')
-        {
-            const int dir = token == 'K' ? -1 : 1;
-            Square    sq  = relative_square(c, token == 'K' ? SQ_H1 : SQ_A1);
-            // Look for a rook and a king for the castling. King must come later.
-            // Only the first rook is noted.
-            // If the castling rights are available the king must always be between files 2 and 7 inclusive
-            // so there is no need to check the last square.
-            for (int i = 0; i < 7; ++i, sq = Square(sq + dir))
-            {
-                const Piece pc = piece_on(sq);
-                if (pc == king)
-                {
-                    ksq = sq;
-                    break;
-                }
-                else if (pc == rook && rsq == SQ_NONE)
-                    rsq = sq;
-            }
-        }
-        else if (token >= 'A' && token <= 'H')
-        {
-            const Square rsqCandidate = make_square(File(token - 'A'), relative_rank(c, RANK_1));
-            if (piece_on(rsqCandidate) == rook)
-                rsq = rsqCandidate;
-
-            // If the castling rights are available the king must always be between files 2 and 7 inclusive.
-            Square sq = square<KING>(c);
-            if (relative_rank(c, sq) == RANK_1 && file_of(sq) >= FILE_B && file_of(sq) <= FILE_G)
-                ksq = sq;
-        }
-        else
+        char upper = toupper(token);
+        if (upper != 'K' && upper != 'Q' && (upper < 'A' || upper > 'H'))
             return PositionSetError(std::string("Invalid FEN. Expected castling rights. Got: ")
                                     + std::string(1, token));
 
-        // Only apply castling rights if they can be valid.
-        if (ksq != SQ_NONE && rsq != SQ_NONE)
+        Color  c   = islower(token) ? BLACK : WHITE;
+        Square ksq = square<KING>(c);
+
+        if (rank_of(ksq) != relative_rank(c, RANK_1) || file_of(ksq) == FILE_A
+            || file_of(ksq) == FILE_H)
+            continue;
+
+        Bitboard rooks = pieces(c, ROOK);
+        if (upper == 'K')
+            rooks &= between_bb(ksq, relative_square(c, SQ_H1));
+        else if (upper == 'Q')
+            rooks &= between_bb(ksq, relative_square(c, SQ_A1));
+        else
+            rooks &=
+              square_bb(make_square(static_cast<File>(upper - 'A'), relative_rank(c, RANK_1)));
+
+        if (rooks)
+        {
+            Square rsq = upper == 'K' ? msb(rooks) : lsb(rooks);
             set_castling_right(c, rsq);
+        }
     }
 
     // 4. En passant square.
@@ -694,7 +679,7 @@ Key Position::compute_material_key() const {
 
 // Overload to initialize the position object with the given endgame code string
 // like "KBPKN". It's mainly a helper to get the material key out of an endgame code.
-std::optional<PositionSetError> Position::set(const string& code, Color c, StateInfo* si) {
+std::optional<PositionSetError> Position::set(const string& code, Color c) {
 
     assert(code[0] == 'K');
 
@@ -709,7 +694,7 @@ std::optional<PositionSetError> Position::set(const string& code, Color c, State
     string fenStr = "8/" + sides[0] + char(8 - sides[0].length() + '0') + "/8/8/8/8/" + sides[1]
                   + char(8 - sides[1].length() + '0') + "/8 w - - 0 10";
 
-    return set(fenStr, false, si);
+    return set(fenStr, false);
 }
 
 
@@ -925,26 +910,25 @@ bool Position::gives_check(Move m) const {
 // to a StateInfo object. The move is assumed to be legal.
 // If a pointer to the shared histories is passed, their entries for the
 // new position will be prefetched.
-void Position::do_move(
-  Move m, StateInfo& newSt, bool givesCheck, Dirties& dirties, const SharedHistories* history) {
+void Position::do_move(Move m, bool givesCheck, Dirties& dirties, const SharedHistories* history) {
 
     assert(m.is_ok());
-    assert(&newSt != st);
 
-    Key k = st->key ^ Zobrist::side;
+    StateInfo* previousSt = st;
+    stateIdx              = (stateIdx + 1) & (MAX_HIST - 1);
+    st                    = &stateInfos[stateIdx];
 
     // Copy some fields of the old state to our new StateInfo object except the
-    // ones which are going to be recalculated from scratch anyway and then switch
-    // our state pointer to point to the new (ready to be updated) state.
-    std::memcpy(&newSt, st, offsetof(StateInfo, key));
-    newSt.previous = st;
-    st             = &newSt;
+    // ones which are going to be recalculated from scratch anyway
+    std::memcpy(st, previousSt, offsetof(StateInfo, key));
+
+    Key k = previousSt->key ^ Zobrist::side;
 
     // Increment ply counters. In particular, rule50 will be reset to zero later on
     // in case of a capture or a pawn move.
     ++gamePly;
     ++st->rule50;
-    ++st->pliesFromNull;
+    st->repWindow = std::min(st->repWindow + 1, MAX_HIST - 1);
 
     auto& dpps = dirties.dirtyPawnPairs;
     auto& dts  = dirties.dirtyThreats;
@@ -1022,7 +1006,8 @@ void Position::do_move(
           Zobrist::psq[captured][8 + pieceCount[captured] - (m.type_of() != EN_PASSANT)];
 
         // Reset rule 50 counter
-        st->rule50 = 0;
+        st->rule50    = 0;
+        st->repWindow = 0;
     }
     else
         dp.remove_sq = SQ_NONE;
@@ -1056,7 +1041,7 @@ void Position::do_move(
             if (pawns)
             {
                 Square   ksq         = square<KING>(them);
-                Bitboard notBlockers = ~st->previous->blockersForKing[them];
+                Bitboard notBlockers = ~previousSt->blockersForKing[them];
                 bool     noDiscovery = (from & notBlockers) || file_of(from) == file_of(ksq);
 
                 // If the pawn gives discovered check, ep is never legal. Else, if at least one
@@ -1100,7 +1085,8 @@ void Position::do_move(
         st->pawnKey ^= Zobrist::psq[pc][from] ^ Zobrist::psq[pc][to];
 
         // Reset rule 50 draw counter
-        st->rule50 = 0;
+        st->rule50    = 0;
+        st->repWindow = 0;
     }
 
     else
@@ -1159,20 +1145,13 @@ void Position::do_move(
     // occurrence of the same position, negative in the 3-fold case, or zero
     // if the position was not repeated.
     st->repetition = 0;
-    int end        = std::min(st->rule50, st->pliesFromNull);
-    if (end >= 4)
+    for (int i = 4; i <= st->repWindow; i += 2)
     {
-        StateInfo* stp = st->previous->previous;
-        for (int i = 4; i <= end; i += 2)
+        StateInfo* stp = &stateInfos[(stateIdx - i) & (MAX_HIST - 1)];
+        if (stp->key == st->key && stp->piecePlacement == st->piecePlacement)
         {
-            stp = stp->previous->previous;
-            // The piecePlacement, in addition to the Zobrist key, provides accurate
-            // repetition detection.
-            if (stp->key == st->key && stp->piecePlacement == st->piecePlacement)
-            {
-                st->repetition = stp->repetition ? -i : i;
-                break;
-            }
+            st->repetition = stp->repetition ? -i : i;
+            break;
         }
     }
 
@@ -1232,7 +1211,7 @@ void Position::undo_move(Move m) {
                 capsq -= pawn_push(us);
 
                 assert(type_of(pc) == PAWN);
-                assert(to == st->previous->epSquare);
+                assert(to == stateInfos[(stateIdx - 1) & (MAX_HIST - 1)].epSquare);
                 assert(relative_rank(us, to) == RANK_6);
                 assert(piece_on(capsq) == NO_PIECE);
                 assert(st->capturedPiece == make_piece(~us, PAWN));
@@ -1243,7 +1222,8 @@ void Position::undo_move(Move m) {
     }
 
     // Finally point our state pointer back to the previous state
-    st = st->previous;
+    stateIdx = (stateIdx - 1) & (MAX_HIST - 1);
+    st       = &stateInfos[stateIdx];
     --gamePly;
 
     assert(pos_is_ok());
@@ -1349,10 +1329,9 @@ void Position::update_piece_threats(Piece               pc,
     Bitboard       threatened    = (pt == BISHOP  ? bAttacks
                                     : pt == ROOK  ? rAttacks
                                     : pt == QUEEN ? sliderAttacks
-                                    : pt == PAWN  ? PseudoAttacks[color_of(pc)][s]
-                                                  : PseudoAttacks[pt][s])
+                                                  : attacks_bb(pt, s, color_of(pc)))
                         & threatTargets;
-    Bitboard incomingThreats = PseudoAttacks[KNIGHT][s] & pieces(KNIGHT);
+    Bitboard incomingThreats = attacks_bb(KNIGHT, s) & pieces(KNIGHT);
 
     if (pt == KNIGHT || pt == ROOK)
         incomingThreats |= (attacks_bb(PAWN, s, WHITE) & pieces(BLACK, PAWN))
@@ -1448,17 +1427,18 @@ void Position::do_castling(Color                              us,
 
 // Used to do a "null move": it flips
 // the side to move without executing any move on the board.
-void Position::do_null_move(StateInfo& newSt) {
+void Position::do_null_move() {
 
     assert(!checkers());
-    assert(&newSt != st);
+
+    StateInfo* previousSt = st;
+    stateIdx              = (stateIdx + 1) & (MAX_HIST - 1);
+    st                    = &stateInfos[stateIdx];
 
     // Remaining fields are recomputed, invalidated or overwritten below.
-    std::memcpy(&newSt, st, offsetof(StateInfo, blockersForKing));
-    newSt.piecePlacement = st->piecePlacement;
+    std::memcpy(st, previousSt, offsetof(StateInfo, blockersForKing));
+    st->piecePlacement = previousSt->piecePlacement;
 
-    newSt.previous = st;
-    st             = &newSt;
 
     if (st->epSquare != SQ_NONE)
     {
@@ -1468,7 +1448,7 @@ void Position::do_null_move(StateInfo& newSt) {
 
     st->key ^= Zobrist::side;
 
-    st->pliesFromNull = 0;
+    st->repWindow = 0;
 
     st->capturedPiece = NO_PIECE;
 
@@ -1487,7 +1467,8 @@ void Position::undo_null_move() {
 
     assert(!checkers());
 
-    st         = st->previous;
+    stateIdx   = (stateIdx - 1) & (MAX_HIST - 1);
+    st         = &stateInfos[stateIdx];
     sideToMove = ~sideToMove;
 }
 
@@ -1617,15 +1598,10 @@ bool Position::is_repetition(int ply) const { return st->repetition && st->repet
 // Tests whether there has been at least one repetition
 // of positions since the last capture or pawn move.
 bool Position::has_repeated() const {
-
-    StateInfo* stc = st;
-    int        end = std::min(st->rule50, st->pliesFromNull);
-    while (end-- >= 4)
+    for (int i = 0; i <= st->repWindow - 4; ++i)
     {
-        if (stc->repetition)
+        if (stateInfos[(stateIdx - i) & (MAX_HIST - 1)].repetition)
             return true;
-
-        stc = stc->previous;
     }
     return false;
 }
@@ -1634,21 +1610,14 @@ bool Position::has_repeated() const {
 // Tests if the position has a move which draws by repetition.
 // This function accurately matches the outcome of is_draw() over all legal moves.
 bool Position::upcoming_repetition(int ply) const {
+    Key originalKey = st->key;
+    Key other       = originalKey ^ stateInfos[(stateIdx - 1) & (MAX_HIST - 1)].key ^ Zobrist::side;
 
-    int end = std::min(st->rule50, st->pliesFromNull);
-
-    if (end < 3)
-        return false;
-
-    Key        originalKey = st->key;
-    StateInfo* stp         = st->previous;
-    Key        other       = originalKey ^ stp->key ^ Zobrist::side;
-
-    for (int i = 3; i <= end; i += 2)
+    for (int i = 3; i <= st->repWindow; i += 2)
     {
-        stp = stp->previous;
-        other ^= stp->key ^ stp->previous->key ^ Zobrist::side;
-        stp = stp->previous;
+        const StateInfo* stp0 = &stateInfos[(stateIdx - i + 1) & (MAX_HIST - 1)];
+        const StateInfo* stp  = &stateInfos[(stateIdx - i) & (MAX_HIST - 1)];
+        other ^= stp0->key ^ stp->key ^ Zobrist::side;
 
         if (other != 0)
             continue;
@@ -1726,7 +1695,13 @@ std::optional<PositionSetError> Position::flip() {
     std::getline(ss, token);  // Half and full moves
     f += token;
 
-    return set(f, is_chess960(), st);
+    return set(f, is_chess960());
+}
+
+void Position::copy_state_infos(const Position& other) {
+    std::memcpy(stateInfos, other.stateInfos, sizeof(stateInfos));
+    stateIdx = other.stateIdx;
+    st       = &stateInfos[stateIdx];
 }
 
 
