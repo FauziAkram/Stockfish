@@ -708,7 +708,7 @@ void Search::Worker::clear() {
 
     // Each thread clears its part of the dynamically-sized shared histories.
     // The constant-size continuation history is initialized by thread 0 of each NUMA node.
-    sharedHistory.correctionHistory.clear_range(-5, numaThreadIdx, numaTotal);
+    sharedHistory.correctionHistory.clear_range(0, numaThreadIdx, numaTotal);
     sharedHistory.pawnHistory.clear_range(-1292, numaThreadIdx, numaTotal);
 
     if (numaThreadIdx == 0)
