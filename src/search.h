@@ -304,6 +304,8 @@ class SearchManager {
     Value                bestPreviousScore;
     Value                bestPreviousAverageScore;
     bool                 stopOnPonderhit;
+    i64 evalBetWealth;
+    i64 evalBetLambda;
 
     const UpdateContext& updates;
 };
