@@ -272,6 +272,8 @@ void ThreadPool::clear() {
     main_manager()->bestPreviousScore  = VALUE_INFINITE;
     main_manager()->originalTimeAdjust = -1;
     main_manager()->tm.clear();
+    main_manager()->evalBetWealth      = 1024;
+    main_manager()->evalBetLambda      = 0;
 }
 
 void ThreadPool::run_on_thread(usize threadId, std::function<void()> f) {
