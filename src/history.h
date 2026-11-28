@@ -154,7 +154,7 @@ enum CorrHistType {
 };
 
 template<typename T, int D>
-struct CorrectionBundle {
+struct alignas(16) CorrectionBundle {
     StatsEntry<T, D, true> pawn[2];  // Indexed by queen exists
     StatsEntry<T, D, true> minor;
     StatsEntry<T, D, true> nonPawnWhite;
@@ -244,6 +244,30 @@ struct SharedHistories {
     template<Color c>
     const auto& nonpawn_correction_entry(const Position& pos) const {
         return correctionHistory[pos.non_pawn_key(c) & sizeMinus1];
+    }
+    template<typename Accessor>
+    int read_correction_sketch(Key key, Accessor&& field) const {
+        const usize idx0 = key & sizeMinus1;
+        const usize idx1 = idx0 ^ (((key >> 20) & 2) + 1);  // Same 64B cache line (4x16B)
+        const int   s0   = (key & (1ULL << 62)) ? -1 : 1;
+        const int   s1   = (key & (1ULL << 63)) ? -1 : 1;
+
+        const int v0 = s0 * int(field(correctionHistory[idx0]));
+        const int v1 = s1 * int(field(correctionHistory[idx1]));
+        if ((v0 ^ v1) < 0)
+            return (v0 + v1) / 4;
+        return std::abs(v0) <= std::abs(v1) ? (3 * v0 + v1) / 4 : (v0 + 3 * v1) / 4;
+    }
+
+    template<typename Accessor>
+    void update_correction_sketch(Key key, int bonus, Accessor&& field) {
+        const usize idx0 = key & sizeMinus1;
+        const usize idx1 = idx0 ^ (((key >> 20) & 2) + 1);  // Same 64B cache line (4x16B)
+        const int   s0   = (key & (1ULL << 62)) ? -1 : 1;
+        const int   s1   = (key & (1ULL << 63)) ? -1 : 1;
+
+        field(correctionHistory[idx0]) << (s0 * bonus);
+        field(correctionHistory[idx1]) << (s1 * bonus);
     }
 
     UnifiedCorrectionHistory               correctionHistory;
