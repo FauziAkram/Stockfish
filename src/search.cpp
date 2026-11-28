@@ -74,6 +74,11 @@ constexpr u64 NODES_LIMIT_OUTPUT = 10'000'000;
 
 constexpr int SEARCHEDLIST_CAPACITY = 32;
 using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
+struct ScoredQuiet {
+    Move move;
+    int  statScore;
+};
+using QuietSearchedList = ValueList<ScoredQuiet, SEARCHEDLIST_CAPACITY>;
 
 // Reductions lookup table indexed by depth or move number.
 const std::array<int, MAX_MOVES> reductions = [] {
@@ -151,7 +156,8 @@ void update_all_stats(const Position& pos,
                       Search::Worker& workerThread,
                       Move            bestMove,
                       Square          prevSq,
-                      SearchedList&   quietsSearched,
+                      QuietSearchedList& quietsSearched,
+                      int                bestMoveStatScore,
                       SearchedList&   capturesSearched,
                       Depth           depth,
                       Move            ttMove);
@@ -763,7 +769,8 @@ Value Search::Worker::search(
     Piece movedPiece;
 
     SearchedList capturesSearched;
-    SearchedList quietsSearched;
+    QuietSearchedList quietsSearched;
+    int               bestMoveStatScore = 0;
 
     // Step 1. Initialize node
     ss->inCheck   = pos.checkers();
@@ -1542,6 +1549,9 @@ moves_loop:  // When in check, search starts here
             {
                 bestMove = move;
 
+                if (!capture)
+                    bestMoveStatScore = ss->statScore;
+
                 // Update PV even in fail-high case
                 if (PvNode && !rootNode)
                     ss->pv->update(move, (ss + 1)->pv);
@@ -1566,7 +1576,8 @@ moves_loop:  // When in check, search starts here
         // If the move is worse than some previously searched move,
         // remember it, to update its stats later.
         if (move != bestMove && moveCount <= SEARCHEDLIST_CAPACITY)
-            (capture ? capturesSearched : quietsSearched).push_back(move);
+            capture ? capturesSearched.push_back(move)
+                    : quietsSearched.push_back({move, ss->statScore});
     }
 
     // Step 23. Check for mate and stalemate, otherwise update best move and history stats
@@ -1587,8 +1598,8 @@ moves_loop:  // When in check, search starts here
     // we update the stats of searched moves.
     else if (bestMove)
     {
-        update_all_stats(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth,
-                         ttData.move);
+        update_all_stats(pos, ss, *this, bestMove, prevSq, quietsSearched, bestMoveStatScore,
+                         capturesSearched, depth, ttData.move);
         if (!PvNode)
             ttMoveHistory << (bestMove == ttData.move ? 948 : -786);
     }
@@ -1973,7 +1984,8 @@ void update_all_stats(const Position& pos,
                       Search::Worker& workerThread,
                       Move            bestMove,
                       Square          prevSq,
-                      SearchedList&   quietsSearched,
+                      QuietSearchedList& quietsSearched,
+                      int                bestMoveStatScore,
                       SearchedList&   capturesSearched,
                       Depth           depth,
                       Move            ttMove) {
@@ -1992,14 +2004,34 @@ void update_all_stats(const Position& pos,
 
     if (!pos.capture_stage(bestMove))
     {
-        update_quiet_histories(pos, ss, workerThread, bestMove, bonus * 903 / 1024);
+        auto choice_weight = [](int s) -> u64 {
+            const int shifted  = std::clamp(s, -16384, 16384) + 16384;
+            const int intPart  = shifted >> 12;
+            const int fracPart = shifted & 4095;
+            return ((16ULL << intPart) * u64(4096 + fracPart)) >> 12;
+        };
 
-        // Decrease stats for all non-best quiet moves
-        int actualMalus = malus * 1168 / 1024;
-        for (Move move : quietsSearched)
+        const u64 wBest = choice_weight(bestMoveStatScore);
+        u64       wLose = 0;
+        for (const ScoredQuiet& sq : quietsSearched)
+            wLose += choice_weight(sq.statScore);
+
+        const u64 zTotal = wBest + wLose;
+        const int plBonusScale =
+          quietsSearched.size() ? int(512 + (1024 * wLose) / std::max(u64(1), zTotal)) : 903;
+        update_quiet_histories(pos, ss, workerThread, bestMove, bonus * plBonusScale / 1024);
+
+        const u64 loserCount  = u64(quietsSearched.size());
+        const u64 safeWLose   = std::max(u64(1), wLose);
+        int       actualMalus = malus * 1168 / 1024;
+        for (const ScoredQuiet& sq : quietsSearched)
         {
             actualMalus = actualMalus * 922 / 1024;
-            update_quiet_histories(pos, ss, workerThread, move, -actualMalus);
+            const u64 w = choice_weight(sq.statScore);
+            const int plMalusScale =
+              int(std::min(u64(3072), 256 + (768 * loserCount * w) / safeWLose));
+            update_quiet_histories(pos, ss, workerThread, sq.move,
+                                   -(actualMalus * plMalusScale / 1024));
         }
     }
     else
