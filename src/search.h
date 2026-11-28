@@ -337,6 +337,8 @@ class Worker {
     TTMoveHistory    ttMoveHistory;
     SharedHistories& sharedHistory;
     ContinuationHistory (&continuationHistory)[2][2];
+    static constexpr int ConformalDepthMax = 20;
+    std::array<int, ConformalDepthMax> conformalMargin;
 
    private:
     bool iterative_deepening();
