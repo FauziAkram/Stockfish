@@ -75,6 +75,8 @@ constexpr u64 NODES_LIMIT_OUTPUT = 10'000'000;
 constexpr int SEARCHEDLIST_CAPACITY = 32;
 using SearchedList                  = ValueList<Move, SEARCHEDLIST_CAPACITY>;
 
+constexpr std::array<int, 7> DefaultCorrWeights = {14120, 9650, 12401, 8335, 8337, 6237, 76511};
+
 // Reductions lookup table indexed by depth or move number.
 const std::array<int, MAX_MOVES> reductions = [] {
     std::array<int, MAX_MOVES> table{};
@@ -99,14 +101,15 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
     const int   micv   = shared.minor_piece_correction_entry(pos).minor;
     const int   wnpcv  = shared.nonpawn_correction_entry<WHITE>(pos).nonPawnWhite;
     const int   bnpcv  = shared.nonpawn_correction_entry<BLACK>(pos).nonPawnBlack;
+    const auto& cw = w.corrWeights;
     const int   cntcv =
       m.is_ok()
-          ? 8335 * (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
-            + 8337 * (*(ss - 4)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
-            + 6237 * (*(ss - 6)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
-          : 76511;
+          ? cw[3] * (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
+            + cw[4] * (*(ss - 4)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
+            + cw[5] * (*(ss - 6)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
+          : cw[6];
 
-    return 14120 * pcv + 9650 * micv + 12401 * (wnpcv + bnpcv) + cntcv;
+    return cw[0] * pcv + cw[1] * micv + cw[2] * (wnpcv + bnpcv) + cntcv;
 }
 
 // Add correctionHistory value to raw staticEval and guarantee evaluation
@@ -118,11 +121,31 @@ Value to_corrected_static_eval(const Value v, const int cv) {
 void update_correction_history(const Position& pos,
                                Stack* const    ss,
                                Search::Worker& workerThread,
-                               const int       bonus) {
+                               const int       bonus,
+                               const int       evalError) {
     const Move m = (ss - 1)->currentMove;
 
     constexpr int nonPawnWeight = 179;
     auto&         shared        = workerThread.sharedHistory;
+
+    const int errClamped = std::clamp(evalError, -256, 256);
+    const int feats[6]   = {
+      int(shared.pawn_correction_entry(pos).pawn[bool(pos.pieces(QUEEN))]),
+      int(shared.minor_piece_correction_entry(pos).minor),
+      int(shared.nonpawn_correction_entry<WHITE>(pos).nonPawnWhite)
+        + int(shared.nonpawn_correction_entry<BLACK>(pos).nonPawnBlack),
+      m.is_ok() ? int((*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]) : 0,
+      m.is_ok() ? int((*(ss - 4)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]) : 0,
+      m.is_ok() ? int((*(ss - 6)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]) : 0,
+    };
+    for (int k = 0; k < 6; ++k)
+    {
+        const int grad   = (errClamped * std::clamp(feats[k], -1024, 1024)) / 4096;
+        const int anchor = (DefaultCorrWeights[k] - workerThread.corrWeights[k]) >> 8;
+        workerThread.corrWeights[k] = std::clamp(workerThread.corrWeights[k] + grad + anchor,
+                                                 DefaultCorrWeights[k] / 2,
+                                                 DefaultCorrWeights[k] * 2);
+    }
 
     shared.pawn_correction_entry(pos).pawn[bool(pos.pieces(QUEEN))] << bonus;
     shared.minor_piece_correction_entry(pos).minor << bonus * 144 / 128;
@@ -704,6 +727,7 @@ void Search::Worker::clear() {
     // The constant-size continuation history is initialized by thread 0 of each NUMA node.
     sharedHistory.correctionHistory.clear_range(-5, numaThreadIdx, numaTotal);
     sharedHistory.pawnHistory.clear_range(-1292, numaThreadIdx, numaTotal);
+    corrWeights = DefaultCorrWeights;
 
     if (numaThreadIdx == 0)
         for (bool inCheck : {false, true})
@@ -1300,7 +1324,8 @@ moves_loop:  // When in check, search starts here
                     const int bonus =
                       std::clamp(int(value - ss->staticEval) * 704 / 1024,
                                  -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
-                    update_correction_history(pos, ss, *this, 1098 * bonus / 1024);
+                    update_correction_history(pos, ss, *this, 1098 * bonus / 1024,
+                                              int(value - ss->staticEval));
                 }
 
                 return value;
@@ -1654,7 +1679,8 @@ moves_loop:  // When in check, search starts here
         auto bonus =
           std::clamp(int(bestValue - ss->staticEval) * depth * (bestMove ? 12 : 19) / 128,
                      -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
-        update_correction_history(pos, ss, *this, 1057 * bonus / 1024);
+        update_correction_history(pos, ss, *this, 1057 * bonus / 1024,
+                                  int(bestValue - ss->staticEval));
     }
 
     // The search is now complete
