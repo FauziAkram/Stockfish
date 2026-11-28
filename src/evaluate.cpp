@@ -35,20 +35,8 @@
 
 namespace Stockfish {
 
-Value scale_evaluation(Value nnue, const Position& pos);
-
-Value Eval::evaluate(const Eval::NNUE::Network&     network,
-                     const Position&                pos,
-                     Eval::NNUE::AccumulatorStack&  accumulators,
-                     Eval::NNUE::AccumulatorCaches& caches) {
-
-    assert(!pos.checkers());
-    Value nnue = network.evaluate(pos, accumulators, caches);
-    return scale_evaluation(nnue, pos);
-}
-
 // Applies material and rule50 scaling to the raw NNUE eval
-Value scale_evaluation(Value nnue, const Position& pos) {
+static Value scale_evaluation(Value nnue, const Position& pos) {
     int v = nnue;
 
     // Scale the evaluation by total material
@@ -62,6 +50,16 @@ Value scale_evaluation(Value nnue, const Position& pos) {
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 
     return v;
+}
+
+Value Eval::evaluate(const Eval::NNUE::Network&     network,
+                     const Position&                pos,
+                     Eval::NNUE::AccumulatorStack&  accumulators,
+                     Eval::NNUE::AccumulatorCaches& caches) {
+
+    assert(!pos.checkers());
+    Value nnue = network.evaluate(pos, accumulators, caches);
+    return scale_evaluation(nnue, pos);
 }
 
 // Like evaluate(), but instead of returning a value, it returns
