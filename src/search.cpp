@@ -705,6 +705,9 @@ void Search::Worker::clear() {
     sharedHistory.correctionHistory.clear_range(-5, numaThreadIdx, numaTotal);
     sharedHistory.pawnHistory.clear_range(-1292, numaThreadIdx, numaTotal);
 
+    for (int d = 0; d < ConformalDepthMax; ++d)
+        conformalMargin[d] = std::min(45 + d * 4, 87) * d;
+
     if (numaThreadIdx == 0)
         for (bool inCheck : {false, true})
             for (StatsType c : {NoCaptures, Captures})
@@ -1013,6 +1016,11 @@ Value Search::Worker::search(
         Value futilityMargin = futilityMult * depth
                              - (2790 * improving + 316 * opponentWorsening) * futilityMult / 1024
                              + std::abs(correctionValue) / 187260;
+
+        const int cDepth         = std::min(depth, ConformalDepthMax - 1);
+        const int baseFutility   = std::min(45 + cDepth * 4, 87) * cDepth;
+        const int conformalDelta = std::clamp((conformalMargin[cDepth] - baseFutility) / 4, -80, 120);
+        futilityMargin += conformalDelta;
 
         if (eval - futilityMargin >= beta)
             return (702 * beta + 322 * eval) / 1024;
@@ -1655,6 +1663,15 @@ moves_loop:  // When in check, search starts here
           std::clamp(int(bestValue - ss->staticEval) * depth * (bestMove ? 12 : 19) / 128,
                      -CORRECTION_HISTORY_LIMIT / 4, CORRECTION_HISTORY_LIMIT / 4);
         update_correction_history(pos, ss, *this, 1057 * bonus / 1024);
+    }
+
+    if (!rootNode && !ss->inCheck && !excludedMove && !is_decisive(bestValue)
+        && is_valid(ss->staticEval))
+    {
+        const int cDepth  = std::min(depth, ConformalDepthMax - 1);
+        const int absJump = std::abs(int(bestValue - ss->staticEval));
+        const int step    = (absJump > conformalMargin[cDepth]) ? 18 : -2;
+        conformalMargin[cDepth] = std::clamp(conformalMargin[cDepth] + step, 40, 1200);
     }
 
     // The search is now complete
