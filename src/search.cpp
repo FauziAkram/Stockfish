@@ -314,6 +314,8 @@ bool Search::Worker::iterative_deepening() {
             mainThread->iterValue.fill(VALUE_ZERO);
         else
             mainThread->iterValue.fill(mainThread->bestPreviousScore);
+        mainThread->evalBetWealth = 1024;
+        mainThread->evalBetLambda = 0;
     }
 
     usize multiPV = usize(options["MultiPV"]);
@@ -607,6 +609,29 @@ bool Search::Worker::iterative_deepening() {
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * highBestMoveEffort;
+
+            if (rootDepth >= 2)
+            {
+                const int  prevIterScore = mainThread->iterValue[(iterIdx - 1) & 3];
+                const int  scoreSurprise = std::abs(int(rootMoves[0].score - prevIterScore));
+                const bool pvFlip        = lastBestMovePV.empty() || lastBestMovePV[0] != rootMoves[0].pv[0];
+                const i64  x             = std::clamp(i64(scoreSurprise) * 8 + i64(pvFlip) * 384 - 256,
+                                                      -1024LL, 1024LL);
+
+                // Anytime-valid wealth update via Ville's supermartingale
+                mainThread->evalBetWealth = std::clamp(
+                  mainThread->evalBetWealth
+                    + (mainThread->evalBetWealth * mainThread->evalBetLambda * x) / (1024LL * 1024LL),
+                  256LL, 16384LL);
+
+                const i64 denom = std::max(512LL, 1024LL + (mainThread->evalBetLambda * x) / 1024LL);
+                const i64 grad  = (x * 1024LL) / denom;
+                mainThread->evalBetLambda = std::clamp(mainThread->evalBetLambda + grad / 4, 0LL, 512LL);
+
+                const double eFactor =
+                  std::clamp(0.90 + 0.10 * double(mainThread->evalBetWealth) / 1024.0, 0.90, 1.40);
+                totalTime *= eFactor;
+            }
 
             if (rootMoves.size() == 1)
                 // Cap used time to 0.5s for a better viewer experience
