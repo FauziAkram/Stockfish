@@ -337,6 +337,7 @@ class Worker {
     TTMoveHistory    ttMoveHistory;
     SharedHistories& sharedHistory;
     ContinuationHistory (&continuationHistory)[2][2];
+    std::array<int, 7> corrWeights;
 
    private:
     bool iterative_deepening();
