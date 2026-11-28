@@ -123,7 +123,7 @@ constexpr Bitboard pawn_attacks_bb(Bitboard b) {
 }
 
 constexpr Bitboard pawn_single_push_bb(Color c, Bitboard b) {
-    return shift(b, c == WHITE ? NORTH : SOUTH);
+    return shift(b, pawn_push(c));
 }
 
 inline constexpr auto PawnPairBB = []() {
