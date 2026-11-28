@@ -95,10 +95,11 @@ const std::array<int, MAX_MOVES> reductions = [] {
 int correction_value(const Worker& w, const Position& pos, const Stack* const ss) {
     const auto  m      = (ss - 1)->currentMove;
     const auto& shared = w.sharedHistory;
-    const int   pcv    = shared.pawn_correction_entry(pos).pawn[bool(pos.pieces(QUEEN))];
-    const int   micv   = shared.minor_piece_correction_entry(pos).minor;
-    const int   wnpcv  = shared.nonpawn_correction_entry<WHITE>(pos).nonPawnWhite;
-    const int   bnpcv  = shared.nonpawn_correction_entry<BLACK>(pos).nonPawnBlack;
+    const bool  hasQueen = bool(pos.pieces(QUEEN));
+    const int   pcv   = shared.read_correction_sketch(pos.pawn_key(), [&](const auto& b) { return int(b.pawn[hasQueen]); });
+    const int   micv  = shared.read_correction_sketch(pos.minor_piece_key(), [](const auto& b) { return int(b.minor); });
+    const int   wnpcv = shared.read_correction_sketch(pos.non_pawn_key(WHITE), [](const auto& b) { return int(b.nonPawnWhite); });
+    const int   bnpcv = shared.read_correction_sketch(pos.non_pawn_key(BLACK), [](const auto& b) { return int(b.nonPawnBlack); });
     const int   cntcv =
       m.is_ok()
           ? 8335 * (*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
@@ -124,10 +125,15 @@ void update_correction_history(const Position& pos,
     constexpr int nonPawnWeight = 179;
     auto&         shared        = workerThread.sharedHistory;
 
-    shared.pawn_correction_entry(pos).pawn[bool(pos.pieces(QUEEN))] << bonus;
-    shared.minor_piece_correction_entry(pos).minor << bonus * 144 / 128;
-    shared.nonpawn_correction_entry<WHITE>(pos).nonPawnWhite << bonus * nonPawnWeight / 128;
-    shared.nonpawn_correction_entry<BLACK>(pos).nonPawnBlack << bonus * nonPawnWeight / 128;
+    const bool hasQueen = bool(pos.pieces(QUEEN));
+    shared.update_correction_sketch(pos.pawn_key(), bonus,
+                                    [&](auto& b) -> auto& { return b.pawn[hasQueen]; });
+    shared.update_correction_sketch(pos.minor_piece_key(), bonus * 144 / 128,
+                                    [](auto& b) -> auto& { return b.minor; });
+    shared.update_correction_sketch(pos.non_pawn_key(WHITE), bonus * nonPawnWeight / 128,
+                                    [](auto& b) -> auto& { return b.nonPawnWhite; });
+    shared.update_correction_sketch(pos.non_pawn_key(BLACK), bonus * nonPawnWeight / 128,
+                                    [](auto& b) -> auto& { return b.nonPawnBlack; });
 
     if (m.is_ok())
     {
